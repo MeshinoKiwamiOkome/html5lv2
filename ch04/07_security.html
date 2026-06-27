@@ -1,0 +1,1495 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>4-7 セキュリティモデル | HTML5 Level 2 学習サイト</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --purple-dark:  #553c9a;
+      --purple-light: #9f7aea;
+      --purple-bg:    #faf5ff;
+      --purple-border:#e9d8fd;
+      --success-bg:   #f0fff4;
+      --success:      #48bb78;
+      --success-dark: #276749;
+      --warning-bg:   #fffaf0;
+      --warning:      #ed8936;
+      --warning-dark: #744210;
+      --danger-bg:    #fff5f5;
+      --danger:       #fc8181;
+      --danger-dark:  #c53030;
+      --info-bg:      #ebf8ff;
+      --info:         #4299e1;
+      --info-dark:    #2b6cb0;
+      --bg:           #f0f4f8;
+      --text:         #2d3748;
+      --muted:        #718096;
+      --dark-bg:      #1a202c;
+      --white:        #ffffff;
+      --border:       #e2e8f0;
+    }
+    body { font-family:'Segoe UI','Hiragino Sans','Meiryo',sans-serif; background:var(--bg); color:var(--text); line-height:1.7; }
+    a { color:var(--purple-dark); text-decoration:none; }
+    a:hover { text-decoration:underline; }
+
+    .breadcrumb { background:var(--white); border-bottom:1px solid var(--border); padding:10px 24px; font-size:0.85rem; color:var(--muted); }
+    .breadcrumb a { color:var(--purple-dark); }
+
+    .chapter-header { background:linear-gradient(135deg,var(--purple-dark) 0%,var(--purple-light) 100%); color:var(--white); padding:48px 24px 40px; text-align:center; position:relative; overflow:hidden; }
+    .chapter-header::before { content:''; position:absolute; top:-60px; right:-60px; width:220px; height:220px; background:rgba(255,255,255,0.06); border-radius:50%; }
+    .chapter-header::after  { content:''; position:absolute; bottom:-80px; left:-40px; width:280px; height:280px; background:rgba(255,255,255,0.04); border-radius:50%; }
+    .chapter-header .sec-label { font-size:0.85rem; letter-spacing:0.15em; opacity:0.8; margin-bottom:8px; }
+    .chapter-header h1 { font-size:clamp(1.5rem,4vw,2.2rem); font-weight:800; margin-bottom:12px; position:relative; z-index:1; }
+    .chapter-header p  { font-size:0.97rem; opacity:0.88; max-width:580px; margin:0 auto; position:relative; z-index:1; }
+
+    .section-nav { background:var(--white); border-bottom:1px solid var(--border); padding:12px 20px; overflow-x:auto; white-space:nowrap; }
+    .section-nav a { display:inline-block; padding:5px 12px; margin-right:6px; border-radius:20px; font-size:0.82rem; color:var(--muted); border:1px solid var(--border); transition:all 0.2s; }
+    .section-nav a:hover { background:var(--purple-bg); border-color:var(--purple-light); color:var(--purple-dark); text-decoration:none; }
+    .section-nav a.active { background:var(--purple-dark); color:var(--white); border-color:var(--purple-dark); }
+
+    .main { max-width:960px; margin:0 auto; padding:40px 20px 60px; }
+
+    .sec-heading { font-size:1.4rem; font-weight:800; color:var(--purple-dark); border-left:5px solid var(--purple-light); padding-left:14px; margin:48px 0 20px; }
+    .sec-heading:first-of-type { margin-top:0; }
+    .sub-heading { font-size:1.1rem; font-weight:700; color:var(--text); margin:28px 0 12px; display:flex; align-items:center; gap:8px; }
+    .sub-heading::before { content:''; display:inline-block; width:4px; height:18px; background:var(--purple-light); border-radius:2px; }
+
+    .info-box { border-radius:8px; padding:16px 20px; margin:20px 0; font-size:0.9rem; line-height:1.7; }
+    .info-box.point { background:var(--purple-bg); border:1px solid var(--purple-border); border-left:4px solid var(--purple-dark); }
+    .info-box.point strong { color:var(--purple-dark); }
+    .info-box.warn  { background:var(--warning-bg); border:1px solid #fbd38d; border-left:4px solid var(--warning); }
+    .info-box.warn  strong { color:var(--warning-dark); }
+    .info-box.tip   { background:var(--success-bg); border:1px solid #c6f6d5; border-left:4px solid var(--success); }
+    .info-box.tip   strong { color:var(--success-dark); }
+    .info-box p { margin-top:6px; }
+    .info-box ul { margin:8px 0 0 18px; }
+    .info-box li { margin-bottom:4px; }
+
+    .tbl-wrap { overflow-x:auto; margin:20px 0; border-radius:8px; border:1px solid var(--border); }
+    table { width:100%; border-collapse:collapse; font-size:0.88rem; }
+    th { background:var(--purple-dark); color:var(--white); padding:10px 14px; text-align:left; font-weight:600; }
+    td { padding:9px 14px; border-bottom:1px solid var(--border); vertical-align:top; }
+    tr:last-child td { border-bottom:none; }
+    tr:nth-child(even) td { background:#f7f8fa; }
+    code { background:#edf2f7; color:var(--purple-dark); padding:1px 6px; border-radius:4px; font-size:0.85em; font-family:'Consolas','Monaco',monospace; }
+
+    .code-block { position:relative; background:var(--dark-bg); border-radius:10px; margin:20px 0; overflow:hidden; }
+    .code-block-header { background:#2d3748; padding:8px 16px; font-size:0.78rem; color:#a0aec0; display:flex; justify-content:space-between; align-items:center; }
+    .copy-btn { background:transparent; border:1px solid #4a5568; color:#a0aec0; padding:3px 10px; border-radius:4px; font-size:0.75rem; cursor:pointer; transition:all 0.2s; }
+    .copy-btn:hover { background:#4a5568; color:var(--white); }
+    .copy-btn.copied { background:var(--success-dark); border-color:var(--success-dark); color:var(--white); }
+    .code-block pre { padding:20px; overflow-x:auto; font-size:0.85rem; line-height:1.7; color:#e2e8f0; font-family:'Consolas','Monaco','Courier New',monospace; }
+    .kw  { color:#90cdf4; }
+    .fn  { color:#b794f4; }
+    .str { color:#fbd38d; }
+    .num { color:#fc8181; }
+    .cm  { color:#68d391; }
+    .op  { color:#f6ad55; }
+    .out { color:#a0aec0; }
+    .hdr { color:#68d391; }
+    .val { color:#fbd38d; }
+
+    .demo-box { background:var(--white); border:2px solid var(--purple-border); border-radius:12px; padding:24px; margin:24px 0; }
+    .demo-box h3 { font-size:1rem; font-weight:700; color:var(--purple-dark); margin-bottom:16px; display:flex; align-items:center; gap:8px; }
+    .demo-box h3 .demo-num { background:var(--purple-dark); color:var(--white); border-radius:50%; width:24px; height:24px; display:inline-flex; align-items:center; justify-content:center; font-size:0.75rem; flex-shrink:0; }
+
+    .btn { padding:8px 16px; border:none; border-radius:7px; font-size:0.88rem; font-weight:600; cursor:pointer; transition:all 0.2s; }
+    .btn:disabled { opacity:0.45; cursor:not-allowed; }
+    .btn-primary { background:var(--purple-dark); color:var(--white); }
+    .btn-primary:hover:not(:disabled) { background:var(--purple-light); }
+    .btn-success { background:var(--success-dark); color:var(--white); }
+    .btn-success:hover:not(:disabled) { background:var(--success); }
+    .btn-danger  { background:var(--danger-dark); color:var(--white); }
+    .btn-danger:hover:not(:disabled)  { background:var(--danger); }
+    .btn-info    { background:var(--info-dark); color:var(--white); }
+    .btn-info:hover:not(:disabled)    { background:var(--info); }
+    .btn-warn    { background:var(--warning-dark); color:var(--white); }
+    .btn-warn:hover:not(:disabled)    { background:var(--warning); }
+    .btn-outline { background:transparent; border:2px solid var(--purple-dark); color:var(--purple-dark); }
+    .btn-outline:hover:not(:disabled) { background:var(--purple-bg); }
+    .btn-sm { padding:5px 12px; font-size:0.82rem; }
+
+    .ctrl-row { display:flex; flex-wrap:wrap; gap:10px; align-items:center; margin-bottom:12px; }
+    label { font-size:0.85rem; color:var(--muted); }
+    input[type=text] { padding:7px 10px; border:1px solid var(--border); border-radius:6px; font-size:0.88rem; color:var(--text); background:var(--white); }
+    input[type=text]:focus { outline:none; border-color:var(--purple-light); }
+    select { padding:6px 10px; border:1px solid var(--border); border-radius:6px; font-size:0.85rem; color:var(--text); background:var(--white); }
+
+    .console { background:var(--dark-bg); border-radius:8px; padding:14px 16px; font-family:'Consolas','Monaco',monospace; font-size:0.82rem; color:#e2e8f0; min-height:80px; max-height:260px; overflow-y:auto; margin-top:12px; }
+    .console .log-line { margin-bottom:4px; }
+    .console .log-line.ok   { color:#68d391; }
+    .console .log-line.err  { color:#fc8181; }
+    .console .log-line.info { color:#90cdf4; }
+    .console .log-line.warn { color:#f6ad55; }
+    .console .log-line.hdr  { color:#68d391; }
+    .console .log-line.req  { color:#fbd38d; }
+    .console .log-line.res  { color:#b794f4; }
+
+    /* オリジン判定 */
+    .origin-input-grid { display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:14px; }
+    .origin-panel { background:#f7f8fa; border:1px solid var(--border); border-radius:8px; padding:14px; }
+    .origin-panel h4 { font-size:0.85rem; font-weight:700; color:var(--text); margin-bottom:10px; }
+    .origin-field { display:flex; flex-direction:column; gap:4px; margin-bottom:8px; }
+    .origin-field label { font-size:0.78rem; font-weight:600; color:var(--muted); }
+    .origin-field input { font-family:monospace; }
+    .origin-result { border-radius:8px; padding:14px 16px; text-align:center; margin-top:12px; border:2px solid var(--border); transition:all 0.3s; }
+    .origin-result.same    { border-color:var(--success); background:var(--success-bg); }
+    .origin-result.diff    { border-color:var(--danger);  background:var(--danger-bg); }
+    .origin-result .or-icon { font-size:2rem; margin-bottom:6px; }
+    .origin-result .or-text { font-size:1rem; font-weight:700; }
+    .origin-result.same .or-text { color:var(--success-dark); }
+    .origin-result.diff .or-text { color:var(--danger-dark); }
+    .origin-result .or-reason { font-size:0.82rem; margin-top:4px; }
+    .origin-result.same .or-reason { color:var(--success-dark); }
+    .origin-result.diff .or-reason { color:var(--danger-dark); }
+
+    /* CORS フロービジュアライザ */
+    .cors-flow { display:flex; flex-direction:column; gap:0; margin:14px 0; }
+    .cors-flow-step { display:flex; align-items:flex-start; gap:12px; padding:10px 14px; border-radius:8px; background:#f7f8fa; border:1px solid var(--border); margin-bottom:6px; transition:all 0.4s; opacity:0.4; }
+    .cors-flow-step.active { opacity:1; border-color:var(--purple-light); background:var(--purple-bg); }
+    .cors-flow-step.done   { opacity:1; border-color:var(--success); background:var(--success-bg); }
+    .cors-flow-step.error  { opacity:1; border-color:var(--danger);  background:var(--danger-bg); }
+    .cors-step-num  { width:24px; height:24px; border-radius:50%; background:var(--muted); color:var(--white); display:flex; align-items:center; justify-content:center; font-size:0.72rem; font-weight:700; flex-shrink:0; margin-top:2px; }
+    .cors-flow-step.active .cors-step-num { background:var(--purple-dark); }
+    .cors-flow-step.done   .cors-step-num { background:var(--success-dark); }
+    .cors-flow-step.error  .cors-step-num { background:var(--danger-dark); }
+    .cors-step-body .cors-step-title { font-size:0.88rem; font-weight:700; color:var(--text); }
+    .cors-step-body .cors-step-detail { font-size:0.8rem; color:var(--muted); font-family:monospace; margin-top:2px; }
+    .cors-flow-step.active .cors-step-body .cors-step-title { color:var(--purple-dark); }
+    .cors-flow-step.done   .cors-step-body .cors-step-title { color:var(--success-dark); }
+    .cors-flow-step.error  .cors-step-body .cors-step-title { color:var(--danger-dark); }
+
+    /* プリフライト判定 */
+    .preflight-result { border-radius:10px; padding:16px 20px; text-align:center; margin:14px 0; border:2px solid var(--border); transition:all 0.3s; }
+    .preflight-result.simple     { border-color:var(--success); background:var(--success-bg); }
+    .preflight-result.preflight  { border-color:var(--warning); background:var(--warning-bg); }
+    .preflight-result .pr-icon   { font-size:2rem; margin-bottom:6px; }
+    .preflight-result .pr-type   { font-size:1.1rem; font-weight:800; }
+    .preflight-result.simple    .pr-type { color:var(--success-dark); }
+    .preflight-result.preflight .pr-type { color:var(--warning-dark); }
+    .preflight-result .pr-reason { font-size:0.85rem; margin-top:6px; line-height:1.6; }
+    .preflight-result.simple    .pr-reason { color:var(--success-dark); }
+    .preflight-result.preflight .pr-reason { color:var(--warning-dark); }
+
+    /* CORS ヘッダーシミュレーター */
+    .cors-header-grid { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+    .cors-header-panel { background:#f7f8fa; border:1px solid var(--border); border-radius:8px; padding:14px; }
+    .cors-header-panel h4 { font-size:0.85rem; font-weight:700; color:var(--text); margin-bottom:10px; }
+    .cors-header-row { display:flex; flex-direction:column; gap:3px; margin-bottom:10px; }
+    .cors-header-row label { font-size:0.78rem; font-weight:600; color:var(--muted); }
+    .cors-result-badge { display:inline-flex; align-items:center; gap:6px; padding:6px 14px; border-radius:6px; font-size:0.88rem; font-weight:700; }
+    .cors-result-badge.allow  { background:var(--success-bg); color:var(--success-dark); border:1px solid var(--success); }
+    .cors-result-badge.block  { background:var(--danger-bg);  color:var(--danger-dark);  border:1px solid var(--danger); }
+
+    /* HTTP ヘッダービューア */
+    .header-viewer { background:var(--dark-bg); border-radius:8px; padding:14px 16px; font-family:'Consolas','Monaco',monospace; font-size:0.82rem; line-height:1.8; }
+    .hv-line { }
+    .hv-key   { color:#68d391; }
+    .hv-sep   { color:#4a5568; }
+    .hv-val   { color:#fbd38d; }
+    .hv-comment { color:#4a5568; font-style:italic; }
+
+    /* セキュリティヘッダー */
+    .sec-header-cards { display:grid; grid-template-columns:repeat(auto-fill,minmax(280px,1fr)); gap:12px; margin:14px 0; }
+    .sec-header-card { background:#f7f8fa; border:1px solid var(--border); border-radius:8px; padding:14px; cursor:pointer; transition:all 0.2s; }
+    .sec-header-card:hover { border-color:var(--purple-light); background:var(--purple-bg); }
+    .sec-header-card.active { border-color:var(--purple-dark); background:var(--purple-bg); }
+    .shc-name  { font-family:monospace; font-size:0.85rem; font-weight:700; color:var(--purple-dark); margin-bottom:4px; }
+    .shc-desc  { font-size:0.8rem; color:var(--muted); line-height:1.5; }
+    .shc-detail { display:none; margin-top:10px; padding-top:10px; border-top:1px solid var(--purple-border); font-size:0.82rem; color:var(--text); line-height:1.7; }
+    .shc-detail.show { display:block; }
+
+    /* 演習問題 */
+    .quiz-section { background:var(--white); border:2px solid var(--purple-border); border-radius:14px; padding:28px; margin:48px 0 32px; }
+    .quiz-section h2 { font-size:1.2rem; font-weight:800; color:var(--purple-dark); margin-bottom:6px; }
+    .quiz-section .quiz-desc { font-size:0.88rem; color:var(--muted); margin-bottom:24px; }
+    .quiz-item { background:var(--bg); border-radius:10px; padding:20px; margin-bottom:16px; }
+    .quiz-item .q-num  { font-size:0.78rem; font-weight:700; color:var(--purple-light); letter-spacing:0.1em; margin-bottom:6px; }
+    .quiz-item .q-text { font-size:0.95rem; font-weight:600; color:var(--text); margin-bottom:14px; line-height:1.6; }
+    .quiz-item .q-code { background:var(--dark-bg); border-radius:6px; padding:12px 16px; font-family:'Consolas','Monaco',monospace; font-size:0.83rem; color:#e2e8f0; margin-bottom:14px; line-height:1.6; }
+    .options { display:flex; flex-direction:column; gap:8px; }
+    .option-btn { background:var(--white); border:2px solid var(--border); border-radius:8px; padding:10px 16px; font-size:0.88rem; text-align:left; cursor:pointer; transition:all 0.2s; color:var(--text); }
+    .option-btn:hover:not(:disabled) { border-color:var(--purple-light); background:var(--purple-bg); }
+    .option-btn.correct  { border-color:var(--success); background:var(--success-bg); color:var(--success-dark); font-weight:600; }
+    .option-btn.wrong    { border-color:var(--danger);  background:var(--danger-bg);  color:var(--danger-dark); }
+    .option-btn:disabled { cursor:default; }
+    .option-btn.selected { border-color:var(--purple-light); background:var(--purple-bg); }
+    .explanation { display:none; margin-top:12px; padding:12px 16px; background:var(--purple-bg); border:1px solid var(--purple-border); border-radius:8px; font-size:0.87rem; color:var(--text); line-height:1.7; }
+    .explanation.show { display:block; }
+    .explanation strong { color:var(--purple-dark); }
+    .fill-input { width:100%; padding:8px 12px; border:2px solid var(--border); border-radius:7px; font-size:0.9rem; font-family:'Consolas','Monaco',monospace; margin-bottom:8px; }
+    .fill-input:focus { outline:none; border-color:var(--purple-light); }
+
+    .complete-area { text-align:center; margin:40px 0 20px; }
+    .complete-btn { background:linear-gradient(135deg,var(--purple-dark),var(--purple-light)); color:var(--white); border:none; border-radius:12px; padding:16px 40px; font-size:1rem; font-weight:700; cursor:pointer; transition:all 0.3s; box-shadow:0 4px 15px rgba(85,60,154,0.3); }
+    .complete-btn:hover { transform:translateY(-2px); box-shadow:0 6px 20px rgba(85,60,154,0.4); }
+    .complete-btn.done { background:linear-gradient(135deg,var(--success-dark),var(--success)); box-shadow:0 4px 15px rgba(72,187,120,0.3); }
+
+    /* 完了バナー */
+    .chapter-complete-banner { background:linear-gradient(135deg,var(--success-dark),var(--success)); color:var(--white); border-radius:14px; padding:28px 32px; text-align:center; margin:32px 0; }
+    .chapter-complete-banner h2 { font-size:1.4rem; font-weight:800; margin-bottom:8px; }
+    .chapter-complete-banner p  { font-size:0.95rem; opacity:0.9; margin-bottom:16px; }
+    .chapter-complete-banner .banner-links { display:flex; gap:12px; justify-content:center; flex-wrap:wrap; }
+    .banner-link { background:rgba(255,255,255,0.2); border:2px solid rgba(255,255,255,0.4); color:var(--white); border-radius:8px; padding:10px 20px; font-size:0.9rem; font-weight:600; transition:all 0.2s; }
+    .banner-link:hover { background:rgba(255,255,255,0.3); text-decoration:none; color:var(--white); }
+
+    .page-nav { display:flex; justify-content:space-between; align-items:center; gap:16px; flex-wrap:wrap; margin-top:40px; padding-top:24px; border-top:2px solid var(--border); }
+    .page-nav-btn { display:inline-flex; align-items:center; gap:8px; background:var(--white); border:2px solid var(--purple-border); color:var(--purple-dark); border-radius:10px; padding:12px 20px; font-size:0.9rem; font-weight:600; transition:all 0.2s; }
+    .page-nav-btn:hover { background:var(--purple-bg); border-color:var(--purple-light); text-decoration:none; }
+
+    footer { background:var(--dark-bg); color:#a0aec0; text-align:center; padding:28px 20px; font-size:0.85rem; margin-top:60px; }
+    footer a { color:var(--purple-light); }
+
+    @media(max-width:640px){
+      .main { padding:24px 14px 48px; }
+      .origin-input-grid { grid-template-columns:1fr; }
+      .cors-header-grid  { grid-template-columns:1fr; }
+      .sec-header-cards  { grid-template-columns:1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- パンくずナビ -->
+<div class="breadcrumb">
+  <a href="../index.html">🏠 HTML5 Level 2</a> ›
+  <a href="index.html">Chapter 4</a> ›
+  4-7 セキュリティモデル
+</div>
+
+<!-- チャプターヘッダー -->
+<div class="chapter-header">
+  <div class="sec-label">CHAPTER 4 — SECTION 7</div>
+  <h1>🔒 セキュリティモデル</h1>
+  <p>同一オリジンポリシー・CORS・シンプルリクエスト・プリフライトリクエスト・SSL など、Web セキュリティの基礎を学びます。</p>
+</div>
+
+<!-- セクションナビ -->
+<div class="section-nav">
+  <a href="01_graphics.html">4-1 グラフィックス</a>
+  <a href="02_media.html">4-2 メディア</a>
+  <a href="03_storage.html">4-3 ストレージ</a>
+  <a href="04_communication.html">4-4 通信</a>
+  <a href="05_device.html">4-5 デバイス</a>
+  <a href="06_performance.html">4-6 パフォーマンス</a>
+  <a href="07_security.html" class="active">4-7 セキュリティ</a>
+</div>
+
+<main class="main">
+
+  <!-- ========== 1. 同一オリジンポリシー ========== -->
+  <h2 class="sec-heading">1. 同一オリジンポリシー（Same-Origin Policy）</h2>
+
+  <p>同一オリジンポリシーは、あるオリジンから読み込まれたドキュメントやスクリプトが、<strong>別のオリジンのリソースにアクセスすることを制限</strong>するブラウザのセキュリティ機構です。</p>
+
+  <p>オリジンは <strong>プロトコル（スキーム）・ホスト（ドメイン）・ポート番号</strong> の3要素で構成されます。これら3つがすべて一致する場合のみ「同一オリジン」となります。</p>
+
+  <div class="code-block">
+    <div class="code-block-header">
+      <span>オリジンの構成と判定例</span>
+      <button class="copy-btn" onclick="copyCode(this)">copy</button>
+    </div>
+    <pre><span class="cm">// オリジン = プロトコル + ホスト + ポート</span>
+<span class="cm">// https://example.com:443/path?query#hash</span>
+<span class="cm">//  ↑プロトコル  ↑ホスト  ↑ポート  ↑パス以降はオリジンに含まれない</span>
+
+<span class="cm">// ── 基準 URL: https://example.com/page.html ──</span>
+
+<span class="cm">// ✅ 同一オリジン</span>
+<span class="cm">// https://example.com/other.html     → プロトコル・ホスト・ポート同じ</span>
+<span class="cm">// https://example.com/dir/page.html  → パスが違うだけ</span>
+
+<span class="cm">// ❌ 異なるオリジン（クロスオリジン）</span>
+<span class="cm">// http://example.com/page.html       → プロトコルが違う (http vs https)</span>
+<span class="cm">// https://other.com/page.html        → ホストが違う</span>
+<span class="cm">// https://sub.example.com/page.html  → サブドメインも別オリジン</span>
+<span class="cm">// https://example.com:8080/page.html → ポートが違う</span>
+
+<span class="cm">// JavaScript でオリジンを取得</span>
+console.<span class="fn">log</span>(location.origin);
+<span class="out">// → 'https://example.com'</span>
+
+<span class="cm">// URL オブジェクトでオリジンを解析</span>
+<span class="kw">const</span> url <span class="op">=</span> <span class="kw">new</span> <span class="fn">URL</span>(<span class="str">'https://api.example.com:8080/data'</span>);
+console.<span class="fn">log</span>(url.protocol); <span class="out">// 'https:'</span>
+console.<span class="fn">log</span>(url.hostname); <span class="out">// 'api.example.com'</span>
+console.<span class="fn">log</span>(url.port);     <span class="out">// '8080'</span>
+console.<span class="fn">log</span>(url.origin);   <span class="out">// 'https://api.example.com:8080'</span>
+
+<span class="cm">// 同一オリジンポリシーが制限するもの</span>
+<span class="cm">// - XMLHttpRequest / fetch によるクロスオリジンリクエスト</span>
+<span class="cm">// - iframe 内のクロスオリジンページへの DOM アクセス</span>
+<span class="cm">// - クロスオリジンの Cookie・localStorage へのアクセス</span>
+<span class="cm">// ※ &lt;img&gt;・&lt;script&gt;・&lt;link&gt; などの埋め込みは許可される</span></pre>
+  </div>
+
+  <div class="tbl-wrap">
+    <table>
+      <tr><th>比較対象 URL</th><th>基準: https://example.com/</th><th>理由</th></tr>
+      <tr><td><code>https://example.com/other.html</code></td><td>✅ 同一オリジン</td><td>パスのみ異なる</td></tr>
+      <tr><td><code>http://example.com/</code></td><td>❌ 異なる</td><td>プロトコルが違う（http vs https）</td></tr>
+      <tr><td><code>https://www.example.com/</code></td><td>❌ 異なる</td><td>ホストが違う（サブドメイン）</td></tr>
+      <tr><td><code>https://example.com:8080/</code></td><td>❌ 異なる</td><td>ポートが違う（443 vs 8080）</td></tr>
+      <tr><td><code>https://other.com/</code></td><td>❌ 異なる</td><td>ホストが違う</td></tr>
+    </table>
+  </div>
+
+  <div class="info-box point">
+    <strong>📌 試験頻出：同一オリジンの判定基準</strong>
+    <ul>
+      <li>オリジン = <strong>プロトコル + ホスト + ポート</strong> の3要素すべてが一致すること</li>
+      <li>パス・クエリ・フラグメントはオリジンに含まれない</li>
+      <li><code>http://</code> と <code>https://</code> は<strong>別オリジン</strong>（プロトコルが違う）</li>
+      <li><code>example.com</code> と <code>sub.example.com</code> は<strong>別オリジン</strong>（サブドメインも別）</li>
+      <li>HTTPS のデフォルトポートは 443、HTTP は 80。明示しない場合はデフォルトポートが使われる</li>
+    </ul>
+  </div>
+
+  <!-- ===== DEMO 1: 同一オリジン判定デモ ===== -->
+  <div class="demo-box">
+    <h3><span class="demo-num">1</span> 同一オリジンポリシー 判定デモ</h3>
+    <p style="font-size:0.85rem;color:var(--muted);margin-bottom:14px;">2つの URL のオリジンを入力して、同一オリジンかどうかをリアルタイムで判定します。</p>
+
+    <div class="origin-input-grid">
+      <div class="origin-panel">
+        <h4>🅰 基準 URL</h4>
+        <div class="origin-field">
+          <label>プロトコル</label>
+          <select id="originAProto" onchange="judgeOrigin()">
+            <option value="https">https://</option>
+            <option value="http">http://</option>
+          </select>
+        </div>
+        <div class="origin-field">
+          <label>ホスト</label>
+          <input type="text" id="originAHost" value="example.com" oninput="judgeOrigin()">
+        </div>
+        <div class="origin-field">
+          <label>ポート（空欄=デフォルト）</label>
+          <input type="text" id="originAPort" value="" placeholder="443" oninput="judgeOrigin()">
+        </div>
+        <div style="font-family:monospace;font-size:0.82rem;color:var(--purple-dark);margin-top:8px;padding:6px 10px;background:var(--purple-bg);border-radius:4px;" id="originADisplay">https://example.com</div>
+      </div>
+      <div class="origin-panel">
+        <h4>🅱 比較 URL</h4>
+        <div class="origin-field">
+          <label>プロトコル</label>
+          <select id="originBProto" onchange="judgeOrigin()">
+            <option value="https">https://</option>
+            <option value="http">http://</option>
+          </select>
+        </div>
+        <div class="origin-field">
+          <label>ホスト</label>
+          <input type="text" id="originBHost" value="example.com" oninput="judgeOrigin()">
+        </div>
+        <div class="origin-field">
+          <label>ポート（空欄=デフォルト）</label>
+          <input type="text" id="originBPort" value="" placeholder="443" oninput="judgeOrigin()">
+        </div>
+        <div style="font-family:monospace;font-size:0.82rem;color:var(--purple-dark);margin-top:8px;padding:6px 10px;background:var(--purple-bg);border-radius:4px;" id="originBDisplay">https://example.com</div>
+      </div>
+    </div>
+
+    <div class="origin-result" id="originResult">
+      <div class="or-icon">🤝</div>
+      <div class="or-text">判定中...</div>
+      <div class="or-reason"></div>
+    </div>
+
+    <div class="ctrl-row" style="margin-top:12px;">
+      <button class="btn btn-sm btn-outline" onclick="setOriginPreset('same')">同一オリジン例</button>
+      <button class="btn btn-sm btn-outline" onclick="setOriginPreset('proto')">プロトコル違い</button>
+      <button class="btn btn-sm btn-outline" onclick="setOriginPreset('host')">ホスト違い</button>
+      <button class="btn btn-sm btn-outline" onclick="setOriginPreset('subdomain')">サブドメイン違い</button>
+      <button class="btn btn-sm btn-outline" onclick="setOriginPreset('port')">ポート違い</button>
+    </div>
+    <div class="console" id="originConsole"><div class="log-line info">▶ URL を入力するかプリセットを選択してください</div></div>
+  </div>
+
+  <!-- ========== 2. CORS ========== -->
+  <h2 class="sec-heading">2. CORS（Cross-Origin Resource Sharing）</h2>
+
+  <p>CORS は、クロスオリジンリクエストを安全に許可するための仕組みです。サーバーが特定のレスポンスヘッダーを返すことで、ブラウザがクロスオリジンアクセスを許可します。</p>
+
+  <div class="code-block">
+    <div class="code-block-header">
+      <span>CORS の主要ヘッダー</span>
+      <button class="copy-btn" onclick="copyCode(this)">copy</button>
+    </div>
+    <pre><span class="cm">// ── サーバー側のレスポンスヘッダー ──</span>
+
+<span class="cm">// 許可するオリジン（* = すべて許可）</span>
+<span class="hdr">Access-Control-Allow-Origin</span>: <span class="val">https://example.com</span>
+<span class="hdr">Access-Control-Allow-Origin</span>: <span class="val">*</span>  <span class="cm">// ※ credentials と併用不可</span>
+
+<span class="cm">// 許可するメソッド（プリフライト応答で使用）</span>
+<span class="hdr">Access-Control-Allow-Methods</span>: <span class="val">GET, POST, PUT, DELETE, OPTIONS</span>
+
+<span class="cm">// 許可するリクエストヘッダー</span>
+<span class="hdr">Access-Control-Allow-Headers</span>: <span class="val">Content-Type, Authorization, X-Custom-Header</span>
+
+<span class="cm">// 認証情報（Cookie等）を含むリクエストを許可</span>
+<span class="hdr">Access-Control-Allow-Credentials</span>: <span class="val">true</span>
+
+<span class="cm">// プリフライト結果のキャッシュ時間（秒）</span>
+<span class="hdr">Access-Control-Max-Age</span>: <span class="val">86400</span>
+
+<span class="cm">// JS から読み取れるレスポンスヘッダーを指定</span>
+<span class="hdr">Access-Control-Expose-Headers</span>: <span class="val">X-Total-Count, X-Page</span>
+
+<span class="cm">// ── クライアント側（fetch）──</span>
+<span class="fn">fetch</span>(<span class="str">'https://api.other.com/data'</span>, {
+  method:      <span class="str">'POST'</span>,
+  credentials: <span class="str">'include'</span>,  <span class="cm">// Cookie を送信する場合</span>
+  headers: { <span class="str">'Content-Type'</span>: <span class="str">'application/json'</span> },
+  body:    JSON.<span class="fn">stringify</span>({ key: <span class="str">'value'</span> }),
+});
+
+<span class="cm">// credentials: 'include' のとき</span>
+<span class="cm">// Access-Control-Allow-Origin: * は使えない（具体的なオリジンが必要）</span>
+<span class="cm">// Access-Control-Allow-Credentials: true が必要</span></pre>
+  </div>
+
+  <div class="info-box point">
+    <strong>📌 試験頻出：CORS の重要ルール</strong>
+    <ul>
+      <li><code>Access-Control-Allow-Origin: *</code> は<strong>認証情報付きリクエスト（credentials: 'include'）と併用できない</strong></li>
+      <li>認証情報を使う場合は具体的なオリジンを指定し、<code>Access-Control-Allow-Credentials: true</code> も必要</li>
+      <li>CORS はブラウザの制限。サーバー間通信（Node.js から Node.js など）には適用されない</li>
+      <li>プリフライトリクエストは <code>OPTIONS</code> メソッドで送信される</li>
+    </ul>
+  </div>
+
+  <!-- ========== 3. シンプルリクエスト ========== -->
+  <h2 class="sec-heading">3. シンプルリクエストとプリフライトリクエスト</h2>
+
+  <p>CORS リクエストは<strong>シンプルリクエスト</strong>と<strong>プリフライトリクエスト</strong>の2種類に分かれます。シンプルリクエストは事前確認なしに送信されますが、プリフライトリクエストは本リクエストの前に <code>OPTIONS</code> リクエストで許可を確認します。</p>
+
+  <div class="code-block">
+    <div class="code-block-header">
+      <span>シンプルリクエストの条件</span>
+      <button class="copy-btn" onclick="copyCode(this)">copy</button>
+    </div>
+    <pre><span class="cm">// ── シンプルリクエストになる条件（すべてを満たす場合）──</span>
+
+<span class="cm">// ① メソッドが以下のいずれか</span>
+<span class="cm">//    GET / HEAD / POST</span>
+
+<span class="cm">// ② ヘッダーが CORS セーフリストヘッダーのみ</span>
+<span class="cm">//    Accept</span>
+<span class="cm">//    Accept-Language</span>
+<span class="cm">//    Content-Language</span>
+<span class="cm">//    Content-Type（値に制限あり ↓）</span>
+
+<span class="cm">// ③ Content-Type が以下のいずれか（POST の場合）</span>
+<span class="cm">//    application/x-www-form-urlencoded</span>
+<span class="cm">//    multipart/form-data</span>
+<span class="cm">//    text/plain</span>
+
+<span class="cm">// ── シンプルリクエストの例 ──</span>
+<span class="fn">fetch</span>(<span class="str">'https://api.other.com/data'</span>);  <span class="cm">// GET → シンプル</span>
+
+<span class="fn">fetch</span>(<span class="str">'https://api.other.com/data'</span>, {
+  method:  <span class="str">'POST'</span>,
+  headers: { <span class="str">'Content-Type'</span>: <span class="str">'text/plain'</span> },
+  body:    <span class="str">'hello'</span>
+});  <span class="cm">// POST + text/plain → シンプル</span>
+
+<span class="cm">// ── プリフライトが発生する例 ──</span>
+<span class="fn">fetch</span>(<span class="str">'https://api.other.com/data'</span>, {
+  method:  <span class="str">'PUT'</span>,  <span class="cm">// PUT → プリフライト</span>
+});
+
+<span class="fn">fetch</span>(<span class="str">'https://api.other.com/data'</span>, {
+  method:  <span class="str">'POST'</span>,
+  headers: { <span class="str">'Content-Type'</span>: <span class="str">'application/json'</span> },  <span class="cm">// JSON → プリフライト</span>
+});
+
+<span class="fn">fetch</span>(<span class="str">'https://api.other.com/data'</span>, {
+  headers: { <span class="str">'Authorization'</span>: <span class="str">'Bearer token'</span> },  <span class="cm">// カスタムヘッダー → プリフライト</span>
+});
+
+<span class="cm">// ── プリフライトリクエストの流れ ──</span>
+<span class="cm">// 1. ブラウザが OPTIONS リクエストを送信</span>
+<span class="cm">//    Origin: https://example.com</span>
+<span class="cm">//    Access-Control-Request-Method: PUT</span>
+<span class="cm">//    Access-Control-Request-Headers: Content-Type, Authorization</span>
+<span class="cm">//</span>
+<span class="cm">// 2. サーバーが許可を返す</span>
+<span class="cm">//    Access-Control-Allow-Origin: https://example.com</span>
+<span class="cm">//    Access-Control-Allow-Methods: PUT, POST, GET</span>
+<span class="cm">//    Access-Control-Allow-Headers: Content-Type, Authorization</span>
+<span class="cm">//    Access-Control-Max-Age: 86400</span>
+<span class="cm">//</span>
+<span class="cm">// 3. 本リクエストを送信</span></pre>
+  </div>
+
+  <div class="tbl-wrap">
+    <table>
+      <tr><th>条件</th><th>シンプルリクエスト</th><th>プリフライト発生</th></tr>
+      <tr><td>メソッド: GET</td><td>✅</td><td>—</td></tr>
+      <tr><td>メソッド: HEAD</td><td>✅</td><td>—</td></tr>
+      <tr><td>メソッド: POST + text/plain</td><td>✅</td><td>—</td></tr>
+      <tr><td>メソッド: POST + application/json</td><td>—</td><td>✅ Content-Type が非セーフリスト</td></tr>
+      <tr><td>メソッド: PUT / DELETE / PATCH</td><td>—</td><td>✅ メソッドが非セーフリスト</td></tr>
+      <tr><td>カスタムヘッダー（Authorization 等）</td><td>—</td><td>✅ セーフリスト外のヘッダー</td></tr>
+      <tr><td>credentials: 'include'</td><td>条件次第</td><td>サーバー側の設定が必要</td></tr>
+    </table>
+  </div>
+
+  <!-- ===== DEMO 2: CORS フロービジュアライザ ===== -->
+  <div class="demo-box">
+    <h3><span class="demo-num">2</span> CORS リクエストフロービジュアライザー</h3>
+    <p style="font-size:0.85rem;color:var(--muted);margin-bottom:14px;">シンプルリクエストとプリフライトリクエストのフローをステップアニメーションで確認できます。</p>
+
+    <div class="ctrl-row">
+      <label>リクエスト種別:
+        <select id="corsFlowType" onchange="resetCorsFlow()">
+          <option value="simple">シンプルリクエスト（GET）</option>
+          <option value="simple_post">シンプルリクエスト（POST + text/plain）</option>
+          <option value="preflight">プリフライト（POST + application/json）</option>
+          <option value="preflight_put">プリフライト（PUT）</option>
+          <option value="preflight_auth">プリフライト（カスタムヘッダー）</option>
+          <option value="blocked">CORS ブロック（サーバーが拒否）</option>
+        </select>
+      </label>
+      <button class="btn btn-primary btn-sm" onclick="runCorsFlow()">▶ フローを実行</button>
+      <button class="btn btn-outline btn-sm" onclick="resetCorsFlow()">リセット</button>
+    </div>
+
+    <div class="cors-flow" id="corsFlow"></div>
+    <div class="console" id="corsFlowConsole"><div class="log-line info">▶ リクエスト種別を選択して「フローを実行」をクリックしてください</div></div>
+  </div>
+
+  <!-- ===== DEMO 3: プリフライト判定デモ ===== -->
+  <div class="demo-box">
+    <h3><span class="demo-num">3</span> プリフライトリクエスト判定デモ</h3>
+    <p style="font-size:0.85rem;color:var(--muted);margin-bottom:14px;">メソッド・ヘッダー・Content-Type を選択すると、プリフライトが必要かどうかをリアルタイムで判定します。</p>
+
+    <div class="ctrl-row">
+      <label>メソッド:
+        <select id="pfMethod" onchange="judgePreflight()">
+          <option value="GET">GET</option>
+          <option value="HEAD">HEAD</option>
+          <option value="POST">POST</option>
+          <option value="PUT">PUT</option>
+          <option value="DELETE">DELETE</option>
+          <option value="PATCH">PATCH</option>
+        </select>
+      </label>
+      <label>Content-Type:
+        <select id="pfContentType" onchange="judgePreflight()">
+          <option value="text/plain">text/plain</option>
+          <option value="application/x-www-form-urlencoded">application/x-www-form-urlencoded</option>
+          <option value="multipart/form-data">multipart/form-data</option>
+          <option value="application/json">application/json</option>
+          <option value="application/xml">application/xml</option>
+        </select>
+      </label>
+      <label>カスタムヘッダー:
+        <select id="pfCustomHeader" onchange="judgePreflight()">
+          <option value="none">なし</option>
+          <option value="authorization">Authorization</option>
+          <option value="x-custom">X-Custom-Header</option>
+          <option value="accept">Accept（セーフリスト）</option>
+        </select>
+      </label>
+    </div>
+
+    <div class="preflight-result" id="preflightResult">
+      <div class="pr-icon">🤔</div>
+      <div class="pr-type">判定中...</div>
+      <div class="pr-reason"></div>
+    </div>
+
+    <div class="console" id="preflightConsole"><div class="log-line info">▶ オプションを変更してプリフライトの要否を確認してください</div></div>
+  </div>
+
+  <!-- ===== DEMO 4: CORS ヘッダーシミュレーター ===== -->
+  <div class="demo-box">
+    <h3><span class="demo-num">4</span> CORS ヘッダー設定シミュレーター</h3>
+    <p style="font-size:0.85rem;color:var(--muted);margin-bottom:14px;">サーバーの CORS ヘッダー設定を変更して、リクエストが成功するかどうかをシミュレートします。</p>
+
+    <div class="cors-header-grid">
+      <div class="cors-header-panel">
+        <h4>🌐 クライアント（リクエスト設定）</h4>
+        <div class="cors-header-row">
+          <label>リクエスト元オリジン</label>
+          <select id="chClientOrigin">
+            <option value="https://example.com">https://example.com</option>
+            <option value="https://other.com">https://other.com</option>
+            <option value="https://app.example.com">https://app.example.com</option>
+          </select>
+        </div>
+        <div class="cors-header-row">
+          <label>メソッド</label>
+          <select id="chMethod">
+            <option value="GET">GET</option>
+            <option value="POST">POST</option>
+            <option value="PUT">PUT</option>
+            <option value="DELETE">DELETE</option>
+          </select>
+        </div>
+        <div class="cors-header-row">
+          <label>credentials</label>
+          <select id="chCredentials">
+            <option value="omit">omit（Cookie なし）</option>
+            <option value="include">include（Cookie あり）</option>
+          </select>
+        </div>
+      </div>
+      <div class="cors-header-panel">
+        <h4>🖥️ サーバー（レスポンスヘッダー設定）</h4>
+        <div class="cors-header-row">
+          <label>Access-Control-Allow-Origin</label>
+          <select id="chAllowOrigin">
+            <option value="*">*（すべて許可）</option>
+            <option value="https://example.com">https://example.com（特定）</option>
+            <option value="none">設定なし（CORS 非対応）</option>
+          </select>
+        </div>
+        <div class="cors-header-row">
+          <label>Access-Control-Allow-Methods</label>
+          <select id="chAllowMethods">
+            <option value="GET, POST">GET, POST のみ</option>
+            <option value="GET, POST, PUT, DELETE">GET, POST, PUT, DELETE</option>
+            <option value="none">設定なし</option>
+          </select>
+        </div>
+        <div class="cors-header-row">
+          <label>Access-Control-Allow-Credentials</label>
+          <select id="chAllowCredentials">
+            <option value="false">false（設定なし）</option>
+            <option value="true">true</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <div class="ctrl-row" style="margin-top:14px;">
+      <button class="btn btn-primary btn-sm" onclick="runCorsHeaderSim()">▶ シミュレーション実行</button>
+      <button class="btn btn-outline btn-sm" onclick="resetCorsHeaderSim()">リセット</button>
+    </div>
+
+    <!-- ヘッダービューア -->
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px;">
+      <div>
+        <div style="font-size:0.78rem;font-weight:600;color:var(--muted);margin-bottom:6px;">リクエストヘッダー</div>
+        <div class="header-viewer" id="reqHeaderView">—</div>
+      </div>
+      <div>
+        <div style="font-size:0.78rem;font-weight:600;color:var(--muted);margin-bottom:6px;">レスポンスヘッダー</div>
+        <div class="header-viewer" id="resHeaderView">—</div>
+      </div>
+    </div>
+
+    <div id="corsSimResult" style="margin-top:12px;"></div>
+    <div class="console" id="corsHeaderConsole"><div class="log-line info">▶ 設定を変更して「シミュレーション実行」をクリックしてください</div></div>
+  </div>
+
+  <!-- ========== 4. SSL / HTTPS ========== -->
+  <h2 class="sec-heading">4. SSL / HTTPS とセキュリティヘッダー</h2>
+
+  <div class="code-block">
+    <div class="code-block-header">
+      <span>主要なセキュリティヘッダー</span>
+      <button class="copy-btn" onclick="copyCode(this)">copy</button>
+    </div>
+    <pre><span class="cm">// ── Strict-Transport-Security（HSTS）──</span>
+<span class="cm">// HTTPS のみでアクセスさせる</span>
+<span class="hdr">Strict-Transport-Security</span>: <span class="val">max-age=31536000; includeSubDomains; preload</span>
+
+<span class="cm">// ── Content-Security-Policy（CSP）──</span>
+<span class="cm">// 読み込めるリソースの出所を制限（XSS 対策）</span>
+<span class="hdr">Content-Security-Policy</span>: <span class="val">default-src 'self'; script-src 'self' https://cdn.example.com</span>
+
+<span class="cm">// ── X-Frame-Options ──</span>
+<span class="cm">// iframe での埋め込みを制限（クリックジャッキング対策）</span>
+<span class="hdr">X-Frame-Options</span>: <span class="val">DENY</span>          <span class="cm">// 埋め込み禁止</span>
+<span class="hdr">X-Frame-Options</span>: <span class="val">SAMEORIGIN</span>    <span class="cm">// 同一オリジンのみ許可</span>
+
+<span class="cm">// ── X-Content-Type-Options ──</span>
+<span class="cm">// MIME スニッフィングを防止</span>
+<span class="hdr">X-Content-Type-Options</span>: <span class="val">nosniff</span>
+
+<span class="cm">// ── Referrer-Policy ──</span>
+<span class="cm">// Referer ヘッダーの送信を制御</span>
+<span class="hdr">Referrer-Policy</span>: <span class="val">strict-origin-when-cross-origin</span>
+
+<span class="cm">// ── Permissions-Policy（旧 Feature-Policy）──</span>
+<span class="cm">// ブラウザ機能へのアクセスを制限</span>
+<span class="hdr">Permissions-Policy</span>: <span class="val">geolocation=(), camera=(), microphone=()</span>
+
+<span class="cm">// ── CORS と SSL の関係 ──</span>
+<span class="cm">// HTTPS ページから HTTP へのリクエストは</span>
+<span class="cm">// Mixed Content として多くのブラウザでブロックされる</span>
+<span class="cm">// wss:// (WebSocket Secure) は HTTPS ページで必須</span></pre>
+  </div>
+
+  <div class="info-box warn">
+    <strong>⚠️ Mixed Content に注意</strong>
+    <p>HTTPS ページから HTTP リソース（画像・スクリプト・API 等）を読み込もうとすると <strong>Mixed Content</strong> エラーが発生し、ブラウザにブロックされます。HTTPS サイトでは、すべてのリソースを HTTPS で提供する必要があります。WebSocket も <code>wss://</code>（WebSocket Secure）を使用してください。</p>
+  </div>
+
+  <!-- ===== DEMO 5: セキュリティヘッダー解析デモ ===== -->
+  <div class="demo-box">
+    <h3><span class="demo-num">5</span> セキュリティヘッダー解析デモ</h3>
+    <p style="font-size:0.85rem;color:var(--muted);margin-bottom:14px;">各セキュリティヘッダーをクリックすると、詳細な説明・設定例・効果を確認できます。</p>
+
+    <div class="sec-header-cards" id="secHeaderCards">
+
+      <div class="sec-header-card" onclick="toggleSecHeader(this,'hsts')">
+        <div class="shc-name">Strict-Transport-Security</div>
+        <div class="shc-desc">HTTPS 接続を強制する（HSTS）</div>
+        <div class="shc-detail" id="detail_hsts">
+          <strong>目的：</strong> HTTP でアクセスしても自動的に HTTPS にリダイレクトさせる<br>
+          <strong>設定例：</strong><br>
+          <code>max-age=31536000</code> — 1年間 HTTPS を強制<br>
+          <code>includeSubDomains</code> — サブドメインにも適用<br>
+          <code>preload</code> — ブラウザの HSTS プリロードリストに登録可能<br>
+          <strong>効果：</strong> SSL ストリッピング攻撃を防止
+        </div>
+      </div>
+
+      <div class="sec-header-card" onclick="toggleSecHeader(this,'csp')">
+        <div class="shc-name">Content-Security-Policy</div>
+        <div class="shc-desc">読み込めるリソースの出所を制限（XSS 対策）</div>
+        <div class="shc-detail" id="detail_csp">
+          <strong>目的：</strong> XSS（クロスサイトスクリプティング）攻撃を軽減<br>
+          <strong>主なディレクティブ：</strong><br>
+          <code>default-src 'self'</code> — 同一オリジンのみ許可<br>
+          <code>script-src 'nonce-xxx'</code> — nonce 付きスクリプトのみ許可<br>
+          <code>img-src *</code> — 画像はすべて許可<br>
+          <code>frame-ancestors 'none'</code> — iframe 埋め込み禁止<br>
+          <strong>効果：</strong> インラインスクリプトや外部スクリプトの実行を制限
+        </div>
+      </div>
+
+      <div class="sec-header-card" onclick="toggleSecHeader(this,'xfo')">
+        <div class="shc-name">X-Frame-Options</div>
+        <div class="shc-desc">iframe での埋め込みを制限（クリックジャッキング対策）</div>
+        <div class="shc-detail" id="detail_xfo">
+          <strong>目的：</strong> クリックジャッキング攻撃を防止<br>
+          <strong>値：</strong><br>
+          <code>DENY</code> — iframe での埋め込みを完全禁止<br>
+          <code>SAMEORIGIN</code> — 同一オリジンの iframe のみ許可<br>
+          <code>ALLOW-FROM uri</code> — 特定の URI のみ許可（非推奨）<br>
+          <strong>注意：</strong> 現代のブラウザでは CSP の <code>frame-ancestors</code> が推奨
+        </div>
+      </div>
+
+      <div class="sec-header-card" onclick="toggleSecHeader(this,'xcto')">
+        <div class="shc-name">X-Content-Type-Options</div>
+        <div class="shc-desc">MIME スニッフィングを防止</div>
+        <div class="shc-detail" id="detail_xcto">
+          <strong>目的：</strong> ブラウザが Content-Type を無視して MIME タイプを推測（スニッフィング）するのを防ぐ<br>
+          <strong>値：</strong> <code>nosniff</code> のみ<br>
+          <strong>効果：</strong> 悪意のあるファイルが別の MIME タイプとして実行されるのを防止<br>
+          例: テキストファイルが JavaScript として実行されるのを防ぐ
+        </div>
+      </div>
+
+      <div class="sec-header-card" onclick="toggleSecHeader(this,'rp')">
+        <div class="shc-name">Referrer-Policy</div>
+        <div class="shc-desc">Referer ヘッダーの送信を制御</div>
+        <div class="shc-detail" id="detail_rp">
+          <strong>目的：</strong> クロスオリジンリクエスト時に送信される Referer 情報を制御<br>
+          <strong>主な値：</strong><br>
+          <code>no-referrer</code> — Referer を送信しない<br>
+          <code>same-origin</code> — 同一オリジンのみ送信<br>
+          <code>strict-origin-when-cross-origin</code> — クロスオリジンはオリジンのみ送信（推奨）<br>
+          <code>unsafe-url</code> — 常に完全な URL を送信（非推奨）
+        </div>
+      </div>
+
+      <div class="sec-header-card" onclick="toggleSecHeader(this,'pp')">
+        <div class="shc-name">Permissions-Policy</div>
+        <div class="shc-desc">ブラウザ機能へのアクセスを制限</div>
+        <div class="shc-detail" id="detail_pp">
+          <strong>目的：</strong> Geolocation・カメラ・マイクなどのブラウザ機能へのアクセスを制限<br>
+          <strong>設定例：</strong><br>
+          <code>geolocation=()</code> — Geolocation を無効化<br>
+          <code>camera=(self)</code> — 自サイトのみカメラ許可<br>
+          <code>microphone=("https://meet.example.com")</code> — 特定サイトのみ許可<br>
+          <strong>旧名称：</strong> Feature-Policy（現在は Permissions-Policy に統一）
+        </div>
+      </div>
+
+    </div>
+
+    <div class="console" id="secHeaderConsole"><div class="log-line info">▶ ヘッダーカードをクリックして詳細を確認してください</div></div>
+  </div>
+
+  <!-- ========== 演習問題 ========== -->
+  <div class="quiz-section">
+    <h2>🧩 演習問題</h2>
+    <p class="quiz-desc">4-7 セキュリティモデルの理解を確認しましょう。</p>
+
+    <!-- Q1 -->
+    <div class="quiz-item" id="q1">
+      <div class="q-num">QUESTION 1 / 6</div>
+      <div class="q-text">基準 URL が <code>https://example.com/page.html</code> のとき、同一オリジンとなる URL はどれですか？</div>
+      <div class="options">
+        <button class="option-btn" onclick="checkQ(this,'q1','C')">A. http://example.com/other.html</button>
+        <button class="option-btn" onclick="checkQ(this,'q1','C')">B. https://www.example.com/page.html</button>
+        <button class="option-btn" onclick="checkQ(this,'q1','C')">C. https://example.com/dir/other.html</button>
+        <button class="option-btn" onclick="checkQ(this,'q1','C')">D. https://example.com:8080/page.html</button>
+      </div>
+      <div class="explanation" id="exp_q1">
+        <strong>✅ 正解：C</strong><br>
+        オリジンはプロトコル・ホスト・ポートの3要素で決まります。<br>
+        <strong>A ✗</strong> プロトコルが違う（http vs https）<br>
+        <strong>B ✗</strong> ホストが違う（www.example.com vs example.com）<br>
+        <strong>C ✅</strong> パスが違うだけ → 同一オリジン（プロトコル=https、ホスト=example.com、ポート=443 が一致）<br>
+        <strong>D ✗</strong> ポートが違う（443 vs 8080）
+      </div>
+    </div>
+
+    <!-- Q2 -->
+    <div class="quiz-item" id="q2">
+      <div class="q-num">QUESTION 2 / 6</div>
+      <div class="q-text">CORS のプリフライトリクエストで使用される HTTP メソッドはどれですか？</div>
+      <div class="options">
+        <button class="option-btn" onclick="checkQ(this,'q2','B')">A. GET</button>
+        <button class="option-btn" onclick="checkQ(this,'q2','B')">B. OPTIONS</button>
+        <button class="option-btn" onclick="checkQ(this,'q2','B')">C. HEAD</button>
+        <button class="option-btn" onclick="checkQ(this,'q2','B')">D. PREFLIGHT</button>
+      </div>
+      <div class="explanation" id="exp_q2">
+        <strong>✅ 正解：B（OPTIONS）</strong><br>
+        プリフライトリクエストはブラウザが自動的に <code>OPTIONS</code> メソッドで送信します。<br>
+        リクエストには以下のヘッダーが含まれます：<br>
+        • <code>Origin</code>: リクエスト元のオリジン<br>
+        • <code>Access-Control-Request-Method</code>: 本リクエストで使うメソッド<br>
+        • <code>Access-Control-Request-Headers</code>: 本リクエストで使うカスタムヘッダー<br>
+        <code>PREFLIGHT</code> というメソッドは存在しません。
+      </div>
+    </div>
+
+    <!-- Q3 -->
+    <div class="quiz-item" id="q3">
+      <div class="q-num">QUESTION 3 / 6</div>
+      <div class="q-text">以下のリクエストのうち、CORS の<strong>シンプルリクエスト</strong>になるものはどれですか？</div>
+      <div class="options">
+        <button class="option-btn" onclick="checkQ(this,'q3','A')">A. GET リクエスト（カスタムヘッダーなし）</button>
+        <button class="option-btn" onclick="checkQ(this,'q3','A')">B. POST リクエスト（Content-Type: application/json）</button>
+        <button class="option-btn" onclick="checkQ(this,'q3','A')">C. PUT リクエスト</button>
+        <button class="option-btn" onclick="checkQ(this,'q3','A')">D. POST リクエスト（Authorization ヘッダー付き）</button>
+      </div>
+      <div class="explanation" id="exp_q3">
+        <strong>✅ 正解：A</strong><br>
+        シンプルリクエストの条件：<br>
+        • メソッドが GET / HEAD / POST のいずれか<br>
+        • ヘッダーが CORS セーフリスト（Accept・Accept-Language・Content-Language・Content-Type）のみ<br>
+        • POST の場合、Content-Type が text/plain / application/x-www-form-urlencoded / multipart/form-data のいずれか<br>
+        <strong>A ✅</strong> GET + カスタムヘッダーなし → シンプルリクエスト<br>
+        <strong>B ✗</strong> application/json はセーフリスト外 → プリフライト<br>
+        <strong>C ✗</strong> PUT はセーフリスト外のメソッド → プリフライト<br>
+        <strong>D ✗</strong> Authorization はセーフリスト外のヘッダー → プリフライト
+      </div>
+    </div>
+
+    <!-- Q4 -->
+    <div class="quiz-item" id="q4">
+      <div class="q-num">QUESTION 4 / 6</div>
+      <div class="q-text"><code>Access-Control-Allow-Origin: *</code> を設定したとき、<strong>できないこと</strong>はどれですか？</div>
+      <div class="options">
+        <button class="option-btn" onclick="checkQ(this,'q4','C')">A. GET リクエストを任意のオリジンから受け付ける</button>
+        <button class="option-btn" onclick="checkQ(this,'q4','C')">B. POST リクエストを任意のオリジンから受け付ける</button>
+        <button class="option-btn" onclick="checkQ(this,'q4','C')">C. credentials: 'include' のリクエストを受け付ける</button>
+        <button class="option-btn" onclick="checkQ(this,'q4','C')">D. パブリック API を公開する</button>
+      </div>
+      <div class="explanation" id="exp_q4">
+        <strong>✅ 正解：C</strong><br>
+        <code>Access-Control-Allow-Origin: *</code> は認証情報付きリクエストと<strong>併用できません</strong>。<br>
+        <code>credentials: 'include'</code>（Cookie・認証ヘッダーを送信）のリクエストを受け付けるには：<br>
+        1. <code>Access-Control-Allow-Origin</code> に具体的なオリジンを指定（<code>*</code> 不可）<br>
+        2. <code>Access-Control-Allow-Credentials: true</code> を設定<br>
+        <br>
+        これはセキュリティ上の重要な制約です。<code>*</code> は認証情報なしのリクエストのみ許可します。
+      </div>
+    </div>
+
+    <!-- Q5 複数選択 -->
+    <div class="quiz-item" id="q5">
+      <div class="q-num">QUESTION 5 / 6（複数選択）</div>
+      <div class="q-text">同一オリジンポリシーによって<strong>制限される</strong>操作をすべて選んでください。</div>
+      <div style="font-size:0.82rem;color:var(--muted);margin-bottom:10px;">※ 正しいものをすべてクリックして「確認」を押してください</div>
+      <div class="options" id="q5options">
+        <button class="option-btn" onclick="toggleMulti(this)" data-correct="true">A. fetch() によるクロスオリジン API へのリクエスト</button>
+        <button class="option-btn" onclick="toggleMulti(this)" data-correct="false">B. &lt;img&gt; タグによるクロスオリジン画像の表示</button>
+        <button class="option-btn" onclick="toggleMulti(this)" data-correct="true">C. クロスオリジン iframe の DOM へのアクセス</button>
+        <button class="option-btn" onclick="toggleMulti(this)" data-correct="false">D. &lt;script src="..."&gt; によるクロスオリジンスクリプトの読み込み</button>
+        <button class="option-btn" onclick="toggleMulti(this)" data-correct="true">E. クロスオリジンの localStorage へのアクセス</button>
+      </div>
+      <button class="btn btn-primary btn-sm" style="margin-top:10px;" onclick="checkQ5Multi()">確認</button>
+      <div class="explanation" id="exp_q5">
+        <strong>✅ 正解：A・C・E</strong><br>
+        <strong>A ✅</strong> fetch/XHR によるクロスオリジンリクエストは制限される（CORS で許可が必要）<br>
+        <strong>B ✗</strong> &lt;img&gt; タグでの画像表示は許可される（埋め込みは許可）<br>
+        <strong>C ✅</strong> クロスオリジン iframe の DOM へのアクセスは制限される<br>
+        <strong>D ✗</strong> &lt;script src&gt; でのスクリプト読み込みは許可される（CDN が使えるのはこのため）<br>
+        <strong>E ✅</strong> 別オリジンの localStorage にはアクセスできない<br>
+        <br>
+        同一オリジンポリシーは「読み取り」を制限します。「埋め込み」（img・script・link・iframe）は基本的に許可されます。
+      </div>
+    </div>
+
+    <!-- Q6 穴埋め -->
+    <div class="quiz-item" id="q6">
+      <div class="q-num">QUESTION 6 / 6（穴埋め）</div>
+      <div class="q-text">以下の CORS レスポンスヘッダーの空欄を埋めてください。認証情報付きリクエストを特定のオリジンから許可します。</div>
+      <div class="q-code">HTTP/1.1 200 OK
+[___A___]: https://example.com
+[___B___]: true
+Access-Control-Allow-Methods: GET, POST, PUT</div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:8px;">
+        <div style="flex:1;min-width:220px;">
+          <label style="font-size:0.82rem;color:var(--muted);">A の答え（ヘッダー名）：</label>
+          <input type="text" class="fill-input" id="q6a" placeholder="Access-Control-Allow-???">
+        </div>
+        <div style="flex:1;min-width:220px;">
+          <label style="font-size:0.82rem;color:var(--muted);">B の答え（ヘッダー名）：</label>
+          <input type="text" class="fill-input" id="q6b" placeholder="Access-Control-Allow-???">
+        </div>
+      </div>
+      <button class="btn btn-primary btn-sm" onclick="checkQ6()">答え合わせ</button>
+      <div class="explanation" id="exp_q6"></div>
+    </div>
+
+  </div><!-- /quiz-section -->
+
+  <!-- 完了ボタン -->
+  <div class="complete-area">
+    <button class="complete-btn" id="completeBtn" onclick="markComplete()">
+      ✅ このセクションを完了にする
+    </button>
+  </div>
+
+  <!-- Chapter 4 完了バナー -->
+  <div class="chapter-complete-banner">
+    <h2>🎉 Chapter 4 完了おめでとうございます！</h2>
+    <p>グラフィックス・メディア・ストレージ・通信・デバイス・パフォーマンス・セキュリティ、7つのセクションをすべて学習しました。</p>
+    <div class="banner-links">
+      <a href="index.html" class="banner-link">📚 Chapter 4 目次へ</a>
+      <a href="../index.html" class="banner-link">🏠 トップページへ</a>
+      <a href="../exam/index.html" class="banner-link">📝 模擬試験に挑戦</a>
+    </div>
+  </div>
+
+  <!-- ページナビ -->
+  <div class="page-nav">
+    <a href="06_performance.html" class="page-nav-btn">← 4-6 パフォーマンス</a>
+    <div style="font-size:0.85rem;color:var(--muted);text-align:center;">
+      <a href="index.html">📚 Chapter 4 目次</a>
+    </div>
+    <a href="../index.html" class="page-nav-btn">🏠 トップページ →</a>
+  </div>
+
+</main>
+
+<footer>
+  <p>© MeshinoKiwamiOkome |
+    <a href="https://github.com/MeshinoKiwamiOkome/html5lv2" target="_blank" rel="noopener">GitHub リポジトリ</a>
+  </p>
+  <p style="margin-top:6px;font-size:0.8rem;opacity:0.7;">HTML5 Professional Level 2 学習サイト</p>
+</footer>
+
+<script>
+// ===================================================
+// ユーティリティ
+// ===================================================
+function copyCode(btn) {
+  const pre = btn.closest('.code-block').querySelector('pre');
+  navigator.clipboard.writeText(pre.innerText).then(() => {
+    btn.textContent = 'copied!'; btn.classList.add('copied');
+    setTimeout(() => { btn.textContent = 'copy'; btn.classList.remove('copied'); }, 2000);
+  });
+}
+function log(id, msg, type='') {
+  const c = document.getElementById(id);
+  if (!c) return;
+  const d = document.createElement('div');
+  d.className = 'log-line ' + type;
+  d.textContent = msg;
+  c.appendChild(d);
+  c.scrollTop = c.scrollHeight;
+}
+function clearLog(id) {
+  const c = document.getElementById(id);
+  if (c) c.innerHTML = '';
+}
+
+// ===================================================
+// DEMO 1: 同一オリジン判定
+// ===================================================
+function getDefaultPort(proto) {
+  return proto === 'https' ? '443' : '80';
+}
+
+function normalizePort(proto, port) {
+  if (!port || port === '') return getDefaultPort(proto);
+  return port;
+}
+
+function getOriginStr(proto, host, port) {
+  const normPort = normalizePort(proto, port);
+  const defPort  = getDefaultPort(proto);
+  if (normPort === defPort) return `${proto}://${host}`;
+  return `${proto}://${host}:${normPort}`;
+}
+
+function judgeOrigin() {
+  const aProto = document.getElementById('originAProto').value;
+  const aHost  = document.getElementById('originAHost').value.trim();
+  const aPort  = document.getElementById('originAPort').value.trim();
+  const bProto = document.getElementById('originBProto').value;
+  const bHost  = document.getElementById('originBHost').value.trim();
+  const bPort  = document.getElementById('originBPort').value.trim();
+
+  const aOrigin = getOriginStr(aProto, aHost, aPort);
+  const bOrigin = getOriginStr(bProto, bHost, bPort);
+
+  document.getElementById('originADisplay').textContent = aOrigin + '/...';
+  document.getElementById('originBDisplay').textContent = bOrigin + '/...';
+
+  const result = document.getElementById('originResult');
+  const reasons = [];
+
+  const aNormPort = normalizePort(aProto, aPort);
+  const bNormPort = normalizePort(bProto, bPort);
+
+  if (aProto !== bProto) reasons.push(`プロトコルが違う（${aProto} ≠ ${bProto}）`);
+  if (aHost  !== bHost)  reasons.push(`ホストが違う（${aHost} ≠ ${bHost}）`);
+  if (aNormPort !== bNormPort) reasons.push(`ポートが違う（${aNormPort} ≠ ${bNormPort}）`);
+
+  const isSame = reasons.length === 0;
+  result.className = 'origin-result ' + (isSame ? 'same' : 'diff');
+  result.querySelector('.or-icon').textContent = isSame ? '✅' : '❌';
+  result.querySelector('.or-text').textContent = isSame ? '同一オリジン（Same-Origin）' : 'クロスオリジン（Cross-Origin）';
+  result.querySelector('.or-reason').textContent = isSame
+    ? 'プロトコル・ホスト・ポートがすべて一致しています'
+    : '違いの理由: ' + reasons.join(' / ');
+
+  clearLog('originConsole');
+  log('originConsole', `オリジン A: ${aOrigin}`, 'info');
+  log('originConsole', `オリジン B: ${bOrigin}`, 'info');
+  if (isSame) {
+    log('originConsole', '✅ 同一オリジン — クロスオリジン制限は適用されません', 'ok');
+  } else {
+    log('originConsole', '❌ クロスオリジン — 同一オリジンポリシーが適用されます', 'err');
+    reasons.forEach(r => log('originConsole', '  ' + r, 'warn'));
+    log('originConsole', 'CORS ヘッダーがなければリクエストはブロックされます', 'warn');
+  }
+}
+
+function setOriginPreset(type) {
+  const presets = {
+    same:      { ap:'https', ah:'example.com', ap2:'', bp:'https', bh:'example.com', bp2:'' },
+    proto:     { ap:'https', ah:'example.com', ap2:'', bp:'http',  bh:'example.com', bp2:'' },
+    host:      { ap:'https', ah:'example.com', ap2:'', bp:'https', bh:'other.com',   bp2:'' },
+    subdomain: { ap:'https', ah:'example.com', ap2:'', bp:'https', bh:'sub.example.com', bp2:'' },
+    port:      { ap:'https', ah:'example.com', ap2:'', bp:'https', bh:'example.com', bp2:'8080' },
+  };
+  const p = presets[type];
+  document.getElementById('originAProto').value = p.ap;
+  document.getElementById('originAHost').value  = p.ah;
+  document.getElementById('originAPort').value  = p.ap2;
+  document.getElementById('originBProto').value = p.bp;
+  document.getElementById('originBHost').value  = p.bh;
+  document.getElementById('originBPort').value  = p.bp2;
+  judgeOrigin();
+}
+
+// ===================================================
+// DEMO 2: CORS フロービジュアライザ
+// ===================================================
+const CORS_FLOWS = {
+  simple: {
+    label: 'シンプルリクエスト（GET）',
+    steps: [
+      { title:'ブラウザ: GET リクエスト送信',       detail:'GET /api/data HTTP/1.1\nOrigin: https://example.com',                                                                               type:'req' },
+      { title:'サーバー: リクエスト受信・処理',      detail:'サーバーは Origin ヘッダーを確認',                                                                                                    type:'proc' },
+      { title:'サーバー: CORS ヘッダー付きレスポンス', detail:'HTTP/1.1 200 OK\nAccess-Control-Allow-Origin: *',                                                                                  type:'res' },
+      { title:'ブラウザ: CORS チェック通過',         detail:'Access-Control-Allow-Origin が一致 → レスポンスを JS に渡す',                                                                        type:'ok' },
+    ]
+  },
+  simple_post: {
+    label: 'シンプルリクエスト（POST + text/plain）',
+    steps: [
+      { title:'ブラウザ: POST リクエスト送信',       detail:'POST /api/data HTTP/1.1\nOrigin: https://example.com\nContent-Type: text/plain',                                                   type:'req' },
+      { title:'サーバー: リクエスト受信・処理',      detail:'Content-Type: text/plain はセーフリスト内 → プリフライト不要',                                                                        type:'proc' },
+      { title:'サーバー: CORS ヘッダー付きレスポンス', detail:'HTTP/1.1 200 OK\nAccess-Control-Allow-Origin: https://example.com',                                                               type:'res' },
+      { title:'ブラウザ: CORS チェック通過',         detail:'✅ シンプルリクエスト完了',                                                                                                          type:'ok' },
+    ]
+  },
+  preflight: {
+    label: 'プリフライト（POST + application/json）',
+    steps: [
+      { title:'ブラウザ: OPTIONS プリフライト送信',   detail:'OPTIONS /api/data HTTP/1.1\nOrigin: https://example.com\nAccess-Control-Request-Method: POST\nAccess-Control-Request-Headers: Content-Type', type:'req' },
+      { title:'サーバー: プリフライト応答',           detail:'HTTP/1.1 204 No Content\nAccess-Control-Allow-Origin: https://example.com\nAccess-Control-Allow-Methods: GET, POST\nAccess-Control-Allow-Headers: Content-Type\nAccess-Control-Max-Age: 86400', type:'res' },
+      { title:'ブラウザ: プリフライト通過 → 本リクエスト送信', detail:'POST /api/data HTTP/1.1\nOrigin: https://example.com\nContent-Type: application/json\n{"key":"value"}',              type:'req' },
+      { title:'サーバー: 本リクエスト処理・レスポンス', detail:'HTTP/1.1 200 OK\nAccess-Control-Allow-Origin: https://example.com',                                                              type:'res' },
+      { title:'ブラウザ: CORS チェック通過',          detail:'✅ プリフライト + 本リクエスト完了',                                                                                                type:'ok' },
+    ]
+  },
+  preflight_put: {
+    label: 'プリフライト（PUT）',
+    steps: [
+      { title:'ブラウザ: OPTIONS プリフライト送信',   detail:'OPTIONS /api/resource/1 HTTP/1.1\nOrigin: https://example.com\nAccess-Control-Request-Method: PUT',                               type:'req' },
+      { title:'サーバー: プリフライト応答',           detail:'HTTP/1.1 204 No Content\nAccess-Control-Allow-Origin: https://example.com\nAccess-Control-Allow-Methods: GET, POST, PUT, DELETE', type:'res' },
+      { title:'ブラウザ: 本リクエスト（PUT）送信',    detail:'PUT /api/resource/1 HTTP/1.1\nOrigin: https://example.com',                                                                        type:'req' },
+      { title:'サーバー: レスポンス',                 detail:'HTTP/1.1 200 OK\nAccess-Control-Allow-Origin: https://example.com',                                                                type:'res' },
+      { title:'ブラウザ: CORS チェック通過',          detail:'✅ PUT リクエスト完了',                                                                                                            type:'ok' },
+    ]
+  },
+  preflight_auth: {
+    label: 'プリフライト（カスタムヘッダー）',
+    steps: [
+      { title:'ブラウザ: OPTIONS プリフライト送信',   detail:'OPTIONS /api/data HTTP/1.1\nOrigin: https://example.com\nAccess-Control-Request-Method: GET\nAccess-Control-Request-Headers: Authorization', type:'req' },
+      { title:'サーバー: プリフライト応答',           detail:'HTTP/1.1 204 No Content\nAccess-Control-Allow-Origin: https://example.com\nAccess-Control-Allow-Headers: Authorization',          type:'res' },
+      { title:'ブラウザ: 本リクエスト送信',           detail:'GET /api/data HTTP/1.1\nOrigin: https://example.com\nAuthorization: Bearer eyJhbGci...',                                           type:'req' },
+      { title:'サーバー: 認証確認・レスポンス',       detail:'HTTP/1.1 200 OK\nAccess-Control-Allow-Origin: https://example.com',                                                                type:'res' },
+      { title:'ブラウザ: CORS チェック通過',          detail:'✅ 認証付きリクエスト完了',                                                                                                        type:'ok' },
+    ]
+  },
+  blocked: {
+    label: 'CORS ブロック（サーバーが拒否）',
+    steps: [
+      { title:'ブラウザ: OPTIONS プリフライト送信',   detail:'OPTIONS /api/data HTTP/1.1\nOrigin: https://example.com\nAccess-Control-Request-Method: POST',                                     type:'req' },
+      { title:'サーバー: CORS ヘッダーなしで応答',    detail:'HTTP/1.1 200 OK\n（Access-Control-Allow-Origin ヘッダーなし）',                                                                     type:'error' },
+      { title:'ブラウザ: CORS エラー',                detail:'❌ CORS policy: No "Access-Control-Allow-Origin" header is present\n本リクエストはブロックされました',                               type:'error' },
+    ]
+  }
+};
+
+function buildCorsFlowSteps(type) {
+  const flow   = CORS_FLOWS[type];
+  const el     = document.getElementById('corsFlow');
+  el.innerHTML = '';
+  flow.steps.forEach((step, i) => {
+    const div = document.createElement('div');
+    div.className = 'cors-flow-step';
+    div.id = `corsStep_${i}`;
+    div.innerHTML = `
+      <div class="cors-step-num">${i + 1}</div>
+      <div class="cors-step-body">
+        <div class="cors-step-title">${step.title}</div>
+        <div class="cors-step-detail">${step.detail.replace(/\n/g,'<br>')}</div>
+      </div>`;
+    el.appendChild(div);
+  });
+}
+
+function resetCorsFlow() {
+  const type = document.getElementById('corsFlowType').value;
+  buildCorsFlowSteps(type);
+  clearLog('corsFlowConsole');
+  log('corsFlowConsole', `リクエスト種別: ${CORS_FLOWS[type].label}`, 'info');
+  log('corsFlowConsole', '「フローを実行」をクリックしてください', 'info');
+}
+
+function runCorsFlow() {
+  const type  = document.getElementById('corsFlowType').value;
+  const flow  = CORS_FLOWS[type];
+  buildCorsFlowSteps(type);
+  clearLog('corsFlowConsole');
+  log('corsFlowConsole', `▶ ${flow.label} のフローを実行`, 'info');
+
+  flow.steps.forEach((step, i) => {
+    setTimeout(() => {
+      const el = document.getElementById(`corsStep_${i}`);
+      if (!el) return;
+      if (i > 0) {
+        const prev = document.getElementById(`corsStep_${i - 1}`);
+        if (prev) {
+          prev.classList.remove('active');
+          prev.classList.add(flow.steps[i - 1].type === 'error' ? 'error' : 'done');
+        }
+      }
+      el.classList.add('active');
+
+      const typeMap = { req:'req', res:'res', proc:'info', ok:'ok', error:'err' };
+      log('corsFlowConsole', `[Step ${i + 1}] ${step.title}`, typeMap[step.type] || 'info');
+
+      if (i === flow.steps.length - 1) {
+        setTimeout(() => {
+          el.classList.remove('active');
+          el.classList.add(step.type === 'error' ? 'error' : 'done');
+          log('corsFlowConsole', step.type === 'error'
+            ? '❌ CORS エラーでリクエストがブロックされました'
+            : '✅ CORS フロー完了', step.type === 'error' ? 'err' : 'ok');
+        }, 600);
+      }
+    }, i * 900);
+  });
+}
+
+// 初期化
+resetCorsFlow();
+
+// ===================================================
+// DEMO 3: プリフライト判定
+// ===================================================
+const SAFE_METHODS       = ['GET','HEAD','POST'];
+const SAFE_CONTENT_TYPES = ['text/plain','application/x-www-form-urlencoded','multipart/form-data'];
+const SAFE_HEADERS       = ['none','accept'];
+
+function judgePreflight() {
+  const method      = document.getElementById('pfMethod').value;
+  const contentType = document.getElementById('pfContentType').value;
+  const customHdr   = document.getElementById('pfCustomHeader').value;
+
+  const reasons = [];
+  if (!SAFE_METHODS.includes(method))        reasons.push(`メソッド「${method}」はセーフリスト外（GET/HEAD/POST のみ）`);
+  if (method === 'POST' && !SAFE_CONTENT_TYPES.includes(contentType))
+    reasons.push(`Content-Type「${contentType}」はセーフリスト外`);
+  if (!SAFE_HEADERS.includes(customHdr))     reasons.push(`ヘッダー「${customHdr}」はセーフリスト外のカスタムヘッダー`);
+
+  const isSimple = reasons.length === 0;
+  const result   = document.getElementById('preflightResult');
+  result.className = 'preflight-result ' + (isSimple ? 'simple' : 'preflight');
+  result.querySelector('.pr-icon').textContent = isSimple ? '✅' : '⚠️';
+  result.querySelector('.pr-type').textContent = isSimple
+    ? 'シンプルリクエスト（プリフライト不要）'
+    : 'プリフライトリクエストが発生します';
+  result.querySelector('.pr-reason').textContent = isSimple
+    ? 'メソッド・ヘッダー・Content-Type がすべてセーフリスト内です'
+    : '理由: ' + reasons.join(' / ');
+
+  clearLog('preflightConsole');
+  log('preflightConsole', `method: ${method}  Content-Type: ${contentType}  custom header: ${customHdr}`, 'info');
+  if (isSimple) {
+    log('preflightConsole', '✅ シンプルリクエスト — OPTIONS プリフライトは送信されません', 'ok');
+    log('preflightConsole', `直接 ${method} リクエストを送信します`, 'ok');
+  } else {
+    log('preflightConsole', '⚠ プリフライトリクエストが必要です', 'warn');
+    reasons.forEach(r => log('preflightConsole', '  ' + r, 'warn'));
+    log('preflightConsole', '先に OPTIONS リクエストを送信してサーバーの許可を確認します', 'info');
+    log('preflightConsole', `Access-Control-Request-Method: ${method}`, 'req');
+    if (!SAFE_CONTENT_TYPES.includes(contentType) && method === 'POST') {
+      log('preflightConsole', `Access-Control-Request-Headers: Content-Type`, 'req');
+    }
+    if (!SAFE_HEADERS.includes(customHdr)) {
+      log('preflightConsole', `Access-Control-Request-Headers: ${customHdr}`, 'req');
+    }
+  }
+}
+
+judgePreflight();
+
+// ===================================================
+// DEMO 4: CORS ヘッダーシミュレーター
+// ===================================================
+function renderHeaderView(elId, lines) {
+  const el = document.getElementById(elId);
+  el.innerHTML = lines.map(line => {
+    if (!line) return '<div class="hv-line" style="height:6px;"></div>';
+    const colon = line.indexOf(':');
+    if (colon > -1) {
+      return `<div class="hv-line"><span class="hv-key">${escHtml(line.substring(0,colon))}</span><span class="hv-sep">:</span><span class="hv-val">${escHtml(line.substring(colon+1))}</span></div>`;
+    }
+    return `<div class="hv-line" style="color:#a0aec0;">${escHtml(line)}</div>`;
+  }).join('');
+}
+
+function escHtml(s) {
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+function runCorsHeaderSim() {
+  const clientOrigin    = document.getElementById('chClientOrigin').value;
+  const method          = document.getElementById('chMethod').value;
+  const credentials     = document.getElementById('chCredentials').value;
+  const allowOrigin     = document.getElementById('chAllowOrigin').value;
+  const allowMethods    = document.getElementById('chAllowMethods').value;
+  const allowCredentials= document.getElementById('chAllowCredentials').value;
+
+  // リクエストヘッダー
+  const reqLines = [
+    `${method} /api/resource HTTP/1.1`,
+    `Host: api.other.com`,
+    `Origin: ${clientOrigin}`,
+    ``,
+    ...(credentials === 'include' ? ['Cookie: session=abc123'] : []),
+  ];
+  renderHeaderView('reqHeaderView', reqLines);
+
+  // レスポンスヘッダー
+  const resLines = ['HTTP/1.1 200 OK', ''];
+  if (allowOrigin !== 'none') resLines.push(`Access-Control-Allow-Origin: ${allowOrigin}`);
+  if (allowMethods !== 'none') resLines.push(`Access-Control-Allow-Methods: ${allowMethods}`);
+  if (allowCredentials === 'true') resLines.push(`Access-Control-Allow-Credentials: true`);
+  renderHeaderView('resHeaderView', resLines);
+
+  // 判定ロジック
+  clearLog('corsHeaderConsole');
+  log('corsHeaderConsole', `リクエスト元: ${clientOrigin}  メソッド: ${method}  credentials: ${credentials}`, 'info');
+
+  const errors = [];
+  const warns  = [];
+
+  // 1. Allow-Origin チェック
+  if (allowOrigin === 'none') {
+    errors.push('Access-Control-Allow-Origin ヘッダーがありません');
+  } else if (allowOrigin === '*' && credentials === 'include') {
+    errors.push('Access-Control-Allow-Origin: * は credentials: include と併用できません');
+  } else if (allowOrigin !== '*' && allowOrigin !== clientOrigin) {
+    errors.push(`Access-Control-Allow-Origin: ${allowOrigin} はリクエスト元 ${clientOrigin} と一致しません`);
+  }
+
+  // 2. Allow-Methods チェック
+  if (allowMethods !== 'none') {
+    const allowed = allowMethods.split(',').map(m => m.trim());
+    if (!allowed.includes(method) && !['GET','HEAD','POST'].includes(method)) {
+      warns.push(`メソッド ${method} は Access-Control-Allow-Methods に含まれていません`);
+    }
+  }
+
+  // 3. Credentials チェック
+  if (credentials === 'include' && allowCredentials !== 'true') {
+    errors.push('credentials: include には Access-Control-Allow-Credentials: true が必要です');
+  }
+
+  const success = errors.length === 0;
+  const resultEl = document.getElementById('corsSimResult');
+  resultEl.innerHTML = `
+    <div class="cors-result-badge ${success ? 'allow' : 'block'}" style="margin-bottom:8px;">
+      ${success ? '✅ リクエスト成功' : '❌ CORS エラー（ブロック）'}
+    </div>`;
+
+  if (success) {
+    log('corsHeaderConsole', '✅ CORS チェック通過 — リクエストが許可されました', 'ok');
+    if (allowOrigin === '*') {
+      log('corsHeaderConsole', 'Access-Control-Allow-Origin: * → すべてのオリジンを許可', 'ok');
+    } else {
+      log('corsHeaderConsole', `Access-Control-Allow-Origin: ${allowOrigin} → オリジン一致`, 'ok');
+    }
+  } else {
+    errors.forEach(e => log('corsHeaderConsole', '❌ ' + e, 'err'));
+    warns.forEach(w  => log('corsHeaderConsole', '⚠ ' + w, 'warn'));
+    log('corsHeaderConsole', 'ブラウザはレスポンスを JS に渡しません', 'err');
+  }
+}
+
+function resetCorsHeaderSim() {
+  document.getElementById('reqHeaderView').textContent = '—';
+  document.getElementById('resHeaderView').textContent = '—';
+  document.getElementById('corsSimResult').innerHTML   = '';
+  clearLog('corsHeaderConsole');
+  log('corsHeaderConsole', '設定を変更して「シミュレーション実行」をクリックしてください', 'info');
+}
+
+// ===================================================
+// DEMO 5: セキュリティヘッダー
+// ===================================================
+function toggleSecHeader(card, id) {
+  const detail = document.getElementById('detail_' + id);
+  const isOpen = detail.classList.contains('show');
+  // 全部閉じる
+  document.querySelectorAll('.shc-detail').forEach(d => d.classList.remove('show'));
+  document.querySelectorAll('.sec-header-card').forEach(c => c.classList.remove('active'));
+  if (!isOpen) {
+    detail.classList.add('show');
+    card.classList.add('active');
+    clearLog('secHeaderConsole');
+    const name = card.querySelector('.shc-name').textContent;
+    log('secHeaderConsole', `ヘッダー: ${name}`, 'hdr');
+    log('secHeaderConsole', card.querySelector('.shc-desc').textContent, 'info');
+  }
+}
+
+// ===================================================
+// 演習問題
+// ===================================================
+function checkQ(btn, qid, correctLetter) {
+  const item = document.getElementById(qid);
+  item.querySelectorAll('.option-btn').forEach(b => {
+    b.disabled = true;
+    if (b.textContent.trim().startsWith(correctLetter + '.') ||
+        b.textContent.trim().startsWith(correctLetter + '（') ||
+        b.textContent.trim().startsWith(correctLetter + ' ')) b.classList.add('correct');
+  });
+  if (!btn.classList.contains('correct')) btn.classList.add('wrong');
+  document.getElementById('exp_' + qid).classList.add('show');
+}
+
+function toggleMulti(btn) {
+  if (btn.disabled) return;
+  btn.classList.toggle('selected');
+  btn.style.borderColor = btn.classList.contains('selected') ? 'var(--purple-light)' : '';
+  btn.style.background  = btn.classList.contains('selected') ? 'var(--purple-bg)'    : '';
+}
+
+function checkQ5Multi() {
+  const btns = document.querySelectorAll('#q5options .option-btn');
+  btns.forEach(b => {
+    b.disabled = true;
+    const isCorrect  = b.dataset.correct === 'true';
+    const isSelected = b.classList.contains('selected');
+    b.style.borderColor = ''; b.style.background = '';
+    if (isCorrect)                b.classList.add('correct');
+    if (!isCorrect && isSelected) b.classList.add('wrong');
+  });
+  document.getElementById('exp_q5').classList.add('show');
+  document.querySelector('#q5 .btn-primary').disabled = true;
+}
+
+function checkQ6() {
+  const a   = document.getElementById('q6a').value.trim()
+    .replace(/^access-control-allow-/i,'').toLowerCase();
+  const b   = document.getElementById('q6b').value.trim()
+    .replace(/^access-control-allow-/i,'').toLowerCase();
+  const aOk = a === 'origin' || a === 'access-control-allow-origin';
+  const bOk = b === 'credentials' || b === 'access-control-allow-credentials';
+  const exp = document.getElementById('exp_q6');
+  exp.classList.add('show');
+  let html = '';
+  if (aOk && bOk) {
+    html = '<strong>✅ 両方正解！</strong><br><br>';
+  } else {
+    html  = '<strong>' + (aOk ? '✅' : '❌') + ' A: Access-Control-Allow-Origin</strong>（あなたの答え: ' + (document.getElementById('q6a').value || '未入力') + '）<br>';
+    html += '<strong>' + (bOk ? '✅' : '❌') + ' B: Access-Control-Allow-Credentials</strong>（あなたの答え: ' + (document.getElementById('q6b').value || '未入力') + '）<br><br>';
+  }
+  html += '<strong>解説：</strong><br>';
+  html += '• <code>Access-Control-Allow-Origin: https://example.com</code> — 特定のオリジンからのリクエストを許可します。認証情報付きリクエストでは <code>*</code> は使えず、具体的なオリジンを指定する必要があります。<br>';
+  html += '• <code>Access-Control-Allow-Credentials: true</code> — Cookie や Authorization ヘッダーなどの認証情報を含むリクエストを許可します。クライアント側では <code>credentials: "include"</code> の設定も必要です。<br>';
+  html += '• この2つのヘッダーをセットで設定することで、認証情報付きのクロスオリジンリクエストが可能になります。';
+  exp.innerHTML = html;
+}
+
+// ===================================================
+// 完了ボタン
+// ===================================================
+function markComplete() {
+  const key = 'html5lv2_ch4_07';
+  const btn = document.getElementById('completeBtn');
+  if (localStorage.getItem(key) === 'done') {
+    localStorage.removeItem(key);
+    btn.textContent = '✅ このセクションを完了にする';
+    btn.classList.remove('done');
+  } else {
+    localStorage.setItem(key, 'done');
+    btn.textContent = '🎉 完了済み！（クリックで取り消し）';
+    btn.classList.add('done');
+  }
+}
+
+// ===================================================
+// 初期化
+// ===================================================
+(function init() {
+  if (localStorage.getItem('html5lv2_ch4_07') === 'done') {
+    const btn = document.getElementById('completeBtn');
+    btn.textContent = '🎉 完了済み！（クリックで取り消し）';
+    btn.classList.add('done');
+  }
+  judgeOrigin();
+  judgePreflight();
+})();
+</script>
+</body>
+</html>
