@@ -1,0 +1,1647 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>3-6 テスト・デバッグ | HTML5プロフェッショナル Level 2</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; }
+    body {
+      font-family: 'Segoe UI', 'Helvetica Neue', sans-serif;
+      max-width: 960px; margin: 40px auto; padding: 0 24px;
+      background: #f0f4f8; color: #2d3748; line-height: 1.8;
+    }
+    .breadcrumb {
+      font-size: 0.82em; color: #a0aec0; margin-bottom: 20px;
+      font-family: 'Consolas','Monaco',monospace;
+    }
+    .breadcrumb a { color: #553c9a; text-decoration: none; }
+    .breadcrumb a:hover { text-decoration: underline; }
+
+    .chapter-header {
+      background: linear-gradient(135deg, #553c9a, #9f7aea);
+      border-radius: 12px; padding: 32px 32px 24px;
+      margin-bottom: 32px; color: #fff;
+      box-shadow: 0 4px 18px rgba(85,60,154,0.35);
+    }
+    .chapter-header .ch-num {
+      font-size: 0.8em; font-family: 'Consolas','Monaco',monospace;
+      opacity: 0.85; letter-spacing: 0.08em; margin-bottom: 6px;
+    }
+    .chapter-header h1 { margin: 0 0 10px; font-size: 1.6em; color: #fff; border: none; padding: 0; }
+    .chapter-header p  { margin: 0; font-size: 0.92em; opacity: 0.88; }
+    .badge-row { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 14px; }
+    .badge {
+      background: rgba(255,255,255,0.18); border: 1px solid rgba(255,255,255,0.35);
+      border-radius: 20px; padding: 3px 12px; font-size: 0.76em; font-weight: bold;
+    }
+
+    .section-nav {
+      background: #fff; border: 1px solid #e9d8fd;
+      border-radius: 10px; padding: 18px 22px;
+      margin-bottom: 32px; box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+    }
+    .section-nav h2 { margin: 0 0 12px; font-size: 0.92em; color: #553c9a; border: none; padding: 0; }
+    .section-nav ol { margin: 0; padding-left: 20px; font-size: 0.9em; }
+    .section-nav ol li { margin: 4px 0; }
+    .section-nav ol li a { color: #553c9a; text-decoration: none; }
+    .section-nav ol li a:hover { text-decoration: underline; }
+    .section-nav ol li.current a { font-weight: bold; pointer-events: none; }
+
+    h2 { color: #553c9a; margin-top: 48px; border-left: 5px solid #9f7aea; padding-left: 12px; font-size: 1.25em; }
+    h3 { color: #6b46c1; margin-top: 28px; font-size: 1.05em; }
+
+    code {
+      background: #f3e8ff; padding: 2px 6px; border-radius: 4px;
+      font-size: 0.93em; font-family: 'Consolas','Monaco',monospace; color: #553c9a;
+    }
+
+    .code-block { position: relative; margin: 14px 0; }
+    .code-block pre {
+      background: #1a202c; color: #e2e8f0; padding: 18px 20px; border-radius: 8px;
+      overflow-x: auto; font-size: 0.87em; line-height: 1.75;
+      font-family: 'Consolas','Monaco',monospace; margin: 0;
+    }
+    .copy-btn {
+      position: absolute; top: 8px; right: 8px;
+      background: #4a5568; color: #e2e8f0; border: none; border-radius: 4px;
+      padding: 4px 10px; font-size: 0.75em; cursor: pointer;
+      font-family: 'Consolas','Monaco',monospace; transition: background 0.2s; z-index: 1;
+    }
+    .copy-btn:hover { background: #9f7aea; }
+
+    .kw  { color: #90cdf4; }
+    .fn  { color: #b794f4; }
+    .str { color: #fbd38d; }
+    .num { color: #fc8181; }
+    .cm  { color: #68d391; }
+    .op  { color: #f6ad55; }
+    .out { color: #a0aec0; }
+
+    .info-box {
+      border-radius: 8px; padding: 14px 18px;
+      font-size: 0.93em; margin: 16px 0; line-height: 1.7;
+    }
+    .info-box.tip   { background: #f0fff4; border: 1px solid #9ae6b4; border-left: 5px solid #48bb78; color: #276749; }
+    .info-box.warn  { background: #fffaf0; border: 1px solid #f6ad55; border-left: 5px solid #ed8936; color: #744210; }
+    .info-box.point { background: #faf5ff; border: 1px solid #d6bcfa; border-left: 5px solid #9f7aea; color: #553c9a; }
+    .info-box strong { display: block; margin-bottom: 4px; }
+
+    .content-card {
+      background: #fff; border-radius: 10px; padding: 24px 28px;
+      margin-bottom: 28px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); border: 1px solid #e9d8fd;
+    }
+    .content-card h3 { margin-top: 0; }
+
+    .tbl-wrap { overflow-x: auto; margin: 14px 0; }
+    .tbl-wrap table {
+      border-collapse: collapse; width: 100%; background: #fff;
+      border-radius: 8px; overflow: hidden; font-size: 0.88em;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+    }
+    .tbl-wrap th, .tbl-wrap td { border: 1px solid #e9d8fd; padding: 10px 14px; text-align: left; }
+    .tbl-wrap thead tr { background: #553c9a; color: #fff; }
+    .tbl-wrap tbody tr:nth-child(even) { background: #faf5ff; }
+
+    .demo-card {
+      background: #fff; border: 2px solid #e9d8fd; border-radius: 12px;
+      padding: 22px 24px; margin: 20px 0 32px;
+      box-shadow: 0 2px 10px rgba(85,60,154,0.08);
+    }
+    .demo-card h3 { margin-top: 0; color: #553c9a; }
+    .demo-desc {
+      font-size: 0.88em; color: #718096; background: #faf5ff;
+      border-radius: 6px; padding: 10px 14px; margin-bottom: 16px;
+    }
+    .run-btn {
+      background: linear-gradient(135deg, #553c9a, #9f7aea);
+      color: #fff; border: none; border-radius: 8px;
+      padding: 9px 20px; font-size: 0.88em; font-weight: bold;
+      cursor: pointer; transition: opacity 0.2s; margin: 4px 4px 4px 0;
+    }
+    .run-btn:hover { opacity: 0.85; }
+    .run-btn.secondary { background: #edf2f7; color: #4a5568; }
+    .run-btn.secondary:hover { background: #e2e8f0; opacity: 1; }
+    .run-btn.danger  { background: linear-gradient(135deg, #c53030, #fc8181); }
+    .run-btn.success { background: linear-gradient(135deg, #276749, #48bb78); }
+    .run-btn.warn-btn { background: linear-gradient(135deg, #c05621, #ed8936); }
+
+    /* ===== 疑似コンソール ===== */
+    .pseudo-console {
+      background: #1a202c; border-radius: 10px;
+      overflow: hidden; box-shadow: 0 4px 16px rgba(0,0,0,0.3);
+    }
+    .console-bar {
+      background: #2d3748; padding: 8px 14px;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .c-dot { width: 12px; height: 12px; border-radius: 50%; }
+    .console-bar span {
+      font-size: 0.78em; color: #a0aec0;
+      font-family: 'Consolas','Monaco',monospace; margin-left: 6px;
+    }
+    .console-output {
+      padding: 12px 16px; min-height: 120px; max-height: 280px;
+      overflow-y: auto; font-family: 'Consolas','Monaco',monospace;
+      font-size: 0.82em; line-height: 1.9;
+    }
+    .c-log     { color: #e2e8f0; }
+    .c-info    { color: #90cdf4; border-left: 3px solid #4299e1; padding-left: 8px; }
+    .c-warn    { color: #f6ad55; background: rgba(246,173,85,0.08); border-left: 3px solid #ed8936; padding-left: 8px; }
+    .c-error   { color: #fc8181; background: rgba(252,129,129,0.08); border-left: 3px solid #c53030; padding-left: 8px; }
+    .c-success { color: #68d391; }
+    .c-group   { color: #b794f4; }
+    .c-time    { color: #fbd38d; }
+    .c-table-wrap {
+      overflow-x: auto; margin: 4px 0;
+    }
+    .c-table {
+      border-collapse: collapse; font-size: 0.9em;
+      border: 1px solid #4a5568;
+    }
+    .c-table th { background: #2d3748; color: #90cdf4; padding: 4px 10px; border: 1px solid #4a5568; }
+    .c-table td { color: #e2e8f0; padding: 4px 10px; border: 1px solid #4a5568; }
+    .c-table tr:nth-child(even) td { background: rgba(255,255,255,0.03); }
+    .console-input-row {
+      display: flex; align-items: center; gap: 8px;
+      border-top: 1px solid #2d3748; padding: 8px 12px;
+    }
+    .console-input-row span { color: #68d391; font-family: 'Consolas','Monaco',monospace; font-size: 0.9em; }
+    .console-input {
+      flex: 1; background: transparent; border: none; outline: none;
+      color: #e2e8f0; font-family: 'Consolas','Monaco',monospace;
+      font-size: 0.88em; caret-color: #68d391;
+    }
+    .console-run-btn {
+      background: #553c9a; color: #fff; border: none;
+      border-radius: 4px; padding: 4px 12px;
+      font-size: 0.78em; font-weight: bold; cursor: pointer;
+    }
+    .console-clear-btn {
+      background: #4a5568; color: #e2e8f0; border: none;
+      border-radius: 4px; padding: 4px 10px;
+      font-size: 0.78em; cursor: pointer;
+    }
+
+    /* ===== パフォーマンス計測デモ ===== */
+    .perf-compare {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 12px;
+    }
+    .perf-box {
+      border: 2px solid #e9d8fd; border-radius: 10px; padding: 14px;
+    }
+    .perf-box h4 { margin: 0 0 8px; font-size: 0.9em; color: #553c9a; }
+    .perf-result {
+      background: #1a202c; border-radius: 6px; padding: 10px 14px;
+      font-family: 'Consolas','Monaco',monospace; font-size: 0.82em;
+      color: #e2e8f0; min-height: 60px; line-height: 1.8;
+    }
+    .perf-bar-outer {
+      background: #e9d8fd; border-radius: 99px; height: 12px;
+      overflow: hidden; margin: 8px 0;
+    }
+    .perf-bar-inner {
+      height: 100%; border-radius: 99px;
+      background: linear-gradient(90deg, #553c9a, #9f7aea);
+      transition: width 0.5s ease; width: 0%;
+    }
+    .iter-input {
+      border: 2px solid #e9d8fd; border-radius: 6px; padding: 6px 10px;
+      font-size: 0.88em; font-family: 'Consolas','Monaco',monospace;
+      outline: none; width: 120px;
+    }
+    .iter-input:focus { border-color: #9f7aea; }
+
+    /* ===== エラーハンドリングデモ ===== */
+    .error-demo-grid {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 12px;
+    }
+    .error-type-card {
+      border: 2px solid #e9d8fd; border-radius: 10px; padding: 14px;
+      cursor: pointer; transition: all 0.2s;
+    }
+    .error-type-card:hover { border-color: #9f7aea; transform: translateY(-2px); }
+    .error-type-card.active { border-color: #fc8181; background: #fff5f5; }
+    .err-name {
+      font-family: 'Consolas','Monaco',monospace; font-size: 0.9em;
+      font-weight: bold; color: #c53030; margin-bottom: 4px;
+    }
+    .err-desc { font-size: 0.82em; color: #718096; }
+    .error-output {
+      background: #1a202c; border-radius: 8px; padding: 14px 16px;
+      font-family: 'Consolas','Monaco',monospace; font-size: 0.82em;
+      line-height: 1.9; margin-top: 12px; min-height: 100px;
+    }
+    .err-line   { color: #fc8181; }
+    .err-catch  { color: #68d391; }
+    .err-finally{ color: #90cdf4; }
+    .err-info   { color: #a0aec0; }
+
+    /* ===== デバッグガイドデモ ===== */
+    .debug-steps { margin-top: 12px; }
+    .debug-step {
+      border: 2px solid #e9d8fd; border-radius: 10px; padding: 16px 20px;
+      margin-bottom: 10px; transition: all 0.3s; cursor: pointer;
+    }
+    .debug-step:hover { border-color: #9f7aea; }
+    .debug-step.active { border-color: #9f7aea; background: #faf5ff; }
+    .debug-step.done   { border-color: #48bb78; background: #f0fff4; }
+    .debug-step-header {
+      display: flex; align-items: center; gap: 12px;
+    }
+    .debug-step-num {
+      width: 32px; height: 32px; border-radius: 50%;
+      background: #e9d8fd; color: #553c9a;
+      display: flex; align-items: center; justify-content: center;
+      font-weight: bold; font-size: 0.9em; flex-shrink: 0;
+    }
+    .debug-step.active .debug-step-num { background: #9f7aea; color: #fff; }
+    .debug-step.done   .debug-step-num { background: #48bb78; color: #fff; }
+    .debug-step-title { font-weight: bold; color: #2d3748; font-size: 0.95em; }
+    .debug-step-body {
+      margin-top: 12px; padding-top: 12px;
+      border-top: 1px solid #e9d8fd; display: none;
+      font-size: 0.88em; line-height: 1.8; color: #4a5568;
+    }
+    .debug-step.active .debug-step-body { display: block; }
+    .debug-step.done   .debug-step-body { display: block; }
+
+    /* ===== 演習問題 ===== */
+    .quiz-section {
+      background: #faf5ff; border-left: 6px solid #9f7aea;
+      border-radius: 0 10px 10px 0; padding: 28px; margin: 48px 0 32px;
+    }
+    .quiz-section > h2 { margin-top: 0; border-left: none; padding-left: 0; }
+    .quiz-item {
+      background: #fff; border: 1px solid #e9d8fd;
+      border-radius: 10px; padding: 20px 24px; margin-bottom: 22px;
+    }
+    .quiz-q { font-weight: bold; color: #2d3748; margin-bottom: 12px; }
+    .q-num {
+      display: inline-block; background: #553c9a; color: #fff;
+      border-radius: 20px; padding: 2px 10px; font-size: 0.78em; margin-right: 8px;
+    }
+    .blank-input {
+      border: 2px solid #e9d8fd; border-radius: 6px; padding: 7px 12px;
+      font-size: 0.93em; font-family: 'Consolas','Monaco',monospace;
+      outline: none; transition: border-color 0.2s; margin: 4px 2px;
+    }
+    .blank-input:focus { border-color: #9f7aea; }
+    .choice-btn {
+      display: block; width: 100%; text-align: left; padding: 10px 16px; margin: 6px 0;
+      border: 2px solid #e9d8fd; border-radius: 8px; background: #fff;
+      cursor: pointer; font-size: 0.9em; transition: all 0.2s; font-family: inherit;
+    }
+    .choice-btn:hover { border-color: #9f7aea; background: #faf5ff; }
+    .choice-btn.correct { border-color: #48bb78; background: #f0fff4; color: #276749; font-weight: bold; }
+    .choice-btn.wrong   { border-color: #fc8181; background: #fff5f5; color: #c53030; }
+    .cb-label {
+      display: flex; align-items: flex-start; gap: 10px; padding: 8px 12px; margin: 4px 0;
+      border-radius: 6px; border: 2px solid #e9d8fd; cursor: pointer;
+      font-size: 0.9em; transition: all 0.2s;
+    }
+    .cb-label:hover { border-color: #9f7aea; background: #faf5ff; }
+    .cb-label input { margin-top: 3px; flex-shrink: 0; accent-color: #9f7aea; }
+    .cb-label.correct { border-color: #48bb78; background: #f0fff4; color: #276749; }
+    .cb-label.wrong   { border-color: #fc8181; background: #fff5f5; color: #c53030; }
+    .check-btn {
+      background: linear-gradient(135deg, #553c9a, #9f7aea);
+      color: #fff; border: none; border-radius: 8px;
+      padding: 9px 22px; font-size: 0.9em; font-weight: bold;
+      cursor: pointer; transition: opacity 0.2s; margin-top: 8px;
+    }
+    .check-btn:hover { opacity: 0.85; }
+    .feedback {
+      margin-top: 12px; padding: 12px 16px; border-radius: 8px;
+      font-size: 0.9em; display: none; line-height: 1.7;
+    }
+    .feedback.ok { background: #f0fff4; border: 1px solid #9ae6b4; color: #276749; display: block; }
+    .feedback.ng { background: #fff5f5; border: 1px solid #feb2b2; color: #c53030; display: block; }
+
+    .code-fill {
+      background: #1a202c; border-radius: 8px; padding: 16px 18px;
+      font-family: 'Consolas','Monaco',monospace; font-size: 0.87em;
+      line-height: 2.1; margin: 12px 0;
+    }
+    .fill-input {
+      background: #2d3748; border: 2px solid #4a5568; color: #fbd38d;
+      padding: 3px 8px; display: inline-block; vertical-align: middle;
+      border-radius: 4px; font-family: 'Consolas','Monaco',monospace;
+      font-size: 0.9em; outline: none; transition: border-color 0.2s;
+    }
+    .fill-input:focus { border-color: #9f7aea; }
+
+    .complete-area {
+      background: #f0fff4; border: 2px solid #9ae6b4;
+      border-radius: 12px; padding: 24px; margin-top: 40px; text-align: center;
+    }
+    .complete-area p { margin: 0 0 14px; color: #276749; font-weight: bold; font-size: 1.05em; }
+    .complete-btn {
+      background: linear-gradient(135deg, #38a169, #48bb78);
+      color: #fff; border: none; border-radius: 10px;
+      padding: 12px 32px; font-size: 1em; font-weight: bold;
+      cursor: pointer; transition: opacity 0.2s;
+    }
+    .complete-btn:hover { opacity: 0.85; }
+    .complete-btn.done { background: #a0aec0; cursor: default; }
+    .complete-msg { margin-top: 10px; color: #276749; font-size: 0.9em; display: none; }
+
+    .page-nav {
+      display: flex; justify-content: space-between; align-items: center;
+      margin-top: 48px; padding-top: 20px; border-top: 2px solid #e9d8fd;
+      gap: 12px; flex-wrap: wrap;
+    }
+    .nav-btn {
+      display: inline-block; padding: 10px 22px; border-radius: 8px;
+      text-decoration: none; font-weight: bold; font-size: 0.9em; transition: opacity 0.2s;
+    }
+    .nav-btn:hover { opacity: 0.8; }
+    .nav-btn.prev  { background: #edf2f7; color: #4a5568; }
+    .nav-btn.index { background: #faf5ff; color: #553c9a; border: 2px solid #e9d8fd; }
+    .nav-btn.next  { background: linear-gradient(135deg, #553c9a, #9f7aea); color: #fff; }
+
+    footer {
+      margin-top: 48px; padding-top: 16px; border-top: 2px solid #e9d8fd;
+      font-size: 0.82em; color: #a0aec0; text-align: center;
+    }
+    footer a { color: #553c9a; text-decoration: none; }
+    footer a:hover { text-decoration: underline; }
+
+    @media (max-width: 640px) {
+      body { font-size: 0.84em; padding: 0 12px; }
+      .chapter-header { padding: 20px 16px; }
+      .chapter-header h1 { font-size: 1.2em; }
+      .perf-compare    { grid-template-columns: 1fr; }
+      .error-demo-grid { grid-template-columns: 1fr; }
+      .page-nav { flex-direction: column; align-items: stretch; }
+      .nav-btn  { text-align: center; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- パンくず -->
+<div class="breadcrumb">
+  <a href="../index.html">🏠 HTML5 Level 2</a> ›
+  <a href="index.html">Chapter 3</a> ›
+  3-6 テスト・デバッグ
+</div>
+
+<!-- ヘッダー -->
+<div class="chapter-header">
+  <div class="ch-num">CHAPTER 03 › SECTION 06</div>
+  <h1>🐛 3-6 テスト・デバッグ</h1>
+  <p>ブラウザ開発者ツールの使い方から console オブジェクトの活用、
+  ブレークポイントの設定、パフォーマンス計測、エラーハンドリングまで、
+  実践的なデバッグ技法を体系的に学びます。</p>
+  <div class="badge-row">
+    <span class="badge">DevTools</span>
+    <span class="badge">console API</span>
+    <span class="badge">ブレークポイント</span>
+    <span class="badge">performance.now()</span>
+    <span class="badge">try-catch-finally</span>
+    <span class="badge">エラーの種類</span>
+  </div>
+</div>
+
+<!-- セクションナビ -->
+<div class="section-nav">
+  <h2>📋 Chapter 3 のセクション</h2>
+  <ol>
+    <li><a href="01_events.html">3-1 イベント</a></li>
+    <li><a href="02_dom.html">3-2 ドキュメントオブジェクト／DOM</a></li>
+    <li><a href="03_window.html">3-3 ウィンドウオブジェクト</a></li>
+    <li><a href="04_selector.html">3-4 セレクタAPI</a></li>
+    <li><a href="05_history.html">3-5 ブラウザ履歴とナビゲーション</a></li>
+    <li class="current"><a href="06_debug.html">3-6 テスト・デバッグ</a></li>
+  </ol>
+</div>
+
+
+<!-- ============================================================ -->
+<!-- 1. 開発者ツール -->
+<!-- ============================================================ -->
+<h2 id="devtools">① ブラウザ開発者ツールのパネル</h2>
+
+<div class="content-card">
+  <h3>各パネルの役割</h3>
+  <p>
+    ブラウザの開発者ツール（DevTools）は <kbd>F12</kbd> または
+    <kbd>Ctrl+Shift+I</kbd>（Mac: <kbd>Cmd+Option+I</kbd>）で開けます。
+    各パネルの役割を理解することがデバッグの第一歩です。
+  </p>
+
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr><th>パネル</th><th>主な用途</th><th>よく使う機能</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Elements</strong></td><td>HTML/CSS の確認・編集</td><td>DOM ツリー表示、スタイル確認、ライブ編集</td></tr>
+        <tr><td><strong>Console</strong></td><td>ログ出力・JS実行</td><td>console.log 確認、式の評価、エラー表示</td></tr>
+        <tr><td><strong>Sources</strong></td><td>JS ソースとデバッグ</td><td>ブレークポイント設定、ステップ実行</td></tr>
+        <tr><td><strong>Network</strong></td><td>通信の監視</td><td>リクエスト/レスポンス確認、タイミング</td></tr>
+        <tr><td><strong>Performance</strong></td><td>パフォーマンス分析</td><td>CPU/メモリプロファイル、フレームレート</td></tr>
+        <tr><td><strong>Application</strong></td><td>ストレージ管理</td><td>localStorage, Cookie, IndexedDB 確認</td></tr>
+        <tr><td><strong>Memory</strong></td><td>メモリ使用量分析</td><td>ヒープスナップショット、メモリリーク検出</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+
+<!-- ============================================================ -->
+<!-- 2. console オブジェクト -->
+<!-- ============================================================ -->
+<h2 id="console">② console オブジェクトのメソッド</h2>
+
+<div class="content-card">
+  <h3>console の主要メソッド一覧</h3>
+
+  <div class="code-block">
+    <button class="copy-btn" onclick="copyCode(this)">copy</button>
+    <pre><span class="cm">// 基本的な出力</span>
+console.<span class="fn">log</span>(<span class="str">'通常のログ'</span>, { key: <span class="str">'value'</span> });
+console.<span class="fn">info</span>(<span class="str">'情報メッセージ'</span>);
+console.<span class="fn">warn</span>(<span class="str">'警告メッセージ'</span>);
+console.<span class="fn">error</span>(<span class="str">'エラーメッセージ'</span>);
+
+<span class="cm">// テーブル形式で表示</span>
+<span class="kw">const</span> users = [
+  { name: <span class="str">'Alice'</span>, age: <span class="num">25</span> },
+  { name: <span class="str">'Bob'</span>,   age: <span class="num">30</span> }
+];
+console.<span class="fn">table</span>(users); <span class="cm">// 表形式で見やすく表示</span>
+
+<span class="cm">// グループ化</span>
+console.<span class="fn">group</span>(<span class="str">'ユーザー処理'</span>);
+  console.<span class="fn">log</span>(<span class="str">'処理開始'</span>);
+  console.<span class="fn">log</span>(<span class="str">'処理中...'</span>);
+console.<span class="fn">groupEnd</span>();
+
+<span class="cm">// 折りたたみグループ</span>
+console.<span class="fn">groupCollapsed</span>(<span class="str">'詳細ログ（折りたたみ）'</span>);
+  console.<span class="fn">log</span>(<span class="str">'詳細1'</span>);
+console.<span class="fn">groupEnd</span>();
+
+<span class="cm">// アサーション（条件が false のときだけ出力）</span>
+console.<span class="fn">assert</span>(<span class="num">1</span> <span class="op">===</span> <span class="num">2</span>, <span class="str">'1 は 2 ではありません'</span>); <span class="cm">// 出力される</span>
+console.<span class="fn">assert</span>(<span class="num">1</span> <span class="op">===</span> <span class="num">1</span>, <span class="str">'これは出力されない'</span>);    <span class="cm">// 出力されない</span>
+
+<span class="cm">// カウント</span>
+console.<span class="fn">count</span>(<span class="str">'click'</span>); <span class="cm">// click: 1</span>
+console.<span class="fn">count</span>(<span class="str">'click'</span>); <span class="cm">// click: 2</span>
+console.<span class="fn">countReset</span>(<span class="str">'click'</span>);
+
+<span class="cm">// タイマー</span>
+console.<span class="fn">time</span>(<span class="str">'処理時間'</span>);
+<span class="cm">// ... 処理 ...</span>
+console.<span class="fn">timeLog</span>(<span class="str">'処理時間'</span>);  <span class="cm">// 途中経過</span>
+console.<span class="fn">timeEnd</span>(<span class="str">'処理時間'</span>); <span class="cm">// 処理時間: 12.34ms</span></pre>
+  </div>
+
+  <div class="info-box point">
+    <strong>📌 試験頻出：console.assert の動作</strong>
+    <code>console.assert(condition, message)</code> は
+    <strong>条件が false のときだけ</strong>エラーメッセージを出力します。
+    true のときは何も出力しません。
+    テスト・デバッグ時の簡易アサーションとして使います。
+  </div>
+</div>
+
+
+<!-- ============================================================ -->
+<!-- 3. ブレークポイントと debugger -->
+<!-- ============================================================ -->
+<h2 id="breakpoint">③ ブレークポイントと debugger 文</h2>
+
+<div class="content-card">
+  <h3>ブレークポイントの種類</h3>
+
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr><th>種類</th><th>設定方法</th><th>用途</th></tr></thead>
+      <tbody>
+        <tr><td>行ブレークポイント</td><td>Sources パネルで行番号をクリック</td><td>特定の行で一時停止</td></tr>
+        <tr><td>条件付きブレークポイント</td><td>行番号を右クリック → 条件を入力</td><td>条件が true のときだけ停止</td></tr>
+        <tr><td>DOM 変更ブレークポイント</td><td>Elements で要素右クリック → Break on</td><td>DOM 変更時に停止</td></tr>
+        <tr><td>イベントリスナーブレークポイント</td><td>Sources → Event Listener Breakpoints</td><td>特定イベント発生時に停止</td></tr>
+        <tr><td>例外ブレークポイント</td><td>Sources の ⏸ アイコン</td><td>例外発生時に自動停止</td></tr>
+        <tr><td>debugger 文</td><td>コードに <code>debugger;</code> を記述</td><td>プログラムから停止を指示</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="code-block">
+    <button class="copy-btn" onclick="copyCode(this)">copy</button>
+    <pre><span class="cm">// debugger 文：開発者ツールが開いているときだけ停止</span>
+<span class="kw">function</span> <span class="fn">calculateTotal</span>(items) {
+  <span class="kw">debugger</span>; <span class="cm">// ← ここで実行が一時停止する</span>
+
+  <span class="kw">let</span> total = <span class="num">0</span>;
+  <span class="kw">for</span> (<span class="kw">const</span> item <span class="kw">of</span> items) {
+    total <span class="op">+=</span> item.price;
+  }
+  <span class="kw">return</span> total;
+}
+
+<span class="cm">// ステップ実行のショートカット</span>
+<span class="cm">// F8  / Resume       → 次のブレークポイントまで実行</span>
+<span class="cm">// F10 / Step over    → 現在の行を実行して次の行へ（関数の中に入らない）</span>
+<span class="cm">// F11 / Step into    → 関数の中に入る</span>
+<span class="cm">// Shift+F11 / Step out → 現在の関数を抜ける</span>
+
+<span class="cm">// 条件付きデバッグ（本番コードでよく使うパターン）</span>
+<span class="kw">const</span> DEBUG = <span class="kw">true</span>;
+<span class="kw">if</span> (DEBUG) {
+  console.<span class="fn">log</span>(<span class="str">'デバッグ情報:'</span>, data);
+}</pre>
+  </div>
+
+  <div class="info-box warn">
+    <strong>⚠️ debugger 文を本番コードに残さない</strong>
+    <code>debugger</code> 文は開発者ツールが開いていると実行を停止させます。
+    本番環境に残すとユーザーの操作を妨げる可能性があります。
+    ビルドツール（webpack など）で自動削除するか、必ず手動で削除しましょう。
+  </div>
+</div>
+
+
+<!-- ============================================================ -->
+<!-- 4. パフォーマンス計測 -->
+<!-- ============================================================ -->
+<h2 id="perf">④ パフォーマンス計測</h2>
+
+<div class="content-card">
+  <h3>console.time() と performance.now()</h3>
+
+  <div class="code-block">
+    <button class="copy-btn" onclick="copyCode(this)">copy</button>
+    <pre><span class="cm">// console.time() / timeEnd()：シンプルな計測</span>
+console.<span class="fn">time</span>(<span class="str">'ループ処理'</span>);
+<span class="kw">for</span> (<span class="kw">let</span> i = <span class="num">0</span>; i &lt; <span class="num">1000000</span>; i++) { <span class="cm">/* 処理 */</span> }
+console.<span class="fn">timeEnd</span>(<span class="str">'ループ処理'</span>); <span class="out">// → ループ処理: 12.345ms</span>
+
+<span class="cm">// performance.now()：高精度タイムスタンプ（マイクロ秒精度）</span>
+<span class="kw">const</span> start = performance.<span class="fn">now</span>();
+
+<span class="cm">// 計測したい処理</span>
+<span class="kw">const</span> arr = [];
+<span class="kw">for</span> (<span class="kw">let</span> i = <span class="num">0</span>; i &lt; <span class="num">100000</span>; i++) arr.<span class="fn">push</span>(i);
+
+<span class="kw">const</span> end = performance.<span class="fn">now</span>();
+console.<span class="fn">log</span>(<span class="str">`処理時間: ${(end - start).<span class="fn">toFixed</span>(<span class="num">3</span>)}ms`</span>);
+
+<span class="cm">// performance.mark() / measure()：詳細な計測</span>
+performance.<span class="fn">mark</span>(<span class="str">'start'</span>);
+<span class="cm">// ... 処理A ...</span>
+performance.<span class="fn">mark</span>(<span class="str">'middle'</span>);
+<span class="cm">// ... 処理B ...</span>
+performance.<span class="fn">mark</span>(<span class="str">'end'</span>);
+
+performance.<span class="fn">measure</span>(<span class="str">'処理A'</span>, <span class="str">'start'</span>, <span class="str">'middle'</span>);
+performance.<span class="fn">measure</span>(<span class="str">'処理B'</span>, <span class="str">'middle'</span>, <span class="str">'end'</span>);
+
+<span class="kw">const</span> measures = performance.<span class="fn">getEntriesByType</span>(<span class="str">'measure'</span>);
+measures.<span class="fn">forEach</span>(m =&gt; console.<span class="fn">log</span>(m.name, m.duration.<span class="fn">toFixed</span>(<span class="num">3</span>) + <span class="str">'ms'</span>));</pre>
+  </div>
+
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr><th>方法</th><th>精度</th><th>特徴</th><th>用途</th></tr></thead>
+      <tbody>
+        <tr><td><code>console.time()</code></td><td>ms</td><td>シンプル・手軽</td><td>簡易計測</td></tr>
+        <tr><td><code>performance.now()</code></td><td>μs（マイクロ秒）</td><td>高精度・差分計算</td><td>精密計測・ベンチマーク</td></tr>
+        <tr><td><code>performance.mark()</code></td><td>μs</td><td>複数ポイントを記録</td><td>詳細なプロファイリング</td></tr>
+        <tr><td>DevTools Performance</td><td>ms</td><td>視覚的・CPU/メモリも</td><td>総合的なパフォーマンス分析</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+
+<!-- ============================================================ -->
+<!-- 5. エラーの種類と try-catch -->
+<!-- ============================================================ -->
+<h2 id="error">⑤ エラーの種類と try-catch-finally</h2>
+
+<div class="content-card">
+  <h3>JavaScriptの主要エラー型</h3>
+
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr><th>エラー型</th><th>発生原因</th><th>例</th></tr></thead>
+      <tbody>
+        <tr><td><code>SyntaxError</code></td><td>構文エラー（パース時）</td><td><code>let x = ;</code></td></tr>
+        <tr><td><code>ReferenceError</code></td><td>未定義の変数を参照</td><td><code>console.log(undeclared)</code></td></tr>
+        <tr><td><code>TypeError</code></td><td>型が不正な操作</td><td><code>null.property</code></td></tr>
+        <tr><td><code>RangeError</code></td><td>値が有効範囲外</td><td><code>new Array(-1)</code></td></tr>
+        <tr><td><code>URIError</code></td><td>URI 関数の不正使用</td><td><code>decodeURIComponent('%')</code></td></tr>
+        <tr><td><code>EvalError</code></td><td><code>eval()</code> 関連</td><td>（現代では稀）</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="code-block">
+    <button class="copy-btn" onclick="copyCode(this)">copy</button>
+    <pre><span class="cm">// try-catch-finally の基本構造</span>
+<span class="kw">try</span> {
+  <span class="cm">// エラーが発生する可能性のある処理</span>
+  <span class="kw">const</span> data = <span class="fn">JSON</span>.<span class="fn">parse</span>(<span class="str">'invalid json'</span>); <span class="cm">// SyntaxError</span>
+} <span class="kw">catch</span> (error) {
+  <span class="cm">// エラーが発生したときの処理</span>
+  console.<span class="fn">error</span>(error.name);    <span class="out">// → 'SyntaxError'</span>
+  console.<span class="fn">error</span>(error.message); <span class="out">// → エラーメッセージ</span>
+  console.<span class="fn">error</span>(error.stack);   <span class="out">// → スタックトレース</span>
+} <span class="kw">finally</span> {
+  <span class="cm">// エラーの有無に関わらず必ず実行</span>
+  console.<span class="fn">log</span>(<span class="str">'クリーンアップ処理'</span>);
+}
+
+<span class="cm">// エラーの種類で分岐</span>
+<span class="kw">try</span> {
+  riskyOperation();
+} <span class="kw">catch</span> (e) {
+  <span class="kw">if</span> (e <span class="kw">instanceof</span> TypeError) {
+    console.<span class="fn">error</span>(<span class="str">'型エラー:'</span>, e.message);
+  } <span class="kw">else if</span> (e <span class="kw">instanceof</span> RangeError) {
+    console.<span class="fn">error</span>(<span class="str">'範囲エラー:'</span>, e.message);
+  } <span class="kw">else</span> {
+    <span class="kw">throw</span> e; <span class="cm">// 処理できないエラーは再スロー</span>
+  }
+}
+
+<span class="cm">// カスタムエラー</span>
+<span class="kw">class</span> <span class="fn">ValidationError</span> <span class="kw">extends</span> Error {
+  <span class="fn">constructor</span>(message, field) {
+    <span class="kw">super</span>(message);
+    <span class="kw">this</span>.name = <span class="str">'ValidationError'</span>;
+    <span class="kw">this</span>.field = field;
+  }
+}
+<span class="kw">throw new</span> <span class="fn">ValidationError</span>(<span class="str">'必須項目です'</span>, <span class="str">'email'</span>);</pre>
+  </div>
+
+  <div class="info-box point">
+    <strong>📌 試験頻出：finally ブロックの特性</strong>
+    <code>finally</code> ブロックは <strong>try / catch のどちらが実行されても必ず実行</strong>されます。
+    <code>try</code> 内で <code>return</code> しても <code>finally</code> は実行されます。
+    リソースの解放・クリーンアップ処理に使います。
+  </div>
+</div>
+
+
+<!-- ============================================================ -->
+<!-- デモ① console メソッド出力比較 -->
+<!-- ============================================================ -->
+<div class="demo-card">
+  <h3>🖥️ デモ①：console メソッド出力比較デモ</h3>
+  <div class="demo-desc">
+    各ボタンをクリックして console の各メソッドの出力スタイルの違いを確認しましょう。
+    下の疑似コンソールに実際の出力が再現されます。自由にコードを入力して実行もできます。
+  </div>
+
+  <div style="display:flex; gap:8px; flex-wrap:wrap; margin-bottom:12px;">
+    <button class="run-btn" onclick="demoLog()">console.log</button>
+    <button class="run-btn" style="background:linear-gradient(135deg,#2b6cb0,#4299e1);" onclick="demoInfo()">console.info</button>
+    <button class="run-btn warn-btn" onclick="demoWarn()">console.warn</button>
+    <button class="run-btn danger" onclick="demoError()">console.error</button>
+    <button class="run-btn success" onclick="demoTable()">console.table</button>
+    <button class="run-btn" style="background:linear-gradient(135deg,#6b46c1,#b794f4);" onclick="demoGroup()">console.group</button>
+    <button class="run-btn" style="background:linear-gradient(135deg,#c05621,#fbd38d); color:#1a202c;" onclick="demoAssert()">console.assert</button>
+    <button class="run-btn secondary" onclick="clearConsoleDemo()">クリア</button>
+  </div>
+
+  <div class="pseudo-console">
+    <div class="console-bar">
+      <div class="c-dot" style="background:#fc8181;"></div>
+      <div class="c-dot" style="background:#f6ad55;"></div>
+      <div class="c-dot" style="background:#68d391;"></div>
+      <span>Console — DevTools シミュレーター</span>
+    </div>
+    <div class="console-output" id="console-demo-output">
+      <div class="c-info">// ボタンをクリックして各メソッドの出力を確認しましょう</div>
+    </div>
+    <div class="console-input-row">
+      <span>&gt;</span>
+      <input class="console-input" id="console-demo-input"
+        placeholder="console.log('Hello'), JSON.stringify({a:1}) など自由に入力">
+      <button class="console-clear-btn" onclick="clearConsoleDemo()">clear</button>
+      <button class="console-run-btn" onclick="runConsoleDemo()">▶ 実行</button>
+    </div>
+  </div>
+</div>
+
+
+<!-- ============================================================ -->
+<!-- デモ② パフォーマンス計測デモ -->
+<!-- ============================================================ -->
+<div class="demo-card">
+  <h3>⏱️ デモ②：performance.now() / console.time() 計測デモ</h3>
+  <div class="demo-desc">
+    同じ処理を <code>console.time()</code> と <code>performance.now()</code> の両方で計測し、
+    結果を比較します。繰り返し回数を変えて試してみましょう。
+  </div>
+
+  <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap; margin-bottom:14px;">
+    <label style="font-size:0.88em; font-weight:bold; color:#553c9a;">繰り返し回数：</label>
+    <input class="iter-input" id="iter-count" type="number" value="1000000" min="1000" max="10000000" step="100000">
+    <button class="run-btn" onclick="runPerfDemo()">▶ 計測実行</button>
+    <button class="run-btn secondary" onclick="resetPerfDemo()">リセット</button>
+  </div>
+
+  <div class="perf-compare">
+    <div class="perf-box">
+      <h4>⏰ console.time() / timeEnd()</h4>
+      <div class="perf-bar-outer"><div class="perf-bar-inner" id="perf-bar-time"></div></div>
+      <div class="perf-result" id="perf-result-time">
+        <span style="color:#a0aec0;">// 計測前</span>
+      </div>
+    </div>
+    <div class="perf-box">
+      <h4>🎯 performance.now()</h4>
+      <div class="perf-bar-outer"><div class="perf-bar-inner" id="perf-bar-perf"></div></div>
+      <div class="perf-result" id="perf-result-perf">
+        <span style="color:#a0aec0;">// 計測前</span>
+      </div>
+    </div>
+  </div>
+
+  <div style="margin-top:14px; background:#1a202c; border-radius:8px; padding:12px 16px;
+    font-family:'Consolas','Monaco',monospace; font-size:0.82em; line-height:1.9;"
+    id="perf-demo-log">
+    <span style="color:#a0aec0;">// 計測を実行するとここにログが表示されます</span>
+  </div>
+</div>
+
+
+<!-- ============================================================ -->
+<!-- デモ③ エラーハンドリング インタラクティブデモ -->
+<!-- ============================================================ -->
+<div class="demo-card">
+  <h3>💥 デモ③：エラー発生 &amp; try-catch インタラクティブデモ</h3>
+  <div class="demo-desc">
+    各エラーカードをクリックして意図的にエラーを発生させ、
+    try-catch でどのように捕捉されるかを確認しましょう。
+  </div>
+
+  <div class="error-demo-grid" id="error-cards">
+    <div class="error-type-card" onclick="triggerError('TypeError')">
+      <div class="err-name">TypeError</div>
+      <div class="err-desc">null や undefined のプロパティにアクセス</div>
+      <code style="font-size:0.78em;">null.property</code>
+    </div>
+    <div class="error-type-card" onclick="triggerError('ReferenceError')">
+      <div class="err-name">ReferenceError</div>
+      <div class="err-desc">宣言されていない変数を参照</div>
+      <code style="font-size:0.78em;">console.log(undeclaredVar)</code>
+    </div>
+    <div class="error-type-card" onclick="triggerError('RangeError')">
+      <div class="err-name">RangeError</div>
+      <div class="err-desc">値が有効な範囲外</div>
+      <code style="font-size:0.78em;">new Array(-1)</code>
+    </div>
+    <div class="error-type-card" onclick="triggerError('SyntaxError')">
+      <div class="err-name">SyntaxError（JSON）</div>
+      <div class="err-desc">不正なJSON文字列をパース</div>
+      <code style="font-size:0.78em;">JSON.parse('invalid')</code>
+    </div>
+    <div class="error-type-card" onclick="triggerError('CustomError')">
+      <div class="err-name">CustomError</div>
+      <div class="err-desc">カスタムエラークラスをスロー</div>
+      <code style="font-size:0.78em;">throw new ValidationError()</code>
+    </div>
+    <div class="error-type-card" onclick="triggerError('Finally')">
+      <div class="err-name">finally の動作確認</div>
+      <div class="err-desc">エラーがあってもなくても finally が実行</div>
+      <code style="font-size:0.78em;">try-catch-finally</code>
+    </div>
+  </div>
+
+  <div class="error-output" id="error-output">
+    <span style="color:#a0aec0;">// エラーカードをクリックして try-catch の動作を確認しましょう</span>
+  </div>
+</div>
+
+
+<!-- ============================================================ -->
+<!-- デモ④ デバッグ ベストプラクティス ステップガイド -->
+<!-- ============================================================ -->
+<div class="demo-card">
+  <h3>📋 デモ④：デバッグ ベストプラクティス ステップガイド</h3>
+  <div class="demo-desc">
+    各ステップをクリックして展開し、実践的なデバッグ手順を学びましょう。
+    すべてのステップを確認するとデバッグの全体像が掴めます。
+  </div>
+
+  <div class="debug-steps" id="debug-steps">
+
+    <div class="debug-step" id="dbg-step-1" onclick="toggleDebugStep(1)">
+      <div class="debug-step-header">
+        <div class="debug-step-num">1</div>
+        <div class="debug-step-title">🔍 エラーメッセージを正確に読む</div>
+      </div>
+      <div class="debug-step-body">
+        <p>コンソールのエラーメッセージには<strong>エラーの種類・メッセージ・ファイル名・行番号</strong>が含まれます。</p>
+        <div style="background:#1a202c; border-radius:6px; padding:10px 14px; font-family:'Consolas','Monaco',monospace; font-size:0.82em; line-height:1.8;">
+          <div style="color:#fc8181;">Uncaught TypeError: Cannot read properties of null (reading 'textContent')</div>
+          <div style="color:#a0aec0;">    at updateUI (app.js:42:18)</div>
+          <div style="color:#a0aec0;">    at init (app.js:10:3)</div>
+        </div>
+        <p style="margin-top:8px;">→ <strong>app.js の 42行目</strong>で <code>null</code> の <code>textContent</code> にアクセスしようとしている。<br>
+        → <code>getElementById</code> が <code>null</code> を返している可能性が高い（IDのタイポなど）。</p>
+      </div>
+    </div>
+
+    <div class="debug-step" id="dbg-step-2" onclick="toggleDebugStep(2)">
+      <div class="debug-step-header">
+        <div class="debug-step-num">2</div>
+        <div class="debug-step-title">🖨️ console.log で変数の値を確認する</div>
+      </div>
+      <div class="debug-step-body">
+        <p>問題が起きている箇所の前後に <code>console.log</code> を追加して、変数の値を確認します。</p>
+        <div style="background:#1a202c; border-radius:6px; padding:10px 14px; font-family:'Consolas','Monaco',monospace; font-size:0.82em; line-height:1.8;">
+          <div style="color:#68d391;">// ❌ 問題のあるコード</div>
+          <div style="color:#e2e8f0;">function updateUI(data) {</div>
+          <div style="color:#e2e8f0;">  document.getElementById('result').textContent = data.value;</div>
+          <div style="color:#e2e8f0;">}</div>
+          <br>
+          <div style="color:#68d391;">// ✅ デバッグ用 console.log を追加</div>
+          <div style="color:#e2e8f0;">function updateUI(data) {</div>
+          <div style="color:#b794f4;">  console.log('data:', data);  <span style="color:#a0aec0;">// データを確認</span></div>
+          <div style="color:#b794f4;">  console.log('el:', document.getElementById('result'));  <span style="color:#a0aec0;">// 要素を確認</span></div>
+          <div style="color:#e2e8f0;">  document.getElementById('result').textContent = data.value;</div>
+          <div style="color:#e2e8f0;">}</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="debug-step" id="dbg-step-3" onclick="toggleDebugStep(3)">
+      <div class="debug-step-header">
+        <div class="debug-step-num">3</div>
+        <div class="debug-step-title">⏸️ ブレークポイントでステップ実行する</div>
+      </div>
+      <div class="debug-step-body">
+        <p>console.log だけでは追いきれない場合は、Sources パネルでブレークポイントを設定してステップ実行します。</p>
+        <ul style="padding-left:20px; margin:8px 0;">
+          <li><kbd>F8</kbd> / Resume：次のブレークポイントまで実行</li>
+          <li><kbd>F10</kbd> / Step over：現在の行を実行（関数に入らない）</li>
+          <li><kbd>F11</kbd> / Step into：関数の中に入る</li>
+          <li><kbd>Shift+F11</kbd> / Step out：現在の関数を抜ける</li>
+        </ul>
+        <p>右側の <strong>Scope パネル</strong>で現在のスコープの変数値を確認できます。<br>
+        <strong>Watch パネル</strong>で特定の式をウォッチできます。</p>
+      </div>
+    </div>
+
+    <div class="debug-step" id="dbg-step-4" onclick="toggleDebugStep(4)">
+      <div class="debug-step-header">
+        <div class="debug-step-num">4</div>
+        <div class="debug-step-title">🛡️ try-catch でエラーを適切に処理する</div>
+      </div>
+      <div class="debug-step-body">
+        <p>外部APIの呼び出しやユーザー入力の処理など、エラーが予想される箇所は try-catch で囲みます。</p>
+        <div style="background:#1a202c; border-radius:6px; padding:10px 14px; font-family:'Consolas','Monaco',monospace; font-size:0.82em; line-height:1.8;">
+          <div style="color:#68d391;">// ベストプラクティス</div>
+          <div style="color:#90cdf4;">async function</div> <div style="display:inline; color:#b794f4;">fetchData</div><div style="display:inline; color:#e2e8f0;">(url) {</div>
+          <div style="color:#90cdf4;">  try</div><div style="display:inline; color:#e2e8f0;"> {</div>
+          <div style="color:#e2e8f0;">    const res = await fetch(url);</div>
+          <div style="color:#90cdf4;">    if</div><div style="display:inline; color:#e2e8f0;"> (!res.ok) </div><div style="display:inline; color:#90cdf4;">throw new</div><div style="display:inline; color:#e2e8f0;"> Error(`HTTP ${res.status}`);</div>
+          <div style="color:#90cdf4;">    return await</div><div style="display:inline; color:#e2e8f0;"> res.json();</div>
+          <div style="color:#e2e8f0;">  } </div><div style="display:inline; color:#90cdf4;">catch</div><div style="display:inline; color:#e2e8f0;"> (e) {</div>
+          <div style="color:#e2e8f0;">    console.error('取得失敗:', e.message);</div>
+          <div style="color:#90cdf4;">    return null</div><div style="display:inline; color:#e2e8f0;">;</div>
+          <div style="color:#e2e8f0;">  } </div><div style="display:inline; color:#90cdf4;">finally</div><div style="display:inline; color:#e2e8f0;"> {</div>
+          <div style="color:#e2e8f0;">    hideLoadingSpinner();</div>
+          <div style="color:#e2e8f0;">  }</div>
+          <div style="color:#e2e8f0;">}</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="debug-step" id="dbg-step-5" onclick="toggleDebugStep(5)">
+      <div class="debug-step-header">
+        <div class="debug-step-num">5</div>
+        <div class="debug-step-title">📊 パフォーマンスを計測して最適化する</div>
+      </div>
+      <div class="debug-step-body">
+        <p>処理が遅い場合は <code>performance.now()</code> で計測してボトルネックを特定します。</p>
+        <div style="background:#1a202c; border-radius:6px; padding:10px 14px; font-family:'Consolas','Monaco',monospace; font-size:0.82em; line-height:1.8;">
+          <div style="color:#68d391;">// どの処理が遅いか特定する</div>
+          <div style="color:#e2e8f0;">const t0 = performance.now();</div>
+          <div style="color:#e2e8f0;">heavyOperation1();</div>
+          <div style="color:#e2e8f0;">const t1 = performance.now();</div>
+          <div style="color:#e2e8f0;">heavyOperation2();</div>
+          <div style="color:#e2e8f0;">const t2 = performance.now();</div>
+          <div style="color:#b794f4;">console.log</div><div style="display:inline; color:#e2e8f0;">(`op1: ${(t1-t0).toFixed(2)}ms, op2: ${(t2-t1).toFixed(2)}ms`);</div>
+        </div>
+        <p style="margin-top:8px;"><strong>よくある最適化：</strong><br>
+        ・DOM操作をまとめる（DocumentFragment）<br>
+        ・ループ内の DOM 取得をキャッシュする<br>
+        ・不要なイベントリスナーを削除する</p>
+      </div>
+    </div>
+
+  </div>
+
+  <div style="margin-top:14px; display:flex; gap:8px;">
+    <button class="run-btn" onclick="expandAllSteps()">📖 全て展開</button>
+    <button class="run-btn secondary" onclick="collapseAllSteps()">📕 全て折りたたむ</button>
+  </div>
+</div>
+
+
+<!-- ============================================================ -->
+<!-- 演習問題 -->
+<!-- ============================================================ -->
+<div class="quiz-section">
+  <h2>🖊️ 演習問題</h2>
+
+  <!-- Q1：穴埋め -->
+  <div class="quiz-item">
+    <div class="quiz-q"><span class="q-num">Q1</span> 穴埋め問題</div>
+    <p>以下の説明に当てはまる正しいメソッド名・キーワードを入力してください。</p>
+
+    <p>① 配列やオブジェクトをコンソールに<strong>表形式</strong>で出力するメソッド：
+    <input class="blank-input" id="q1a" placeholder="console.___" style="width:180px;"></p>
+
+    <p>② 条件が <strong>false</strong> のときだけエラーメッセージを出力するメソッド：
+    <input class="blank-input" id="q1b" placeholder="console.___" style="width:180px;"></p>
+
+    <p>③ 開発者ツールが開いているときに実行を一時停止させるキーワード：
+    <input class="blank-input" id="q1c" placeholder="キーワード" style="width:140px;"></p>
+
+    <p>④ try-catch-finally で、<strong>エラーの有無に関わらず必ず実行</strong>されるブロック：
+    <input class="blank-input" id="q1d" placeholder="ブロック名" style="width:140px;"></p>
+
+    <button class="check-btn" onclick="checkQ1()">答え合わせ</button>
+    <div class="feedback" id="q1-fb"></div>
+  </div>
+
+  <!-- Q2：選択 -->
+  <div class="quiz-item">
+    <div class="quiz-q"><span class="q-num">Q2</span> 選択問題</div>
+    <p>以下のコードを実行したとき、コンソールに出力される内容として正しいものはどれですか？</p>
+
+    <div class="code-block" style="margin-bottom:14px;">
+      <pre style="background:#1a202c;color:#e2e8f0;padding:14px 16px;border-radius:8px;font-size:0.85em;font-family:'Consolas','Monaco',monospace;margin:0;line-height:1.8;"><span class="kw">function</span> <span class="fn">test</span>() {
+  <span class="kw">try</span> {
+    console.<span class="fn">log</span>(<span class="str">'A'</span>);
+    <span class="kw">throw new</span> Error(<span class="str">'エラー'</span>);
+    console.<span class="fn">log</span>(<span class="str">'B'</span>);
+  } <span class="kw">catch</span> (e) {
+    console.<span class="fn">log</span>(<span class="str">'C'</span>);
+  } <span class="kw">finally</span> {
+    console.<span class="fn">log</span>(<span class="str">'D'</span>);
+  }
+  console.<span class="fn">log</span>(<span class="str">'E'</span>);
+}
+<span class="fn">test</span>();</pre>
+    </div>
+
+    <button class="choice-btn" onclick="checkQ2(this,'wrong')">① A → B → C → D → E</button>
+    <button class="choice-btn" onclick="checkQ2(this,'wrong')">② A → C → D</button>
+    <button class="choice-btn" onclick="checkQ2(this,'correct')">③ A → C → D → E</button>
+    <button class="choice-btn" onclick="checkQ2(this,'wrong')">④ A → D → E</button>
+    <div class="feedback" id="q2-fb"></div>
+  </div>
+
+  <!-- Q3：チェックボックス -->
+  <div class="quiz-item">
+    <div class="quiz-q"><span class="q-num">Q3</span> 複数選択問題</div>
+    <p><strong>JavaScriptのエラーハンドリング</strong>に関して正しい記述をすべて選んでください。</p>
+
+    <label class="cb-label"><input type="checkbox" id="q3a">
+      ① <code>SyntaxError</code> は実行時ではなくパース（解析）時に発生する</label>
+    <label class="cb-label"><input type="checkbox" id="q3b">
+      ② <code>catch</code> ブロックの引数からエラーの <code>name</code>・<code>message</code>・<code>stack</code> を取得できる</label>
+    <label class="cb-label"><input type="checkbox" id="q3c">
+      ③ <code>finally</code> ブロックは <code>catch</code> でエラーを捕捉した場合のみ実行される</label>
+    <label class="cb-label"><input type="checkbox" id="q3d">
+      ④ <code>instanceof</code> を使ってエラーの種類を判別できる</label>
+    <label class="cb-label"><input type="checkbox" id="q3e">
+      ⑤ <code>try</code> ブロック内で <code>return</code> しても <code>finally</code> は実行される</label>
+    <label class="cb-label"><input type="checkbox" id="q3f">
+      ⑥ <code>ReferenceError</code> は存在しないプロパティにアクセスしたときに発生する</label>
+
+    <button class="check-btn" onclick="checkQ3()">答え合わせ</button>
+    <div class="feedback" id="q3-fb"></div>
+  </div>
+
+  <!-- Q4：コード補完 -->
+  <div class="quiz-item">
+    <div class="quiz-q"><span class="q-num">Q4</span> コード補完問題</div>
+    <p>以下のコードの空欄を埋めて、デバッグとエラーハンドリングを正しく実装してください。</p>
+
+    <div class="code-fill">
+      <span style="color:#a0aec0;">// パフォーマンス計測</span><br>
+      <span style="color:#90cdf4;">const</span> t0 = <span style="color:#b794f4;">performance</span>.<input class="fill-input" id="q4a" placeholder="メソッド名" style="width:80px;">();<br>
+      <span style="color:#b794f4;">heavyWork</span>();<br>
+      <span style="color:#90cdf4;">const</span> t1 = <span style="color:#b794f4;">performance</span>.<span style="color:#b794f4;">now</span>();<br>
+      <span style="color:#b794f4;">console</span>.<span style="color:#b794f4;">log</span>(<span style="color:#fbd38d;">`処理時間: ${(t1 - t0).<input class="fill-input" id="q4b" placeholder="メソッド名" style="width:110px;">(3)}ms`</span>);<br><br>
+      <span style="color:#a0aec0;">// エラーハンドリング</span><br>
+      <span style="color:#90cdf4;">try</span> {<br>
+      &nbsp;&nbsp;<span style="color:#90cdf4;">const</span> data = <span style="color:#b794f4;">JSON</span>.<span style="color:#b794f4;">parse</span>(<span style="color:#fbd38d;">'invalid'</span>);<br>
+      } <span style="color:#90cdf4;">catch</span> (e) {<br>
+      &nbsp;&nbsp;<span style="color:#b794f4;">console</span>.<span style="color:#b794f4;">error</span>(e.<input class="fill-input" id="q4c" placeholder="プロパティ名" style="width:100px;">, e.message);<br>
+      &nbsp;&nbsp;<span style="color:#90cdf4;">if</span> (e <span style="color:#90cdf4;">instanceof</span> <input class="fill-input" id="q4d" placeholder="エラー型" style="width:130px;">) {<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#b794f4;">console</span>.<span style="color:#b794f4;">log</span>(<span style="color:#fbd38d;">'JSON解析エラー'</span>);<br>
+      &nbsp;&nbsp;}<br>
+      } <span style="color:#90cdf4;">finally</span> {<br>
+      &nbsp;&nbsp;<span style="color:#b794f4;">console</span>.<span style="color:#b794f4;">log</span>(<span style="color:#fbd38d;">'クリーンアップ'</span>);<br>
+      }
+    </div>
+
+    <button class="check-btn" onclick="checkQ4()">答え合わせ</button>
+    <div class="feedback" id="q4-fb"></div>
+  </div>
+
+</div><!-- /quiz-section -->
+
+
+<!-- 完了ボタン -->
+<div class="complete-area">
+  <p>🎉 「3-6 テスト・デバッグ」の学習が完了したら記録しましょう！</p>
+  <button class="complete-btn" id="complete-btn" onclick="markComplete()">
+    ✅ このセクションを完了にする
+  </button>
+  <div class="complete-msg" id="complete-msg">
+    進捗を保存しました！Chapter 3 目次ページの進捗バーに反映されます。
+  </div>
+</div>
+
+<!-- ページナビ -->
+<div class="page-nav">
+  <a class="nav-btn prev" href="05_history.html">← 3-5 ブラウザ履歴とナビゲーション</a>
+  <a class="nav-btn index" href="index.html">📋 Chapter 3 目次</a>
+  <span class="nav-btn next" style="opacity:0.45; cursor:default;">次章（準備中）</span>
+</div>
+
+<!-- フッター -->
+<footer>
+  <p>
+    HTML5プロフェッショナル Level 2 学習サイト ／
+    <a href="../index.html">🏠 サイトトップ</a> ／
+    <a href="index.html">Chapter 3 目次</a> ／
+    <a href="https://github.com/MeshinoKiwamiOkome/html5lv2" target="_blank">GitHub</a>
+  </p>
+  <p style="margin-top:4px;">© MeshinoKiwamiOkome</p>
+</footer>
+
+
+<!-- ============================================================ -->
+<!-- JavaScript -->
+<!-- ============================================================ -->
+<script>
+/* ===== コピーボタン ===== */
+function copyCode(btn) {
+  const pre = btn.nextElementSibling;
+  navigator.clipboard.writeText(pre.innerText || pre.textContent).then(() => {
+    btn.textContent = 'copied!';
+    setTimeout(() => btn.textContent = 'copy', 1800);
+  });
+}
+
+/* ============================================================
+   デモ①：疑似コンソール
+============================================================ */
+function addConsoleLine(html, cls) {
+  const out  = document.getElementById('console-demo-output');
+  const line = document.createElement('div');
+  line.className = cls || 'c-log';
+  line.innerHTML = html;
+  out.appendChild(line);
+  out.scrollTop = out.scrollHeight;
+}
+
+function addConsoleText(text, cls) {
+  addConsoleLine(escapeHtml(text), cls);
+}
+
+function escapeHtml(s) {
+  return String(s)
+    .replace(/&/g,'&amp;')
+    .replace(/</g,'&lt;')
+    .replace(/>/g,'&gt;');
+}
+
+function formatVal(v) {
+  if (v === null)      return '<span style="color:#a0aec0;">null</span>';
+  if (v === undefined) return '<span style="color:#a0aec0;">undefined</span>';
+  if (typeof v === 'string')  return `<span style="color:#fbd38d;">"${escapeHtml(v)}"</span>`;
+  if (typeof v === 'number')  return `<span style="color:#fc8181;">${v}</span>`;
+  if (typeof v === 'boolean') return `<span style="color:#90cdf4;">${v}</span>`;
+  if (typeof v === 'object') {
+    try { return `<span style="color:#e2e8f0;">${escapeHtml(JSON.stringify(v, null, 0))}</span>`; }
+    catch(e) { return String(v); }
+  }
+  return escapeHtml(String(v));
+}
+
+function demoLog() {
+  addConsoleLine(
+    `<span style="color:#a0aec0;">&gt; console.log('通常ログ', {x:1, y:2})</span>`, 'c-log');
+  addConsoleLine(
+    `通常ログ <span style="color:#e2e8f0;">{x: 1, y: 2}</span>`, 'c-log');
+}
+
+function demoInfo() {
+  addConsoleLine(
+    `<span style="color:#a0aec0;">&gt; console.info('情報メッセージ')</span>`, 'c-log');
+  addConsoleLine(
+    `ℹ️ 情報メッセージ`, 'c-info');
+}
+
+function demoWarn() {
+  addConsoleLine(
+    `<span style="color:#a0aec0;">&gt; console.warn('警告：非推奨のAPIを使用しています')</span>`, 'c-log');
+  addConsoleLine(
+    `⚠️ 警告：非推奨のAPIを使用しています`, 'c-warn');
+}
+
+function demoError() {
+  addConsoleLine(
+    `<span style="color:#a0aec0;">&gt; console.error('エラー：接続に失敗しました')</span>`, 'c-log');
+  addConsoleLine(
+    `❌ エラー：接続に失敗しました`, 'c-error');
+}
+
+function demoTable() {
+  addConsoleLine(
+    `<span style="color:#a0aec0;">&gt; console.table([{name:'Alice',age:25},{name:'Bob',age:30}])</span>`, 'c-log');
+  const wrap = document.createElement('div');
+  wrap.className = 'c-table-wrap';
+  wrap.innerHTML = `
+    <table class="c-table">
+      <thead><tr><th>(index)</th><th>name</th><th>age</th></tr></thead>
+      <tbody>
+        <tr><td>0</td><td>"Alice"</td><td>25</td></tr>
+        <tr><td>1</td><td>"Bob"</td><td>30</td></tr>
+      </tbody>
+    </table>`;
+  const out = document.getElementById('console-demo-output');
+  out.appendChild(wrap);
+  out.scrollTop = out.scrollHeight;
+}
+
+function demoGroup() {
+  addConsoleLine(
+    `<span style="color:#a0aec0;">&gt; console.group / groupEnd</span>`, 'c-log');
+  addConsoleLine(`▼ <strong>ユーザー処理グループ</strong>`, 'c-group');
+  addConsoleLine(`&nbsp;&nbsp;処理開始`, 'c-log');
+  addConsoleLine(`&nbsp;&nbsp;ユーザーID: 42`, 'c-log');
+  addConsoleLine(`&nbsp;&nbsp;⚠️ 警告：セッション期限切れ間近`, 'c-warn');
+  addConsoleLine(`▲ グループ終了`, 'c-group');
+}
+
+function demoAssert() {
+  addConsoleLine(
+    `<span style="color:#a0aec0;">&gt; console.assert(1 === 2, '1は2ではない')</span>`, 'c-log');
+  addConsoleLine(
+    `❌ Assertion failed: 1は2ではない`, 'c-error');
+  addConsoleLine(
+    `<span style="color:#a0aec0;">&gt; console.assert(1 === 1, 'これは出力されない')</span>`, 'c-log');
+  addConsoleLine(
+    `<span style="color:#a0aec0;">（条件が true のため何も出力されない）</span>`, 'c-log');
+}
+
+function clearConsoleDemo() {
+  document.getElementById('console-demo-output').innerHTML =
+    '<div class="c-info">// クリアしました</div>';
+}
+
+function runConsoleDemo() {
+  const input = document.getElementById('console-demo-input');
+  const code  = input.value.trim();
+  if (!code) return;
+
+  addConsoleLine(`<span style="color:#a0aec0;">&gt; ${escapeHtml(code)}</span>`, 'c-log');
+
+  const origLog   = console.log;
+  const origWarn  = console.warn;
+  const origError = console.error;
+  const origInfo  = console.info;
+  const origTable = console.table;
+
+  console.log   = (...a) => { addConsoleLine(a.map(formatVal).join(' '), 'c-log');   origLog(...a); };
+  console.warn  = (...a) => { addConsoleLine('⚠️ ' + a.map(formatVal).join(' '), 'c-warn');  origWarn(...a); };
+  console.error = (...a) => { addConsoleLine('❌ ' + a.map(formatVal).join(' '), 'c-error'); origError(...a); };
+  console.info  = (...a) => { addConsoleLine('ℹ️ ' + a.map(formatVal).join(' '), 'c-info');  origInfo(...a); };
+  console.table = (data) => {
+    if (Array.isArray(data) && data.length > 0) {
+      const keys = Object.keys(data[0]);
+      let html = '<div class="c-table-wrap"><table class="c-table"><thead><tr><th>(index)</th>';
+      keys.forEach(k => { html += `<th>${escapeHtml(k)}</th>`; });
+      html += '</tr></thead><tbody>';
+      data.forEach((row, i) => {
+        html += `<tr><td>${i}</td>`;
+        keys.forEach(k => { html += `<td>${escapeHtml(String(row[k]))}</td>`; });
+        html += '</tr>';
+      });
+      html += '</tbody></table></div>';
+      const out = document.getElementById('console-demo-output');
+      const d = document.createElement('div');
+      d.innerHTML = html;
+      out.appendChild(d);
+      out.scrollTop = out.scrollHeight;
+    }
+    origTable(data);
+  };
+
+  try {
+    const result = eval(code);
+    if (result !== undefined) {
+      addConsoleLine(`← ${formatVal(result)}`, 'c-success');
+    }
+  } catch(e) {
+    addConsoleLine(`❌ ${escapeHtml(e.toString())}`, 'c-error');
+  }
+
+  console.log   = origLog;
+  console.warn  = origWarn;
+  console.error = origError;
+  console.info  = origInfo;
+  console.table = origTable;
+
+  input.value = '';
+}
+
+document.getElementById('console-demo-input').addEventListener('keydown', e => {
+  if (e.key === 'Enter') runConsoleDemo();
+});
+
+
+/* ============================================================
+   デモ②：パフォーマンス計測デモ
+============================================================ */
+function runPerfDemo() {
+  const n   = parseInt(document.getElementById('iter-count').value) || 1000000;
+  const log = document.getElementById('perf-demo-log');
+  log.innerHTML = '<span style="color:#f6ad55;">計測中...</span>';
+
+  setTimeout(() => {
+    // console.time 計測
+    const label = 'ループ処理_' + Date.now();
+    const timeStart = performance.now();
+    console.time(label);
+    let sum1 = 0;
+    for (let i = 0; i < n; i++) sum1 += i;
+    console.timeEnd(label);
+    const timeElapsed = performance.now() - timeStart;
+
+    // performance.now 計測
+    const perfStart = performance.now();
+    let sum2 = 0;
+    for (let i = 0; i < n; i++) sum2 += i;
+    const perfElapsed = performance.now() - perfStart;
+
+    // 結果表示
+    document.getElementById('perf-result-time').innerHTML =
+      `<span style="color:#68d391;">console.time('label');</span>\n` +
+      `<span style="color:#e2e8f0;">// ... ${n.toLocaleString()}回ループ ...</span>\n` +
+      `<span style="color:#68d391;">console.timeEnd('label');</span>\n` +
+      `<span style="color:#fbd38d;">→ ${timeElapsed.toFixed(3)}ms</span>`;
+
+    document.getElementById('perf-result-perf').innerHTML =
+      `<span style="color:#68d391;">const t0 = performance.now();</span>\n` +
+      `<span style="color:#e2e8f0;">// ... ${n.toLocaleString()}回ループ ...</span>\n` +
+      `<span style="color:#68d391;">const t1 = performance.now();</span>\n` +
+      `<span style="color:#fbd38d;">→ ${perfElapsed.toFixed(3)}ms</span>`;
+
+    const maxT = Math.max(timeElapsed, perfElapsed, 0.001);
+    document.getElementById('perf-bar-time').style.width =
+      Math.max(4, Math.round(timeElapsed / maxT * 100)) + '%';
+    document.getElementById('perf-bar-perf').style.width =
+      Math.max(4, Math.round(perfElapsed / maxT * 100)) + '%';
+
+    log.innerHTML =
+      `<span style="color:#68d391;">✅ 計測完了（${n.toLocaleString()}回ループ）</span>\n` +
+      `console.time:      <span style="color:#fbd38d;">${timeElapsed.toFixed(3)}ms</span>\n` +
+      `performance.now(): <span style="color:#fbd38d;">${perfElapsed.toFixed(3)}ms</span>\n` +
+      `計算結果（sum）:   <span style="color:#a0aec0;">${sum1.toLocaleString()}</span>\n\n` +
+      `<span style="color:#a0aec0;">// performance.now() は μs 精度のため、より正確な計測が可能です</span>\n` +
+      `<span style="color:#a0aec0;">// 結果はブラウザ・CPU・キャッシュ状態により変動します</span>`;
+  }, 50);
+}
+
+function resetPerfDemo() {
+  document.getElementById('perf-result-time').innerHTML = '<span style="color:#a0aec0;">// 計測前</span>';
+  document.getElementById('perf-result-perf').innerHTML = '<span style="color:#a0aec0;">// 計測前</span>';
+  document.getElementById('perf-bar-time').style.width = '0%';
+  document.getElementById('perf-bar-perf').style.width = '0%';
+  document.getElementById('perf-demo-log').innerHTML =
+    '<span style="color:#a0aec0;">// 計測を実行するとここにログが表示されます</span>';
+}
+
+
+/* ============================================================
+   デモ③：エラーハンドリング
+============================================================ */
+class ValidationError extends Error {
+  constructor(message, field) {
+    super(message);
+    this.name = 'ValidationError';
+    this.field = field;
+  }
+}
+
+function triggerError(type) {
+  // カードのハイライト
+  document.querySelectorAll('.error-type-card').forEach(c => c.classList.remove('active'));
+  event.currentTarget.classList.add('active');
+
+  const out = document.getElementById('error-output');
+  out.innerHTML = '';
+
+  function addLine(html) {
+    const d = document.createElement('div');
+    d.innerHTML = html;
+    out.appendChild(d);
+  }
+
+  const scenarios = {
+    TypeError: {
+      code: `try {\n  const obj = null;\n  obj.property; // TypeError!\n} catch(e) {\n  // catch で捕捉\n} finally {\n  // 必ず実行\n}`,
+      run: () => {
+        try {
+          const obj = null;
+          const x = obj.property;
+        } catch(e) {
+          return { name: e.name, message: e.message, caught: true };
+        } finally {}
+      }
+    },
+    ReferenceError: {
+      code: `try {\n  console.log(undeclaredVar);\n} catch(e) {\n  // ReferenceError を捕捉\n}`,
+      run: () => {
+        try {
+          const x = undeclaredVariableXYZ;
+        } catch(e) {
+          return { name: e.name, message: e.message, caught: true };
+        }
+      }
+    },
+    RangeError: {
+      code: `try {\n  new Array(-1); // RangeError!\n} catch(e) {\n  // RangeError を捕捉\n}`,
+      run: () => {
+        try {
+          const a = new Array(-1);
+        } catch(e) {
+          return { name: e.name, message: e.message, caught: true };
+        }
+      }
+    },
+    SyntaxError: {
+      code: `try {\n  JSON.parse('invalid json');\n} catch(e) {\n  // SyntaxError を捕捉\n}`,
+      run: () => {
+        try {
+          JSON.parse('invalid json string');
+        } catch(e) {
+          return { name: e.name, message: e.message, caught: true };
+        }
+      }
+    },
+    CustomError: {
+      code: `class ValidationError extends Error {\n  constructor(msg, field) {\n    super(msg);\n    this.name = 'ValidationError';\n    this.field = field;\n  }\n}\ntry {\n  throw new ValidationError('必須項目', 'email');\n} catch(e) {\n  if (e instanceof ValidationError) { ... }\n}`,
+      run: () => {
+        try {
+          throw new ValidationError('メールアドレスは必須です', 'email');
+        } catch(e) {
+          return {
+            name: e.name,
+            message: e.message,
+            field: e.field,
+            isValidation: e instanceof ValidationError,
+            caught: true
+          };
+        }
+      }
+    },
+    Finally: {
+      code: `// finally はエラーの有無に関わらず実行される\ntry {\n  console.log('try 実行');\n  throw new Error('テストエラー');\n} catch(e) {\n  console.log('catch 実行');\n} finally {\n  console.log('finally 実行（必ず）');\n}`,
+      run: () => {
+        const steps = [];
+        try {
+          steps.push('try ブロック実行');
+          throw new Error('テストエラー');
+          steps.push('（throw後は実行されない）');
+        } catch(e) {
+          steps.push('catch ブロック実行: ' + e.message);
+        } finally {
+          steps.push('finally ブロック実行（必ず！）');
+        }
+        steps.push('try-catch-finally の後も実行継続');
+        return { steps, caught: true };
+      }
+    }
+  };
+
+  const scenario = scenarios[type];
+  if (!scenario) return;
+
+  // コード表示
+  addLine(`<span class="err-info">// 実行するコード:</span>`);
+  scenario.code.split('\n').forEach(line => {
+    addLine(`<span class="err-info">${escapeHtml(line)}</span>`);
+  });
+  addLine('');
+
+  // 実行
+  const result = scenario.run();
+
+  if (type === 'Finally') {
+    addLine(`<span class="err-info">// 実行結果:</span>`);
+    result.steps.forEach((s, i) => {
+      const cls = s.includes('finally') ? 'err-finally' :
+                  s.includes('catch')   ? 'err-catch' : 'err-info';
+      addLine(`<span class="${cls}">${i + 1}. ${escapeHtml(s)}</span>`);
+    });
+  } else if (result && result.caught) {
+    addLine(`<span class="err-line">// エラー発生！</span>`);
+    addLine(`<span class="err-line">error.name:    "${escapeHtml(result.name)}"</span>`);
+    addLine(`<span class="err-line">error.message: "${escapeHtml(result.message)}"</span>`);
+    if (result.field) {
+      addLine(`<span class="err-line">error.field:   "${escapeHtml(result.field)}"</span>`);
+    }
+    addLine('');
+    addLine(`<span class="err-catch">// catch ブロックで捕捉成功 ✅</span>`);
+    if (result.isValidation !== undefined) {
+      addLine(`<span class="err-catch">e instanceof ValidationError: ${result.isValidation}</span>`);
+    }
+    addLine(`<span class="err-finally">// finally ブロック実行（エラーがあっても）</span>`);
+  }
+}
+
+
+/* ============================================================
+   デモ④：デバッグステップガイド
+============================================================ */
+function toggleDebugStep(n) {
+  const step = document.getElementById('dbg-step-' + n);
+  if (step.classList.contains('active')) {
+    step.classList.remove('active');
+    step.classList.add('done');
+  } else if (step.classList.contains('done')) {
+    step.classList.remove('done');
+  } else {
+    step.classList.add('active');
+  }
+}
+
+function expandAllSteps() {
+  for (let i = 1; i <= 5; i++) {
+    const s = document.getElementById('dbg-step-' + i);
+    s.classList.remove('done');
+    s.classList.add('active');
+  }
+}
+
+function collapseAllSteps() {
+  for (let i = 1; i <= 5; i++) {
+    const s = document.getElementById('dbg-step-' + i);
+    s.classList.remove('active','done');
+  }
+}
+
+
+/* ============================================================
+   演習問題
+============================================================ */
+function checkQ1() {
+  const a = document.getElementById('q1a').value.trim();
+  const b = document.getElementById('q1b').value.trim();
+  const c = document.getElementById('q1c').value.trim();
+  const d = document.getElementById('q1d').value.trim();
+  const fb = document.getElementById('q1-fb');
+
+  const ca = /table/i.test(a);
+  const cb = /assert/i.test(b);
+  const cc = /debugger/i.test(c);
+  const cd = /finally/i.test(d);
+  const score = [ca,cb,cc,cd].filter(Boolean).length;
+
+  if (score === 4) {
+    fb.className = 'feedback ok';
+    fb.innerHTML = '✅ 全問正解！デバッグAPIを正確に理解しています。';
+  } else {
+    fb.className = 'feedback ng';
+    fb.innerHTML = `❌ ${score}/4 問正解。<br><br>` +
+      `① ${ca ? '✅' : '❌ 正解：<strong>table</strong>（console.table で表形式出力）'}<br>` +
+      `② ${cb ? '✅' : '❌ 正解：<strong>assert</strong>（条件が false のときだけ出力）'}<br>` +
+      `③ ${cc ? '✅' : '❌ 正解：<strong>debugger</strong>（実行を一時停止させるキーワード）'}<br>` +
+      `④ ${cd ? '✅' : '❌ 正解：<strong>finally</strong>（エラーの有無に関わらず必ず実行）'}`;
+  }
+}
+
+function checkQ2(btn, result) {
+  document.querySelectorAll('.quiz-item:nth-child(2) .choice-btn').forEach(b => {
+    b.disabled = true; b.classList.remove('correct','wrong');
+  });
+  const fb = document.getElementById('q2-fb');
+  if (result === 'correct') {
+    btn.classList.add('correct');
+    fb.className = 'feedback ok';
+    fb.innerHTML = '✅ 正解！<br><br>' +
+      '<strong>実行の流れ：</strong><br>' +
+      '1. <code>console.log(\'A\')</code> → <strong>A</strong> を出力<br>' +
+      '2. <code>throw new Error()</code> → 例外発生。B はスキップ<br>' +
+      '3. <code>catch</code> ブロック → <strong>C</strong> を出力<br>' +
+      '4. <code>finally</code> ブロック → <strong>D</strong> を出力（必ず実行）<br>' +
+      '5. try-catch-finally の後 → <strong>E</strong> を出力（catch で捕捉されたので処理継続）<br><br>' +
+      '出力順：<strong>A → C → D → E</strong>';
+  } else {
+    btn.classList.add('wrong');
+    fb.className = 'feedback ng';
+    fb.innerHTML = '❌ 不正解。正解は <strong>③ A → C → D → E</strong> です。<br>' +
+      'throw 後の B はスキップ、catch で C、finally で D（必ず実行）、' +
+      'catch で捕捉されたので E も実行されます。';
+  }
+}
+
+function checkQ3() {
+  const answers = {
+    a: document.getElementById('q3a').checked,
+    b: document.getElementById('q3b').checked,
+    c: document.getElementById('q3c').checked,
+    d: document.getElementById('q3d').checked,
+    e: document.getElementById('q3e').checked,
+    f: document.getElementById('q3f').checked,
+  };
+  // 正解：a, b, d, e
+  // c: finally は常に実行（catch のみではない）
+  // f: ReferenceError は未定義変数の参照（存在しないプロパティは TypeError）
+  const correct = { a:true, b:true, c:false, d:true, e:true, f:false };
+  const labels = document.querySelectorAll('.quiz-item:nth-child(3) .cb-label');
+  let allOk = true;
+  Object.keys(correct).forEach((k, i) => {
+    if (answers[k] === correct[k]) { labels[i].classList.add('correct'); }
+    else { labels[i].classList.add('wrong'); allOk = false; }
+  });
+  const fb = document.getElementById('q3-fb');
+  if (allOk) {
+    fb.className = 'feedback ok';
+    fb.innerHTML = '✅ 全問正解！エラーハンドリングを完全に理解しています。';
+  } else {
+    fb.className = 'feedback ng';
+    fb.innerHTML = '❌ 不正解の項目があります。<br><br>' +
+      '<strong>正しい記述：①②④⑤</strong><br><br>' +
+      '・③ <strong>誤り</strong>：<code>finally</code> は <strong>try / catch どちらが実行されても必ず実行</strong>されます。catch のみではありません<br>' +
+      '・⑥ <strong>誤り</strong>：存在しないプロパティへのアクセスは <strong>TypeError</strong> ではなく <code>undefined</code> を返します。' +
+      '<code>ReferenceError</code> は<strong>宣言されていない変数</strong>を参照したときに発生します';
+  }
+}
+
+function checkQ4() {
+  const a = document.getElementById('q4a').value.trim();
+  const b = document.getElementById('q4b').value.trim();
+  const c = document.getElementById('q4c').value.trim();
+  const d = document.getElementById('q4d').value.trim();
+  const fb = document.getElementById('q4-fb');
+
+  const ca = /now/i.test(a);
+  const cb = /toFixed/i.test(b);
+  const cc = /name/i.test(c);
+  const cd = /SyntaxError/i.test(d);
+  const score = [ca,cb,cc,cd].filter(Boolean).length;
+
+  if (score === 4) {
+    fb.className = 'feedback ok';
+    fb.innerHTML = '✅ 全問正解！<br><br>' +
+      '① <code>now</code>（performance.now() で高精度タイムスタンプ取得）<br>' +
+      '② <code>toFixed</code>（小数点以下3桁に丸める）<br>' +
+      '③ <code>name</code>（error.name でエラー型名を取得）<br>' +
+      '④ <code>SyntaxError</code>（JSON.parse の失敗は SyntaxError）<br><br>' +
+      'デバッグとエラーハンドリングのパターンを完全にマスターしています！';
+  } else {
+    fb.className = 'feedback ng';
+    fb.innerHTML = `❌ ${score}/4 問正解。<br><br>` +
+      `① ${ca ? '✅' : '❌ 正解：<strong>now</strong>（performance.now()）'}<br>` +
+      `② ${cb ? '✅' : '❌ 正解：<strong>toFixed</strong>（小数点以下の桁数を指定）'}<br>` +
+      `③ ${cc ? '✅' : '❌ 正解：<strong>name</strong>（e.name でエラー型名を取得）'}<br>` +
+      `④ ${cd ? '✅' : '❌ 正解：<strong>SyntaxError</strong>（JSON.parse の失敗はこのエラー型）'}`;
+  }
+}
+
+/* ===== 完了ボタン ===== */
+function markComplete() {
+  localStorage.setItem('html5lv2_ch3_06', 'done');
+  const btn = document.getElementById('complete-btn');
+  const msg = document.getElementById('complete-msg');
+  btn.classList.add('done');
+  btn.textContent = '✅ 完了済み';
+  btn.disabled = true;
+  msg.style.display = 'block';
+}
+
+window.addEventListener('DOMContentLoaded', () => {
+  if (localStorage.getItem('html5lv2_ch3_06') === 'done') {
+    const btn = document.getElementById('complete-btn');
+    const msg = document.getElementById('complete-msg');
+    btn.classList.add('done');
+    btn.textContent = '✅ 完了済み';
+    btn.disabled = true;
+    msg.style.display = 'block';
+  }
+});
+</script>
+
+</body>
+</html>
