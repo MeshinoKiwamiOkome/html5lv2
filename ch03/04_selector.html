@@ -1,0 +1,1471 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>3-4 セレクタAPI | HTML5プロフェッショナル Level 2</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; }
+    body {
+      font-family: 'Segoe UI', 'Helvetica Neue', sans-serif;
+      max-width: 960px; margin: 40px auto; padding: 0 24px;
+      background: #f0f4f8; color: #2d3748; line-height: 1.8;
+    }
+    .breadcrumb {
+      font-size: 0.82em; color: #a0aec0; margin-bottom: 20px;
+      font-family: 'Consolas','Monaco',monospace;
+    }
+    .breadcrumb a { color: #553c9a; text-decoration: none; }
+    .breadcrumb a:hover { text-decoration: underline; }
+
+    .chapter-header {
+      background: linear-gradient(135deg, #553c9a, #9f7aea);
+      border-radius: 12px; padding: 32px 32px 24px;
+      margin-bottom: 32px; color: #fff;
+      box-shadow: 0 4px 18px rgba(85,60,154,0.35);
+    }
+    .chapter-header .ch-num {
+      font-size: 0.8em; font-family: 'Consolas','Monaco',monospace;
+      opacity: 0.85; letter-spacing: 0.08em; margin-bottom: 6px;
+    }
+    .chapter-header h1 { margin: 0 0 10px; font-size: 1.6em; color: #fff; border: none; padding: 0; }
+    .chapter-header p  { margin: 0; font-size: 0.92em; opacity: 0.88; }
+    .badge-row { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 14px; }
+    .badge {
+      background: rgba(255,255,255,0.18); border: 1px solid rgba(255,255,255,0.35);
+      border-radius: 20px; padding: 3px 12px; font-size: 0.76em; font-weight: bold;
+    }
+
+    .section-nav {
+      background: #fff; border: 1px solid #e9d8fd;
+      border-radius: 10px; padding: 18px 22px;
+      margin-bottom: 32px; box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+    }
+    .section-nav h2 { margin: 0 0 12px; font-size: 0.92em; color: #553c9a; border: none; padding: 0; }
+    .section-nav ol { margin: 0; padding-left: 20px; font-size: 0.9em; }
+    .section-nav ol li { margin: 4px 0; }
+    .section-nav ol li a { color: #553c9a; text-decoration: none; }
+    .section-nav ol li a:hover { text-decoration: underline; }
+    .section-nav ol li.current a { font-weight: bold; pointer-events: none; }
+
+    h2 { color: #553c9a; margin-top: 48px; border-left: 5px solid #9f7aea; padding-left: 12px; font-size: 1.25em; }
+    h3 { color: #6b46c1; margin-top: 28px; font-size: 1.05em; }
+
+    code {
+      background: #f3e8ff; padding: 2px 6px; border-radius: 4px;
+      font-size: 0.93em; font-family: 'Consolas','Monaco',monospace; color: #553c9a;
+    }
+
+    .code-block { position: relative; margin: 14px 0; }
+    .code-block pre {
+      background: #1a202c; color: #e2e8f0; padding: 18px 20px; border-radius: 8px;
+      overflow-x: auto; font-size: 0.87em; line-height: 1.75;
+      font-family: 'Consolas','Monaco',monospace; margin: 0;
+    }
+    .copy-btn {
+      position: absolute; top: 8px; right: 8px;
+      background: #4a5568; color: #e2e8f0; border: none; border-radius: 4px;
+      padding: 4px 10px; font-size: 0.75em; cursor: pointer;
+      font-family: 'Consolas','Monaco',monospace; transition: background 0.2s; z-index: 1;
+    }
+    .copy-btn:hover { background: #9f7aea; }
+
+    .kw  { color: #90cdf4; }
+    .fn  { color: #b794f4; }
+    .str { color: #fbd38d; }
+    .num { color: #fc8181; }
+    .cm  { color: #68d391; }
+    .op  { color: #f6ad55; }
+    .out { color: #a0aec0; }
+
+    .info-box {
+      border-radius: 8px; padding: 14px 18px;
+      font-size: 0.93em; margin: 16px 0; line-height: 1.7;
+    }
+    .info-box.tip   { background: #f0fff4; border: 1px solid #9ae6b4; border-left: 5px solid #48bb78; color: #276749; }
+    .info-box.warn  { background: #fffaf0; border: 1px solid #f6ad55; border-left: 5px solid #ed8936; color: #744210; }
+    .info-box.point { background: #faf5ff; border: 1px solid #d6bcfa; border-left: 5px solid #9f7aea; color: #553c9a; }
+    .info-box strong { display: block; margin-bottom: 4px; }
+
+    .content-card {
+      background: #fff; border-radius: 10px; padding: 24px 28px;
+      margin-bottom: 28px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); border: 1px solid #e9d8fd;
+    }
+    .content-card h3 { margin-top: 0; }
+
+    .tbl-wrap { overflow-x: auto; margin: 14px 0; }
+    .tbl-wrap table {
+      border-collapse: collapse; width: 100%; background: #fff;
+      border-radius: 8px; overflow: hidden; font-size: 0.88em;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+    }
+    .tbl-wrap th, .tbl-wrap td { border: 1px solid #e9d8fd; padding: 10px 14px; text-align: left; }
+    .tbl-wrap thead tr { background: #553c9a; color: #fff; }
+    .tbl-wrap tbody tr:nth-child(even) { background: #faf5ff; }
+
+    .demo-card {
+      background: #fff; border: 2px solid #e9d8fd; border-radius: 12px;
+      padding: 22px 24px; margin: 20px 0 32px;
+      box-shadow: 0 2px 10px rgba(85,60,154,0.08);
+    }
+    .demo-card h3 { margin-top: 0; color: #553c9a; }
+    .demo-desc {
+      font-size: 0.88em; color: #718096; background: #faf5ff;
+      border-radius: 6px; padding: 10px 14px; margin-bottom: 16px;
+    }
+    .run-btn {
+      background: linear-gradient(135deg, #553c9a, #9f7aea);
+      color: #fff; border: none; border-radius: 8px;
+      padding: 9px 20px; font-size: 0.88em; font-weight: bold;
+      cursor: pointer; transition: opacity 0.2s; margin: 4px 4px 4px 0;
+    }
+    .run-btn:hover { opacity: 0.85; }
+    .run-btn.secondary { background: #edf2f7; color: #4a5568; }
+    .run-btn.secondary:hover { background: #e2e8f0; opacity: 1; }
+    .run-btn.danger  { background: linear-gradient(135deg, #c53030, #fc8181); }
+    .run-btn.success { background: linear-gradient(135deg, #276749, #48bb78); }
+
+    /* ===== セレクタ検索デモ ===== */
+    .selector-playground {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 12px;
+    }
+    .sel-input-area { display: flex; flex-direction: column; gap: 8px; }
+    .sel-input {
+      border: 2px solid #e9d8fd; border-radius: 8px; padding: 10px 14px;
+      font-size: 0.95em; font-family: 'Consolas','Monaco',monospace;
+      outline: none; transition: border-color 0.2s; color: #553c9a;
+    }
+    .sel-input:focus { border-color: #9f7aea; }
+    .sel-presets { display: flex; flex-wrap: wrap; gap: 6px; }
+    .sel-preset {
+      padding: 4px 12px; border-radius: 20px; border: 1px solid #e9d8fd;
+      background: #faf5ff; font-size: 0.78em; font-family: 'Consolas','Monaco',monospace;
+      cursor: pointer; color: #553c9a; transition: all 0.2s;
+    }
+    .sel-preset:hover { background: #e9d8fd; border-color: #9f7aea; }
+    .sel-result-box {
+      background: #1a202c; border-radius: 8px; padding: 12px 14px;
+      font-family: 'Consolas','Monaco',monospace; font-size: 0.82em;
+      min-height: 80px; color: #e2e8f0; line-height: 1.8;
+    }
+    /* デモ用サンプルDOM */
+    .sample-dom {
+      border: 2px solid #e9d8fd; border-radius: 8px; padding: 14px;
+      font-size: 0.85em; background: #faf5ff;
+    }
+    .sample-dom .s-item {
+      padding: 6px 10px; margin: 4px 0; border-radius: 6px;
+      border: 2px solid transparent; transition: all 0.3s; cursor: default;
+    }
+    .sample-dom .s-item.highlighted {
+      border-color: #9f7aea; background: #e9d8fd; color: #553c9a; font-weight: bold;
+    }
+    .sample-dom .s-item.first-only {
+      border-color: #f6ad55; background: #fffaf0; color: #744210;
+    }
+    .s-tag { color: #9f7aea; font-family: 'Consolas','Monaco',monospace; font-size: 0.82em; }
+
+    /* ===== NodeList vs HTMLCollection デモ ===== */
+    .nodelist-compare {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 12px;
+    }
+    .nl-box {
+      border: 2px solid #e9d8fd; border-radius: 10px; padding: 14px;
+    }
+    .nl-box h4 { margin: 0 0 8px; font-size: 0.9em; color: #553c9a; }
+    .nl-list {
+      list-style: none; padding: 0; margin: 0 0 10px;
+      border: 1px solid #e9d8fd; border-radius: 6px; overflow: hidden;
+    }
+    .nl-list li {
+      padding: 7px 12px; border-bottom: 1px solid #e9d8fd;
+      font-size: 0.85em; display: flex; justify-content: space-between;
+    }
+    .nl-list li:last-child { border-bottom: none; }
+    .nl-count {
+      background: #1a202c; border-radius: 6px; padding: 8px 12px;
+      font-family: 'Consolas','Monaco',monospace; font-size: 0.82em;
+      color: #e2e8f0; line-height: 1.8; min-height: 50px;
+    }
+
+    /* ===== closest/matches デモ ===== */
+    .cm-demo-tree {
+      border: 2px solid #e9d8fd; border-radius: 10px; padding: 14px;
+      margin-bottom: 12px; position: relative;
+    }
+    .cm-level {
+      border: 2px solid #e9d8fd; border-radius: 8px; padding: 10px 14px;
+      margin: 8px 0; transition: all 0.3s; font-size: 0.88em;
+    }
+    .cm-level.nav-el    { background: #faf5ff; }
+    .cm-level.list-el   { background: #f0fff4; margin-left: 20px; }
+    .cm-level.item-el   { background: #fffaf0; margin-left: 40px; }
+    .cm-level.btn-el    { background: #fff5f5; margin-left: 60px; cursor: pointer; }
+    .cm-level.btn-el:hover { border-color: #9f7aea; }
+    .cm-level.matched   { border-color: #9f7aea !important; background: #e9d8fd !important; font-weight: bold; }
+    .cm-level.matches-true  { border-color: #48bb78 !important; background: #f0fff4 !important; }
+    .cm-level.matches-false { border-color: #fc8181 !important; background: #fff5f5 !important; }
+    .cm-tag {
+      font-family: 'Consolas','Monaco',monospace; font-size: 0.82em;
+      color: #9f7aea; margin-right: 8px;
+    }
+    .cm-log {
+      background: #1a202c; border-radius: 8px; padding: 12px 14px;
+      font-family: 'Consolas','Monaco',monospace; font-size: 0.82em;
+      min-height: 80px; color: #e2e8f0; line-height: 1.9;
+    }
+
+    /* ===== パフォーマンス比較デモ ===== */
+    .perf-bars { margin-top: 12px; }
+    .perf-row {
+      display: flex; align-items: center; gap: 10px; margin: 8px 0;
+    }
+    .perf-label {
+      font-family: 'Consolas','Monaco',monospace; font-size: 0.82em;
+      color: #553c9a; min-width: 220px; flex-shrink: 0;
+    }
+    .perf-bar-wrap {
+      flex: 1; background: #e9d8fd; border-radius: 99px; height: 20px; overflow: hidden;
+    }
+    .perf-bar {
+      height: 100%; border-radius: 99px; transition: width 0.6s ease;
+      display: flex; align-items: center; justify-content: flex-end; padding-right: 8px;
+    }
+    .perf-bar span { font-size: 0.72em; color: #fff; font-weight: bold; white-space: nowrap; }
+    .perf-time {
+      font-family: 'Consolas','Monaco',monospace; font-size: 0.82em;
+      color: #553c9a; min-width: 70px; text-align: right;
+    }
+    .perf-log {
+      background: #1a202c; border-radius: 8px; padding: 12px 14px;
+      font-family: 'Consolas','Monaco',monospace; font-size: 0.8em;
+      color: #e2e8f0; line-height: 1.8; margin-top: 12px; min-height: 60px;
+    }
+
+    /* ===== 演習問題 ===== */
+    .quiz-section {
+      background: #faf5ff; border-left: 6px solid #9f7aea;
+      border-radius: 0 10px 10px 0; padding: 28px; margin: 48px 0 32px;
+    }
+    .quiz-section > h2 { margin-top: 0; border-left: none; padding-left: 0; }
+    .quiz-item {
+      background: #fff; border: 1px solid #e9d8fd;
+      border-radius: 10px; padding: 20px 24px; margin-bottom: 22px;
+    }
+    .quiz-q { font-weight: bold; color: #2d3748; margin-bottom: 12px; }
+    .q-num {
+      display: inline-block; background: #553c9a; color: #fff;
+      border-radius: 20px; padding: 2px 10px; font-size: 0.78em; margin-right: 8px;
+    }
+    .blank-input {
+      border: 2px solid #e9d8fd; border-radius: 6px; padding: 7px 12px;
+      font-size: 0.93em; font-family: 'Consolas','Monaco',monospace;
+      outline: none; transition: border-color 0.2s; margin: 4px 2px;
+    }
+    .blank-input:focus { border-color: #9f7aea; }
+    .choice-btn {
+      display: block; width: 100%; text-align: left; padding: 10px 16px; margin: 6px 0;
+      border: 2px solid #e9d8fd; border-radius: 8px; background: #fff;
+      cursor: pointer; font-size: 0.9em; transition: all 0.2s; font-family: inherit;
+    }
+    .choice-btn:hover { border-color: #9f7aea; background: #faf5ff; }
+    .choice-btn.correct { border-color: #48bb78; background: #f0fff4; color: #276749; font-weight: bold; }
+    .choice-btn.wrong   { border-color: #fc8181; background: #fff5f5; color: #c53030; }
+    .cb-label {
+      display: flex; align-items: flex-start; gap: 10px; padding: 8px 12px; margin: 4px 0;
+      border-radius: 6px; border: 2px solid #e9d8fd; cursor: pointer;
+      font-size: 0.9em; transition: all 0.2s;
+    }
+    .cb-label:hover { border-color: #9f7aea; background: #faf5ff; }
+    .cb-label input { margin-top: 3px; flex-shrink: 0; accent-color: #9f7aea; }
+    .cb-label.correct { border-color: #48bb78; background: #f0fff4; color: #276749; }
+    .cb-label.wrong   { border-color: #fc8181; background: #fff5f5; color: #c53030; }
+    .check-btn {
+      background: linear-gradient(135deg, #553c9a, #9f7aea);
+      color: #fff; border: none; border-radius: 8px;
+      padding: 9px 22px; font-size: 0.9em; font-weight: bold;
+      cursor: pointer; transition: opacity 0.2s; margin-top: 8px;
+    }
+    .check-btn:hover { opacity: 0.85; }
+    .feedback {
+      margin-top: 12px; padding: 12px 16px; border-radius: 8px;
+      font-size: 0.9em; display: none; line-height: 1.7;
+    }
+    .feedback.ok { background: #f0fff4; border: 1px solid #9ae6b4; color: #276749; display: block; }
+    .feedback.ng { background: #fff5f5; border: 1px solid #feb2b2; color: #c53030; display: block; }
+
+    .code-fill {
+      background: #1a202c; border-radius: 8px; padding: 16px 18px;
+      font-family: 'Consolas','Monaco',monospace; font-size: 0.87em;
+      line-height: 2.1; margin: 12px 0;
+    }
+    .fill-input {
+      background: #2d3748; border: 2px solid #4a5568; color: #fbd38d;
+      padding: 3px 8px; display: inline-block; vertical-align: middle;
+      border-radius: 4px; font-family: 'Consolas','Monaco',monospace;
+      font-size: 0.9em; outline: none; transition: border-color 0.2s;
+    }
+    .fill-input:focus { border-color: #9f7aea; }
+
+    .complete-area {
+      background: #f0fff4; border: 2px solid #9ae6b4;
+      border-radius: 12px; padding: 24px; margin-top: 40px; text-align: center;
+    }
+    .complete-area p { margin: 0 0 14px; color: #276749; font-weight: bold; font-size: 1.05em; }
+    .complete-btn {
+      background: linear-gradient(135deg, #38a169, #48bb78);
+      color: #fff; border: none; border-radius: 10px;
+      padding: 12px 32px; font-size: 1em; font-weight: bold;
+      cursor: pointer; transition: opacity 0.2s;
+    }
+    .complete-btn:hover { opacity: 0.85; }
+    .complete-btn.done { background: #a0aec0; cursor: default; }
+    .complete-msg { margin-top: 10px; color: #276749; font-size: 0.9em; display: none; }
+
+    .page-nav {
+      display: flex; justify-content: space-between; align-items: center;
+      margin-top: 48px; padding-top: 20px; border-top: 2px solid #e9d8fd;
+      gap: 12px; flex-wrap: wrap;
+    }
+    .nav-btn {
+      display: inline-block; padding: 10px 22px; border-radius: 8px;
+      text-decoration: none; font-weight: bold; font-size: 0.9em; transition: opacity 0.2s;
+    }
+    .nav-btn:hover { opacity: 0.8; }
+    .nav-btn.prev  { background: #edf2f7; color: #4a5568; }
+    .nav-btn.index { background: #faf5ff; color: #553c9a; border: 2px solid #e9d8fd; }
+    .nav-btn.next  { background: linear-gradient(135deg, #553c9a, #9f7aea); color: #fff; }
+
+    footer {
+      margin-top: 48px; padding-top: 16px; border-top: 2px solid #e9d8fd;
+      font-size: 0.82em; color: #a0aec0; text-align: center;
+    }
+    footer a { color: #553c9a; text-decoration: none; }
+    footer a:hover { text-decoration: underline; }
+
+    @media (max-width: 640px) {
+      body { font-size: 0.84em; padding: 0 12px; }
+      .chapter-header { padding: 20px 16px; }
+      .chapter-header h1 { font-size: 1.2em; }
+      .selector-playground { grid-template-columns: 1fr; }
+      .nodelist-compare    { grid-template-columns: 1fr; }
+      .perf-label          { min-width: 150px; font-size: 0.75em; }
+      .page-nav { flex-direction: column; align-items: stretch; }
+      .nav-btn  { text-align: center; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- パンくず -->
+<div class="breadcrumb">
+  <a href="../index.html">🏠 HTML5 Level 2</a> ›
+  <a href="index.html">Chapter 3</a> ›
+  3-4 セレクタAPI
+</div>
+
+<!-- ヘッダー -->
+<div class="chapter-header">
+  <div class="ch-num">CHAPTER 03 › SECTION 04</div>
+  <h1>🔍 3-4 セレクタAPI</h1>
+  <p>CSSセレクタを使ってDOM要素を取得するセレクタAPIを体系的に学びます。
+  querySelector / querySelectorAll の使い方から NodeList vs HTMLCollection の違い、
+  closest() / matches() の活用まで、実際に動かして理解を深めましょう。</p>
+  <div class="badge-row">
+    <span class="badge">querySelector</span>
+    <span class="badge">querySelectorAll</span>
+    <span class="badge">NodeList vs HTMLCollection</span>
+    <span class="badge">closest()</span>
+    <span class="badge">matches()</span>
+    <span class="badge">パフォーマンス</span>
+  </div>
+</div>
+
+<!-- セクションナビ -->
+<div class="section-nav">
+  <h2>📋 Chapter 3 のセクション</h2>
+  <ol>
+    <li><a href="01_events.html">3-1 イベント</a></li>
+    <li><a href="02_dom.html">3-2 ドキュメントオブジェクト／DOM</a></li>
+    <li><a href="03_window.html">3-3 ウィンドウオブジェクト</a></li>
+    <li class="current"><a href="04_selector.html">3-4 セレクタAPI</a></li>
+    <li><a href="05_history.html">3-5 ブラウザ履歴とナビゲーション</a></li>
+    <li><a href="06_debug.html">3-6 テスト・デバッグ</a></li>
+  </ol>
+</div>
+
+
+<!-- ============================================================ -->
+<!-- 1. CSSセレクタの復習 -->
+<!-- ============================================================ -->
+<h2 id="css-selector">① CSSセレクタの種類</h2>
+
+<div class="content-card">
+  <h3>querySelector で使えるセレクタ一覧</h3>
+  <p>
+    <code>querySelector</code> / <code>querySelectorAll</code> には
+    CSSで使えるセレクタをそのまま指定できます。
+    複雑なセレクタも使えるため、従来の <code>getElementById</code> などより柔軟です。
+  </p>
+
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr><th>セレクタの種類</th><th>記法</th><th>説明</th><th>例</th></tr></thead>
+      <tbody>
+        <tr><td>要素セレクタ</td><td><code>tag</code></td><td>タグ名で選択</td><td><code>'p'</code> <code>'div'</code></td></tr>
+        <tr><td>クラスセレクタ</td><td><code>.class</code></td><td>クラス名で選択</td><td><code>'.btn'</code></td></tr>
+        <tr><td>IDセレクタ</td><td><code>#id</code></td><td>IDで選択</td><td><code>'#header'</code></td></tr>
+        <tr><td>属性セレクタ</td><td><code>[attr]</code></td><td>属性の有無・値で選択</td><td><code>'[type="text"]'</code></td></tr>
+        <tr><td>擬似クラス</td><td><code>:pseudo</code></td><td>状態・位置で選択</td><td><code>':first-child'</code> <code>':hover'</code></td></tr>
+        <tr><td>子孫結合子</td><td><code>A B</code></td><td>Aの子孫のB</td><td><code>'nav a'</code></td></tr>
+        <tr><td>子結合子</td><td><code>A &gt; B</code></td><td>Aの直接の子のB</td><td><code>'ul &gt; li'</code></td></tr>
+        <tr><td>隣接兄弟</td><td><code>A + B</code></td><td>Aの直後の兄弟B</td><td><code>'h2 + p'</code></td></tr>
+        <tr><td>一般兄弟</td><td><code>A ~ B</code></td><td>Aの後の兄弟B全て</td><td><code>'h2 ~ p'</code></td></tr>
+        <tr><td>複合セレクタ</td><td><code>A, B</code></td><td>AまたはB</td><td><code>'h1, h2, h3'</code></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="code-block">
+    <button class="copy-btn" onclick="copyCode(this)">copy</button>
+    <pre><span class="cm">// 様々なセレクタの使用例</span>
+document.<span class="fn">querySelector</span>(<span class="str">'p'</span>);                   <span class="cm">// 最初の p 要素</span>
+document.<span class="fn">querySelector</span>(<span class="str">'.btn-primary'</span>);        <span class="cm">// クラス</span>
+document.<span class="fn">querySelector</span>(<span class="str">'#main-title'</span>);         <span class="cm">// ID</span>
+document.<span class="fn">querySelector</span>(<span class="str">'input[type="email"]'</span>); <span class="cm">// 属性</span>
+document.<span class="fn">querySelector</span>(<span class="str">'li:first-child'</span>);      <span class="cm">// 擬似クラス</span>
+document.<span class="fn">querySelector</span>(<span class="str">'nav > ul > li'</span>);       <span class="cm">// 子結合子</span>
+document.<span class="fn">querySelector</span>(<span class="str">'.card:not(.disabled)'</span>); <span class="cm">// :not() 擬似クラス</span>
+
+<span class="cm">// querySelectorAll で全要素取得</span>
+document.<span class="fn">querySelectorAll</span>(<span class="str">'ul.menu li'</span>);       <span class="cm">// メニューの全 li</span>
+document.<span class="fn">querySelectorAll</span>(<span class="str">'[data-active="true"]'</span>); <span class="cm">// data属性</span>
+document.<span class="fn">querySelectorAll</span>(<span class="str">'h1, h2, h3'</span>);        <span class="cm">// 複数セレクタ</span>
+
+<span class="cm">// スコープを絞って検索（要素.querySelector）</span>
+<span class="kw">const</span> form = document.<span class="fn">getElementById</span>(<span class="str">'myForm'</span>);
+<span class="kw">const</span> inputs = form.<span class="fn">querySelectorAll</span>(<span class="str">'input'</span>); <span class="cm">// form 内の input のみ</span></pre>
+  </div>
+</div>
+
+
+<!-- ============================================================ -->
+<!-- 2. 取得メソッドの比較 -->
+<!-- ============================================================ -->
+<h2 id="methods">② 取得メソッドの比較</h2>
+
+<div class="content-card">
+  <h3>querySelector vs 従来のメソッド</h3>
+
+  <div class="tbl-wrap">
+    <table>
+      <thead>
+        <tr><th>メソッド</th><th>引数</th><th>返り値</th><th>静的/動的</th><th>速度</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><code>getElementById</code></td>
+          <td>ID文字列</td><td>Element / null</td><td>—</td>
+          <td>⚡ 最速</td>
+        </tr>
+        <tr>
+          <td><code>getElementsByClassName</code></td>
+          <td>クラス名</td><td>HTMLCollection</td><td>🔄 動的</td>
+          <td>🚀 高速</td>
+        </tr>
+        <tr>
+          <td><code>getElementsByTagName</code></td>
+          <td>タグ名</td><td>HTMLCollection</td><td>🔄 動的</td>
+          <td>🚀 高速</td>
+        </tr>
+        <tr>
+          <td><code>querySelector</code></td>
+          <td>CSSセレクタ</td><td>Element / null</td><td>—</td>
+          <td>🐢 やや遅い</td>
+        </tr>
+        <tr>
+          <td><code>querySelectorAll</code></td>
+          <td>CSSセレクタ</td><td>NodeList</td><td>📸 静的</td>
+          <td>🐢 やや遅い</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="info-box point">
+    <strong>📌 試験頻出：静的 NodeList vs 動的 HTMLCollection</strong>
+    <code>querySelectorAll</code> が返す <strong>NodeList は静的スナップショット</strong>です。
+    取得後にDOMに要素を追加・削除しても NodeList の内容は変わりません。<br>
+    <code>getElementsByClassName</code> などが返す <strong>HTMLCollection は動的</strong>です。
+    DOMが変わるとリアルタイムに内容が更新されます。
+    これは無限ループの原因になることもあるため注意が必要です。
+  </div>
+
+  <div class="code-block">
+    <button class="copy-btn" onclick="copyCode(this)">copy</button>
+    <pre><span class="cm">// NodeList（静的）vs HTMLCollection（動的）の違い</span>
+<span class="kw">const</span> ul = document.<span class="fn">querySelector</span>(<span class="str">'ul'</span>);
+
+<span class="cm">// 静的 NodeList：取得時点のスナップショット</span>
+<span class="kw">const</span> nodeList = document.<span class="fn">querySelectorAll</span>(<span class="str">'li'</span>);
+console.<span class="fn">log</span>(nodeList.length); <span class="out">// → 3</span>
+
+<span class="cm">// 動的 HTMLCollection：DOMの変化を反映</span>
+<span class="kw">const</span> htmlCol = document.<span class="fn">getElementsByTagName</span>(<span class="str">'li'</span>);
+console.<span class="fn">log</span>(htmlCol.length); <span class="out">// → 3</span>
+
+<span class="cm">// li を1つ追加</span>
+<span class="kw">const</span> newLi = document.<span class="fn">createElement</span>(<span class="str">'li'</span>);
+ul.<span class="fn">appendChild</span>(newLi);
+
+console.<span class="fn">log</span>(nodeList.length); <span class="out">// → 3（変わらない！静的）</span>
+console.<span class="fn">log</span>(htmlCol.length);  <span class="out">// → 4（自動更新！動的）</span>
+
+<span class="cm">// ⚠️ HTMLCollection の無限ループ罠</span>
+<span class="cm">// for ループ中に要素を追加すると length が増え続ける！</span>
+<span class="kw">const</span> items = document.<span class="fn">getElementsByClassName</span>(<span class="str">'item'</span>);
+<span class="cm">// for (let i = 0; i &lt; items.length; i++) {  ← 危険！</span>
+<span class="cm">//   items[i].classList.add('item'); // item が増え続ける</span>
+<span class="cm">// }</span>
+<span class="cm">// → Array.from() で静的コピーを作ってから操作する</span>
+<span class="fn">Array</span>.<span class="fn">from</span>(items).<span class="fn">forEach</span>(el =&gt; el.classList.<span class="fn">add</span>(<span class="str">'processed'</span>));</pre>
+  </div>
+
+  <div class="info-box warn">
+    <strong>⚠️ HTMLCollection の無限ループ罠</strong>
+    <code>getElementsByClassName</code> などで取得した HTMLCollection を
+    <code>for</code> ループで処理中に同じクラスを追加すると、
+    <code>length</code> が増え続けて無限ループになります。
+    安全に処理するには <code>Array.from(collection)</code> や
+    <code>[...collection]</code> で静的配列に変換してから操作しましょう。
+  </div>
+</div>
+
+
+<!-- ============================================================ -->
+<!-- 3. closest() / matches() -->
+<!-- ============================================================ -->
+<h2 id="closest-matches">③ closest() と matches() の活用</h2>
+
+<div class="content-card">
+  <h3>closest()：祖先要素を遡って検索</h3>
+  <p>
+    <code>element.closest(selector)</code> は、要素自身から始めて
+    <strong>DOM ツリーを上方向（祖先方向）に遡り</strong>、
+    セレクタに一致する最初の要素を返します。
+    一致するものがなければ <code>null</code> を返します。
+    イベント委譲と組み合わせて使うことが多いです。
+  </p>
+
+  <div class="code-block">
+    <button class="copy-btn" onclick="copyCode(this)">copy</button>
+    <pre><span class="cm">// closest()：自分から祖先方向に遡って検索</span>
+<span class="kw">const</span> btn = document.<span class="fn">querySelector</span>(<span class="str">'.delete-btn'</span>);
+
+<span class="cm">// ボタンの祖先の .card 要素を取得</span>
+<span class="kw">const</span> card = btn.<span class="fn">closest</span>(<span class="str">'.card'</span>);
+<span class="kw">if</span> (card) {
+  card.<span class="fn">remove</span>(); <span class="cm">// カードごと削除</span>
+}
+
+<span class="cm">// イベント委譲との組み合わせ（実践的な使い方）</span>
+document.<span class="fn">addEventListener</span>(<span class="str">'click'</span>, (e) =&gt; {
+  <span class="cm">// クリックされた要素の祖先に .card があるか確認</span>
+  <span class="kw">const</span> card = e.target.<span class="fn">closest</span>(<span class="str">'.card'</span>);
+  <span class="kw">if</span> (card) {
+    console.<span class="fn">log</span>(<span class="str">'カードがクリックされました'</span>, card);
+  }
+});
+
+<span class="cm">// matches()：要素がセレクタに一致するか確認</span>
+<span class="kw">const</span> el = document.<span class="fn">querySelector</span>(<span class="str">'#myBtn'</span>);
+console.<span class="fn">log</span>(el.<span class="fn">matches</span>(<span class="str">'.btn'</span>));          <span class="out">// → true/false</span>
+console.<span class="fn">log</span>(el.<span class="fn">matches</span>(<span class="str">':disabled'</span>));     <span class="out">// → true/false</span>
+console.<span class="fn">log</span>(el.<span class="fn">matches</span>(<span class="str">'button.primary'</span>)); <span class="out">// → true/false</span>
+
+<span class="cm">// イベント委譲での matches() 活用</span>
+list.<span class="fn">addEventListener</span>(<span class="str">'click'</span>, (e) =&gt; {
+  <span class="kw">if</span> (e.target.<span class="fn">matches</span>(<span class="str">'li.item'</span>)) {
+    console.<span class="fn">log</span>(<span class="str">'リストアイテムがクリックされた'</span>);
+  }
+});</pre>
+  </div>
+
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr><th>メソッド</th><th>検索方向</th><th>返り値</th><th>主な用途</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><code>closest(sel)</code></td>
+          <td>自身 → 上方向（祖先）</td>
+          <td>Element / null</td>
+          <td>親コンテナの取得、イベント委譲</td>
+        </tr>
+        <tr>
+          <td><code>matches(sel)</code></td>
+          <td>自身のみ確認</td>
+          <td>true / false</td>
+          <td>条件分岐、イベント委譲のフィルタリング</td>
+        </tr>
+        <tr>
+          <td><code>querySelector(sel)</code></td>
+          <td>下方向（子孫）</td>
+          <td>Element / null</td>
+          <td>子孫要素の取得</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="info-box point">
+    <strong>📌 試験頻出：closest() の検索開始位置</strong>
+    <code>closest()</code> は<strong>要素自身も含めて</strong>上方向に検索します。
+    つまり要素自身がセレクタに一致する場合は、その要素自身が返されます。
+    <code>querySelector()</code> は下方向（子孫）への検索で、自身は含みません。
+  </div>
+</div>
+
+
+<!-- ============================================================ -->
+<!-- デモ① セレクタ リアルタイム検索デモ -->
+<!-- ============================================================ -->
+<div class="demo-card">
+  <h3>🔍 デモ①：セレクタ リアルタイム検索 &amp; ハイライト</h3>
+  <div class="demo-desc">
+    セレクタを入力すると、下のサンプルDOMからマッチした要素をリアルタイムでハイライトします。
+    プリセットボタンで様々なセレクタを試してみましょう。
+  </div>
+
+  <div class="selector-playground">
+    <div class="sel-input-area">
+      <div style="font-size:0.85em; font-weight:bold; color:#553c9a; margin-bottom:4px;">セレクタを入力：</div>
+      <input class="sel-input" id="sel-input" placeholder="例: .item, li:first-child" value=".item">
+      <div style="display:flex; gap:8px; flex-wrap:wrap;">
+        <button class="run-btn" onclick="runSelector('qs')">querySelector（最初の1つ）</button>
+        <button class="run-btn secondary" onclick="runSelector('qsa')">querySelectorAll（全て）</button>
+      </div>
+      <div style="font-size:0.82em; font-weight:bold; color:#553c9a; margin-top:4px;">プリセット：</div>
+      <div class="sel-presets">
+        <span class="sel-preset" onclick="setPreset('.item')">'.item'</span>
+        <span class="sel-preset" onclick="setPreset('li')">li</span>
+        <span class="sel-preset" onclick="setPreset('li:first-child')">'li:first-child'</span>
+        <span class="sel-preset" onclick="setPreset('li:last-child')">'li:last-child'</span>
+        <span class="sel-preset" onclick="setPreset('.item.active')">'item.active'</span>
+        <span class="sel-preset" onclick="setPreset('[data-type]')">'[data-type]'</span>
+        <span class="sel-preset" onclick="setPreset('ul > li')">'ul > li'</span>
+        <span class="sel-preset" onclick="setPreset('li:nth-child(2)')">'li:nth-child(2)'</span>
+        <span class="sel-preset" onclick="setPreset('li:not(.active)')">'li:not(.active)'</span>
+      </div>
+      <div class="sel-result-box" id="sel-result">// 結果がここに表示されます</div>
+    </div>
+
+    <div>
+      <div style="font-size:0.85em; font-weight:bold; color:#553c9a; margin-bottom:6px;">📦 サンプルDOM（検索対象）</div>
+      <div class="sample-dom" id="sample-dom">
+        <div style="font-size:0.78em; color:#a0aec0; margin-bottom:6px; font-family:'Consolas','Monaco',monospace;">&lt;ul id="menu"&gt;</div>
+        <ul id="sample-ul" style="list-style:none; padding:0; margin:0;">
+          <li class="s-item item active" data-type="fruit">🍎 アイテム1（.item .active）</li>
+          <li class="s-item item" data-type="fruit">🍊 アイテム2（.item）</li>
+          <li class="s-item item" data-type="veggie">🥦 アイテム3（.item [data-type]）</li>
+          <li class="s-item">🍋 アイテム4（クラスなし）</li>
+          <li class="s-item item active" data-type="veggie">🥕 アイテム5（.item .active [data-type]）</li>
+        </ul>
+        <div style="font-size:0.78em; color:#a0aec0; margin-top:6px; font-family:'Consolas','Monaco',monospace;">&lt;/ul&gt;</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ============================================================ -->
+<!-- デモ② NodeList vs HTMLCollection -->
+<!-- ============================================================ -->
+<div class="demo-card">
+  <h3>⚡ デモ②：NodeList（静的）vs HTMLCollection（動的）の違い</h3>
+  <div class="demo-desc">
+    「li を追加」ボタンを押したとき、NodeList と HTMLCollection の
+    <code>length</code> がどう変わるかを確認しましょう。
+    静的と動的の違いが一目でわかります。
+  </div>
+
+  <div style="display:flex; gap:8px; flex-wrap:wrap; margin-bottom:14px;">
+    <button class="run-btn" onclick="nlSnapshot()">📸 両方を取得（スナップショット）</button>
+    <button class="run-btn success" onclick="nlAddItem()">➕ li を1つ追加</button>
+    <button class="run-btn danger"  onclick="nlRemoveItem()">➖ li を1つ削除</button>
+    <button class="run-btn secondary" onclick="nlReset()">↩️ リセット</button>
+  </div>
+
+  <div class="nodelist-compare">
+    <div class="nl-box">
+      <h4>📸 NodeList（静的・querySelectorAll）</h4>
+      <ul class="nl-list" id="nl-nodelist-display">
+        <li><span style="color:#a0aec0;">取得前</span></li>
+      </ul>
+      <div class="nl-count" id="nl-nodelist-count">
+        <span style="color:#a0aec0;">// 「両方を取得」を押してください</span>
+      </div>
+    </div>
+    <div class="nl-box">
+      <h4>🔄 HTMLCollection（動的・getElementsByTagName）</h4>
+      <ul class="nl-list" id="nl-htmlcol-display">
+        <li><span style="color:#a0aec0;">取得前</span></li>
+      </ul>
+      <div class="nl-count" id="nl-htmlcol-count">
+        <span style="color:#a0aec0;">// 「両方を取得」を押してください</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- 実際のリスト（操作対象） -->
+  <div style="margin-top:14px;">
+    <div style="font-size:0.85em; font-weight:bold; color:#553c9a; margin-bottom:6px;">📋 実際のDOM（操作対象）</div>
+    <ul id="nl-target-list" style="border:2px solid #e9d8fd; border-radius:8px; padding:10px 16px; background:#faf5ff; list-style:disc; padding-left:32px; margin:0;">
+      <li class="nl-item">アイテム A</li>
+      <li class="nl-item">アイテム B</li>
+      <li class="nl-item">アイテム C</li>
+    </ul>
+  </div>
+</div>
+
+
+<!-- ============================================================ -->
+<!-- デモ③ closest() / matches() 動作確認 -->
+<!-- ============================================================ -->
+<div class="demo-card">
+  <h3>🎯 デモ③：closest() / matches() 動作確認デモ</h3>
+  <div class="demo-desc">
+    下のツリー構造の「ボタン」をクリックして、<code>closest()</code> がどの祖先要素を返すか、
+    <code>matches()</code> が各要素に対してどう判定するかを確認しましょう。
+  </div>
+
+  <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
+    <div>
+      <div style="font-size:0.85em; font-weight:bold; color:#553c9a; margin-bottom:8px;">🌳 DOM構造</div>
+      <div class="cm-demo-tree">
+        <div class="cm-level nav-el" id="cm-nav">
+          <span class="cm-tag">&lt;nav.main-nav&gt;</span>
+          <div class="cm-level list-el" id="cm-ul">
+            <span class="cm-tag">&lt;ul.nav-list&gt;</span>
+            <div class="cm-level item-el" id="cm-li">
+              <span class="cm-tag">&lt;li.nav-item&gt;</span>
+              <div class="cm-level btn-el" id="cm-btn" onclick="runClosestMatches()">
+                <span class="cm-tag">&lt;button.btn.primary&gt;</span>
+                👆 クリック！
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div style="margin-top:10px; font-size:0.85em; font-weight:bold; color:#553c9a;">closest() のセレクタ：</div>
+      <div style="display:flex; gap:6px; flex-wrap:wrap; margin-top:6px;">
+        <span class="sel-preset" onclick="setClosestSel('.nav-item')">'.nav-item'</span>
+        <span class="sel-preset" onclick="setClosestSel('.nav-list')">'.nav-list'</span>
+        <span class="sel-preset" onclick="setClosestSel('.main-nav')">'.main-nav'</span>
+        <span class="sel-preset" onclick="setClosestSel('.btn')">'.btn'（自身）</span>
+        <span class="sel-preset" onclick="setClosestSel('.not-exist')">'.not-exist'</span>
+      </div>
+      <div style="margin-top:6px; display:flex; gap:8px; align-items:center;">
+        <input class="sel-input" id="closest-sel" value=".nav-item" style="flex:1; padding:7px 10px; font-size:0.85em;">
+        <button class="run-btn" onclick="runClosestMatches()" style="white-space:nowrap;">▶ 実行</button>
+      </div>
+    </div>
+
+    <div>
+      <div style="font-size:0.85em; font-weight:bold; color:#553c9a; margin-bottom:8px;">📋 実行ログ</div>
+      <div class="cm-log" id="cm-log">
+        <span style="color:#a0aec0;">// ボタンをクリックするか▶ 実行を押してください</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ============================================================ -->
+<!-- デモ④ パフォーマンス比較 -->
+<!-- ============================================================ -->
+<div class="demo-card">
+  <h3>📊 デモ④：各取得メソッドのパフォーマンス比較</h3>
+  <div class="demo-desc">
+    同じ要素を異なるメソッドで10,000回取得したときの実行時間を比較します。
+    メソッドの選択がパフォーマンスに与える影響を体感しましょう。
+  </div>
+
+  <div style="margin-bottom:12px;">
+    <button class="run-btn" onclick="runPerfTest()">▶ パフォーマンステスト実行（10,000回）</button>
+    <button class="run-btn secondary" onclick="resetPerf()">リセット</button>
+  </div>
+
+  <!-- 非表示のテスト用要素 -->
+  <div id="perf-target" style="display:none;">
+    <div id="perf-id-el" class="perf-class">テスト要素</div>
+  </div>
+
+  <div class="perf-bars" id="perf-bars">
+    <div class="perf-row">
+      <div class="perf-label">getElementById</div>
+      <div class="perf-bar-wrap">
+        <div class="perf-bar" id="bar-getid" style="width:0%; background:linear-gradient(90deg,#48bb78,#68d391);">
+          <span></span>
+        </div>
+      </div>
+      <div class="perf-time" id="time-getid">—</div>
+    </div>
+    <div class="perf-row">
+      <div class="perf-label">getElementsByClassName</div>
+      <div class="perf-bar-wrap">
+        <div class="perf-bar" id="bar-getcls" style="width:0%; background:linear-gradient(90deg,#4299e1,#90cdf4);">
+          <span></span>
+        </div>
+      </div>
+      <div class="perf-time" id="time-getcls">—</div>
+    </div>
+    <div class="perf-row">
+      <div class="perf-label">getElementsByTagName</div>
+      <div class="perf-bar-wrap">
+        <div class="perf-bar" id="bar-gettag" style="width:0%; background:linear-gradient(90deg,#4299e1,#90cdf4);">
+          <span></span>
+        </div>
+      </div>
+      <div class="perf-time" id="time-gettag">—</div>
+    </div>
+    <div class="perf-row">
+      <div class="perf-label">querySelector（ID）</div>
+      <div class="perf-bar-wrap">
+        <div class="perf-bar" id="bar-qsid" style="width:0%; background:linear-gradient(90deg,#9f7aea,#b794f4);">
+          <span></span>
+        </div>
+      </div>
+      <div class="perf-time" id="time-qsid">—</div>
+    </div>
+    <div class="perf-row">
+      <div class="perf-label">querySelector（クラス）</div>
+      <div class="perf-bar-wrap">
+        <div class="perf-bar" id="bar-qscls" style="width:0%; background:linear-gradient(90deg,#9f7aea,#b794f4);">
+          <span></span>
+        </div>
+      </div>
+      <div class="perf-time" id="time-qscls">—</div>
+    </div>
+    <div class="perf-row">
+      <div class="perf-label">querySelectorAll（複雑）</div>
+      <div class="perf-bar-wrap">
+        <div class="perf-bar" id="bar-qsacomp" style="width:0%; background:linear-gradient(90deg,#ed8936,#f6ad55);">
+          <span></span>
+        </div>
+      </div>
+      <div class="perf-time" id="time-qsacomp">—</div>
+    </div>
+  </div>
+
+  <div class="perf-log" id="perf-log">
+    // テストを実行するとここに結果が表示されます
+  </div>
+
+  <div class="info-box tip" style="margin-top:14px;">
+    <strong>💡 パフォーマンスのベストプラクティス</strong>
+    ① IDで取得できる場合は <code>getElementById</code> が最速<br>
+    ② ループ内では要素をキャッシュして再取得を避ける<br>
+    ③ 複雑なセレクタは右から左に評価されるため、右端を具体的にする<br>
+    ④ スコープを絞る（<code>document</code> より <code>parentEl.querySelector</code>）
+  </div>
+</div>
+
+
+<!-- ============================================================ -->
+<!-- 演習問題 -->
+<!-- ============================================================ -->
+<div class="quiz-section">
+  <h2>🖊️ 演習問題</h2>
+
+  <!-- Q1：穴埋め -->
+  <div class="quiz-item">
+    <div class="quiz-q"><span class="q-num">Q1</span> 穴埋め問題</div>
+    <p>以下の説明に当てはまる正しいメソッド名を入力してください。</p>
+
+    <p>① CSSセレクタに一致する<strong>全要素</strong>を静的 NodeList で返すメソッド：
+    <input class="blank-input" id="q1a" placeholder="メソッド名" style="width:220px;"></p>
+
+    <p>② 要素自身から祖先方向に遡り、セレクタに一致する最初の要素を返すメソッド：
+    <input class="blank-input" id="q1b" placeholder="メソッド名" style="width:160px;"></p>
+
+    <p>③ 要素がセレクタに一致するかどうかを <code>true/false</code> で返すメソッド：
+    <input class="blank-input" id="q1c" placeholder="メソッド名" style="width:140px;"></p>
+
+    <p>④ <code>getElementsByClassName</code> が返すコレクションの型名：
+    <input class="blank-input" id="q1d" placeholder="型名" style="width:200px;"></p>
+
+    <button class="check-btn" onclick="checkQ1()">答え合わせ</button>
+    <div class="feedback" id="q1-fb"></div>
+  </div>
+
+  <!-- Q2：選択 -->
+  <div class="quiz-item">
+    <div class="quiz-q"><span class="q-num">Q2</span> 選択問題</div>
+    <p>以下のコードを実行した後、<code>nodeList.length</code> と <code>htmlCol.length</code> の値として正しいものはどれですか？</p>
+
+    <div class="code-block" style="margin-bottom:14px;">
+      <pre style="background:#1a202c;color:#e2e8f0;padding:14px 16px;border-radius:8px;font-size:0.85em;font-family:'Consolas','Monaco',monospace;margin:0;line-height:1.8;"><span class="cm">// 初期状態：ul に li が 2つある</span>
+<span class="kw">const</span> nodeList = document.<span class="fn">querySelectorAll</span>(<span class="str">'li'</span>);
+<span class="kw">const</span> htmlCol  = document.<span class="fn">getElementsByTagName</span>(<span class="str">'li'</span>);
+
+<span class="cm">// li を 2つ追加</span>
+<span class="kw">const</span> ul = document.<span class="fn">querySelector</span>(<span class="str">'ul'</span>);
+ul.<span class="fn">appendChild</span>(document.<span class="fn">createElement</span>(<span class="str">'li'</span>));
+ul.<span class="fn">appendChild</span>(document.<span class="fn">createElement</span>(<span class="str">'li'</span>));
+
+console.<span class="fn">log</span>(nodeList.length); <span class="out">// ?</span>
+console.<span class="fn">log</span>(htmlCol.length);  <span class="out">// ?</span></pre>
+    </div>
+
+    <button class="choice-btn" onclick="checkQ2(this,'wrong')">① nodeList: 4 / htmlCol: 4</button>
+    <button class="choice-btn" onclick="checkQ2(this,'correct')">② nodeList: 2 / htmlCol: 4</button>
+    <button class="choice-btn" onclick="checkQ2(this,'wrong')">③ nodeList: 2 / htmlCol: 2</button>
+    <button class="choice-btn" onclick="checkQ2(this,'wrong')">④ nodeList: 4 / htmlCol: 2</button>
+    <div class="feedback" id="q2-fb"></div>
+  </div>
+
+  <!-- Q3：チェックボックス -->
+  <div class="quiz-item">
+    <div class="quiz-q"><span class="q-num">Q3</span> 複数選択問題</div>
+    <p><strong>querySelector / querySelectorAll</strong> に関して正しい記述をすべて選んでください。</p>
+
+    <label class="cb-label"><input type="checkbox" id="q3a"> ① <code>querySelector</code> は一致する最初の要素を返し、一致しない場合は <code>null</code> を返す</label>
+    <label class="cb-label"><input type="checkbox" id="q3b"> ② <code>querySelectorAll</code> が返す NodeList は動的で、DOM変更が自動反映される</label>
+    <label class="cb-label"><input type="checkbox" id="q3c"> ③ <code>querySelectorAll</code> の返り値は <code>forEach</code> で反復処理できる</label>
+    <label class="cb-label"><input type="checkbox" id="q3d"> ④ <code>document</code> だけでなく任意の要素に対しても <code>querySelector</code> を呼び出せる</label>
+    <label class="cb-label"><input type="checkbox" id="q3e"> ⑤ <code>querySelector('#id')</code> は <code>getElementById('id')</code> より高速である</label>
+    <label class="cb-label"><input type="checkbox" id="q3f"> ⑥ <code>querySelectorAll</code> に無効なセレクタを渡すと例外（SyntaxError）が発生する</label>
+
+    <button class="check-btn" onclick="checkQ3()">答え合わせ</button>
+    <div class="feedback" id="q3-fb"></div>
+  </div>
+
+  <!-- Q4：コード補完 -->
+  <div class="quiz-item">
+    <div class="quiz-q"><span class="q-num">Q4</span> コード補完問題</div>
+    <p>以下のコードの空欄を埋めて、セレクタAPIを正しく活用してください。</p>
+
+    <div class="code-fill">
+      <span style="color:#a0aec0;">// イベント委譲で .card 内の .delete-btn クリックを処理</span><br>
+      document.<span style="color:#b794f4;">addEventListener</span>(<span style="color:#fbd38d;">'click'</span>, (e) =&gt; {<br>
+      &nbsp;&nbsp;<span style="color:#a0aec0;">// クリックされた要素が .delete-btn かチェック</span><br>
+      &nbsp;&nbsp;<span style="color:#90cdf4;">if</span> (!e.target.<input class="fill-input" id="q4a" placeholder="メソッド名" style="width:110px;">(<span style="color:#fbd38d;">'.delete-btn'</span>)) <span style="color:#90cdf4;">return</span>;<br><br>
+      &nbsp;&nbsp;<span style="color:#a0aec0;">// 祖先の .card 要素を取得</span><br>
+      &nbsp;&nbsp;<span style="color:#90cdf4;">const</span> card = e.target.<input class="fill-input" id="q4b" placeholder="メソッド名" style="width:110px;">(<span style="color:#fbd38d;">'.card'</span>);<br>
+      &nbsp;&nbsp;<span style="color:#90cdf4;">if</span> (card) card.<span style="color:#b794f4;">remove</span>();<br>
+      });<br><br>
+      <span style="color:#a0aec0;">// .active なリストアイテムを全て取得</span><br>
+      <span style="color:#90cdf4;">const</span> activeItems = document.<input class="fill-input" id="q4c" placeholder="メソッド名" style="width:180px;">(<span style="color:#fbd38d;">'li.active'</span>);<br>
+      <span style="color:#a0aec0;">// NodeList を配列に変換して map を使う</span><br>
+      <span style="color:#90cdf4;">const</span> texts = <span style="color:#90cdf4;">Array</span>.<span style="color:#b794f4;">from</span>(<input class="fill-input" id="q4d" placeholder="変数名" style="width:120px;">).<span style="color:#b794f4;">map</span>(el =&gt; el.textContent);
+    </div>
+
+    <button class="check-btn" onclick="checkQ4()">答え合わせ</button>
+    <div class="feedback" id="q4-fb"></div>
+  </div>
+
+</div><!-- /quiz-section -->
+
+
+<!-- 完了ボタン -->
+<div class="complete-area">
+  <p>🎉 「3-4 セレクタAPI」の学習が完了したら記録しましょう！</p>
+  <button class="complete-btn" id="complete-btn" onclick="markComplete()">
+    ✅ このセクションを完了にする
+  </button>
+  <div class="complete-msg" id="complete-msg">
+    進捗を保存しました！Chapter 3 目次ページの進捗バーに反映されます。
+  </div>
+</div>
+
+<!-- ページナビ -->
+<div class="page-nav">
+  <a class="nav-btn prev" href="03_window.html">← 3-3 ウィンドウオブジェクト</a>
+  <a class="nav-btn index" href="index.html">📋 Chapter 3 目次</a>
+  <a class="nav-btn next" href="05_history.html">次へ：3-5 ブラウザ履歴 →</a>
+</div>
+
+<!-- フッター -->
+<footer>
+  <p>
+    HTML5プロフェッショナル Level 2 学習サイト ／
+    <a href="../index.html">🏠 サイトトップ</a> ／
+    <a href="index.html">Chapter 3 目次</a> ／
+    <a href="https://github.com/MeshinoKiwamiOkome/html5lv2" target="_blank">GitHub</a>
+  </p>
+  <p style="margin-top:4px;">© MeshinoKiwamiOkome</p>
+</footer>
+
+
+<!-- ============================================================ -->
+<!-- JavaScript -->
+<!-- ============================================================ -->
+<script>
+/* ===== コピーボタン ===== */
+function copyCode(btn) {
+  const pre = btn.nextElementSibling;
+  navigator.clipboard.writeText(pre.innerText || pre.textContent).then(() => {
+    btn.textContent = 'copied!';
+    setTimeout(() => btn.textContent = 'copy', 1800);
+  });
+}
+
+/* ============================================================
+   デモ①：セレクタ リアルタイム検索
+============================================================ */
+function setPreset(sel) {
+  document.getElementById('sel-input').value = sel;
+}
+
+function runSelector(mode) {
+  const sel    = document.getElementById('sel-input').value.trim();
+  const result = document.getElementById('sel-result');
+  const items  = document.querySelectorAll('#sample-ul .s-item');
+
+  // ハイライトをリセット
+  items.forEach(el => {
+    el.classList.remove('highlighted', 'first-only');
+  });
+
+  if (!sel) {
+    result.innerHTML = '<span style="color:#fc8181;">セレクタを入力してください</span>';
+    return;
+  }
+
+  try {
+    if (mode === 'qs') {
+      const found = document.querySelector('#sample-ul ' + sel);
+      if (found && found.classList.contains('s-item')) {
+        found.classList.add('first-only');
+        result.innerHTML =
+          `<span style="color:#f6ad55;">querySelector('${sel}')</span>\n` +
+          `<span style="color:#68d391;">→ 1件マッチ（オレンジ枠）</span>\n` +
+          `  textContent: "${found.textContent.trim().substring(0, 40)}"`;
+      } else if (found) {
+        result.innerHTML =
+          `<span style="color:#f6ad55;">querySelector('${sel}')</span>\n` +
+          `<span style="color:#a0aec0;">→ マッチしましたが .s-item ではありません</span>`;
+      } else {
+        result.innerHTML =
+          `<span style="color:#f6ad55;">querySelector('${sel}')</span>\n` +
+          `<span style="color:#fc8181;">→ null（一致する要素なし）</span>`;
+      }
+    } else {
+      const found = document.querySelectorAll('#sample-ul ' + sel);
+      let matchCount = 0;
+      found.forEach(el => {
+        if (el.classList.contains('s-item')) {
+          el.classList.add('highlighted');
+          matchCount++;
+        }
+      });
+      result.innerHTML =
+        `<span style="color:#90cdf4;">querySelectorAll('${sel}')</span>\n` +
+        `<span style="color:#68d391;">→ ${matchCount}件マッチ（紫枠）</span>\n` +
+        `NodeList.length = ${found.length}`;
+    }
+  } catch (e) {
+    result.innerHTML =
+      `<span style="color:#fc8181;">SyntaxError: 無効なセレクタです</span>\n` +
+      `${e.message}`;
+  }
+}
+
+// 入力のたびにリアルタイム実行
+document.getElementById('sel-input').addEventListener('input', () => runSelector('qsa'));
+// 初期実行
+runSelector('qsa');
+
+/* ============================================================
+   デモ②：NodeList vs HTMLCollection
+============================================================ */
+let nlNodeList = null;
+let nlHtmlCol  = null;
+let nlItemCount = 3;
+const nlLabels = ['A','B','C','D','E','F','G','H'];
+
+function nlSnapshot() {
+  nlNodeList = document.querySelectorAll('#nl-target-list .nl-item');
+  nlHtmlCol  = document.getElementById('nl-target-list').getElementsByTagName('li');
+  updateNlDisplay();
+}
+
+function updateNlDisplay() {
+  // NodeList 表示
+  const nlDisp = document.getElementById('nl-nodelist-display');
+  const nlCnt  = document.getElementById('nl-nodelist-count');
+  if (nlNodeList) {
+    nlDisp.innerHTML = Array.from(nlNodeList).map(el =>
+      `<li><span>${el.textContent}</span><span style="color:#9f7aea; font-size:0.78em;">スナップショット済み</span></li>`
+    ).join('');
+    nlCnt.innerHTML =
+      `<span style="color:#f6ad55;">nodeList.length</span> = ` +
+      `<span style="color:#68d391;">${nlNodeList.length}</span>\n` +
+      `<span style="color:#a0aec0;">// 取得時点の件数で固定（静的）</span>`;
+  }
+
+  // HTMLCollection 表示
+  const hcDisp = document.getElementById('nl-htmlcol-display');
+  const hcCnt  = document.getElementById('nl-htmlcol-count');
+  if (nlHtmlCol) {
+    hcDisp.innerHTML = Array.from(nlHtmlCol).map(el =>
+      `<li><span>${el.textContent}</span><span style="color:#48bb78; font-size:0.78em;">リアルタイム</span></li>`
+    ).join('');
+    hcCnt.innerHTML =
+      `<span style="color:#f6ad55;">htmlCol.length</span> = ` +
+      `<span style="color:#68d391;">${nlHtmlCol.length}</span>\n` +
+      `<span style="color:#a0aec0;">// DOMの変化を自動反映（動的）</span>`;
+  }
+}
+
+function nlAddItem() {
+  const ul = document.getElementById('nl-target-list');
+  const li = document.createElement('li');
+  li.className = 'nl-item';
+  nlItemCount++;
+  li.textContent = 'アイテム ' + (nlLabels[nlItemCount - 1] || nlItemCount);
+  li.style.animation = 'none';
+  li.style.color = '#553c9a';
+  li.style.fontWeight = 'bold';
+  ul.appendChild(li);
+  setTimeout(() => { li.style.color = ''; li.style.fontWeight = ''; }, 800);
+  updateNlDisplay();
+}
+
+function nlRemoveItem() {
+  const ul = document.getElementById('nl-target-list');
+  const last = ul.querySelector('li:last-child');
+  if (last) { last.remove(); nlItemCount = Math.max(0, nlItemCount - 1); }
+  updateNlDisplay();
+}
+
+function nlReset() {
+  nlNodeList = null;
+  nlHtmlCol  = null;
+  nlItemCount = 3;
+  document.getElementById('nl-target-list').innerHTML =
+    '<li class="nl-item">アイテム A</li>' +
+    '<li class="nl-item">アイテム B</li>' +
+    '<li class="nl-item">アイテム C</li>';
+  document.getElementById('nl-nodelist-display').innerHTML =
+    '<li><span style="color:#a0aec0;">取得前</span></li>';
+  document.getElementById('nl-htmlcol-display').innerHTML =
+    '<li><span style="color:#a0aec0;">取得前</span></li>';
+  document.getElementById('nl-nodelist-count').innerHTML =
+    '<span style="color:#a0aec0;">// 「両方を取得」を押してください</span>';
+  document.getElementById('nl-htmlcol-count').innerHTML =
+    '<span style="color:#a0aec0;">// 「両方を取得」を押してください</span>';
+}
+
+/* ============================================================
+   デモ③：closest() / matches() 動作確認
+============================================================ */
+function setClosestSel(sel) {
+  document.getElementById('closest-sel').value = sel;
+}
+
+function runClosestMatches() {
+  const sel = document.getElementById('closest-sel').value.trim();
+  const log = document.getElementById('cm-log');
+  log.innerHTML = '';
+
+  // 全要素のハイライトをリセット
+  ['cm-nav','cm-ul','cm-li','cm-btn'].forEach(id => {
+    const el = document.getElementById(id);
+    el.classList.remove('matched','matches-true','matches-false');
+  });
+
+  function addLog(text, color) {
+    const d = document.createElement('div');
+    d.style.color = color || '#e2e8f0';
+    d.innerHTML = text;
+    log.appendChild(d);
+  }
+
+  const btn = document.getElementById('cm-btn');
+
+  // closest() の実行
+  addLog(`<span style="color:#f6ad55;">// closest('${sel}') を button から実行</span>`);
+  addLog(`<span style="color:#90cdf4;">const</span> result = btn.<span style="color:#b794f4;">closest</span>(<span style="color:#fbd38d;">'${sel}'</span>);`);
+
+  // 実際に closest を実行（デモ用に手動で判定）
+  const elMap = {
+    'cm-btn': { classes: ['btn','primary'], tag: 'button' },
+    'cm-li':  { classes: ['nav-item'], tag: 'li' },
+    'cm-ul':  { classes: ['nav-list'], tag: 'ul' },
+    'cm-nav': { classes: ['main-nav'], tag: 'nav' }
+  };
+
+  const order = ['cm-btn','cm-li','cm-ul','cm-nav'];
+  let found = null;
+
+  for (const id of order) {
+    const info = elMap[id];
+    const el   = document.getElementById(id);
+    let matches = false;
+
+    // 簡易セレクタ判定
+    if (sel.startsWith('.')) {
+      const cls = sel.slice(1);
+      matches = info.classes.includes(cls);
+    } else if (sel.startsWith('#')) {
+      matches = id === sel.slice(1);
+    } else {
+      matches = info.tag === sel;
+    }
+
+    if (matches && !found) {
+      found = el;
+      el.classList.add('matched');
+      addLog(`<span style="color:#68d391;">→ #${id} がマッチ！これを返します</span>`);
+      break;
+    }
+  }
+
+  if (!found) {
+    addLog(`<span style="color:#fc8181;">→ null（一致する祖先なし）</span>`);
+  }
+
+  addLog('');
+
+  // matches() の確認
+  addLog(`<span style="color:#f6ad55;">// 各要素の matches('${sel}') 結果</span>`);
+  order.forEach(id => {
+    const info = elMap[id];
+    let m = false;
+    if (sel.startsWith('.')) { m = info.classes.includes(sel.slice(1)); }
+    else if (sel.startsWith('#')) { m = id === sel.slice(1); }
+    else { m = info.tag === sel; }
+
+    const el = document.getElementById(id);
+    el.classList.add(m ? 'matches-true' : 'matches-false');
+    addLog(
+      `  #${id}.<span style="color:#b794f4;">matches</span>(<span style="color:#fbd38d;">'${sel}'</span>) → ` +
+      `<span style="color:${m ? '#68d391' : '#fc8181'};">${m}</span>`
+    );
+  });
+}
+
+/* ============================================================
+   デモ④：パフォーマンス比較
+============================================================ */
+function runPerfTest() {
+  const N = 10000;
+  const log = document.getElementById('perf-log');
+  log.innerHTML = '<span style="color:#f6ad55;">計測中...</span>';
+
+  // 少し遅延させてUIを更新
+  setTimeout(() => {
+    const results = {};
+
+    // getElementById
+    let t = performance.now();
+    for (let i = 0; i < N; i++) document.getElementById('perf-id-el');
+    results.getid = performance.now() - t;
+
+    // getElementsByClassName
+    t = performance.now();
+    for (let i = 0; i < N; i++) document.getElementsByClassName('perf-class');
+    results.getcls = performance.now() - t;
+
+    // getElementsByTagName
+    t = performance.now();
+    for (let i = 0; i < N; i++) document.getElementsByTagName('div');
+    results.gettag = performance.now() - t;
+
+    // querySelector（ID）
+    t = performance.now();
+    for (let i = 0; i < N; i++) document.querySelector('#perf-id-el');
+    results.qsid = performance.now() - t;
+
+    // querySelector（クラス）
+    t = performance.now();
+    for (let i = 0; i < N; i++) document.querySelector('.perf-class');
+    results.qscls = performance.now() - t;
+
+    // querySelectorAll（複雑なセレクタ）
+    t = performance.now();
+    for (let i = 0; i < N; i++) document.querySelectorAll('div.perf-class');
+    results.qsacomp = performance.now() - t;
+
+    // 最大値を基準にバーの幅を計算
+    const maxTime = Math.max(...Object.values(results));
+
+    const keys = ['getid','getcls','gettag','qsid','qscls','qsacomp'];
+    keys.forEach(key => {
+      const time = results[key];
+      const pct  = Math.max(4, Math.round((time / maxTime) * 100));
+      const bar  = document.getElementById('bar-' + key);
+      const timeEl = document.getElementById('time-' + key);
+      bar.style.width = pct + '%';
+      bar.querySelector('span').textContent = pct + '%';
+      timeEl.textContent = time.toFixed(3) + 'ms';
+    });
+
+    // 最速・最遅を特定
+    const sorted = keys.slice().sort((a,b) => results[a] - results[b]);
+    const fastest = sorted[0];
+    const slowest = sorted[sorted.length - 1];
+
+    log.innerHTML =
+      `<span style="color:#68d391;">✅ 計測完了（${N.toLocaleString()}回実行）</span>\n` +
+      `最速: <span style="color:#68d391;">${fastest}</span> (${results[fastest].toFixed(3)}ms)\n` +
+      `最遅: <span style="color:#fc8181;">${slowest}</span> (${results[slowest].toFixed(3)}ms)\n` +
+      `速度比: <span style="color:#f6ad55;">${(results[slowest] / results[fastest]).toFixed(1)}倍</span>\n\n` +
+      `<span style="color:#a0aec0;">// 注意：結果はブラウザ・環境・DOM構造によって異なります</span>\n` +
+      `<span style="color:#a0aec0;">// 実際の開発では可読性とのバランスを考慮してください</span>`;
+  }, 50);
+}
+
+function resetPerf() {
+  ['getid','getcls','gettag','qsid','qscls','qsacomp'].forEach(key => {
+    document.getElementById('bar-' + key).style.width = '0%';
+    document.getElementById('bar-' + key).querySelector('span').textContent = '';
+    document.getElementById('time-' + key).textContent = '—';
+  });
+  document.getElementById('perf-log').textContent =
+    '// テストを実行するとここに結果が表示されます';
+}
+
+/* ============================================================
+   演習問題
+============================================================ */
+function checkQ1() {
+  const a = document.getElementById('q1a').value.trim();
+  const b = document.getElementById('q1b').value.trim();
+  const c = document.getElementById('q1c').value.trim();
+  const d = document.getElementById('q1d').value.trim();
+  const fb = document.getElementById('q1-fb');
+
+  const ca = /querySelectorAll/i.test(a);
+  const cb = /closest/i.test(b);
+  const cc = /matches/i.test(c);
+  const cd = /HTMLCollection/i.test(d);
+  const score = [ca,cb,cc,cd].filter(Boolean).length;
+
+  if (score === 4) {
+    fb.className = 'feedback ok';
+    fb.innerHTML = '✅ 全問正解！セレクタAPIを正確に理解しています。';
+  } else {
+    fb.className = 'feedback ng';
+    fb.innerHTML = `❌ ${score}/4 問正解。<br><br>` +
+      `① ${ca ? '✅' : '❌ 正解：<strong>querySelectorAll</strong>（静的NodeListを返す）'}<br>` +
+      `② ${cb ? '✅' : '❌ 正解：<strong>closest</strong>（祖先方向に検索）'}<br>` +
+      `③ ${cc ? '✅' : '❌ 正解：<strong>matches</strong>（セレクタ一致をtrue/falseで返す）'}<br>` +
+      `④ ${cd ? '✅' : '❌ 正解：<strong>HTMLCollection</strong>（動的コレクション）'}`;
+  }
+}
+
+function checkQ2(btn, result) {
+  document.querySelectorAll('.quiz-item:nth-child(2) .choice-btn').forEach(b => {
+    b.disabled = true; b.classList.remove('correct','wrong');
+  });
+  const fb = document.getElementById('q2-fb');
+  if (result === 'correct') {
+    btn.classList.add('correct');
+    fb.className = 'feedback ok';
+    fb.innerHTML = '✅ 正解！<br><br>' +
+      '<strong>解説：</strong><br>' +
+      '・<code>querySelectorAll</code> は<strong>静的スナップショット</strong>を返すため、' +
+      '取得後にDOMに li を追加しても <code>nodeList.length</code> は <strong>2 のまま</strong>です。<br>' +
+      '・<code>getElementsByTagName</code> は<strong>動的コレクション</strong>を返すため、' +
+      'li を追加すると <code>htmlCol.length</code> は自動的に <strong>4 に更新</strong>されます。';
+  } else {
+    btn.classList.add('wrong');
+    fb.className = 'feedback ng';
+    fb.innerHTML = '❌ 不正解。<br>正解は <strong>② nodeList: 2 / htmlCol: 4</strong> です。<br>' +
+      'querySelectorAll の NodeList は静的（変化しない）、' +
+      'getElementsByTagName の HTMLCollection は動的（自動更新）です。';
+  }
+}
+
+function checkQ3() {
+  const answers = {
+    a: document.getElementById('q3a').checked,
+    b: document.getElementById('q3b').checked,
+    c: document.getElementById('q3c').checked,
+    d: document.getElementById('q3d').checked,
+    e: document.getElementById('q3e').checked,
+    f: document.getElementById('q3f').checked,
+  };
+  // 正解：a, c, d, f
+  // b: NodeList は静的（動的ではない）
+  // e: getElementById の方が高速
+  const correct = { a:true, b:false, c:true, d:true, e:false, f:true };
+  const labels = document.querySelectorAll('.quiz-item:nth-child(3) .cb-label');
+  let allOk = true;
+  Object.keys(correct).forEach((k, i) => {
+    if (answers[k] === correct[k]) { labels[i].classList.add('correct'); }
+    else { labels[i].classList.add('wrong'); allOk = false; }
+  });
+  const fb = document.getElementById('q3-fb');
+  if (allOk) {
+    fb.className = 'feedback ok';
+    fb.innerHTML = '✅ 全問正解！querySelector の特性を完全に理解しています。';
+  } else {
+    fb.className = 'feedback ng';
+    fb.innerHTML = '❌ 不正解の項目があります。<br><br>' +
+      '<strong>正しい記述：①③④⑥</strong><br><br>' +
+      '・② <strong>誤り</strong>：<code>querySelectorAll</code> の NodeList は<strong>静的</strong>です（動的なのは HTMLCollection）<br>' +
+      '・⑤ <strong>誤り</strong>：<code>getElementById</code> の方が<strong>高速</strong>です。' +
+      'querySelector はCSSセレクタのパースが必要なため若干遅くなります';
+  }
+}
+
+function checkQ4() {
+  const a = document.getElementById('q4a').value.trim();
+  const b = document.getElementById('q4b').value.trim();
+  const c = document.getElementById('q4c').value.trim();
+  const d = document.getElementById('q4d').value.trim();
+  const fb = document.getElementById('q4-fb');
+
+  const ca = /matches/i.test(a);
+  const cb = /closest/i.test(b);
+  const cc = /querySelectorAll/i.test(c);
+  const cd = /activeItems/i.test(d);
+  const score = [ca,cb,cc,cd].filter(Boolean).length;
+
+  if (score === 4) {
+    fb.className = 'feedback ok';
+    fb.innerHTML = '✅ 全問正解！<br><br>' +
+      '① <code>matches</code>（セレクタ一致確認）<br>' +
+      '② <code>closest</code>（祖先要素の取得）<br>' +
+      '③ <code>querySelectorAll</code>（全要素取得）<br>' +
+      '④ <code>activeItems</code>（NodeList を Array.from に渡す変数名）<br><br>' +
+      'イベント委譲 + matches + closest の組み合わせは実務でよく使うパターンです！';
+  } else {
+    fb.className = 'feedback ng';
+    fb.innerHTML = `❌ ${score}/4 問正解。<br><br>` +
+      `① ${ca ? '✅' : '❌ 正解：<strong>matches</strong>（.delete-btn かどうか確認）'}<br>` +
+      `② ${cb ? '✅' : '❌ 正解：<strong>closest</strong>（祖先の .card を取得）'}<br>` +
+      `③ ${cc ? '✅' : '❌ 正解：<strong>querySelectorAll</strong>（全 li.active を取得）'}<br>` +
+      `④ ${cd ? '✅' : '❌ 正解：<strong>activeItems</strong>（直前で宣言した変数名）'}`;
+  }
+}
+
+/* ===== 完了ボタン ===== */
+function markComplete() {
+  localStorage.setItem('html5lv2_ch3_04', 'done');
+  const btn = document.getElementById('complete-btn');
+  const msg = document.getElementById('complete-msg');
+  btn.classList.add('done');
+  btn.textContent = '✅ 完了済み';
+  btn.disabled = true;
+  msg.style.display = 'block';
+}
+
+window.addEventListener('DOMContentLoaded', () => {
+  if (localStorage.getItem('html5lv2_ch3_04') === 'done') {
+    const btn = document.getElementById('complete-btn');
+    const msg = document.getElementById('complete-msg');
+    btn.classList.add('done');
+    btn.textContent = '✅ 完了済み';
+    btn.disabled = true;
+    msg.style.display = 'block';
+  }
+});
+</script>
+
+</body>
+</html>

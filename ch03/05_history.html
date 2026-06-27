@@ -1,0 +1,1427 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>3-5 ブラウザ履歴とナビゲーション | HTML5プロフェッショナル Level 2</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; }
+    body {
+      font-family: 'Segoe UI', 'Helvetica Neue', sans-serif;
+      max-width: 960px; margin: 40px auto; padding: 0 24px;
+      background: #f0f4f8; color: #2d3748; line-height: 1.8;
+    }
+    .breadcrumb {
+      font-size: 0.82em; color: #a0aec0; margin-bottom: 20px;
+      font-family: 'Consolas','Monaco',monospace;
+    }
+    .breadcrumb a { color: #553c9a; text-decoration: none; }
+    .breadcrumb a:hover { text-decoration: underline; }
+
+    .chapter-header {
+      background: linear-gradient(135deg, #553c9a, #9f7aea);
+      border-radius: 12px; padding: 32px 32px 24px;
+      margin-bottom: 32px; color: #fff;
+      box-shadow: 0 4px 18px rgba(85,60,154,0.35);
+    }
+    .chapter-header .ch-num {
+      font-size: 0.8em; font-family: 'Consolas','Monaco',monospace;
+      opacity: 0.85; letter-spacing: 0.08em; margin-bottom: 6px;
+    }
+    .chapter-header h1 { margin: 0 0 10px; font-size: 1.6em; color: #fff; border: none; padding: 0; }
+    .chapter-header p  { margin: 0; font-size: 0.92em; opacity: 0.88; }
+    .badge-row { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 14px; }
+    .badge {
+      background: rgba(255,255,255,0.18); border: 1px solid rgba(255,255,255,0.35);
+      border-radius: 20px; padding: 3px 12px; font-size: 0.76em; font-weight: bold;
+    }
+
+    .section-nav {
+      background: #fff; border: 1px solid #e9d8fd;
+      border-radius: 10px; padding: 18px 22px;
+      margin-bottom: 32px; box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+    }
+    .section-nav h2 { margin: 0 0 12px; font-size: 0.92em; color: #553c9a; border: none; padding: 0; }
+    .section-nav ol { margin: 0; padding-left: 20px; font-size: 0.9em; }
+    .section-nav ol li { margin: 4px 0; }
+    .section-nav ol li a { color: #553c9a; text-decoration: none; }
+    .section-nav ol li a:hover { text-decoration: underline; }
+    .section-nav ol li.current a { font-weight: bold; pointer-events: none; }
+
+    h2 { color: #553c9a; margin-top: 48px; border-left: 5px solid #9f7aea; padding-left: 12px; font-size: 1.25em; }
+    h3 { color: #6b46c1; margin-top: 28px; font-size: 1.05em; }
+
+    code {
+      background: #f3e8ff; padding: 2px 6px; border-radius: 4px;
+      font-size: 0.93em; font-family: 'Consolas','Monaco',monospace; color: #553c9a;
+    }
+
+    .code-block { position: relative; margin: 14px 0; }
+    .code-block pre {
+      background: #1a202c; color: #e2e8f0; padding: 18px 20px; border-radius: 8px;
+      overflow-x: auto; font-size: 0.87em; line-height: 1.75;
+      font-family: 'Consolas','Monaco',monospace; margin: 0;
+    }
+    .copy-btn {
+      position: absolute; top: 8px; right: 8px;
+      background: #4a5568; color: #e2e8f0; border: none; border-radius: 4px;
+      padding: 4px 10px; font-size: 0.75em; cursor: pointer;
+      font-family: 'Consolas','Monaco',monospace; transition: background 0.2s; z-index: 1;
+    }
+    .copy-btn:hover { background: #9f7aea; }
+
+    .kw  { color: #90cdf4; }
+    .fn  { color: #b794f4; }
+    .str { color: #fbd38d; }
+    .num { color: #fc8181; }
+    .cm  { color: #68d391; }
+    .op  { color: #f6ad55; }
+    .out { color: #a0aec0; }
+
+    .info-box {
+      border-radius: 8px; padding: 14px 18px;
+      font-size: 0.93em; margin: 16px 0; line-height: 1.7;
+    }
+    .info-box.tip   { background: #f0fff4; border: 1px solid #9ae6b4; border-left: 5px solid #48bb78; color: #276749; }
+    .info-box.warn  { background: #fffaf0; border: 1px solid #f6ad55; border-left: 5px solid #ed8936; color: #744210; }
+    .info-box.point { background: #faf5ff; border: 1px solid #d6bcfa; border-left: 5px solid #9f7aea; color: #553c9a; }
+    .info-box strong { display: block; margin-bottom: 4px; }
+
+    .content-card {
+      background: #fff; border-radius: 10px; padding: 24px 28px;
+      margin-bottom: 28px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); border: 1px solid #e9d8fd;
+    }
+    .content-card h3 { margin-top: 0; }
+
+    .tbl-wrap { overflow-x: auto; margin: 14px 0; }
+    .tbl-wrap table {
+      border-collapse: collapse; width: 100%; background: #fff;
+      border-radius: 8px; overflow: hidden; font-size: 0.88em;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+    }
+    .tbl-wrap th, .tbl-wrap td { border: 1px solid #e9d8fd; padding: 10px 14px; text-align: left; }
+    .tbl-wrap thead tr { background: #553c9a; color: #fff; }
+    .tbl-wrap tbody tr:nth-child(even) { background: #faf5ff; }
+
+    .demo-card {
+      background: #fff; border: 2px solid #e9d8fd; border-radius: 12px;
+      padding: 22px 24px; margin: 20px 0 32px;
+      box-shadow: 0 2px 10px rgba(85,60,154,0.08);
+    }
+    .demo-card h3 { margin-top: 0; color: #553c9a; }
+    .demo-desc {
+      font-size: 0.88em; color: #718096; background: #faf5ff;
+      border-radius: 6px; padding: 10px 14px; margin-bottom: 16px;
+    }
+    .run-btn {
+      background: linear-gradient(135deg, #553c9a, #9f7aea);
+      color: #fff; border: none; border-radius: 8px;
+      padding: 9px 20px; font-size: 0.88em; font-weight: bold;
+      cursor: pointer; transition: opacity 0.2s; margin: 4px 4px 4px 0;
+    }
+    .run-btn:hover { opacity: 0.85; }
+    .run-btn.secondary { background: #edf2f7; color: #4a5568; }
+    .run-btn.secondary:hover { background: #e2e8f0; opacity: 1; }
+    .run-btn.danger  { background: linear-gradient(135deg, #c53030, #fc8181); }
+    .run-btn.success { background: linear-gradient(135deg, #276749, #48bb78); }
+    .run-btn:disabled { background: #a0aec0; cursor: not-allowed; opacity: 0.6; }
+
+    /* ===== ミニSPAデモ ===== */
+    .spa-browser {
+      border: 2px solid #e9d8fd; border-radius: 10px; overflow: hidden;
+      box-shadow: 0 4px 16px rgba(85,60,154,0.1);
+    }
+    .spa-toolbar {
+      background: #2d3748; padding: 10px 14px;
+      display: flex; align-items: center; gap: 10px;
+    }
+    .spa-dot { width: 12px; height: 12px; border-radius: 50%; }
+    .spa-nav-btns { display: flex; gap: 4px; }
+    .spa-nav-btn {
+      background: #4a5568; border: none; color: #e2e8f0;
+      border-radius: 4px; padding: 4px 10px; cursor: pointer;
+      font-size: 0.82em; transition: background 0.2s;
+    }
+    .spa-nav-btn:hover { background: #9f7aea; }
+    .spa-nav-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+    .spa-url-bar {
+      flex: 1; background: #1a202c; border: 1px solid #4a5568;
+      border-radius: 6px; padding: 5px 12px;
+      font-family: 'Consolas','Monaco',monospace; font-size: 0.82em;
+      color: #68d391; outline: none;
+    }
+    .spa-content {
+      padding: 20px 24px; min-height: 160px; background: #faf5ff;
+      transition: all 0.3s;
+    }
+    .spa-page { display: none; }
+    .spa-page.active { display: block; animation: fadeSlide 0.3s ease; }
+    @keyframes fadeSlide {
+      from { opacity: 0; transform: translateX(10px); }
+      to   { opacity: 1; transform: translateX(0); }
+    }
+    .spa-page h3 { margin-top: 0; color: #553c9a; }
+    .spa-menu {
+      display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 12px;
+    }
+    .spa-menu-btn {
+      padding: 8px 18px; border-radius: 8px; border: 2px solid #e9d8fd;
+      background: #fff; cursor: pointer; font-size: 0.88em; font-weight: bold;
+      font-family: inherit; color: #553c9a; transition: all 0.2s;
+    }
+    .spa-menu-btn:hover { border-color: #9f7aea; background: #faf5ff; }
+    .spa-menu-btn.active { background: #553c9a; color: #fff; border-color: #553c9a; }
+    .spa-history-log {
+      background: #1a202c; border-radius: 8px; padding: 10px 14px;
+      font-family: 'Consolas','Monaco',monospace; font-size: 0.8em;
+      color: #e2e8f0; line-height: 1.8; max-height: 120px; overflow-y: auto;
+      margin-top: 12px;
+    }
+
+    /* ===== URL パーサー ===== */
+    .url-parser-input {
+      width: 100%; border: 2px solid #e9d8fd; border-radius: 8px;
+      padding: 10px 14px; font-size: 0.9em;
+      font-family: 'Consolas','Monaco',monospace; outline: none;
+      transition: border-color 0.2s; color: #2d3748; margin-bottom: 12px;
+    }
+    .url-parser-input:focus { border-color: #9f7aea; }
+    .url-parts-grid {
+      display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 10px; margin-top: 8px;
+    }
+    .url-part {
+      border: 2px solid #e9d8fd; border-radius: 8px; padding: 10px 14px;
+      transition: all 0.3s;
+    }
+    .url-part.has-value { border-color: #9f7aea; background: #faf5ff; }
+    .url-part.empty     { opacity: 0.5; }
+    .url-part-label {
+      font-size: 0.72em; font-weight: bold; color: #9f7aea;
+      font-family: 'Consolas','Monaco',monospace; margin-bottom: 4px;
+    }
+    .url-part-value {
+      font-size: 0.85em; font-family: 'Consolas','Monaco',monospace;
+      color: #2d3748; word-break: break-all;
+    }
+    .url-part.empty .url-part-value { color: #a0aec0; font-style: italic; }
+    .url-visual {
+      background: #1a202c; border-radius: 8px; padding: 12px 16px;
+      font-family: 'Consolas','Monaco',monospace; font-size: 0.82em;
+      line-height: 2.0; margin-bottom: 12px; word-break: break-all;
+    }
+    .url-seg-protocol { color: #90cdf4; }
+    .url-seg-host     { color: #68d391; }
+    .url-seg-port     { color: #f6ad55; }
+    .url-seg-path     { color: #b794f4; }
+    .url-seg-query    { color: #fbd38d; }
+    .url-seg-hash     { color: #fc8181; }
+
+    /* ===== 履歴スタックビジュアライザ ===== */
+    .history-stack-wrap {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 16px;
+    }
+    .history-stack {
+      border: 2px solid #e9d8fd; border-radius: 10px; padding: 14px;
+      min-height: 200px;
+    }
+    .history-stack h4 { margin: 0 0 10px; font-size: 0.9em; color: #553c9a; }
+    .stack-entries { display: flex; flex-direction: column-reverse; gap: 6px; }
+    .stack-entry {
+      border: 2px solid #e9d8fd; border-radius: 6px; padding: 8px 12px;
+      font-size: 0.82em; font-family: 'Consolas','Monaco',monospace;
+      transition: all 0.3s; background: #fff;
+      display: flex; justify-content: space-between; align-items: center;
+    }
+    .stack-entry.current { border-color: #9f7aea; background: #e9d8fd; font-weight: bold; color: #553c9a; }
+    .stack-entry.future  { opacity: 0.4; border-style: dashed; }
+    .stack-entry .entry-url { color: #553c9a; }
+    .stack-entry .entry-state { color: #9f7aea; font-size: 0.75em; }
+    .stack-entry .entry-badge {
+      background: #9f7aea; color: #fff; border-radius: 20px;
+      padding: 1px 8px; font-size: 0.72em;
+    }
+    .history-controls { display: flex; flex-direction: column; gap: 8px; }
+    .hist-input {
+      border: 2px solid #e9d8fd; border-radius: 6px; padding: 7px 10px;
+      font-size: 0.85em; font-family: 'Consolas','Monaco',monospace;
+      outline: none; width: 100%;
+    }
+    .hist-input:focus { border-color: #9f7aea; }
+    .hist-log {
+      background: #1a202c; border-radius: 8px; padding: 10px 14px;
+      font-family: 'Consolas','Monaco',monospace; font-size: 0.78em;
+      color: #e2e8f0; line-height: 1.8; min-height: 80px;
+      max-height: 160px; overflow-y: auto;
+    }
+
+    /* ===== popstate デモ ===== */
+    .popstate-timeline {
+      position: relative; padding-left: 24px; margin-top: 12px;
+    }
+    .popstate-timeline::before {
+      content: ''; position: absolute; left: 8px; top: 0; bottom: 0;
+      width: 2px; background: #e9d8fd;
+    }
+    .popstate-event {
+      position: relative; margin-bottom: 10px;
+      background: #fff; border: 2px solid #e9d8fd;
+      border-radius: 8px; padding: 10px 14px;
+      font-size: 0.85em; animation: slideIn 0.3s ease;
+    }
+    .popstate-event::before {
+      content: ''; position: absolute; left: -20px; top: 50%;
+      transform: translateY(-50%); width: 12px; height: 12px;
+      border-radius: 50%; background: #9f7aea; border: 2px solid #fff;
+    }
+    @keyframes slideIn {
+      from { opacity: 0; transform: translateX(-10px); }
+      to   { opacity: 1; transform: translateX(0); }
+    }
+    .popstate-event.push    { border-color: #9f7aea; }
+    .popstate-event.replace { border-color: #48bb78; }
+    .popstate-event.pop     { border-color: #f6ad55; }
+    .popstate-event.push::before    { background: #9f7aea; }
+    .popstate-event.replace::before { background: #48bb78; }
+    .popstate-event.pop::before     { background: #f6ad55; }
+    .event-type {
+      font-weight: bold; font-size: 0.78em; font-family: 'Consolas','Monaco',monospace;
+    }
+    .event-type.push    { color: #9f7aea; }
+    .event-type.replace { color: #48bb78; }
+    .event-type.pop     { color: #f6ad55; }
+
+    /* ===== 演習問題 ===== */
+    .quiz-section {
+      background: #faf5ff; border-left: 6px solid #9f7aea;
+      border-radius: 0 10px 10px 0; padding: 28px; margin: 48px 0 32px;
+    }
+    .quiz-section > h2 { margin-top: 0; border-left: none; padding-left: 0; }
+    .quiz-item {
+      background: #fff; border: 1px solid #e9d8fd;
+      border-radius: 10px; padding: 20px 24px; margin-bottom: 22px;
+    }
+    .quiz-q { font-weight: bold; color: #2d3748; margin-bottom: 12px; }
+    .q-num {
+      display: inline-block; background: #553c9a; color: #fff;
+      border-radius: 20px; padding: 2px 10px; font-size: 0.78em; margin-right: 8px;
+    }
+    .blank-input {
+      border: 2px solid #e9d8fd; border-radius: 6px; padding: 7px 12px;
+      font-size: 0.93em; font-family: 'Consolas','Monaco',monospace;
+      outline: none; transition: border-color 0.2s; margin: 4px 2px;
+    }
+    .blank-input:focus { border-color: #9f7aea; }
+    .choice-btn {
+      display: block; width: 100%; text-align: left; padding: 10px 16px; margin: 6px 0;
+      border: 2px solid #e9d8fd; border-radius: 8px; background: #fff;
+      cursor: pointer; font-size: 0.9em; transition: all 0.2s; font-family: inherit;
+    }
+    .choice-btn:hover { border-color: #9f7aea; background: #faf5ff; }
+    .choice-btn.correct { border-color: #48bb78; background: #f0fff4; color: #276749; font-weight: bold; }
+    .choice-btn.wrong   { border-color: #fc8181; background: #fff5f5; color: #c53030; }
+    .cb-label {
+      display: flex; align-items: flex-start; gap: 10px; padding: 8px 12px; margin: 4px 0;
+      border-radius: 6px; border: 2px solid #e9d8fd; cursor: pointer;
+      font-size: 0.9em; transition: all 0.2s;
+    }
+    .cb-label:hover { border-color: #9f7aea; background: #faf5ff; }
+    .cb-label input { margin-top: 3px; flex-shrink: 0; accent-color: #9f7aea; }
+    .cb-label.correct { border-color: #48bb78; background: #f0fff4; color: #276749; }
+    .cb-label.wrong   { border-color: #fc8181; background: #fff5f5; color: #c53030; }
+    .check-btn {
+      background: linear-gradient(135deg, #553c9a, #9f7aea);
+      color: #fff; border: none; border-radius: 8px;
+      padding: 9px 22px; font-size: 0.9em; font-weight: bold;
+      cursor: pointer; transition: opacity 0.2s; margin-top: 8px;
+    }
+    .check-btn:hover { opacity: 0.85; }
+    .feedback {
+      margin-top: 12px; padding: 12px 16px; border-radius: 8px;
+      font-size: 0.9em; display: none; line-height: 1.7;
+    }
+    .feedback.ok { background: #f0fff4; border: 1px solid #9ae6b4; color: #276749; display: block; }
+    .feedback.ng { background: #fff5f5; border: 1px solid #feb2b2; color: #c53030; display: block; }
+
+    .code-fill {
+      background: #1a202c; border-radius: 8px; padding: 16px 18px;
+      font-family: 'Consolas','Monaco',monospace; font-size: 0.87em;
+      line-height: 2.1; margin: 12px 0;
+    }
+    .fill-input {
+      background: #2d3748; border: 2px solid #4a5568; color: #fbd38d;
+      padding: 3px 8px; display: inline-block; vertical-align: middle;
+      border-radius: 4px; font-family: 'Consolas','Monaco',monospace;
+      font-size: 0.9em; outline: none; transition: border-color 0.2s;
+    }
+    .fill-input:focus { border-color: #9f7aea; }
+
+    .complete-area {
+      background: #f0fff4; border: 2px solid #9ae6b4;
+      border-radius: 12px; padding: 24px; margin-top: 40px; text-align: center;
+    }
+    .complete-area p { margin: 0 0 14px; color: #276749; font-weight: bold; font-size: 1.05em; }
+    .complete-btn {
+      background: linear-gradient(135deg, #38a169, #48bb78);
+      color: #fff; border: none; border-radius: 10px;
+      padding: 12px 32px; font-size: 1em; font-weight: bold;
+      cursor: pointer; transition: opacity 0.2s;
+    }
+    .complete-btn:hover { opacity: 0.85; }
+    .complete-btn.done { background: #a0aec0; cursor: default; }
+    .complete-msg { margin-top: 10px; color: #276749; font-size: 0.9em; display: none; }
+
+    .page-nav {
+      display: flex; justify-content: space-between; align-items: center;
+      margin-top: 48px; padding-top: 20px; border-top: 2px solid #e9d8fd;
+      gap: 12px; flex-wrap: wrap;
+    }
+    .nav-btn {
+      display: inline-block; padding: 10px 22px; border-radius: 8px;
+      text-decoration: none; font-weight: bold; font-size: 0.9em; transition: opacity 0.2s;
+    }
+    .nav-btn:hover { opacity: 0.8; }
+    .nav-btn.prev  { background: #edf2f7; color: #4a5568; }
+    .nav-btn.index { background: #faf5ff; color: #553c9a; border: 2px solid #e9d8fd; }
+    .nav-btn.next  { background: linear-gradient(135deg, #553c9a, #9f7aea); color: #fff; }
+
+    footer {
+      margin-top: 48px; padding-top: 16px; border-top: 2px solid #e9d8fd;
+      font-size: 0.82em; color: #a0aec0; text-align: center;
+    }
+    footer a { color: #553c9a; text-decoration: none; }
+    footer a:hover { text-decoration: underline; }
+
+    @media (max-width: 640px) {
+      body { font-size: 0.84em; padding: 0 12px; }
+      .chapter-header { padding: 20px 16px; }
+      .chapter-header h1 { font-size: 1.2em; }
+      .history-stack-wrap { grid-template-columns: 1fr; }
+      .url-parts-grid { grid-template-columns: 1fr 1fr; }
+      .page-nav { flex-direction: column; align-items: stretch; }
+      .nav-btn  { text-align: center; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- パンくず -->
+<div class="breadcrumb">
+  <a href="../index.html">🏠 HTML5 Level 2</a> ›
+  <a href="index.html">Chapter 3</a> ›
+  3-5 ブラウザ履歴とナビゲーション
+</div>
+
+<!-- ヘッダー -->
+<div class="chapter-header">
+  <div class="ch-num">CHAPTER 03 › SECTION 05</div>
+  <h1>📜 3-5 ブラウザ履歴とナビゲーション</h1>
+  <p>History API と Location API を使ったブラウザ履歴の操作とナビゲーション制御を学びます。
+  SPA（シングルページアプリケーション）のルーティングの仕組みを
+  実際に動かしながら体系的に理解しましょう。</p>
+  <div class="badge-row">
+    <span class="badge">pushState</span>
+    <span class="badge">replaceState</span>
+    <span class="badge">popstate</span>
+    <span class="badge">SPA ルーティング</span>
+    <span class="badge">Location API</span>
+    <span class="badge">URL 構成要素</span>
+  </div>
+</div>
+
+<!-- セクションナビ -->
+<div class="section-nav">
+  <h2>📋 Chapter 3 のセクション</h2>
+  <ol>
+    <li><a href="01_events.html">3-1 イベント</a></li>
+    <li><a href="02_dom.html">3-2 ドキュメントオブジェクト／DOM</a></li>
+    <li><a href="03_window.html">3-3 ウィンドウオブジェクト</a></li>
+    <li><a href="04_selector.html">3-4 セレクタAPI</a></li>
+    <li class="current"><a href="05_history.html">3-5 ブラウザ履歴とナビゲーション</a></li>
+    <li><a href="06_debug.html">3-6 テスト・デバッグ</a></li>
+  </ol>
+</div>
+
+
+<!-- ============================================================ -->
+<!-- 1. History API -->
+<!-- ============================================================ -->
+<h2 id="history">① History API</h2>
+
+<div class="content-card">
+  <h3>pushState / replaceState とは</h3>
+  <p>
+    <strong>History API</strong> を使うと、<strong>ページを再読み込みせずにURLを変更</strong>できます。
+    これが SPA（シングルページアプリケーション）のルーティングの核心です。
+    <code>pushState</code> は新しい履歴エントリを追加し、
+    <code>replaceState</code> は現在のエントリを置き換えます。
+  </p>
+
+  <div class="code-block">
+    <button class="copy-btn" onclick="copyCode(this)">copy</button>
+    <pre><span class="cm">// pushState(state, title, url)</span>
+<span class="cm">// 新しい履歴エントリを追加してURLを変更（ページ遷移なし）</span>
+history.<span class="fn">pushState</span>(
+  { page: <span class="str">'home'</span>, id: <span class="num">1</span> }, <span class="cm">// state オブジェクト（任意のデータ）</span>
+  <span class="str">''</span>,                          <span class="cm">// title（現在のブラウザは無視）</span>
+  <span class="str">'/home'</span>                      <span class="cm">// 新しいURL（同一オリジンのみ）</span>
+);
+
+<span class="cm">// replaceState：現在の履歴エントリを置き換える（戻るボタンに残らない）</span>
+history.<span class="fn">replaceState</span>(
+  { page: <span class="str">'home'</span>, updated: <span class="kw">true</span> },
+  <span class="str">''</span>,
+  <span class="str">'/home?tab=profile'</span>
+);
+
+<span class="cm">// 履歴の移動</span>
+history.<span class="fn">back</span>();      <span class="cm">// 1つ戻る（ブラウザの「戻る」ボタンと同じ）</span>
+history.<span class="fn">forward</span>();   <span class="cm">// 1つ進む</span>
+history.<span class="fn">go</span>(<span class="op">-</span><span class="num">2</span>);      <span class="cm">// 2つ戻る</span>
+history.<span class="fn">go</span>(<span class="num">1</span>);       <span class="cm">// 1つ進む</span>
+history.<span class="fn">go</span>(<span class="num">0</span>);       <span class="cm">// 現在のページをリロード</span>
+
+<span class="cm">// 履歴の長さと現在の state</span>
+console.<span class="fn">log</span>(history.length); <span class="out">// → 履歴エントリ数</span>
+console.<span class="fn">log</span>(history.state);  <span class="out">// → 現在の state オブジェクト</span>
+
+<span class="cm">// popstate イベント：戻る・進むボタン押下時に発火</span>
+window.<span class="fn">addEventListener</span>(<span class="str">'popstate'</span>, (event) =&gt; {
+  console.<span class="fn">log</span>(<span class="str">'popstate 発火！'</span>);
+  console.<span class="fn">log</span>(event.state); <span class="out">// → pushState で渡した state</span>
+  <span class="cm">// ここでページの内容を切り替える（SPAのルーティング）</span>
+  <span class="fn">renderPage</span>(event.state);
+});</pre>
+  </div>
+
+  <div class="info-box point">
+    <strong>📌 試験頻出：pushState vs replaceState の違い</strong>
+    <code>pushState</code>：新しいエントリを<strong>スタックに追加</strong>する。戻るボタンで前のページに戻れる。<br>
+    <code>replaceState</code>：現在のエントリを<strong>置き換える</strong>。戻るボタンに残らない。<br>
+    どちらも <strong>popstate イベントは発火しません</strong>（popstate は back/forward/go でのみ発火）。
+  </div>
+
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr><th>メソッド</th><th>履歴スタック</th><th>popstate 発火</th><th>主な用途</th></tr></thead>
+      <tbody>
+        <tr><td><code>pushState</code></td><td>新エントリを追加</td><td>❌ 発火しない</td><td>ページ遷移のシミュレート</td></tr>
+        <tr><td><code>replaceState</code></td><td>現在のエントリを置換</td><td>❌ 発火しない</td><td>URLの更新（履歴に残さない）</td></tr>
+        <tr><td><code>back() / forward() / go()</code></td><td>ポインタを移動</td><td>✅ 発火する</td><td>プログラムによる履歴移動</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="info-box warn">
+    <strong>⚠️ pushState の URL 制限</strong>
+    <code>pushState</code> で指定できる URL は<strong>同一オリジン</strong>のみです。
+    異なるオリジンの URL を指定すると <code>SecurityError</code> が発生します。
+    また、相対URLも使用可能です（例：<code>'../about'</code>）。
+  </div>
+</div>
+
+
+<!-- ============================================================ -->
+<!-- 2. Location API -->
+<!-- ============================================================ -->
+<h2 id="location">② Location API</h2>
+
+<div class="content-card">
+  <h3>URL の構成要素と Location プロパティ</h3>
+  <p>
+    <code>window.location</code> オブジェクトは現在のURLの情報を提供し、
+    ナビゲーションの制御もできます。URLは以下の構成要素に分解されます。
+  </p>
+
+  <div class="code-block">
+    <button class="copy-btn" onclick="copyCode(this)">copy</button>
+    <pre><span class="cm">// URL: https://example.com:8080/path/page?q=hello&lang=ja#section1</span>
+
+console.<span class="fn">log</span>(location.href);      <span class="out">// → 'https://example.com:8080/path/page?q=hello&lang=ja#section1'</span>
+console.<span class="fn">log</span>(location.protocol);  <span class="out">// → 'https:'（コロン含む）</span>
+console.<span class="fn">log</span>(location.host);      <span class="out">// → 'example.com:8080'（ポート含む）</span>
+console.<span class="fn">log</span>(location.hostname);  <span class="out">// → 'example.com'（ポートなし）</span>
+console.<span class="fn">log</span>(location.port);      <span class="out">// → '8080'</span>
+console.<span class="fn">log</span>(location.pathname);  <span class="out">// → '/path/page'</span>
+console.<span class="fn">log</span>(location.search);    <span class="out">// → '?q=hello&lang=ja'（?含む）</span>
+console.<span class="fn">log</span>(location.hash);      <span class="out">// → '#section1'（#含む）</span>
+console.<span class="fn">log</span>(location.origin);    <span class="out">// → 'https://example.com:8080'</span>
+
+<span class="cm">// ナビゲーション</span>
+location.<span class="fn">assign</span>(<span class="str">'https://example.com'</span>);  <span class="cm">// 遷移（履歴に残る）</span>
+location.<span class="fn">replace</span>(<span class="str">'https://example.com'</span>); <span class="cm">// 遷移（履歴に残らない）</span>
+location.<span class="fn">reload</span>();                       <span class="cm">// 現在のページをリロード</span>
+location.href = <span class="str">'https://example.com'</span>;    <span class="cm">// assign と同じ</span>
+
+<span class="cm">// URLSearchParams でクエリ文字列を解析</span>
+<span class="kw">const</span> params = <span class="kw">new</span> <span class="fn">URLSearchParams</span>(location.search);
+console.<span class="fn">log</span>(params.<span class="fn">get</span>(<span class="str">'q'</span>));    <span class="out">// → 'hello'</span>
+console.<span class="fn">log</span>(params.<span class="fn">get</span>(<span class="str">'lang'</span>)); <span class="out">// → 'ja'</span>
+params.<span class="fn">set</span>(<span class="str">'q'</span>, <span class="str">'world'</span>);
+console.<span class="fn">log</span>(params.<span class="fn">toString</span>()); <span class="out">// → 'q=world&lang=ja'</span></pre>
+  </div>
+
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr><th>プロパティ/メソッド</th><th>説明</th><th>履歴への影響</th></tr></thead>
+      <tbody>
+        <tr><td><code>location.href = url</code></td><td>URLに遷移</td><td>履歴に追加</td></tr>
+        <tr><td><code>location.assign(url)</code></td><td>URLに遷移</td><td>履歴に追加</td></tr>
+        <tr><td><code>location.replace(url)</code></td><td>URLに遷移（置換）</td><td>履歴に残らない</td></tr>
+        <tr><td><code>location.reload()</code></td><td>現在のページをリロード</td><td>変化なし</td></tr>
+        <tr><td><code>location.hash = '#id'</code></td><td>ハッシュを変更</td><td>履歴に追加</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="info-box point">
+    <strong>📌 試験頻出：assign vs replace の違い</strong>
+    <code>location.assign(url)</code>：遷移後に<strong>戻るボタンで前のページに戻れる</strong>（履歴に追加）<br>
+    <code>location.replace(url)</code>：遷移後に<strong>戻るボタンで戻れない</strong>（現在のエントリを置換）<br>
+    ログインページからダッシュボードへの遷移など、「戻れないようにしたい」場合に <code>replace</code> を使います。
+  </div>
+</div>
+
+
+<!-- ============================================================ -->
+<!-- デモ① ミニSPAデモ -->
+<!-- ============================================================ -->
+<div class="demo-card">
+  <h3>🖥️ デモ①：pushState / replaceState ミニSPAデモ</h3>
+  <div class="demo-desc">
+    ページ遷移なしにURLが変わる SPA のルーティングを体験しましょう。
+    ブラウザの戻る・進むボタンでも動作します（popstate イベントで処理）。
+  </div>
+
+  <div class="spa-browser">
+    <div class="spa-toolbar">
+      <div class="spa-dot" style="background:#fc8181;"></div>
+      <div class="spa-dot" style="background:#f6ad55;"></div>
+      <div class="spa-dot" style="background:#68d391;"></div>
+      <div class="spa-nav-btns">
+        <button class="spa-nav-btn" id="spa-back-btn" onclick="spaBack()" disabled>◀</button>
+        <button class="spa-nav-btn" id="spa-fwd-btn"  onclick="spaForward()" disabled>▶</button>
+      </div>
+      <div class="spa-url-bar" id="spa-url-bar">（現在のURL）</div>
+    </div>
+
+    <div style="background:#2d3748; padding:4px 14px; display:flex; gap:6px; flex-wrap:wrap;">
+      <button class="spa-menu-btn" id="spa-btn-home"    onclick="spaNavigate('home')">🏠 ホーム</button>
+      <button class="spa-menu-btn" id="spa-btn-about"   onclick="spaNavigate('about')">ℹ️ About</button>
+      <button class="spa-menu-btn" id="spa-btn-products" onclick="spaNavigate('products')">📦 製品</button>
+      <button class="spa-menu-btn" id="spa-btn-contact" onclick="spaNavigate('contact')">✉️ お問い合わせ</button>
+      <button class="spa-menu-btn" onclick="spaReplace()" style="background:#276749; color:#fff; border-color:#276749;">↩️ replaceState</button>
+    </div>
+
+    <div class="spa-content" id="spa-content">
+      <div class="spa-page active" id="spa-page-home">
+        <h3>🏠 ホームページ</h3>
+        <p>pushState でURLを <code>/home</code> に変更しました。<br>
+        ページの再読み込みは発生していません。</p>
+        <p style="font-size:0.85em; color:#718096;">state: <code id="spa-state-home">{}</code></p>
+      </div>
+      <div class="spa-page" id="spa-page-about">
+        <h3>ℹ️ About ページ</h3>
+        <p>URLが <code>/about</code> に変わりました。<br>
+        SPAではJavaScriptがコンテンツを切り替えています。</p>
+        <p style="font-size:0.85em; color:#718096;">state: <code id="spa-state-about">{}</code></p>
+      </div>
+      <div class="spa-page" id="spa-page-products">
+        <h3>📦 製品ページ</h3>
+        <p>URLが <code>/products</code> に変わりました。<br>
+        サーバーへのリクエストは発生していません。</p>
+        <p style="font-size:0.85em; color:#718096;">state: <code id="spa-state-products">{}</code></p>
+      </div>
+      <div class="spa-page" id="spa-page-contact">
+        <h3>✉️ お問い合わせページ</h3>
+        <p>URLが <code>/contact</code> に変わりました。<br>
+        History API により、ブックマークや共有も可能なURLになります。</p>
+        <p style="font-size:0.85em; color:#718096;">state: <code id="spa-state-contact">{}</code></p>
+      </div>
+    </div>
+  </div>
+
+  <div class="spa-history-log" id="spa-log">
+    <span style="color:#a0aec0;">// メニューをクリックして SPA ナビゲーションを体験しましょう</span>
+  </div>
+</div>
+
+
+<!-- ============================================================ -->
+<!-- デモ② URL パーサー -->
+<!-- ============================================================ -->
+<div class="demo-card">
+  <h3>🔗 デモ②：URL パーサー — 構成要素の分解</h3>
+  <div class="demo-desc">
+    URLを入力すると、Location API の各プロパティに対応する構成要素に分解して表示します。
+    様々なURLを試してみましょう。
+  </div>
+
+  <input class="url-parser-input" id="url-input"
+    value="https://example.com:8080/path/page?q=hello&lang=ja#section1"
+    placeholder="URLを入力してください">
+
+  <div class="url-visual" id="url-visual">
+    URLを入力してください
+  </div>
+
+  <div class="url-parts-grid" id="url-parts-grid">
+    <div class="url-part" id="up-protocol">
+      <div class="url-part-label">protocol</div>
+      <div class="url-part-value" id="upv-protocol">—</div>
+    </div>
+    <div class="url-part" id="up-host">
+      <div class="url-part-label">host</div>
+      <div class="url-part-value" id="upv-host">—</div>
+    </div>
+    <div class="url-part" id="up-hostname">
+      <div class="url-part-label">hostname</div>
+      <div class="url-part-value" id="upv-hostname">—</div>
+    </div>
+    <div class="url-part" id="up-port">
+      <div class="url-part-label">port</div>
+      <div class="url-part-value" id="upv-port">—</div>
+    </div>
+    <div class="url-part" id="up-pathname">
+      <div class="url-part-label">pathname</div>
+      <div class="url-part-value" id="upv-pathname">—</div>
+    </div>
+    <div class="url-part" id="up-search">
+      <div class="url-part-label">search</div>
+      <div class="url-part-value" id="upv-search">—</div>
+    </div>
+    <div class="url-part" id="up-hash">
+      <div class="url-part-label">hash</div>
+      <div class="url-part-value" id="upv-hash">—</div>
+    </div>
+    <div class="url-part" id="up-origin">
+      <div class="url-part-label">origin</div>
+      <div class="url-part-value" id="upv-origin">—</div>
+    </div>
+  </div>
+
+  <div style="margin-top:10px; display:flex; gap:6px; flex-wrap:wrap;">
+    <span style="font-size:0.82em; color:#553c9a; font-weight:bold; align-self:center;">プリセット：</span>
+    <button class="run-btn secondary" style="font-size:0.78em; padding:5px 12px;"
+      onclick="setUrl('https://example.com:8080/path/page?q=hello&lang=ja#section1')">フル形式</button>
+    <button class="run-btn secondary" style="font-size:0.78em; padding:5px 12px;"
+      onclick="setUrl('https://www.google.com/search?q=HTML5')">Google検索</button>
+    <button class="run-btn secondary" style="font-size:0.78em; padding:5px 12px;"
+      onclick="setUrl('http://localhost:3000/api/users')">localhost</button>
+    <button class="run-btn secondary" style="font-size:0.78em; padding:5px 12px;"
+      onclick="setUrl('https://github.com/user/repo#readme')">ハッシュのみ</button>
+  </div>
+</div>
+
+
+<!-- ============================================================ -->
+<!-- デモ③ 履歴スタックビジュアライザ -->
+<!-- ============================================================ -->
+<div class="demo-card">
+  <h3>📚 デモ③：履歴スタック ビジュアライザ</h3>
+  <div class="demo-desc">
+    pushState・replaceState・back・forward の操作で
+    履歴スタックがどう変化するかをリアルタイムで視覚化します。
+  </div>
+
+  <div class="history-stack-wrap">
+    <div class="history-stack">
+      <h4>📚 履歴スタック（下が古い）</h4>
+      <div class="stack-entries" id="stack-entries"></div>
+    </div>
+    <div class="history-controls">
+      <div style="font-size:0.85em; font-weight:bold; color:#553c9a; margin-bottom:4px;">pushState の URL：</div>
+      <input class="hist-input" id="hist-push-url" value="/page-a" placeholder="/path">
+      <div style="font-size:0.82em; color:#718096; margin-bottom:4px;">state データ：</div>
+      <input class="hist-input" id="hist-push-state" value='{"page":"a"}' placeholder='{"key":"value"}'>
+      <button class="run-btn" onclick="histPush()">➕ pushState</button>
+      <button class="run-btn success" onclick="histReplace()">↩️ replaceState</button>
+      <div style="display:flex; gap:8px;">
+        <button class="run-btn secondary" id="hist-back-btn" onclick="histBack()" style="flex:1;">◀ back()</button>
+        <button class="run-btn secondary" id="hist-fwd-btn"  onclick="histForward()" style="flex:1;">forward() ▶</button>
+      </div>
+      <button class="run-btn danger" onclick="histReset()">↩️ リセット</button>
+      <div class="hist-log" id="hist-log">
+        <span style="color:#a0aec0;">// 操作ログ</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ============================================================ -->
+<!-- デモ④ popstate イベント確認 -->
+<!-- ============================================================ -->
+<div class="demo-card">
+  <h3>⚡ デモ④：popstate イベント リアルタイム確認</h3>
+  <div class="demo-desc">
+    pushState でURLを追加した後、back() / forward() を実行すると
+    popstate イベントが発火します。タイムラインで発火の様子を確認しましょう。
+  </div>
+
+  <div style="display:flex; gap:8px; flex-wrap:wrap; margin-bottom:14px;">
+    <button class="run-btn" onclick="psSetup()">① pushState で3件追加</button>
+    <button class="run-btn secondary" onclick="psBack()">◀ back()（popstate 発火）</button>
+    <button class="run-btn secondary" onclick="psForward()">forward() ▶（popstate 発火）</button>
+    <button class="run-btn danger" onclick="psClear()">🗑️ タイムラインをクリア</button>
+  </div>
+
+  <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
+    <div>
+      <div style="font-size:0.85em; font-weight:bold; color:#553c9a; margin-bottom:8px;">
+        📋 イベントタイムライン
+      </div>
+      <div class="popstate-timeline" id="ps-timeline">
+        <div style="color:#a0aec0; font-size:0.85em; padding:8px 0;">
+          ① ボタンを押してイベントを発生させましょう
+        </div>
+      </div>
+    </div>
+    <div>
+      <div style="font-size:0.85em; font-weight:bold; color:#553c9a; margin-bottom:8px;">
+        📊 現在の状態
+      </div>
+      <div style="border:2px solid #e9d8fd; border-radius:8px; padding:14px; background:#faf5ff;">
+        <div style="font-size:0.82em; margin-bottom:6px;">
+          <span style="color:#9f7aea; font-weight:bold;">現在のURL：</span>
+          <span id="ps-current-url" style="font-family:'Consolas','Monaco',monospace; font-size:0.9em; color:#2d3748;">—</span>
+        </div>
+        <div style="font-size:0.82em; margin-bottom:6px;">
+          <span style="color:#9f7aea; font-weight:bold;">history.state：</span>
+          <span id="ps-current-state" style="font-family:'Consolas','Monaco',monospace; font-size:0.9em; color:#2d3748;">null</span>
+        </div>
+        <div style="font-size:0.82em; margin-bottom:6px;">
+          <span style="color:#9f7aea; font-weight:bold;">history.length：</span>
+          <span id="ps-history-length" style="font-family:'Consolas','Monaco',monospace; font-size:0.9em; color:#2d3748;">—</span>
+        </div>
+        <div style="font-size:0.82em;">
+          <span style="color:#9f7aea; font-weight:bold;">popstate 発火回数：</span>
+          <span id="ps-fire-count" style="font-family:'Consolas','Monaco',monospace; font-size:0.9em; color:#553c9a; font-weight:bold;">0</span>
+        </div>
+      </div>
+
+      <div class="info-box point" style="margin-top:12px;">
+        <strong>📌 popstate が発火する条件</strong>
+        ・<code>history.back()</code> / <code>history.forward()</code> / <code>history.go(n)</code><br>
+        ・ブラウザの戻る・進むボタン<br>
+        <strong>発火しない：</strong><code>pushState</code> / <code>replaceState</code> 実行時
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ============================================================ -->
+<!-- 演習問題 -->
+<!-- ============================================================ -->
+<div class="quiz-section">
+  <h2>🖊️ 演習問題</h2>
+
+  <!-- Q1：穴埋め -->
+  <div class="quiz-item">
+    <div class="quiz-q"><span class="q-num">Q1</span> 穴埋め問題</div>
+    <p>以下の説明に当てはまる正しいメソッド名・プロパティ名を入力してください。</p>
+
+    <p>① ページ遷移なしに新しい履歴エントリを追加してURLを変更するメソッド：
+    <input class="blank-input" id="q1a" placeholder="メソッド名" style="width:180px;"></p>
+
+    <p>② 現在の履歴エントリを置き換えてURLを変更するメソッド（戻るボタンに残らない）：
+    <input class="blank-input" id="q1b" placeholder="メソッド名" style="width:200px;"></p>
+
+    <p>③ 戻る・進むボタン押下時に発火するイベント名：
+    <input class="blank-input" id="q1c" placeholder="イベント名" style="width:160px;"></p>
+
+    <p>④ <code>location.search</code> が返す値の例（URL が <code>?name=Alice&age=25</code> の場合）：
+    <input class="blank-input" id="q1d" placeholder="値を入力" style="width:220px;"></p>
+
+    <button class="check-btn" onclick="checkQ1()">答え合わせ</button>
+    <div class="feedback" id="q1-fb"></div>
+  </div>
+
+  <!-- Q2：選択 -->
+  <div class="quiz-item">
+    <div class="quiz-q"><span class="q-num">Q2</span> 選択問題</div>
+    <p><code>history.pushState</code> と <code>history.replaceState</code> の違いとして<strong>正しいもの</strong>はどれですか？</p>
+
+    <button class="choice-btn" onclick="checkQ2(this,'wrong')">
+      ① pushState はページを再読み込みするが、replaceState はしない
+    </button>
+    <button class="choice-btn" onclick="checkQ2(this,'wrong')">
+      ② pushState は popstate イベントを発火するが、replaceState は発火しない
+    </button>
+    <button class="choice-btn" onclick="checkQ2(this,'correct')">
+      ③ pushState は新しい履歴エントリを追加するが、replaceState は現在のエントリを置き換える
+    </button>
+    <button class="choice-btn" onclick="checkQ2(this,'wrong')">
+      ④ pushState は同一オリジンのみ使えるが、replaceState は異なるオリジンにも使える
+    </button>
+    <div class="feedback" id="q2-fb"></div>
+  </div>
+
+  <!-- Q3：チェックボックス -->
+  <div class="quiz-item">
+    <div class="quiz-q"><span class="q-num">Q3</span> 複数選択問題</div>
+    <p><strong>Location API</strong> に関して正しい記述をすべて選んでください。</p>
+
+    <label class="cb-label"><input type="checkbox" id="q3a">
+      ① <code>location.protocol</code> は <code>'https:'</code> のようにコロンを含む文字列を返す</label>
+    <label class="cb-label"><input type="checkbox" id="q3b">
+      ② <code>location.assign(url)</code> で遷移すると、戻るボタンで前のページに戻れる</label>
+    <label class="cb-label"><input type="checkbox" id="q3c">
+      ③ <code>location.replace(url)</code> で遷移すると、戻るボタンで前のページに戻れる</label>
+    <label class="cb-label"><input type="checkbox" id="q3d">
+      ④ <code>location.search</code> はクエリ文字列を <code>?</code> を含めて返す</label>
+    <label class="cb-label"><input type="checkbox" id="q3e">
+      ⑤ <code>location.hostname</code> はポート番号を含まないホスト名を返す</label>
+    <label class="cb-label"><input type="checkbox" id="q3f">
+      ⑥ <code>location.hash</code> はハッシュ文字列を <code>#</code> を含まずに返す</label>
+
+    <button class="check-btn" onclick="checkQ3()">答え合わせ</button>
+    <div class="feedback" id="q3-fb"></div>
+  </div>
+
+  <!-- Q4：コード補完 -->
+  <div class="quiz-item">
+    <div class="quiz-q"><span class="q-num">Q4</span> コード補完問題</div>
+    <p>以下のコードの空欄を埋めて、SPA のルーティングを正しく実装してください。</p>
+
+    <div class="code-fill">
+      <span style="color:#a0aec0;">// SPA のページ遷移（URLを変えてコンテンツを切り替え）</span><br>
+      <span style="color:#90cdf4;">function</span> <span style="color:#b794f4;">navigate</span>(page) {<br>
+      &nbsp;&nbsp;<span style="color:#a0aec0;">// 新しい履歴エントリを追加</span><br>
+      &nbsp;&nbsp;history.<input class="fill-input" id="q4a" placeholder="メソッド名" style="width:130px;">(
+      { page }, <span style="color:#fbd38d;">''</span>, <span style="color:#fbd38d;">`/${page}`</span>);<br>
+      &nbsp;&nbsp;<span style="color:#b794f4;">renderPage</span>(page);<br>
+      }<br><br>
+      <span style="color:#a0aec0;">// 戻る・進むボタンへの対応</span><br>
+      window.<span style="color:#b794f4;">addEventListener</span>(<span style="color:#fbd38d;">'<input class="fill-input" id="q4b" placeholder="イベント名" style="width:120px;">'</span>, (e) =&gt; {<br>
+      &nbsp;&nbsp;<span style="color:#90cdf4;">const</span> page = e.<input class="fill-input" id="q4c" placeholder="プロパティ名" style="width:90px;">?.page ?? <span style="color:#fbd38d;">'home'</span>;<br>
+      &nbsp;&nbsp;<span style="color:#b794f4;">renderPage</span>(page);<br>
+      });<br><br>
+      <span style="color:#a0aec0;">// クエリ文字列の解析</span><br>
+      <span style="color:#90cdf4;">const</span> params = <span style="color:#90cdf4;">new</span> <span style="color:#b794f4;">URLSearchParams</span>(location.<input class="fill-input" id="q4d" placeholder="プロパティ名" style="width:100px;">);<br>
+      <span style="color:#90cdf4;">const</span> tab = params.<span style="color:#b794f4;">get</span>(<span style="color:#fbd38d;">'tab'</span>);
+    </div>
+
+    <button class="check-btn" onclick="checkQ4()">答え合わせ</button>
+    <div class="feedback" id="q4-fb"></div>
+  </div>
+
+</div><!-- /quiz-section -->
+
+
+<!-- 完了ボタン -->
+<div class="complete-area">
+  <p>🎉 「3-5 ブラウザ履歴とナビゲーション」の学習が完了したら記録しましょう！</p>
+  <button class="complete-btn" id="complete-btn" onclick="markComplete()">
+    ✅ このセクションを完了にする
+  </button>
+  <div class="complete-msg" id="complete-msg">
+    進捗を保存しました！Chapter 3 目次ページの進捗バーに反映されます。
+  </div>
+</div>
+
+<!-- ページナビ -->
+<div class="page-nav">
+  <a class="nav-btn prev" href="04_selector.html">← 3-4 セレクタAPI</a>
+  <a class="nav-btn index" href="index.html">📋 Chapter 3 目次</a>
+  <a class="nav-btn next" href="06_debug.html">次へ：3-6 テスト・デバッグ →</a>
+</div>
+
+<!-- フッター -->
+<footer>
+  <p>
+    HTML5プロフェッショナル Level 2 学習サイト ／
+    <a href="../index.html">🏠 サイトトップ</a> ／
+    <a href="index.html">Chapter 3 目次</a> ／
+    <a href="https://github.com/MeshinoKiwamiOkome/html5lv2" target="_blank">GitHub</a>
+  </p>
+  <p style="margin-top:4px;">© MeshinoKiwamiOkome</p>
+</footer>
+
+
+<!-- ============================================================ -->
+<!-- JavaScript -->
+<!-- ============================================================ -->
+<script>
+/* ===== コピーボタン ===== */
+function copyCode(btn) {
+  const pre = btn.nextElementSibling;
+  navigator.clipboard.writeText(pre.innerText || pre.textContent).then(() => {
+    btn.textContent = 'copied!';
+    setTimeout(() => btn.textContent = 'copy', 1800);
+  });
+}
+
+/* ============================================================
+   デモ①：ミニSPAデモ
+============================================================ */
+const spaPages = {
+  home:     { url: '/home',     title: 'ホーム' },
+  about:    { url: '/about',    title: 'About' },
+  products: { url: '/products', title: '製品' },
+  contact:  { url: '/contact',  title: 'お問い合わせ' }
+};
+
+let spaStack   = [];
+let spaPointer = -1;
+
+function spaLog(text, color) {
+  const log  = document.getElementById('spa-log');
+  const line = document.createElement('div');
+  line.style.color = color || '#e2e8f0';
+  const t = new Date().toLocaleTimeString('ja-JP', { hour12: false });
+  line.textContent = `[${t}] ${text}`;
+  log.appendChild(line);
+  log.scrollTop = log.scrollHeight;
+}
+
+function spaShowPage(pageId, state) {
+  document.querySelectorAll('.spa-page').forEach(p => p.classList.remove('active'));
+  const page = document.getElementById('spa-page-' + pageId);
+  if (page) {
+    page.classList.add('active');
+    const stateEl = document.getElementById('spa-state-' + pageId);
+    if (stateEl) stateEl.textContent = JSON.stringify(state || {});
+  }
+  document.querySelectorAll('.spa-menu-btn').forEach(b => b.classList.remove('active'));
+  const btn = document.getElementById('spa-btn-' + pageId);
+  if (btn) btn.classList.add('active');
+  document.getElementById('spa-url-bar').textContent =
+    location.origin + (spaPages[pageId]?.url || '/' + pageId);
+}
+
+function spaNavigate(pageId) {
+  const page  = spaPages[pageId];
+  const state = { page: pageId, ts: Date.now() };
+
+  // 現在位置より先の履歴を削除
+  spaStack = spaStack.slice(0, spaPointer + 1);
+  spaStack.push({ pageId, state, url: page.url });
+  spaPointer = spaStack.length - 1;
+
+  try {
+    history.pushState(state, '', page.url);
+  } catch(e) { /* GitHub Pages では制限あり */ }
+
+  spaShowPage(pageId, state);
+  spaUpdateNavBtns();
+  spaLog(`pushState → ${page.url}  state: ${JSON.stringify(state)}`, '#90cdf4');
+}
+
+function spaReplace() {
+  if (spaPointer < 0) { spaLog('先にページを選択してください', '#fc8181'); return; }
+  const current = spaStack[spaPointer];
+  const newState = { ...current.state, replaced: true, ts: Date.now() };
+  spaStack[spaPointer].state = newState;
+
+  try {
+    history.replaceState(newState, '', current.url + '?updated=true');
+  } catch(e) {}
+
+  document.getElementById('spa-url-bar').textContent =
+    location.origin + current.url + '?updated=true';
+  spaLog(`replaceState → ${current.url}?updated=true  （履歴は増えない）`, '#68d391');
+}
+
+function spaBack() {
+  if (spaPointer <= 0) return;
+  spaPointer--;
+  const entry = spaStack[spaPointer];
+  try { history.back(); } catch(e) {}
+  spaShowPage(entry.pageId, entry.state);
+  spaUpdateNavBtns();
+  spaLog(`back() → ${entry.url}  popstate 発火`, '#f6ad55');
+}
+
+function spaForward() {
+  if (spaPointer >= spaStack.length - 1) return;
+  spaPointer++;
+  const entry = spaStack[spaPointer];
+  try { history.forward(); } catch(e) {}
+  spaShowPage(entry.pageId, entry.state);
+  spaUpdateNavBtns();
+  spaLog(`forward() → ${entry.url}  popstate 発火`, '#f6ad55');
+}
+
+function spaUpdateNavBtns() {
+  document.getElementById('spa-back-btn').disabled = spaPointer <= 0;
+  document.getElementById('spa-fwd-btn').disabled  = spaPointer >= spaStack.length - 1;
+}
+
+// 初期化
+spaNavigate('home');
+
+
+/* ============================================================
+   デモ②：URL パーサー
+============================================================ */
+function parseUrl(urlStr) {
+  try {
+    const u = new URL(urlStr);
+    const parts = {
+      protocol: u.protocol,
+      host:     u.host,
+      hostname: u.hostname,
+      port:     u.port || '（デフォルト）',
+      pathname: u.pathname,
+      search:   u.search || '（なし）',
+      hash:     u.hash   || '（なし）',
+      origin:   u.origin
+    };
+
+    // 各パーツを更新
+    const keys = ['protocol','host','hostname','port','pathname','search','hash','origin'];
+    keys.forEach(k => {
+      const card = document.getElementById('up-' + k);
+      const val  = document.getElementById('upv-' + k);
+      val.textContent = parts[k];
+      const hasVal = parts[k] && parts[k] !== '（なし）' && parts[k] !== '（デフォルト）';
+      card.className = 'url-part ' + (hasVal ? 'has-value' : 'empty');
+    });
+
+    // ビジュアル表示
+    const vis = document.getElementById('url-visual');
+    vis.innerHTML =
+      `<span class="url-seg-protocol">${u.protocol}//</span>` +
+      `<span class="url-seg-host">${u.hostname}</span>` +
+      (u.port ? `<span class="url-seg-port">:${u.port}</span>` : '') +
+      `<span class="url-seg-path">${u.pathname}</span>` +
+      (u.search ? `<span class="url-seg-query">${u.search}</span>` : '') +
+      (u.hash   ? `<span class="url-seg-hash">${u.hash}</span>`   : '');
+
+  } catch(e) {
+    document.getElementById('url-visual').innerHTML =
+      `<span style="color:#fc8181;">無効なURL: ${e.message}</span>`;
+  }
+}
+
+function setUrl(url) {
+  document.getElementById('url-input').value = url;
+  parseUrl(url);
+}
+
+document.getElementById('url-input').addEventListener('input', e => parseUrl(e.target.value));
+parseUrl(document.getElementById('url-input').value);
+
+
+/* ============================================================
+   デモ③：履歴スタックビジュアライザ
+============================================================ */
+let histStack   = [{ url: '（初期ページ）', state: null }];
+let histPointer = 0;
+
+function histLog(text, color) {
+  const log  = document.getElementById('hist-log');
+  const line = document.createElement('div');
+  line.style.color = color || '#e2e8f0';
+  line.textContent = text;
+  log.appendChild(line);
+  log.scrollTop = log.scrollHeight;
+}
+
+function renderHistStack() {
+  const container = document.getElementById('stack-entries');
+  container.innerHTML = '';
+
+  histStack.forEach((entry, i) => {
+    const div = document.createElement('div');
+    div.className = 'stack-entry' +
+      (i === histPointer ? ' current' : '') +
+      (i > histPointer  ? ' future'  : '');
+
+    const isCurrent = i === histPointer;
+    div.innerHTML =
+      `<span class="entry-url">${entry.url}</span>` +
+      (entry.state ? `<span class="entry-state">${JSON.stringify(entry.state).substring(0,20)}</span>` : '') +
+      (isCurrent ? '<span class="entry-badge">現在</span>' : '');
+    container.appendChild(div);
+  });
+
+  document.getElementById('hist-back-btn').disabled = histPointer <= 0;
+  document.getElementById('hist-fwd-btn').disabled  = histPointer >= histStack.length - 1;
+}
+
+function histPush() {
+  const url = document.getElementById('hist-push-url').value.trim() || '/page';
+  let state = null;
+  try { state = JSON.parse(document.getElementById('hist-push-state').value); } catch(e) {}
+
+  // 現在位置より先を削除
+  histStack = histStack.slice(0, histPointer + 1);
+  histStack.push({ url, state });
+  histPointer = histStack.length - 1;
+
+  renderHistStack();
+  histLog(`pushState('${url}') → スタックに追加 [${histStack.length}件]`, '#90cdf4');
+}
+
+function histReplace() {
+  const url = document.getElementById('hist-push-url').value.trim() || '/page';
+  let state = null;
+  try { state = JSON.parse(document.getElementById('hist-push-state').value); } catch(e) {}
+
+  histStack[histPointer] = { url, state };
+  renderHistStack();
+  histLog(`replaceState('${url}') → 現在のエントリを置換`, '#68d391');
+}
+
+function histBack() {
+  if (histPointer <= 0) { histLog('これ以上戻れません', '#fc8181'); return; }
+  histPointer--;
+  renderHistStack();
+  histLog(`back() → ${histStack[histPointer].url}  ← popstate 発火！`, '#f6ad55');
+}
+
+function histForward() {
+  if (histPointer >= histStack.length - 1) { histLog('これ以上進めません', '#fc8181'); return; }
+  histPointer++;
+  renderHistStack();
+  histLog(`forward() → ${histStack[histPointer].url}  ← popstate 発火！`, '#f6ad55');
+}
+
+function histReset() {
+  histStack   = [{ url: '（初期ページ）', state: null }];
+  histPointer = 0;
+  renderHistStack();
+  document.getElementById('hist-log').innerHTML =
+    '<span style="color:#a0aec0;">// 操作ログ</span>';
+}
+
+renderHistStack();
+
+
+/* ============================================================
+   デモ④：popstate イベント確認
+============================================================ */
+let psFireCount  = 0;
+let psEntries    = [];
+let psPtr        = -1;
+
+function psUpdateStatus() {
+  document.getElementById('ps-current-url').textContent =
+    psEntries[psPtr]?.url ?? location.pathname;
+  document.getElementById('ps-current-state').textContent =
+    JSON.stringify(psEntries[psPtr]?.state ?? null);
+  document.getElementById('ps-history-length').textContent =
+    psEntries.length + ' エントリ';
+  document.getElementById('ps-fire-count').textContent = psFireCount;
+}
+
+function psAddEvent(type, url, state) {
+  const timeline = document.getElementById('ps-timeline');
+
+  // プレースホルダーを消す
+  const ph = timeline.querySelector('div[style]');
+  if (ph) ph.remove();
+
+  const div = document.createElement('div');
+  div.className = 'popstate-event ' + type;
+
+  const typeLabels = {
+    push:    '📤 pushState',
+    replace: '↩️ replaceState',
+    pop:     '⚡ popstate 発火'
+  };
+  const t = new Date().toLocaleTimeString('ja-JP', { hour12: false });
+
+  div.innerHTML =
+    `<span class="event-type ${type}">${typeLabels[type]}</span>` +
+    ` <span style="color:#a0aec0; font-size:0.78em;">[${t}]</span><br>` +
+    `<span style="font-family:'Consolas','Monaco',monospace; font-size:0.82em; color:#2d3748;">` +
+    `URL: ${url}` +
+    (state ? `  state: ${JSON.stringify(state)}` : '') +
+    `</span>`;
+
+  timeline.appendChild(div);
+  timeline.scrollTop = timeline.scrollHeight;
+}
+
+function psSetup() {
+  psEntries = [{ url: '/ps-page-1', state: { page: 1 } },
+               { url: '/ps-page-2', state: { page: 2 } },
+               { url: '/ps-page-3', state: { page: 3 } }];
+  psPtr = psEntries.length - 1;
+
+  psEntries.forEach(e => {
+    psAddEvent('push', e.url, e.state);
+  });
+  psUpdateStatus();
+}
+
+function psBack() {
+  if (psPtr <= 0) {
+    psAddEvent('pop', '（これ以上戻れません）', null);
+    return;
+  }
+  psPtr--;
+  psFireCount++;
+  psAddEvent('pop', psEntries[psPtr].url, psEntries[psPtr].state);
+  psUpdateStatus();
+}
+
+function psForward() {
+  if (psPtr >= psEntries.length - 1) {
+    psAddEvent('pop', '（これ以上進めません）', null);
+    return;
+  }
+  psPtr++;
+  psFireCount++;
+  psAddEvent('pop', psEntries[psPtr].url, psEntries[psPtr].state);
+  psUpdateStatus();
+}
+
+function psClear() {
+  psFireCount = 0;
+  psEntries   = [];
+  psPtr       = -1;
+  document.getElementById('ps-timeline').innerHTML =
+    '<div style="color:#a0aec0; font-size:0.85em; padding:8px 0;">① ボタンを押してイベントを発生させましょう</div>';
+  psUpdateStatus();
+}
+
+psUpdateStatus();
+
+
+/* ============================================================
+   演習問題
+============================================================ */
+function checkQ1() {
+  const a = document.getElementById('q1a').value.trim();
+  const b = document.getElementById('q1b').value.trim();
+  const c = document.getElementById('q1c').value.trim();
+  const d = document.getElementById('q1d').value.trim();
+  const fb = document.getElementById('q1-fb');
+
+  const ca = /pushState/i.test(a);
+  const cb = /replaceState/i.test(b);
+  const cc = /popstate/i.test(c);
+  const cd = /\?name=Alice&age=25/.test(d) || d === '?name=Alice&age=25';
+  const score = [ca,cb,cc,cd].filter(Boolean).length;
+
+  if (score === 4) {
+    fb.className = 'feedback ok';
+    fb.innerHTML = '✅ 全問正解！History API と Location API を正確に理解しています。';
+  } else {
+    fb.className = 'feedback ng';
+    fb.innerHTML = `❌ ${score}/4 問正解。<br><br>` +
+      `① ${ca ? '✅' : '❌ 正解：<strong>pushState</strong>（新しいエントリを追加）'}<br>` +
+      `② ${cb ? '✅' : '❌ 正解：<strong>replaceState</strong>（現在のエントリを置換）'}<br>` +
+      `③ ${cc ? '✅' : '❌ 正解：<strong>popstate</strong>（back/forward/go で発火）'}<br>` +
+      `④ ${cd ? '✅' : '❌ 正解：<strong>?name=Alice&age=25</strong>（? を含む文字列）'}`;
+  }
+}
+
+function checkQ2(btn, result) {
+  document.querySelectorAll('.quiz-item:nth-child(2) .choice-btn').forEach(b => {
+    b.disabled = true; b.classList.remove('correct','wrong');
+  });
+  const fb = document.getElementById('q2-fb');
+  if (result === 'correct') {
+    btn.classList.add('correct');
+    fb.className = 'feedback ok';
+    fb.innerHTML = '✅ 正解！<br><br>' +
+      '<strong>pushState vs replaceState の核心的な違い：</strong><br>' +
+      '・<code>pushState</code>：履歴スタックに<strong>新しいエントリを追加</strong>。back() で前のページに戻れる。<br>' +
+      '・<code>replaceState</code>：現在のエントリを<strong>置き換える</strong>。back() で戻れない。<br>' +
+      '・どちらも<strong>ページの再読み込みは発生しない</strong><br>' +
+      '・どちらも<strong>popstate イベントは発火しない</strong>（発火するのは back/forward/go のみ）';
+  } else {
+    btn.classList.add('wrong');
+    fb.className = 'feedback ng';
+    fb.innerHTML = '❌ 不正解。正解は <strong>③</strong> です。<br>' +
+      'どちらもページ再読み込みなし、popstate 発火なし。' +
+      '違いは「新しいエントリを追加するか、現在を置き換えるか」です。';
+  }
+}
+
+function checkQ3() {
+  const answers = {
+    a: document.getElementById('q3a').checked,
+    b: document.getElementById('q3b').checked,
+    c: document.getElementById('q3c').checked,
+    d: document.getElementById('q3d').checked,
+    e: document.getElementById('q3e').checked,
+    f: document.getElementById('q3f').checked,
+  };
+  // 正解：a, b, d, e
+  // c: replace は戻れない
+  // f: hash は # を含む
+  const correct = { a:true, b:true, c:false, d:true, e:true, f:false };
+  const labels = document.querySelectorAll('.quiz-item:nth-child(3) .cb-label');
+  let allOk = true;
+  Object.keys(correct).forEach((k, i) => {
+    if (answers[k] === correct[k]) { labels[i].classList.add('correct'); }
+    else { labels[i].classList.add('wrong'); allOk = false; }
+  });
+  const fb = document.getElementById('q3-fb');
+  if (allOk) {
+    fb.className = 'feedback ok';
+    fb.innerHTML = '✅ 全問正解！Location API の各プロパティを正確に理解しています。';
+  } else {
+    fb.className = 'feedback ng';
+    fb.innerHTML = '❌ 不正解の項目があります。<br><br>' +
+      '<strong>正しい記述：①②④⑤</strong><br><br>' +
+      '・③ <strong>誤り</strong>：<code>location.replace()</code> で遷移すると' +
+      '現在のエントリが置換されるため、<strong>戻るボタンで前のページに戻れません</strong><br>' +
+      '・⑥ <strong>誤り</strong>：<code>location.hash</code> は <strong># を含む</strong>文字列を返します' +
+      '（例：<code>"#section1"</code>）。# を含まないのは <code>location.hash.slice(1)</code> で取得します';
+  }
+}
+
+function checkQ4() {
+  const a = document.getElementById('q4a').value.trim();
+  const b = document.getElementById('q4b').value.trim();
+  const c = document.getElementById('q4c').value.trim();
+  const d = document.getElementById('q4d').value.trim();
+  const fb = document.getElementById('q4-fb');
+
+  const ca = /pushState/i.test(a);
+  const cb = /popstate/i.test(b);
+  const cc = /state/i.test(c);
+  const cd = /search/i.test(d);
+  const score = [ca,cb,cc,cd].filter(Boolean).length;
+
+  if (score === 4) {
+    fb.className = 'feedback ok';
+    fb.innerHTML = '✅ 全問正解！<br><br>' +
+      '① <code>pushState</code>（新しい履歴エントリを追加）<br>' +
+      '② <code>popstate</code>（戻る・進む時に発火するイベント）<br>' +
+      '③ <code>state</code>（popstate イベントの state プロパティ）<br>' +
+      '④ <code>search</code>（クエリ文字列 "?..." を返す）<br><br>' +
+      'SPA のルーティングパターンを完全にマスターしています！';
+  } else {
+    fb.className = 'feedback ng';
+    fb.innerHTML = `❌ ${score}/4 問正解。<br><br>` +
+      `① ${ca ? '✅' : '❌ 正解：<strong>pushState</strong>'}<br>` +
+      `② ${cb ? '✅' : '❌ 正解：<strong>popstate</strong>（戻る・進む時に発火）'}<br>` +
+      `③ ${cc ? '✅' : '❌ 正解：<strong>state</strong>（e.state で pushState の第1引数を取得）'}<br>` +
+      `④ ${cd ? '✅' : '❌ 正解：<strong>search</strong>（?以降のクエリ文字列）'}`;
+  }
+}
+
+/* ===== 完了ボタン ===== */
+function markComplete() {
+  localStorage.setItem('html5lv2_ch3_05', 'done');
+  const btn = document.getElementById('complete-btn');
+  const msg = document.getElementById('complete-msg');
+  btn.classList.add('done');
+  btn.textContent = '✅ 完了済み';
+  btn.disabled = true;
+  msg.style.display = 'block';
+}
+
+window.addEventListener('DOMContentLoaded', () => {
+  if (localStorage.getItem('html5lv2_ch3_05') === 'done') {
+    const btn = document.getElementById('complete-btn');
+    const msg = document.getElementById('complete-msg');
+    btn.classList.add('done');
+    btn.textContent = '✅ 完了済み';
+    btn.disabled = true;
+    msg.style.display = 'block';
+  }
+});
+</script>
+
+</body>
+</html>
