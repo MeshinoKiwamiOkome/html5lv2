@@ -1,0 +1,1218 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>2-1 JavaScriptとは | Chapter 2 | HTML5 Level 2 試験対策</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Segoe UI', 'Helvetica Neue', sans-serif;
+      max-width: 960px;
+      margin: 40px auto;
+      padding: 0 24px;
+      background: #f0f4f8;
+      color: #2d3748;
+      line-height: 1.8;
+    }
+
+    /* ── パンくずナビ ── */
+    .breadcrumb {
+      font-size: 0.85rem;
+      color: #718096;
+      margin-bottom: 24px;
+    }
+    .breadcrumb a { color: #553c9a; text-decoration: none; }
+    .breadcrumb a:hover { text-decoration: underline; }
+    .breadcrumb span { margin: 0 6px; }
+
+    /* ── 章ヘッダー ── */
+    .chapter-header {
+      background: linear-gradient(135deg, #553c9a, #9f7aea);
+      border-radius: 16px;
+      padding: 36px 36px 32px;
+      color: #fff;
+      margin-bottom: 32px;
+      position: relative;
+      overflow: hidden;
+    }
+    .chapter-header::before {
+      content: '';
+      position: absolute;
+      top: -50px; right: -50px;
+      width: 200px; height: 200px;
+      background: rgba(255,255,255,0.07);
+      border-radius: 50%;
+    }
+    .chapter-header h1 { font-size: 1.75rem; font-weight: 700; margin-bottom: 8px; position: relative; z-index: 1; }
+    .chapter-header p  { font-size: 0.95rem; opacity: 0.9; margin-bottom: 18px; position: relative; z-index: 1; }
+    .badge-row { display: flex; flex-wrap: wrap; gap: 8px; position: relative; z-index: 1; }
+    .badge {
+      background: rgba(255,255,255,0.2);
+      border: 1px solid rgba(255,255,255,0.35);
+      border-radius: 20px;
+      padding: 3px 13px;
+      font-size: 0.78rem;
+      font-weight: 600;
+    }
+
+    /* ── セクションナビ ── */
+    .section-nav {
+      background: #fff;
+      border-radius: 12px;
+      padding: 20px 24px;
+      margin-bottom: 32px;
+      box-shadow: 0 2px 12px rgba(85,60,154,0.07);
+    }
+    .section-nav h3 { font-size: 0.85rem; color: #9f7aea; font-weight: 700; margin-bottom: 12px; letter-spacing: 0.06em; }
+    .section-nav ul { list-style: none; display: flex; flex-direction: column; gap: 4px; }
+    .section-nav ul li a {
+      font-size: 0.88rem;
+      color: #553c9a;
+      text-decoration: none;
+      padding: 4px 10px;
+      border-radius: 6px;
+      display: block;
+      transition: background 0.15s;
+    }
+    .section-nav ul li a:hover { background: #f3e8ff; }
+    .section-nav ul li.current a {
+      font-weight: 700;
+      color: #44337a;
+      background: #ede9fe;
+    }
+
+    /* ── 本文カード ── */
+    .content-card {
+      background: #fff;
+      border-radius: 14px;
+      padding: 32px 36px;
+      margin-bottom: 28px;
+      box-shadow: 0 2px 12px rgba(85,60,154,0.07);
+    }
+    .content-card h2 {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: #553c9a;
+      margin-bottom: 18px;
+      padding-bottom: 10px;
+      border-bottom: 2px solid #e9d8fd;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .content-card h3 {
+      font-size: 1rem;
+      font-weight: 700;
+      color: #44337a;
+      margin: 22px 0 10px;
+    }
+    .content-card p { font-size: 0.95rem; color: #4a5568; margin-bottom: 14px; }
+    .content-card ul, .content-card ol {
+      padding-left: 1.4em;
+      margin-bottom: 14px;
+      font-size: 0.93rem;
+      color: #4a5568;
+    }
+    .content-card li { margin-bottom: 6px; }
+
+    /* ── テーブル ── */
+    .tbl-wrap { overflow-x: auto; margin: 16px 0; }
+    table { width: 100%; border-collapse: collapse; font-size: 0.88rem; }
+    th {
+      background: linear-gradient(135deg, #553c9a, #9f7aea);
+      color: #fff;
+      padding: 10px 14px;
+      text-align: left;
+      font-weight: 600;
+    }
+    td { padding: 9px 14px; border-bottom: 1px solid #e2e8f0; color: #4a5568; }
+    tr:hover td { background: #faf5ff; }
+    tr:last-child td { border-bottom: none; }
+
+    /* ── コードブロック ── */
+    .code-block {
+      background: #1a202c;
+      border-radius: 10px;
+      padding: 20px 22px;
+      margin: 16px 0;
+      position: relative;
+      overflow-x: auto;
+    }
+    .code-block pre {
+      font-family: 'Consolas', 'Monaco', monospace;
+      font-size: 0.88rem;
+      line-height: 1.7;
+      color: #e2e8f0;
+      white-space: pre;
+    }
+    .copy-btn {
+      position: absolute;
+      top: 10px; right: 12px;
+      background: #4a5568;
+      color: #e2e8f0;
+      border: none;
+      border-radius: 6px;
+      padding: 4px 12px;
+      font-size: 0.75rem;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+    .copy-btn:hover { background: #9f7aea; }
+    .copy-btn.copied { background: #48bb78; color: #fff; }
+
+    /* シンタックスハイライト */
+    .comment { color: #68d391; }
+    .kw      { color: #b794f4; }
+    .fn      { color: #f6ad55; }
+    .str     { color: #fbd38d; }
+    .num     { color: #90cdf4; }
+    .op      { color: #fc8181; }
+    .out     { color: #a0aec0; }
+
+    /* ── インフォボックス ── */
+    .info-box {
+      border-radius: 10px;
+      padding: 16px 20px;
+      margin: 16px 0;
+      font-size: 0.9rem;
+    }
+    .info-box.tip    { background: #f0fff4; border-left: 4px solid #48bb78; color: #276749; }
+    .info-box.warn   { background: #fffbeb; border-left: 4px solid #f6ad55; color: #744210; }
+    .info-box.point  { background: #faf5ff; border-left: 4px solid #9f7aea; color: #44337a; }
+    .info-box strong { font-weight: 700; }
+
+    /* ── インタラクティブデモ ── */
+    .demo-card {
+      background: #faf5ff;
+      border: 2px solid #d6bcfa;
+      border-radius: 14px;
+      padding: 28px 30px;
+      margin-bottom: 28px;
+    }
+    .demo-card h3 {
+      font-size: 1rem;
+      font-weight: 700;
+      color: #553c9a;
+      margin-bottom: 18px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    /* defer/async ビジュアライザ */
+    .script-selector {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-bottom: 20px;
+    }
+    .sel-btn {
+      padding: 8px 18px;
+      border-radius: 8px;
+      border: 2px solid #c4b5fd;
+      background: #fff;
+      color: #553c9a;
+      font-weight: 600;
+      font-size: 0.88rem;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .sel-btn.active { background: #553c9a; color: #fff; border-color: #553c9a; }
+    .sel-btn:hover  { background: #ede9fe; }
+    .sel-btn.active:hover { background: #44337a; }
+
+    .timeline {
+      position: relative;
+      padding: 10px 0;
+    }
+    .tl-row {
+      display: flex;
+      align-items: center;
+      gap: 0;
+      margin-bottom: 14px;
+    }
+    .tl-label {
+      width: 90px;
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: #553c9a;
+      flex-shrink: 0;
+    }
+    .tl-track {
+      flex: 1;
+      height: 28px;
+      background: #e9d8fd;
+      border-radius: 6px;
+      position: relative;
+      overflow: hidden;
+    }
+    .tl-bar {
+      height: 100%;
+      border-radius: 6px;
+      position: absolute;
+      top: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: #fff;
+      transition: all 0.5s ease;
+    }
+    .tl-bar.html    { background: #68d391; }
+    .tl-bar.fetch   { background: #f6ad55; }
+    .tl-bar.exec    { background: #fc8181; }
+    .tl-bar.blocked { background: #a0aec0; }
+
+    .tl-legend {
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+      margin-top: 12px;
+      font-size: 0.8rem;
+    }
+    .tl-legend span {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+    .dot {
+      width: 12px; height: 12px;
+      border-radius: 3px;
+      display: inline-block;
+    }
+    .dot.html    { background: #68d391; }
+    .dot.fetch   { background: #f6ad55; }
+    .dot.exec    { background: #fc8181; }
+    .dot.blocked { background: #a0aec0; }
+
+    .tl-desc {
+      margin-top: 16px;
+      padding: 14px 18px;
+      background: #fff;
+      border-radius: 8px;
+      font-size: 0.88rem;
+      color: #4a5568;
+      border-left: 3px solid #9f7aea;
+    }
+
+    /* ECMAScript 年表 */
+    .ecma-timeline {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+    }
+    .ecma-item {
+      display: flex;
+      gap: 0;
+      cursor: pointer;
+    }
+    .ecma-year-col {
+      width: 80px;
+      flex-shrink: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .ecma-dot-wrap {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      flex: 1;
+    }
+    .ecma-dot-circle {
+      width: 36px; height: 36px;
+      border-radius: 50%;
+      background: #c4b5fd;
+      border: 3px solid #9f7aea;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.7rem;
+      font-weight: 700;
+      color: #44337a;
+      transition: all 0.2s;
+      flex-shrink: 0;
+    }
+    .ecma-item:hover .ecma-dot-circle,
+    .ecma-item.active .ecma-dot-circle {
+      background: #553c9a;
+      color: #fff;
+      border-color: #44337a;
+      transform: scale(1.15);
+    }
+    .ecma-line {
+      width: 3px;
+      flex: 1;
+      background: #d6bcfa;
+      min-height: 20px;
+    }
+    .ecma-item:last-child .ecma-line { display: none; }
+    .ecma-content {
+      flex: 1;
+      padding: 0 0 20px 16px;
+    }
+    .ecma-ver {
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: #9f7aea;
+      margin-bottom: 2px;
+    }
+    .ecma-detail {
+      display: none;
+      font-size: 0.85rem;
+      color: #4a5568;
+      background: #fff;
+      border-radius: 8px;
+      padding: 12px 16px;
+      margin-top: 8px;
+      border-left: 3px solid #9f7aea;
+      line-height: 1.7;
+    }
+    .ecma-item.active .ecma-detail { display: block; }
+
+    /* ── 演習問題 ── */
+    .quiz-section {
+      background: #fff;
+      border-radius: 14px;
+      padding: 32px 36px;
+      margin-bottom: 28px;
+      box-shadow: 0 2px 12px rgba(85,60,154,0.07);
+    }
+    .quiz-section h2 {
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: #553c9a;
+      margin-bottom: 24px;
+      padding-bottom: 10px;
+      border-bottom: 2px solid #e9d8fd;
+    }
+    .quiz-item {
+      margin-bottom: 32px;
+      padding-bottom: 28px;
+      border-bottom: 1px dashed #e2e8f0;
+    }
+    .quiz-item:last-child { border-bottom: none; margin-bottom: 0; }
+    .quiz-q {
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: #2d3748;
+      margin-bottom: 14px;
+      background: #faf5ff;
+      padding: 12px 16px;
+      border-radius: 8px;
+      border-left: 4px solid #9f7aea;
+    }
+    .quiz-q .q-num {
+      display: inline-block;
+      background: #553c9a;
+      color: #fff;
+      border-radius: 6px;
+      padding: 1px 9px;
+      font-size: 0.8rem;
+      margin-right: 8px;
+    }
+
+    /* 穴埋め */
+    .blank-input {
+      border: 2px solid #c4b5fd;
+      border-radius: 6px;
+      padding: 4px 10px;
+      font-size: 0.9rem;
+      font-family: 'Consolas', monospace;
+      color: #2d3748;
+      background: #faf5ff;
+      width: 140px;
+      transition: border-color 0.15s;
+    }
+    .blank-input:focus { outline: none; border-color: #553c9a; }
+    .blank-input.correct { border-color: #48bb78; background: #f0fff4; }
+    .blank-input.wrong   { border-color: #fc8181; background: #fff5f5; }
+
+    /* 選択問題 */
+    .choices { display: flex; flex-direction: column; gap: 8px; }
+    .choice-btn {
+      padding: 10px 16px;
+      border-radius: 8px;
+      border: 2px solid #e2e8f0;
+      background: #fff;
+      color: #2d3748;
+      font-size: 0.9rem;
+      cursor: pointer;
+      text-align: left;
+      transition: all 0.15s;
+    }
+    .choice-btn:hover:not(:disabled) { border-color: #9f7aea; background: #faf5ff; }
+    .choice-btn.correct { border-color: #48bb78; background: #f0fff4; color: #276749; font-weight: 700; }
+    .choice-btn.wrong   { border-color: #fc8181; background: #fff5f5; color: #c53030; }
+
+    /* チェックボックス */
+    .checkbox-list { display: flex; flex-direction: column; gap: 8px; }
+    .cb-label {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 14px;
+      border-radius: 8px;
+      border: 2px solid #e2e8f0;
+      background: #fff;
+      cursor: pointer;
+      font-size: 0.9rem;
+      transition: all 0.15s;
+    }
+    .cb-label:hover { border-color: #9f7aea; background: #faf5ff; }
+    .cb-label input[type="checkbox"] { width: 16px; height: 16px; accent-color: #553c9a; }
+    .cb-label.correct { border-color: #48bb78; background: #f0fff4; }
+    .cb-label.wrong   { border-color: #fc8181; background: #fff5f5; }
+
+    /* コード補完 */
+    .code-fill {
+      background: #1a202c;
+      border-radius: 10px;
+      padding: 18px 20px;
+      font-family: 'Consolas', 'Monaco', monospace;
+      font-size: 0.88rem;
+      line-height: 1.9;
+      color: #e2e8f0;
+      margin-bottom: 12px;
+    }
+    .fill-input {
+      background: #2d3748;
+      border: 1px solid #9f7aea;
+      border-radius: 4px;
+      color: #fbd38d;
+      font-family: 'Consolas', monospace;
+      font-size: 0.88rem;
+      padding: 1px 8px;
+      width: 160px;
+    }
+    .fill-input:focus { outline: none; border-color: #b794f4; }
+    .fill-input.correct { border-color: #48bb78; background: #1c3a2a; color: #68d391; }
+    .fill-input.wrong   { border-color: #fc8181; background: #3a1c1c; color: #fc8181; }
+
+    /* 判定ボタン・フィードバック */
+    .check-btn {
+      margin-top: 12px;
+      padding: 9px 22px;
+      background: linear-gradient(135deg, #553c9a, #9f7aea);
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      font-size: 0.88rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: opacity 0.15s;
+    }
+    .check-btn:hover { opacity: 0.88; }
+    .feedback {
+      margin-top: 10px;
+      padding: 10px 16px;
+      border-radius: 8px;
+      font-size: 0.88rem;
+      display: none;
+    }
+    .feedback.show { display: block; }
+    .feedback.ok  { background: #f0fff4; color: #276749; border-left: 4px solid #48bb78; }
+    .feedback.ng  { background: #fff5f5; color: #c53030; border-left: 4px solid #fc8181; }
+
+    /* ── 完了ボタン ── */
+    .complete-area {
+      text-align: center;
+      padding: 32px 0 8px;
+    }
+    .complete-btn {
+      padding: 14px 40px;
+      background: linear-gradient(135deg, #553c9a, #9f7aea);
+      color: #fff;
+      border: none;
+      border-radius: 12px;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: opacity 0.15s, transform 0.15s;
+      box-shadow: 0 4px 16px rgba(85,60,154,0.3);
+    }
+    .complete-btn:hover { opacity: 0.9; transform: translateY(-2px); }
+    .complete-btn.done  { background: linear-gradient(135deg, #38a169, #68d391); }
+    .complete-msg { margin-top: 12px; font-size: 0.9rem; color: #718096; }
+
+    /* ── ページナビ ── */
+    .page-nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      margin-top: 40px;
+      flex-wrap: wrap;
+    }
+    .nav-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 12px 22px;
+      border-radius: 10px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      text-decoration: none;
+      transition: background 0.18s, transform 0.18s;
+    }
+    .nav-btn.prev  { background: #e9d8fd; color: #553c9a; }
+    .nav-btn.prev:hover  { background: #d6bcfa; transform: translateX(-2px); }
+    .nav-btn.index { background: linear-gradient(135deg, #553c9a, #9f7aea); color: #fff; }
+    .nav-btn.index:hover { opacity: 0.9; }
+    .nav-btn.next  { background: #553c9a; color: #fff; }
+    .nav-btn.next:hover  { background: #44337a; transform: translateX(2px); }
+
+    footer {
+      text-align: center;
+      font-size: 0.8rem;
+      color: #a0aec0;
+      margin-top: 48px;
+      padding-top: 24px;
+      border-top: 1px solid #e2e8f0;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- パンくずナビ -->
+  <nav class="breadcrumb">
+    <a href="../index.html">🏠 HTML5 Level 2</a>
+    <span>›</span>
+    <a href="index.html">Chapter 2</a>
+    <span>›</span>
+    <strong>2-1 JavaScriptとは</strong>
+  </nav>
+
+  <!-- 章ヘッダー -->
+  <header class="chapter-header">
+    <h1>⚡ 2-1 JavaScriptとは</h1>
+    <p>ECMAScriptとの関係、scriptタグの使い方、defer/async、厳格モードを完全理解する。</p>
+    <div class="badge-row">
+      <span class="badge">📚 ECMAScript</span>
+      <span class="badge">🏷 defer / async</span>
+      <span class="badge">🔒 use strict</span>
+      <span class="badge">✏️ 演習4問</span>
+    </div>
+  </header>
+
+  <!-- セクションナビ -->
+  <nav class="section-nav">
+    <h3>📋 CHAPTER 2 セクション一覧</h3>
+    <ul>
+      <li class="current"><a href="01_js_ecma.html">2-1 JavaScriptとは</a></li>
+      <li><a href="02_variables.html">2-2 変数と型</a></li>
+      <li><a href="03_expressions.html">2-3 式と演算子</a></li>
+      <li><a href="04_control.html">2-4 制御文</a></li>
+      <li><a href="05_arrays.html">2-5 配列</a></li>
+      <li><a href="06_objects.html">2-6 オブジェクト</a></li>
+      <li><a href="07_functions.html">2-7 関数</a></li>
+      <li><a href="08_global.html">2-8 グローバルオブジェクトとCallオブジェクト</a></li>
+    </ul>
+  </nav>
+
+  <!-- ===== 1. JavaScriptとECMAScript ===== -->
+  <div class="content-card">
+    <h2>📜 JavaScriptとECMAScriptの関係</h2>
+
+    <p>
+      <strong>JavaScript</strong> は Netscape 社が開発したスクリプト言語で、
+      現在は <strong>ECMAScript（ECMA-262）</strong> という標準仕様に基づいて実装されています。
+      「JavaScript」はブランド名、「ECMAScript」は仕様書の名前と覚えましょう。
+    </p>
+
+    <div class="info-box point">
+      <strong>💡 試験ポイント：</strong>
+      JavaScriptの標準化を担う団体は <strong>ECMA International</strong>（欧州電子計算機工業会）です。
+      仕様書の正式名称は <strong>ECMA-262</strong> といいます。
+    </div>
+
+    <h3>ECMAScript バージョン早見表</h3>
+    <div class="tbl-wrap">
+      <table>
+        <thead>
+          <tr><th>バージョン</th><th>通称</th><th>リリース年</th><th>主な追加機能</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>ES5</td><td>ES5</td><td>2009年</td><td>strict mode、JSON、Array高階メソッド</td></tr>
+          <tr><td>ES6</td><td>ES2015</td><td>2015年</td><td>let/const、アロー関数、クラス、Promise、テンプレートリテラル</td></tr>
+          <tr><td>ES2017</td><td>ES8</td><td>2017年</td><td>async/await、Object.entries/values</td></tr>
+          <tr><td>ES2019</td><td>ES10</td><td>2019年</td><td>Array.flat/flatMap、Object.fromEntries</td></tr>
+          <tr><td>ES2020</td><td>ES11</td><td>2020年</td><td>オプショナルチェーン(?.)、Nullish合体(??)、BigInt</td></tr>
+          <tr><td>ES2022</td><td>ES13</td><td>2022年</td><td>クラスプライベートフィールド(#)、at()メソッド</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ===== 2. scriptタグ ===== -->
+  <div class="content-card">
+    <h2>🏷 HTMLからJavaScriptを利用する方法</h2>
+
+    <h3>① インラインスクリプト</h3>
+    <p><code>&lt;script&gt;</code> タグの中に直接コードを書く方法です。</p>
+    <div class="code-block">
+      <button class="copy-btn" onclick="copyCode(this)">copy</button>
+      <pre><span class="comment">&lt;!-- インラインスクリプト --&gt;</span>
+<span class="kw">&lt;script&gt;</span>
+  <span class="fn">console</span>.<span class="fn">log</span>(<span class="str">'Hello, JavaScript!'</span>);
+<span class="kw">&lt;/script&gt;</span></pre>
+    </div>
+
+    <h3>② 外部ファイルの読み込み</h3>
+    <p><code>src</code> 属性で外部の .js ファイルを指定します。外部ファイルを指定した場合、タグ内のコードは<strong>無視</strong>されます。</p>
+    <div class="code-block">
+      <button class="copy-btn" onclick="copyCode(this)">copy</button>
+      <pre><span class="comment">&lt;!-- 外部ファイルの読み込み --&gt;</span>
+<span class="kw">&lt;script</span> <span class="fn">src</span>=<span class="str">"./js/app.js"</span><span class="kw">&gt;&lt;/script&gt;</span>
+
+<span class="comment">&lt;!-- ❌ src指定時はタグ内コードが無視される --&gt;</span>
+<span class="kw">&lt;script</span> <span class="fn">src</span>=<span class="str">"app.js"</span><span class="kw">&gt;</span>
+  <span class="fn">console</span>.<span class="fn">log</span>(<span class="str">'これは実行されない'</span>); <span class="comment">// 無視される</span>
+<span class="kw">&lt;/script&gt;</span></pre>
+    </div>
+
+    <h3>③ scriptタグの配置場所</h3>
+    <div class="tbl-wrap">
+      <table>
+        <thead>
+          <tr><th>配置場所</th><th>特徴</th><th>推奨度</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>&lt;head&gt;</code> 内</td>
+            <td>HTML解析前に実行。DOMが存在しないためDOM操作不可</td>
+            <td>△（defer付きなら○）</td>
+          </tr>
+          <tr>
+            <td><code>&lt;/body&gt;</code> 直前</td>
+            <td>DOM構築後に実行。ページ表示が先に完了する</td>
+            <td>○</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>④ defer / async 属性</h3>
+    <div class="code-block">
+      <button class="copy-btn" onclick="copyCode(this)">copy</button>
+      <pre><span class="comment">&lt;!-- 通常：HTML解析をブロックして即実行 --&gt;</span>
+<span class="kw">&lt;script</span> <span class="fn">src</span>=<span class="str">"app.js"</span><span class="kw">&gt;&lt;/script&gt;</span>
+
+<span class="comment">&lt;!-- defer：HTML解析と並行DL → 解析完了後に実行（順序保証） --&gt;</span>
+<span class="kw">&lt;script</span> <span class="fn">src</span>=<span class="str">"app.js"</span> <span class="fn">defer</span><span class="kw">&gt;&lt;/script&gt;</span>
+
+<span class="comment">&lt;!-- async：HTML解析と並行DL → DL完了次第すぐ実行（順序不定） --&gt;</span>
+<span class="kw">&lt;script</span> <span class="fn">src</span>=<span class="str">"app.js"</span> <span class="fn">async</span><span class="kw">&gt;&lt;/script&gt;</span></pre>
+    </div>
+
+    <div class="tbl-wrap">
+      <table>
+        <thead>
+          <tr><th>属性</th><th>ダウンロード</th><th>実行タイミング</th><th>実行順序</th><th>用途</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>なし</td>
+            <td>HTML解析をブロック</td>
+            <td>即時</td>
+            <td>記述順</td>
+            <td>-</td>
+          </tr>
+          <tr>
+            <td><strong>defer</strong></td>
+            <td>並行（非同期）</td>
+            <td>HTML解析完了後</td>
+            <td><strong>記述順を保証</strong></td>
+            <td>DOM操作スクリプト</td>
+          </tr>
+          <tr>
+            <td><strong>async</strong></td>
+            <td>並行（非同期）</td>
+            <td>DL完了次第</td>
+            <td><strong>不定</strong></td>
+            <td>独立した分析ツール等</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="info-box warn">
+      <strong>⚠️ 注意：</strong>
+      <code>defer</code> と <code>async</code> は <strong>外部ファイル（src属性あり）のみ</strong>有効です。
+      インラインスクリプトには効果がありません。
+    </div>
+  </div>
+
+  <!-- ===== 3. 厳格モード ===== -->
+  <div class="content-card">
+    <h2>🔒 厳格モード（Strict Mode）</h2>
+
+    <p>
+      <code>'use strict';</code> を記述すると <strong>厳格モード</strong> が有効になります。
+      ES5 で導入され、バグの原因となりやすいコードをエラーとして検出します。
+    </p>
+
+    <div class="code-block">
+      <button class="copy-btn" onclick="copyCode(this)">copy</button>
+      <pre><span class="comment">// ファイル全体に適用（先頭に記述）</span>
+<span class="str">'use strict'</span>;
+
+<span class="comment">// 関数スコープのみに適用</span>
+<span class="kw">function</span> <span class="fn">myFunc</span>() {
+  <span class="str">'use strict'</span>;
+  <span class="comment">// この関数内だけ厳格モード</span>
+}
+
+<span class="comment">// ES6モジュール（type="module"）は自動的に厳格モード</span>
+<span class="comment">// &lt;script type="module" src="app.js"&gt;&lt;/script&gt;</span></pre>
+    </div>
+
+    <h3>厳格モードで禁止されること</h3>
+    <div class="tbl-wrap">
+      <table>
+        <thead>
+          <tr><th>禁止事項</th><th>通常モード</th><th>厳格モード</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>未宣言変数への代入</td><td>グローバル変数として作成</td><td>ReferenceError</td></tr>
+          <tr><td>with 文の使用</td><td>動作する</td><td>SyntaxError</td></tr>
+          <tr><td>同名の引数</td><td>動作する</td><td>SyntaxError</td></tr>
+          <tr><td>this が undefined（関数内）</td><td>グローバルオブジェクト</td><td>undefined</td></tr>
+          <tr><td>delete で変数削除</td><td>失敗（エラーなし）</td><td>SyntaxError</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="info-box tip">
+      <strong>✅ 推奨：</strong>
+      ES6 の <code>type="module"</code> を使うと自動的に厳格モードが適用されます。
+      また、クラス内のコードも常に厳格モードで動作します。
+    </div>
+  </div>
+
+  <!-- ===== デモ1：defer vs async ビジュアライザ ===== -->
+  <div class="demo-card">
+    <h3>🎮 デモ①：defer vs async 実行タイミング ビジュアライザ</h3>
+    <p style="font-size:0.88rem;color:#553c9a;margin-bottom:16px;">
+      ボタンを選択すると、HTML解析・スクリプトDL・実行の流れを視覚的に確認できます。
+    </p>
+
+    <div class="script-selector">
+      <button class="sel-btn active" onclick="showTimeline('normal')">通常（属性なし）</button>
+      <button class="sel-btn" onclick="showTimeline('defer')">defer</button>
+      <button class="sel-btn" onclick="showTimeline('async')">async</button>
+    </div>
+
+    <div class="timeline">
+      <div class="tl-row">
+        <div class="tl-label">HTML解析</div>
+        <div class="tl-track">
+          <div class="tl-bar html" id="bar-html" style="left:0%;width:40%;">HTML解析</div>
+          <div class="tl-bar blocked" id="bar-blocked" style="left:40%;width:20%;">停止</div>
+          <div class="tl-bar html" id="bar-html2" style="left:60%;width:40%;">HTML解析再開</div>
+        </div>
+      </div>
+      <div class="tl-row">
+        <div class="tl-label">スクリプトDL</div>
+        <div class="tl-track">
+          <div class="tl-bar fetch" id="bar-fetch" style="left:40%;width:20%;">DL</div>
+        </div>
+      </div>
+      <div class="tl-row">
+        <div class="tl-label">スクリプト実行</div>
+        <div class="tl-track">
+          <div class="tl-bar exec" id="bar-exec" style="left:60%;width:15%;">実行</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="tl-legend">
+      <span><span class="dot html"></span>HTML解析</span>
+      <span><span class="dot fetch"></span>スクリプトDL</span>
+      <span><span class="dot exec"></span>スクリプト実行</span>
+      <span><span class="dot blocked"></span>HTML解析停止</span>
+    </div>
+
+    <div class="tl-desc" id="tl-desc">
+      <strong>通常（属性なし）：</strong>
+      scriptタグに達するとHTML解析を<strong>停止</strong>し、スクリプトをダウンロード・実行してから解析を再開します。
+      ページ表示が遅くなる原因になります。
+    </div>
+  </div>
+
+  <!-- ===== デモ2：ECMAScript 年表 ===== -->
+  <div class="demo-card">
+    <h3>🎮 デモ②：ECMAScript バージョン年表（クリックで詳細表示）</h3>
+    <p style="font-size:0.88rem;color:#553c9a;margin-bottom:20px;">
+      各バージョンをクリックすると、追加された主な機能の詳細が表示されます。
+    </p>
+
+    <div class="ecma-timeline">
+
+      <div class="ecma-item" onclick="toggleEcma(this)">
+        <div class="ecma-year-col">
+          <div class="ecma-dot-wrap">
+            <div class="ecma-dot-circle">ES5</div>
+            <div class="ecma-line"></div>
+          </div>
+        </div>
+        <div class="ecma-content">
+          <div class="ecma-ver">ES5 ／ 2009年</div>
+          <div class="ecma-detail">
+            <strong>主な追加機能：</strong><br>
+            • <code>strict mode</code>（厳格モード）<br>
+            • <code>JSON.parse() / JSON.stringify()</code><br>
+            • <code>Array.prototype.forEach / map / filter / reduce</code><br>
+            • <code>Object.create() / Object.keys()</code><br>
+            • <code>Function.prototype.bind()</code>
+          </div>
+        </div>
+      </div>
+
+      <div class="ecma-item" onclick="toggleEcma(this)">
+        <div class="ecma-year-col">
+          <div class="ecma-dot-wrap">
+            <div class="ecma-dot-circle">ES6</div>
+            <div class="ecma-line"></div>
+          </div>
+        </div>
+        <div class="ecma-content">
+          <div class="ecma-ver">ES2015（ES6）／ 2015年 ★最重要</div>
+          <div class="ecma-detail">
+            <strong>主な追加機能：</strong><br>
+            • <code>let / const</code>（ブロックスコープ変数）<br>
+            • アロー関数 <code>() =&gt; {}</code><br>
+            • <code>class</code> 構文<br>
+            • <code>Promise</code>（非同期処理）<br>
+            • テンプレートリテラル <code>`${変数}`</code><br>
+            • 分割代入・スプレッド構文<br>
+            • <code>Map / Set / Symbol</code><br>
+            • <code>import / export</code>（モジュール）<br>
+            • デフォルト引数・残余引数
+          </div>
+        </div>
+      </div>
+
+      <div class="ecma-item" onclick="toggleEcma(this)">
+        <div class="ecma-year-col">
+          <div class="ecma-dot-wrap">
+            <div class="ecma-dot-circle">ES8</div>
+            <div class="ecma-line"></div>
+          </div>
+        </div>
+        <div class="ecma-content">
+          <div class="ecma-ver">ES2017（ES8）／ 2017年</div>
+          <div class="ecma-detail">
+            <strong>主な追加機能：</strong><br>
+            • <code>async / await</code>（非同期処理の糖衣構文）<br>
+            • <code>Object.entries() / Object.values()</code><br>
+            • <code>String.prototype.padStart() / padEnd()</code><br>
+            • 末尾カンマ（関数引数）
+          </div>
+        </div>
+      </div>
+
+      <div class="ecma-item" onclick="toggleEcma(this)">
+        <div class="ecma-year-col">
+          <div class="ecma-dot-wrap">
+            <div class="ecma-dot-circle">ES11</div>
+            <div class="ecma-line"></div>
+          </div>
+        </div>
+        <div class="ecma-content">
+          <div class="ecma-ver">ES2020（ES11）／ 2020年</div>
+          <div class="ecma-detail">
+            <strong>主な追加機能：</strong><br>
+            • オプショナルチェーン <code>?.</code><br>
+            • Nullish合体演算子 <code>??</code><br>
+            • <code>BigInt</code>（大きな整数）<br>
+            • <code>Promise.allSettled()</code><br>
+            • <code>globalThis</code>（環境非依存のグローバルオブジェクト）
+          </div>
+        </div>
+      </div>
+
+      <div class="ecma-item" onclick="toggleEcma(this)">
+        <div class="ecma-year-col">
+          <div class="ecma-dot-wrap">
+            <div class="ecma-dot-circle">ES13</div>
+            <div class="ecma-line"></div>
+          </div>
+        </div>
+        <div class="ecma-content">
+          <div class="ecma-ver">ES2022（ES13）／ 2022年</div>
+          <div class="ecma-detail">
+            <strong>主な追加機能：</strong><br>
+            • クラスプライベートフィールド <code>#field</code><br>
+            • <code>Array.prototype.at()</code>（負のインデックス対応）<br>
+            • <code>Object.hasOwn()</code><br>
+            • <code>Error.cause</code>（エラー原因の連鎖）<br>
+            • Top-level <code>await</code>（モジュール内）
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ===== 演習問題 ===== -->
+  <div class="quiz-section">
+    <h2>✏️ 演習問題</h2>
+
+    <!-- Q1：穴埋め -->
+    <div class="quiz-item">
+      <div class="quiz-q">
+        <span class="q-num">Q1</span>
+        次の文章の空欄を埋めてください。（穴埋め）
+      </div>
+      <p style="font-size:0.92rem;color:#4a5568;margin-bottom:14px;">
+        <code>defer</code> 属性を付けたスクリプトは、HTMLの解析と
+        <input class="blank-input" id="q1a" placeholder="？？？"> で実行され、
+        実行順序は記述順が
+        <input class="blank-input" id="q1b" placeholder="？？？"> される。
+        一方 <code>async</code> 属性はダウンロード完了
+        <input class="blank-input" id="q1c" placeholder="？？？"> に実行され、順序は
+        <input class="blank-input" id="q1d" placeholder="？？？"> である。
+      </p>
+      <button class="check-btn" onclick="checkQ1()">判定する</button>
+      <div class="feedback" id="fb1"></div>
+    </div>
+
+    <!-- Q2：選択 -->
+    <div class="quiz-item">
+      <div class="quiz-q">
+        <span class="q-num">Q2</span>
+        <code>&lt;script src="app.js"&gt;&lt;/script&gt;</code> について正しい説明はどれですか？（選択）
+      </div>
+      <div class="choices">
+        <button class="choice-btn" onclick="checkQ2(this, false)">
+          A. src属性を指定してもタグ内のコードは実行される
+        </button>
+        <button class="choice-btn" onclick="checkQ2(this, false)">
+          B. defer属性はインラインスクリプトにも有効である
+        </button>
+        <button class="choice-btn" onclick="checkQ2(this, true)">
+          C. src属性を指定した場合、タグ内に書いたコードは無視される
+        </button>
+        <button class="choice-btn" onclick="checkQ2(this, false)">
+          D. async属性を付けると複数スクリプトの実行順序が保証される
+        </button>
+      </div>
+      <div class="feedback" id="fb2"></div>
+    </div>
+
+    <!-- Q3：チェックボックス -->
+    <div class="quiz-item">
+      <div class="quiz-q">
+        <span class="q-num">Q3</span>
+        厳格モード（<code>'use strict'</code>）に関して<strong>正しい</strong>ものをすべて選んでください。（複数選択）
+      </div>
+      <div class="checkbox-list" id="q3-list">
+        <label class="cb-label"><input type="checkbox" value="a"> 未宣言変数への代入は ReferenceError になる</label>
+        <label class="cb-label"><input type="checkbox" value="b"> 関数内の this はグローバルオブジェクトを指す</label>
+        <label class="cb-label"><input type="checkbox" value="c"> with 文の使用は SyntaxError になる</label>
+        <label class="cb-label"><input type="checkbox" value="d"> ES6 の type="module" では自動的に厳格モードが適用される</label>
+        <label class="cb-label"><input type="checkbox" value="e"> 同名の関数引数を定義しても問題ない</label>
+      </div>
+      <button class="check-btn" onclick="checkQ3()">判定する</button>
+      <div class="feedback" id="fb3"></div>
+    </div>
+
+    <!-- Q4：コード補完 -->
+    <div class="quiz-item">
+      <div class="quiz-q">
+        <span class="q-num">Q4</span>
+        外部JSファイル <code>main.js</code> を「HTML解析完了後・記述順を保証して」読み込むコードを完成させてください。（コード補完）
+      </div>
+      <div class="code-fill">
+<span class="kw">&lt;script</span> <span class="fn">src</span>=<span class="str">"main.js"</span> <input class="fill-input" id="q4a" placeholder="属性名"> <span class="kw">&gt;&lt;/script&gt;</span>
+      </div>
+      <button class="check-btn" onclick="checkQ4()">判定する</button>
+      <div class="feedback" id="fb4"></div>
+    </div>
+
+  </div>
+
+  <!-- 完了ボタン -->
+  <div class="complete-area">
+    <button class="complete-btn" id="completeBtn" onclick="markComplete()">
+      ✅ セクション 2-1 を完了にする
+    </button>
+    <div class="complete-msg" id="completeMsg"></div>
+  </div>
+
+  <!-- ページナビ -->
+  <nav class="page-nav">
+    <a class="nav-btn prev" href="index.html">← Chapter 2 目次</a>
+    <a class="nav-btn index" href="../index.html">🏠 サイトトップ</a>
+    <a class="nav-btn next" href="02_variables.html">2-2 変数と型 →</a>
+  </nav>
+
+  <footer>
+    <p>HTML5 Professional Level 2 試験対策サイト &copy; 2026</p>
+  </footer>
+
+  <script>
+    // ── コピーボタン ──
+    function copyCode(btn) {
+      const pre = btn.nextElementSibling;
+      navigator.clipboard.writeText(pre.innerText).then(() => {
+        btn.textContent = 'copied!';
+        btn.classList.add('copied');
+        setTimeout(() => { btn.textContent = 'copy'; btn.classList.remove('copied'); }, 2000);
+      });
+    }
+
+    // ── defer/async ビジュアライザ ──
+    const tlData = {
+      normal: {
+        html:    { left: '0%',  width: '40%', show: true },
+        blocked: { left: '40%', width: '20%', show: true },
+        html2:   { left: '60%', width: '40%', show: true },
+        fetch:   { left: '40%', width: '20%', show: true },
+        exec:    { left: '60%', width: '15%', show: true },
+        desc: '<strong>通常（属性なし）：</strong>scriptタグに達するとHTML解析を<strong>停止</strong>し、スクリプトをダウンロード・実行してから解析を再開します。ページ表示が遅くなる原因になります。'
+      },
+      defer: {
+        html:    { left: '0%',  width: '100%', show: true },
+        blocked: { left: '0%',  width: '0%',   show: false },
+        html2:   { left: '0%',  width: '0%',   show: false },
+        fetch:   { left: '10%', width: '55%',  show: true },
+        exec:    { left: '100%',width: '15%',  show: true },
+        desc: '<strong>defer：</strong>HTML解析と<strong>並行</strong>してスクリプトをダウンロードします。実行はHTML解析が<strong>完了した後</strong>で、複数スクリプトの<strong>記述順が保証</strong>されます。DOM操作スクリプトに最適です。'
+      },
+      async: {
+        html:    { left: '0%',  width: '40%',  show: true },
+        blocked: { left: '40%', width: '10%',  show: true },
+        html2:   { left: '50%', width: '50%',  show: true },
+        fetch:   { left: '10%', width: '30%',  show: true },
+        exec:    { left: '40%', width: '10%',  show: true },
+        desc: '<strong>async：</strong>HTML解析と<strong>並行</strong>してダウンロードし、DL完了次第<strong>即座に実行</strong>します（HTML解析を一時停止）。複数スクリプトの実行順序は<strong>不定</strong>です。独立したトラッキングスクリプト等に向いています。'
+      }
+    };
+
+    function showTimeline(mode) {
+      document.querySelectorAll('.sel-btn').forEach(b => b.classList.remove('active'));
+      event.target.classList.add('active');
+      const d = tlData[mode];
+      const set = (id, data) => {
+        const el = document.getElementById(id);
+        if (!el) return;
+        el.style.left  = data.left;
+        el.style.width = data.width;
+        el.style.display = data.show ? 'flex' : 'none';
+      };
+      set('bar-html',    d.html);
+      set('bar-blocked', d.blocked);
+      set('bar-html2',   d.html2);
+      set('bar-fetch',   d.fetch);
+      set('bar-exec',    d.exec);
+      document.getElementById('tl-desc').innerHTML = d.desc;
+    }
+
+    // ── ECMAScript 年表 ──
+    function toggleEcma(item) {
+      const isActive = item.classList.contains('active');
+      document.querySelectorAll('.ecma-item').forEach(i => i.classList.remove('active'));
+      if (!isActive) item.classList.add('active');
+    }
+
+    // ── Q1 穴埋め ──
+    function checkQ1() {
+      const ans = [
+        { id: 'q1a', correct: ['並行', '並列'] },
+        { id: 'q1b', correct: ['保証'] },
+        { id: 'q1c', correct: ['次第', 'すぐ', '即座', '即時'] },
+        { id: 'q1d', correct: ['不定', '保証されない', '不保証'] },
+      ];
+      let allOk = true;
+      ans.forEach(a => {
+        const el = document.getElementById(a.id);
+        const val = el.value.trim();
+        const ok = a.correct.some(c => val.includes(c));
+        el.classList.toggle('correct', ok);
+        el.classList.toggle('wrong', !ok);
+        if (!ok) allOk = false;
+      });
+      const fb = document.getElementById('fb1');
+      fb.className = 'feedback show ' + (allOk ? 'ok' : 'ng');
+      fb.innerHTML = allOk
+        ? '✅ 正解！ defer は並行DL・解析完了後実行・順序保証、async はDL完了次第実行・順序不定です。'
+        : '❌ もう一度確認しましょう。defer は「並行」「保証」、async は「次第」「不定」がキーワードです。';
+    }
+
+    // ── Q2 選択 ──
+    function checkQ2(btn, isCorrect) {
+      document.querySelectorAll('.choice-btn').forEach(b => b.disabled = true);
+      btn.classList.add(isCorrect ? 'correct' : 'wrong');
+      const fb = document.getElementById('fb2');
+      fb.className = 'feedback show ' + (isCorrect ? 'ok' : 'ng');
+      fb.innerHTML = isCorrect
+        ? '✅ 正解！ src属性を指定した場合、タグ内のコードは完全に無視されます。'
+        : '❌ 不正解。src属性を指定するとタグ内コードは無視されます。また defer/async はインラインスクリプトには効きません。';
+    }
+
+    // ── Q3 チェックボックス ──
+    function checkQ3() {
+      const correct = new Set(['a', 'c', 'd']);
+      const labels = document.querySelectorAll('#q3-list .cb-label');
+      let score = 0;
+      labels.forEach(label => {
+        const cb = label.querySelector('input');
+        const val = cb.value;
+        const checked = cb.checked;
+        const shouldCheck = correct.has(val);
+        cb.disabled = true;
+        if (checked && shouldCheck)  { label.classList.add('correct'); score++; }
+        else if (checked && !shouldCheck) { label.classList.add('wrong'); }
+        else if (!checked && shouldCheck) { label.classList.add('wrong'); }
+      });
+      const fb = document.getElementById('fb3');
+      const allOk = score === correct.size &&
+        [...labels].filter(l => l.querySelector('input').checked).length === correct.size;
+      fb.className = 'feedback show ' + (allOk ? 'ok' : 'ng');
+      fb.innerHTML = allOk
+        ? '✅ 完璧！ 正解は a・c・d です。'
+        : '❌ 正解は「a：ReferenceError」「c：with文はSyntaxError」「d：type="module"は自動適用」の3つです。<br>b：厳格モードでは関数内のthisはundefinedになります。e：同名引数はSyntaxErrorです。';
+    }
+
+    // ── Q4 コード補完 ──
+    function checkQ4() {
+      const val = document.getElementById('q4a').value.trim().toLowerCase();
+      const ok = val === 'defer';
+      document.getElementById('q4a').classList.toggle('correct', ok);
+      document.getElementById('q4a').classList.toggle('wrong', !ok);
+      const fb = document.getElementById('fb4');
+      fb.className = 'feedback show ' + (ok ? 'ok' : 'ng');
+      fb.innerHTML = ok
+        ? '✅ 正解！ <code>defer</code> 属性を使うと、HTML解析完了後に記述順を保証して実行されます。'
+        : '❌ 不正解。「HTML解析完了後・記述順を保証」するのは <code>defer</code> 属性です（asyncは順序不定）。';
+    }
+
+    // ── 完了ボタン ──
+    function markComplete() {
+      localStorage.setItem('html5lv2_ch2_01', 'done');
+      const btn = document.getElementById('completeBtn');
+      btn.textContent = '🎉 完了済み！';
+      btn.classList.add('done');
+      btn.disabled = true;
+      document.getElementById('completeMsg').textContent = '進捗が保存されました。次のセクションへ進みましょう！';
+    }
+
+    // ── 完了状態の復元 ──
+    window.addEventListener('DOMContentLoaded', () => {
+      if (localStorage.getItem('html5lv2_ch2_01') === 'done') {
+        const btn = document.getElementById('completeBtn');
+        btn.textContent = '🎉 完了済み！';
+        btn.classList.add('done');
+        btn.disabled = true;
+        document.getElementById('completeMsg').textContent = 'このセクションは完了済みです。';
+      }
+    });
+  </script>
+
+</body>
+</html>

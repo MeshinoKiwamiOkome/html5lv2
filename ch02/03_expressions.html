@@ -1,0 +1,1026 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>2-3 式と演算子 | Chapter 2 | HTML5 Level 2 試験対策</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Segoe UI', 'Helvetica Neue', sans-serif;
+      max-width: 960px; margin: 40px auto; padding: 0 24px;
+      background: #f0f4f8; color: #2d3748; line-height: 1.8;
+    }
+    .breadcrumb { font-size: 0.85rem; color: #718096; margin-bottom: 24px; }
+    .breadcrumb a { color: #553c9a; text-decoration: none; }
+    .breadcrumb a:hover { text-decoration: underline; }
+    .breadcrumb span { margin: 0 6px; }
+
+    .chapter-header {
+      background: linear-gradient(135deg, #553c9a, #9f7aea);
+      border-radius: 16px; padding: 36px 36px 32px;
+      color: #fff; margin-bottom: 32px;
+      position: relative; overflow: hidden;
+    }
+    .chapter-header::before {
+      content: ''; position: absolute; top: -50px; right: -50px;
+      width: 200px; height: 200px;
+      background: rgba(255,255,255,0.07); border-radius: 50%;
+    }
+    .chapter-header h1 { font-size: 1.75rem; font-weight: 700; margin-bottom: 8px; position: relative; z-index: 1; }
+    .chapter-header p  { font-size: 0.95rem; opacity: 0.9; margin-bottom: 18px; position: relative; z-index: 1; }
+    .badge-row { display: flex; flex-wrap: wrap; gap: 8px; position: relative; z-index: 1; }
+    .badge {
+      background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.35);
+      border-radius: 20px; padding: 3px 13px; font-size: 0.78rem; font-weight: 600;
+    }
+
+    .section-nav {
+      background: #fff; border-radius: 12px; padding: 20px 24px;
+      margin-bottom: 32px; box-shadow: 0 2px 12px rgba(85,60,154,0.07);
+    }
+    .section-nav h3 { font-size: 0.85rem; color: #9f7aea; font-weight: 700; margin-bottom: 12px; letter-spacing: 0.06em; }
+    .section-nav ul { list-style: none; display: flex; flex-direction: column; gap: 4px; }
+    .section-nav ul li a {
+      font-size: 0.88rem; color: #553c9a; text-decoration: none;
+      padding: 4px 10px; border-radius: 6px; display: block; transition: background 0.15s;
+    }
+    .section-nav ul li a:hover { background: #f3e8ff; }
+    .section-nav ul li.current a { font-weight: 700; color: #44337a; background: #ede9fe; }
+
+    .content-card {
+      background: #fff; border-radius: 14px; padding: 32px 36px;
+      margin-bottom: 28px; box-shadow: 0 2px 12px rgba(85,60,154,0.07);
+    }
+    .content-card h2 {
+      font-size: 1.25rem; font-weight: 700; color: #553c9a;
+      margin-bottom: 18px; padding-bottom: 10px;
+      border-bottom: 2px solid #e9d8fd;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .content-card h3 { font-size: 1rem; font-weight: 700; color: #44337a; margin: 22px 0 10px; }
+    .content-card p  { font-size: 0.95rem; color: #4a5568; margin-bottom: 14px; }
+    .content-card ul, .content-card ol { padding-left: 1.4em; margin-bottom: 14px; font-size: 0.93rem; color: #4a5568; }
+    .content-card li { margin-bottom: 6px; }
+
+    .tbl-wrap { overflow-x: auto; margin: 16px 0; }
+    table { width: 100%; border-collapse: collapse; font-size: 0.88rem; }
+    th { background: linear-gradient(135deg, #553c9a, #9f7aea); color: #fff; padding: 10px 14px; text-align: left; font-weight: 600; }
+    td { padding: 9px 14px; border-bottom: 1px solid #e2e8f0; color: #4a5568; }
+    tr:hover td { background: #faf5ff; }
+    tr:last-child td { border-bottom: none; }
+
+    .code-block {
+      background: #1a202c; border-radius: 10px; padding: 20px 22px;
+      margin: 16px 0; position: relative; overflow-x: auto;
+    }
+    .code-block pre {
+      font-family: 'Consolas', 'Monaco', monospace;
+      font-size: 0.88rem; line-height: 1.7; color: #e2e8f0; white-space: pre;
+    }
+    .copy-btn {
+      position: absolute; top: 10px; right: 12px;
+      background: #4a5568; color: #e2e8f0; border: none; border-radius: 6px;
+      padding: 4px 12px; font-size: 0.75rem; cursor: pointer; transition: background 0.15s;
+    }
+    .copy-btn:hover { background: #9f7aea; }
+    .copy-btn.copied { background: #48bb78; color: #fff; }
+
+    .comment { color: #68d391; }
+    .kw      { color: #b794f4; }
+    .fn      { color: #f6ad55; }
+    .str     { color: #fbd38d; }
+    .num     { color: #90cdf4; }
+    .op      { color: #fc8181; }
+    .out     { color: #a0aec0; }
+
+    .info-box { border-radius: 10px; padding: 16px 20px; margin: 16px 0; font-size: 0.9rem; }
+    .info-box.tip   { background: #f0fff4; border-left: 4px solid #48bb78; color: #276749; }
+    .info-box.warn  { background: #fffbeb; border-left: 4px solid #f6ad55; color: #744210; }
+    .info-box.point { background: #faf5ff; border-left: 4px solid #9f7aea; color: #44337a; }
+
+    /* ── デモカード ── */
+    .demo-card {
+      background: #faf5ff; border: 2px solid #d6bcfa;
+      border-radius: 14px; padding: 28px 30px; margin-bottom: 28px;
+    }
+    .demo-card h3 {
+      font-size: 1rem; font-weight: 700; color: #553c9a;
+      margin-bottom: 18px; display: flex; align-items: center; gap: 8px;
+    }
+    .demo-desc { font-size: 0.88rem; color: #553c9a; margin-bottom: 16px; }
+
+    /* 演算子プレイグラウンド */
+    .pg-input-row {
+      display: flex; gap: 10px; margin-bottom: 14px; flex-wrap: wrap; align-items: center;
+    }
+    .pg-input {
+      flex: 1; min-width: 200px; padding: 10px 14px;
+      border: 2px solid #c4b5fd; border-radius: 8px;
+      font-size: 0.95rem; font-family: 'Consolas', monospace;
+      color: #2d3748; background: #fff; transition: border-color 0.15s;
+    }
+    .pg-input:focus { outline: none; border-color: #553c9a; }
+    .run-btn {
+      padding: 10px 22px; background: linear-gradient(135deg, #553c9a, #9f7aea);
+      color: #fff; border: none; border-radius: 8px;
+      font-size: 0.88rem; font-weight: 700; cursor: pointer; transition: opacity 0.15s;
+    }
+    .run-btn:hover { opacity: 0.88; }
+    .pg-result {
+      background: #1a202c; border-radius: 10px; padding: 16px 18px;
+      font-family: 'Consolas', monospace; font-size: 0.9rem;
+      color: #e2e8f0; min-height: 56px;
+    }
+    .pg-presets {
+      display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 14px;
+    }
+    .preset-btn {
+      padding: 5px 12px; border-radius: 6px;
+      border: 1px solid #c4b5fd; background: #fff;
+      color: #553c9a; font-size: 0.8rem; font-family: 'Consolas', monospace;
+      cursor: pointer; transition: all 0.15s;
+    }
+    .preset-btn:hover { background: #ede9fe; border-color: #9f7aea; }
+
+    /* ビット演算ビジュアライザ */
+    .bit-inputs { display: flex; gap: 12px; margin-bottom: 14px; flex-wrap: wrap; align-items: flex-end; }
+    .bit-field { display: flex; flex-direction: column; gap: 4px; }
+    .bit-field label { font-size: 0.8rem; font-weight: 700; color: #553c9a; }
+    .bit-num-input {
+      width: 100px; padding: 8px 12px;
+      border: 2px solid #c4b5fd; border-radius: 8px;
+      font-size: 0.95rem; font-family: 'Consolas', monospace;
+      color: #2d3748; background: #fff;
+    }
+    .bit-num-input:focus { outline: none; border-color: #553c9a; }
+    .bit-op-select {
+      padding: 8px 12px; border: 2px solid #c4b5fd; border-radius: 8px;
+      font-size: 0.9rem; color: #553c9a; font-weight: 700;
+      background: #fff; cursor: pointer; height: 42px;
+    }
+    .bit-display {
+      background: #1a202c; border-radius: 10px; padding: 18px 20px;
+      font-family: 'Consolas', monospace; font-size: 0.85rem; overflow-x: auto;
+    }
+    .bit-row { display: flex; gap: 10px; margin-bottom: 8px; align-items: center; }
+    .bit-row-label { color: #9f7aea; width: 70px; flex-shrink: 0; font-size: 0.8rem; }
+    .bit-cells { display: flex; gap: 3px; }
+    .bit-cell {
+      width: 26px; height: 26px; border-radius: 4px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.82rem; font-weight: 700;
+    }
+    .bit-cell.one  { background: #553c9a; color: #fff; }
+    .bit-cell.zero { background: #2d3748; color: #718096; }
+    .bit-cell.result-one  { background: #48bb78; color: #fff; }
+    .bit-cell.result-zero { background: #2d3748; color: #718096; }
+    .bit-dec { color: #fbd38d; margin-left: 12px; font-size: 0.88rem; }
+    .bit-sep { border-top: 1px solid #4a5568; margin: 8px 0; }
+
+    /* 短絡評価デモ */
+    .sc-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
+    @media(max-width:600px){ .sc-grid { grid-template-columns: 1fr; } }
+    .sc-card {
+      background: #fff; border-radius: 10px; padding: 16px;
+      border: 2px solid #e2e8f0;
+    }
+    .sc-card h4 { font-size: 0.9rem; font-weight: 700; color: #553c9a; margin-bottom: 10px; }
+    .sc-expr {
+      background: #1a202c; border-radius: 6px; padding: 10px 12px;
+      font-family: 'Consolas', monospace; font-size: 0.82rem;
+      color: #e2e8f0; margin-bottom: 10px; line-height: 1.7;
+    }
+    .sc-input {
+      width: 100%; padding: 7px 10px; border: 2px solid #c4b5fd;
+      border-radius: 6px; font-size: 0.88rem;
+      font-family: 'Consolas', monospace; margin-bottom: 8px;
+    }
+    .sc-input:focus { outline: none; border-color: #553c9a; }
+    .sc-result {
+      font-size: 0.85rem; color: #4a5568; padding: 8px 10px;
+      background: #faf5ff; border-radius: 6px; min-height: 36px;
+    }
+
+    /* ── 演習問題 ── */
+    .quiz-section {
+      background: #fff; border-radius: 14px; padding: 32px 36px;
+      margin-bottom: 28px; box-shadow: 0 2px 12px rgba(85,60,154,0.07);
+    }
+    .quiz-section h2 {
+      font-size: 1.2rem; font-weight: 700; color: #553c9a;
+      margin-bottom: 24px; padding-bottom: 10px; border-bottom: 2px solid #e9d8fd;
+    }
+    .quiz-item { margin-bottom: 32px; padding-bottom: 28px; border-bottom: 1px dashed #e2e8f0; }
+    .quiz-item:last-child { border-bottom: none; margin-bottom: 0; }
+    .quiz-q {
+      font-size: 0.95rem; font-weight: 700; color: #2d3748;
+      margin-bottom: 14px; background: #faf5ff;
+      padding: 12px 16px; border-radius: 8px; border-left: 4px solid #9f7aea;
+    }
+    .quiz-q .q-num {
+      display: inline-block; background: #553c9a; color: #fff;
+      border-radius: 6px; padding: 1px 9px; font-size: 0.8rem; margin-right: 8px;
+    }
+    .blank-input {
+      border: 2px solid #c4b5fd; border-radius: 6px; padding: 4px 10px;
+      font-size: 0.9rem; font-family: 'Consolas', monospace;
+      color: #2d3748; background: #faf5ff; width: 120px; transition: border-color 0.15s;
+    }
+    .blank-input:focus { outline: none; border-color: #553c9a; }
+    .blank-input.correct { border-color: #48bb78; background: #f0fff4; }
+    .blank-input.wrong   { border-color: #fc8181; background: #fff5f5; }
+
+    .choices { display: flex; flex-direction: column; gap: 8px; }
+    .choice-btn {
+      padding: 10px 16px; border-radius: 8px; border: 2px solid #e2e8f0;
+      background: #fff; color: #2d3748; font-size: 0.9rem;
+      cursor: pointer; text-align: left; transition: all 0.15s;
+    }
+    .choice-btn:hover:not(:disabled) { border-color: #9f7aea; background: #faf5ff; }
+    .choice-btn.correct { border-color: #48bb78; background: #f0fff4; color: #276749; font-weight: 700; }
+    .choice-btn.wrong   { border-color: #fc8181; background: #fff5f5; color: #c53030; }
+
+    .checkbox-list { display: flex; flex-direction: column; gap: 8px; }
+    .cb-label {
+      display: flex; align-items: center; gap: 10px;
+      padding: 10px 14px; border-radius: 8px;
+      border: 2px solid #e2e8f0; background: #fff;
+      cursor: pointer; font-size: 0.9rem; transition: all 0.15s;
+    }
+    .cb-label:hover { border-color: #9f7aea; background: #faf5ff; }
+    .cb-label input[type="checkbox"] { width: 16px; height: 16px; accent-color: #553c9a; }
+    .cb-label.correct { border-color: #48bb78; background: #f0fff4; }
+    .cb-label.wrong   { border-color: #fc8181; background: #fff5f5; }
+
+    .code-fill {
+      background: #1a202c; border-radius: 10px; padding: 18px 20px;
+      font-family: 'Consolas', 'Monaco', monospace;
+      font-size: 0.88rem; line-height: 1.9; color: #e2e8f0; margin-bottom: 12px;
+    }
+    .fill-input {
+      background: #2d3748; border: 1px solid #9f7aea; border-radius: 4px;
+      color: #fbd38d; font-family: 'Consolas', monospace;
+      font-size: 0.88rem; padding: 1px 8px; width: 150px;
+    }
+    .fill-input:focus { outline: none; border-color: #b794f4; }
+    .fill-input.correct { border-color: #48bb78; background: #1c3a2a; color: #68d391; }
+    .fill-input.wrong   { border-color: #fc8181; background: #3a1c1c; color: #fc8181; }
+
+    .check-btn {
+      margin-top: 12px; padding: 9px 22px;
+      background: linear-gradient(135deg, #553c9a, #9f7aea);
+      color: #fff; border: none; border-radius: 8px;
+      font-size: 0.88rem; font-weight: 700; cursor: pointer; transition: opacity 0.15s;
+    }
+    .check-btn:hover { opacity: 0.88; }
+    .feedback { margin-top: 10px; padding: 10px 16px; border-radius: 8px; font-size: 0.88rem; display: none; }
+    .feedback.show { display: block; }
+    .feedback.ok { background: #f0fff4; color: #276749; border-left: 4px solid #48bb78; }
+    .feedback.ng { background: #fff5f5; color: #c53030; border-left: 4px solid #fc8181; }
+
+    .complete-area { text-align: center; padding: 32px 0 8px; }
+    .complete-btn {
+      padding: 14px 40px; background: linear-gradient(135deg, #553c9a, #9f7aea);
+      color: #fff; border: none; border-radius: 12px;
+      font-size: 1rem; font-weight: 700; cursor: pointer;
+      transition: opacity 0.15s, transform 0.15s;
+      box-shadow: 0 4px 16px rgba(85,60,154,0.3);
+    }
+    .complete-btn:hover { opacity: 0.9; transform: translateY(-2px); }
+    .complete-btn.done { background: linear-gradient(135deg, #38a169, #68d391); }
+    .complete-msg { margin-top: 12px; font-size: 0.9rem; color: #718096; }
+
+    .page-nav {
+      display: flex; justify-content: space-between; align-items: center;
+      gap: 12px; margin-top: 40px; flex-wrap: wrap;
+    }
+    .nav-btn {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 12px 22px; border-radius: 10px;
+      font-size: 0.9rem; font-weight: 600; text-decoration: none;
+      transition: background 0.18s, transform 0.18s;
+    }
+    .nav-btn.prev  { background: #e9d8fd; color: #553c9a; }
+    .nav-btn.prev:hover  { background: #d6bcfa; transform: translateX(-2px); }
+    .nav-btn.index { background: linear-gradient(135deg, #553c9a, #9f7aea); color: #fff; }
+    .nav-btn.index:hover { opacity: 0.9; }
+    .nav-btn.next  { background: #553c9a; color: #fff; }
+    .nav-btn.next:hover  { background: #44337a; transform: translateX(2px); }
+
+    footer {
+      text-align: center; font-size: 0.8rem; color: #a0aec0;
+      margin-top: 48px; padding-top: 24px; border-top: 1px solid #e2e8f0;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- パンくずナビ -->
+  <nav class="breadcrumb">
+    <a href="../index.html">🏠 HTML5 Level 2</a>
+    <span>›</span>
+    <a href="index.html">Chapter 2</a>
+    <span>›</span>
+    <strong>2-3 式と演算子</strong>
+  </nav>
+
+  <!-- 章ヘッダー -->
+  <header class="chapter-header">
+    <h1>🔢 2-3 式と演算子</h1>
+    <p>算術・ビット・論理・三項演算子、オプショナルチェーン、Nullish Coalescing を完全理解する。</p>
+    <div class="badge-row">
+      <span class="badge">➕ 算術演算子</span>
+      <span class="badge">⚙️ ビット演算</span>
+      <span class="badge">🔗 論理演算子</span>
+      <span class="badge">❓ ?. / ??</span>
+      <span class="badge">✏️ 演習4問</span>
+    </div>
+  </header>
+
+  <!-- セクションナビ -->
+  <nav class="section-nav">
+    <h3>📋 CHAPTER 2 セクション一覧</h3>
+    <ul>
+      <li><a href="01_js_ecma.html">2-1 JavaScriptとは</a></li>
+      <li><a href="02_variables.html">2-2 変数と型</a></li>
+      <li class="current"><a href="03_expressions.html">2-3 式と演算子</a></li>
+      <li><a href="04_control.html">2-4 制御文</a></li>
+      <li><a href="05_arrays.html">2-5 配列</a></li>
+      <li><a href="06_objects.html">2-6 オブジェクト</a></li>
+      <li><a href="07_functions.html">2-7 関数</a></li>
+      <li><a href="08_global.html">2-8 グローバルオブジェクトとCallオブジェクト</a></li>
+    </ul>
+  </nav>
+
+  <!-- ===== 1. 算術演算子 ===== -->
+  <div class="content-card">
+    <h2>➕ 算術演算子</h2>
+
+    <h3>単項演算子</h3>
+    <div class="tbl-wrap">
+      <table>
+        <thead><tr><th>演算子</th><th>説明</th><th>例</th><th>結果</th></tr></thead>
+        <tbody>
+          <tr><td><code>+x</code></td><td>数値に変換</td><td><code>+'3'</code></td><td><code>3</code>（number）</td></tr>
+          <tr><td><code>-x</code></td><td>符号反転</td><td><code>-5</code></td><td><code>-5</code></td></tr>
+          <tr><td><code>++x</code></td><td>前置インクリメント（先に加算）</td><td><code>let a=1; ++a</code></td><td><code>2</code>（aも2）</td></tr>
+          <tr><td><code>x++</code></td><td>後置インクリメント（後で加算）</td><td><code>let a=1; a++</code></td><td><code>1</code>（aは2）</td></tr>
+          <tr><td><code>--x</code></td><td>前置デクリメント</td><td><code>let a=3; --a</code></td><td><code>2</code>（aも2）</td></tr>
+          <tr><td><code>x--</code></td><td>後置デクリメント</td><td><code>let a=3; a--</code></td><td><code>3</code>（aは2）</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>二項演算子</h3>
+    <div class="tbl-wrap">
+      <table>
+        <thead><tr><th>演算子</th><th>説明</th><th>例</th><th>結果</th></tr></thead>
+        <tbody>
+          <tr><td><code>+</code></td><td>加算 / 文字列結合</td><td><code>'a' + 'b'</code></td><td><code>"ab"</code></td></tr>
+          <tr><td><code>-</code></td><td>減算</td><td><code>10 - 3</code></td><td><code>7</code></td></tr>
+          <tr><td><code>*</code></td><td>乗算</td><td><code>4 * 3</code></td><td><code>12</code></td></tr>
+          <tr><td><code>/</code></td><td>除算</td><td><code>10 / 3</code></td><td><code>3.333...</code></td></tr>
+          <tr><td><code>%</code></td><td>剰余（余り）</td><td><code>10 % 3</code></td><td><code>1</code></td></tr>
+          <tr><td><code>**</code></td><td>べき乗（ES2016）</td><td><code>2 ** 10</code></td><td><code>1024</code></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="code-block">
+      <button class="copy-btn" onclick="copyCode(this)">copy</button>
+      <pre><span class="comment">// インクリメント前置 vs 後置の違い</span>
+<span class="kw">let</span> a <span class="op">=</span> <span class="num">5</span>;
+<span class="fn">console</span>.<span class="fn">log</span>(<span class="op">++</span>a); <span class="out">// 6（先に加算してから返す）</span>
+<span class="fn">console</span>.<span class="fn">log</span>(a<span class="op">++</span>); <span class="out">// 6（現在値を返してから加算）</span>
+<span class="fn">console</span>.<span class="fn">log</span>(a);   <span class="out">// 7</span>
+
+<span class="comment">// べき乗演算子（ES2016）</span>
+<span class="fn">console</span>.<span class="fn">log</span>(<span class="num">2</span> <span class="op">**</span> <span class="num">8</span>);  <span class="out">// 256</span>
+<span class="fn">console</span>.<span class="fn">log</span>(<span class="num">9</span> <span class="op">**</span> <span class="num">0.5</span>); <span class="out">// 3（平方根）</span>
+
+<span class="comment">// 剰余の活用（偶奇判定）</span>
+<span class="fn">console</span>.<span class="fn">log</span>(<span class="num">7</span> <span class="op">%</span> <span class="num">2</span>); <span class="out">// 1（奇数）</span>
+<span class="fn">console</span>.<span class="fn">log</span>(<span class="num">8</span> <span class="op">%</span> <span class="num">2</span>); <span class="out">// 0（偶数）</span></pre>
+    </div>
+  </div>
+
+  <!-- ===== 2. ビット演算子 ===== -->
+  <div class="content-card">
+    <h2>⚙️ ビット演算子</h2>
+    <p>整数を <strong>32ビットの2進数</strong> として扱い、ビット単位で演算します。</p>
+
+    <div class="tbl-wrap">
+      <table>
+        <thead><tr><th>演算子</th><th>名称</th><th>説明</th><th>例（5 op 3）</th><th>結果</th></tr></thead>
+        <tbody>
+          <tr><td><code>&amp;</code></td><td>AND</td><td>両方1のビットが1</td><td><code>5 &amp; 3</code></td><td><code>1</code></td></tr>
+          <tr><td><code>|</code></td><td>OR</td><td>どちらか1のビットが1</td><td><code>5 | 3</code></td><td><code>7</code></td></tr>
+          <tr><td><code>^</code></td><td>XOR</td><td>どちらか一方だけ1のビットが1</td><td><code>5 ^ 3</code></td><td><code>6</code></td></tr>
+          <tr><td><code>~</code></td><td>NOT</td><td>ビットを反転（単項）</td><td><code>~5</code></td><td><code>-6</code></td></tr>
+          <tr><td><code>&lt;&lt;</code></td><td>左シフト</td><td>ビットを左にずらす（×2）</td><td><code>5 &lt;&lt; 1</code></td><td><code>10</code></td></tr>
+          <tr><td><code>&gt;&gt;</code></td><td>右シフト（符号あり）</td><td>ビットを右にずらす（÷2）</td><td><code>5 &gt;&gt; 1</code></td><td><code>2</code></td></tr>
+          <tr><td><code>&gt;&gt;&gt;</code></td><td>右シフト（符号なし）</td><td>符号ビットも0で埋める</td><td><code>-1 &gt;&gt;&gt; 0</code></td><td><code>4294967295</code></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="code-block">
+      <button class="copy-btn" onclick="copyCode(this)">copy</button>
+      <pre><span class="comment">// 5 = 0101, 3 = 0011 (2進数)</span>
+<span class="fn">console</span>.<span class="fn">log</span>(<span class="num">5</span> <span class="op">&amp;</span>  <span class="num">3</span>); <span class="out">// 1  (0001) AND</span>
+<span class="fn">console</span>.<span class="fn">log</span>(<span class="num">5</span> <span class="op">|</span>  <span class="num">3</span>); <span class="out">// 7  (0111) OR</span>
+<span class="fn">console</span>.<span class="fn">log</span>(<span class="num">5</span> <span class="op">^</span>  <span class="num">3</span>); <span class="out">// 6  (0110) XOR</span>
+<span class="fn">console</span>.<span class="fn">log</span>(<span class="op">~</span><span class="num">5</span>);     <span class="out">// -6       NOT（~n = -(n+1)）</span>
+<span class="fn">console</span>.<span class="fn">log</span>(<span class="num">5</span> <span class="op">&lt;&lt;</span> <span class="num">1</span>); <span class="out">// 10 (1010) 左シフト</span>
+<span class="fn">console</span>.<span class="fn">log</span>(<span class="num">5</span> <span class="op">&gt;&gt;</span> <span class="num">1</span>); <span class="out">// 2  (0010) 右シフト</span>
+
+<span class="comment">// ビット演算の実用例：フラグ管理</span>
+<span class="kw">const</span> READ    <span class="op">=</span> <span class="num">0b001</span>; <span class="comment">// 1</span>
+<span class="kw">const</span> WRITE   <span class="op">=</span> <span class="num">0b010</span>; <span class="comment">// 2</span>
+<span class="kw">const</span> EXECUTE <span class="op">=</span> <span class="num">0b100</span>; <span class="comment">// 4</span>
+<span class="kw">let</span> perm <span class="op">=</span> READ <span class="op">|</span> WRITE;  <span class="comment">// 3（読み書き権限）</span>
+<span class="fn">console</span>.<span class="fn">log</span>((perm <span class="op">&amp;</span> READ) <span class="op">!==</span> <span class="num">0</span>);    <span class="out">// true（読み取り権限あり）</span>
+<span class="fn">console</span>.<span class="fn">log</span>((perm <span class="op">&amp;</span> EXECUTE) <span class="op">!==</span> <span class="num">0</span>); <span class="out">// false（実行権限なし）</span></pre>
+    </div>
+  </div>
+
+  <!-- ===== 3. メンバ演算子・条件演算子 ===== -->
+  <div class="content-card">
+    <h2>🔗 メンバ演算子・条件演算子・その他</h2>
+
+    <h3>メンバ演算子</h3>
+    <div class="code-block">
+      <button class="copy-btn" onclick="copyCode(this)">copy</button>
+      <pre><span class="kw">const</span> user <span class="op">=</span> { name: <span class="str">'Alice'</span>, address: { city: <span class="str">'Tokyo'</span> } };
+
+<span class="comment">// ドット記法</span>
+<span class="fn">console</span>.<span class="fn">log</span>(user.name);            <span class="out">// "Alice"</span>
+
+<span class="comment">// ブラケット記法（動的なキー名に対応）</span>
+<span class="kw">const</span> key <span class="op">=</span> <span class="str">'name'</span>;
+<span class="fn">console</span>.<span class="fn">log</span>(user[key]);            <span class="out">// "Alice"</span>
+
+<span class="comment">// オプショナルチェーン ?. （ES2020）</span>
+<span class="comment">// プロパティが存在しない場合 undefined を返す（エラーにならない）</span>
+<span class="fn">console</span>.<span class="fn">log</span>(user<span class="op">?.</span>address<span class="op">?.</span>city);  <span class="out">// "Tokyo"</span>
+<span class="fn">console</span>.<span class="fn">log</span>(user<span class="op">?.</span>phone<span class="op">?.</span>number);  <span class="out">// undefined（エラーなし）</span>
+
+<span class="comment">// メソッドへのオプショナルチェーン</span>
+<span class="fn">console</span>.<span class="fn">log</span>(user<span class="op">?.</span><span class="fn">greet</span><span class="op">?.</span>());       <span class="out">// undefined（メソッドが存在しなくてもOK）</span></pre>
+    </div>
+
+    <h3>条件演算子（三項演算子）</h3>
+    <div class="code-block">
+      <button class="copy-btn" onclick="copyCode(this)">copy</button>
+      <pre><span class="comment">// 構文: 条件 ? 真の値 : 偽の値</span>
+<span class="kw">const</span> age <span class="op">=</span> <span class="num">20</span>;
+<span class="kw">const</span> label <span class="op">=</span> age <span class="op">&gt;=</span> <span class="num">18</span> <span class="op">?</span> <span class="str">'成人'</span> <span class="op">:</span> <span class="str">'未成年'</span>;
+<span class="fn">console</span>.<span class="fn">log</span>(label); <span class="out">// "成人"</span>
+
+<span class="comment">// ネストも可能（可読性に注意）</span>
+<span class="kw">const</span> score <span class="op">=</span> <span class="num">75</span>;
+<span class="kw">const</span> grade <span class="op">=</span> score <span class="op">&gt;=</span> <span class="num">90</span> <span class="op">?</span> <span class="str">'A'</span>
+            <span class="op">:</span> score <span class="op">&gt;=</span> <span class="num">70</span> <span class="op">?</span> <span class="str">'B'</span>
+            <span class="op">:</span> score <span class="op">&gt;=</span> <span class="num">50</span> <span class="op">?</span> <span class="str">'C'</span> <span class="op">:</span> <span class="str">'D'</span>;
+<span class="fn">console</span>.<span class="fn">log</span>(grade); <span class="out">// "B"</span></pre>
+    </div>
+
+    <h3>typeof / instanceof / in / delete</h3>
+    <div class="code-block">
+      <button class="copy-btn" onclick="copyCode(this)">copy</button>
+      <pre><span class="comment">// typeof：型を文字列で返す</span>
+<span class="fn">console</span>.<span class="fn">log</span>(<span class="kw">typeof</span> <span class="num">42</span>);        <span class="out">// "number"</span>
+<span class="fn">console</span>.<span class="fn">log</span>(<span class="kw">typeof</span> <span class="str">'hello'</span>);   <span class="out">// "string"</span>
+<span class="fn">console</span>.<span class="fn">log</span>(<span class="kw">typeof</span> <span class="kw">undefined</span>); <span class="out">// "undefined"</span>
+<span class="fn">console</span>.<span class="fn">log</span>(<span class="kw">typeof</span> <span class="kw">null</span>);      <span class="out">// "object" ← 有名なバグ</span>
+
+<span class="comment">// instanceof：プロトタイプチェーンを確認</span>
+<span class="fn">console</span>.<span class="fn">log</span>([] <span class="kw">instanceof</span> Array);   <span class="out">// true</span>
+<span class="fn">console</span>.<span class="fn">log</span>([] <span class="kw">instanceof</span> Object);  <span class="out">// true（ArrayはObjectを継承）</span>
+
+<span class="comment">// in：プロパティの存在確認</span>
+<span class="kw">const</span> obj <span class="op">=</span> { x: <span class="num">1</span>, y: <span class="num">2</span> };
+<span class="fn">console</span>.<span class="fn">log</span>(<span class="str">'x'</span> <span class="kw">in</span> obj);  <span class="out">// true</span>
+<span class="fn">console</span>.<span class="fn">log</span>(<span class="str">'z'</span> <span class="kw">in</span> obj);  <span class="out">// false</span>
+
+<span class="comment">// delete：プロパティの削除</span>
+<span class="kw">delete</span> obj.x;
+<span class="fn">console</span>.<span class="fn">log</span>(obj); <span class="out">// { y: 2 }</span></pre>
+    </div>
+  </div>
+
+  <!-- ===== 4. 論理演算子 ===== -->
+  <div class="content-card">
+    <h2>🔀 論理演算子と短絡評価</h2>
+
+    <div class="tbl-wrap">
+      <table>
+        <thead><tr><th>演算子</th><th>名称</th><th>説明</th><th>短絡評価</th></tr></thead>
+        <tbody>
+          <tr>
+            <td><code>&amp;&amp;</code></td><td>AND</td>
+            <td>左が Truthy なら右を返す、Falsy なら左を返す</td>
+            <td>左が Falsy → 右を評価しない</td>
+          </tr>
+          <tr>
+            <td><code>||</code></td><td>OR</td>
+            <td>左が Truthy なら左を返す、Falsy なら右を返す</td>
+            <td>左が Truthy → 右を評価しない</td>
+          </tr>
+          <tr>
+            <td><code>??</code></td><td>Nullish Coalescing</td>
+            <td>左が <strong>null / undefined</strong> のときだけ右を返す</td>
+            <td>左が null/undefined 以外 → 右を評価しない</td>
+          </tr>
+          <tr>
+            <td><code>!</code></td><td>NOT</td>
+            <td>真偽値を反転</td>
+            <td>-</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="code-block">
+      <button class="copy-btn" onclick="copyCode(this)">copy</button>
+      <pre><span class="comment">// && の短絡評価</span>
+<span class="fn">console</span>.<span class="fn">log</span>(<span class="kw">null</span>  <span class="op">&amp;&amp;</span> <span class="str">'hello'</span>); <span class="out">// null（左がFalsyなので左を返す）</span>
+<span class="fn">console</span>.<span class="fn">log</span>(<span class="str">'hi'</span>  <span class="op">&amp;&amp;</span> <span class="str">'hello'</span>); <span class="out">// "hello"（左がTruthyなので右を返す）</span>
+
+<span class="comment">// || の短絡評価（デフォルト値に使われる）</span>
+<span class="fn">console</span>.<span class="fn">log</span>(<span class="kw">null</span>  <span class="op">||</span> <span class="str">'default'</span>); <span class="out">// "default"</span>
+<span class="fn">console</span>.<span class="fn">log</span>(<span class="num">0</span>     <span class="op">||</span> <span class="str">'default'</span>); <span class="out">// "default"（0はFalsy！）</span>
+<span class="fn">console</span>.<span class="fn">log</span>(<span class="str">'hi'</span>  <span class="op">||</span> <span class="str">'default'</span>); <span class="out">// "hi"</span>
+
+<span class="comment">// ?? Nullish Coalescing（ES2020）</span>
+<span class="comment">// null / undefined のときだけ右辺を使う（0や""は通さない）</span>
+<span class="fn">console</span>.<span class="fn">log</span>(<span class="kw">null</span>      <span class="op">??</span> <span class="str">'default'</span>); <span class="out">// "default"</span>
+<span class="fn">console</span>.<span class="fn">log</span>(<span class="kw">undefined</span> <span class="op">??</span> <span class="str">'default'</span>); <span class="out">// "default"</span>
+<span class="fn">console</span>.<span class="fn">log</span>(<span class="num">0</span>         <span class="op">??</span> <span class="str">'default'</span>); <span class="out">// 0（0はnull/undefinedではない！）</span>
+<span class="fn">console</span>.<span class="fn">log</span>(<span class="str">''</span>        <span class="op">??</span> <span class="str">'default'</span>); <span class="out">// ""（空文字もnull/undefinedではない）</span></pre>
+    </div>
+
+    <div class="info-box point">
+      <strong>💡 試験ポイント：|| と ?? の違い</strong><br>
+      <code>||</code> は <strong>Falsy（0, "", false, null, undefined, NaN）</strong> のときに右辺を返します。<br>
+      <code>??</code> は <strong>null / undefined のみ</strong> のときに右辺を返します。<br>
+      数値の <code>0</code> や空文字 <code>""</code> を有効な値として扱いたい場合は <code>??</code> を使いましょう。
+    </div>
+
+    <h3>演算子の優先順位（高い順）</h3>
+    <div class="tbl-wrap">
+      <table>
+        <thead><tr><th>優先順位</th><th>演算子</th><th>説明</th></tr></thead>
+        <tbody>
+          <tr><td>高</td><td><code>() [] . ?.</code></td><td>グループ化・メンバアクセス</td></tr>
+          <tr><td>↑</td><td><code>! ~ ++ -- typeof</code></td><td>単項演算子</td></tr>
+          <tr><td>↑</td><td><code>** * / %</code></td><td>べき乗・乗除算</td></tr>
+          <tr><td>↑</td><td><code>+ -</code></td><td>加減算</td></tr>
+          <tr><td>↑</td><td><code>&lt;&lt; &gt;&gt; &gt;&gt;&gt;</code></td><td>ビットシフト</td></tr>
+          <tr><td>↑</td><td><code>&lt; &gt; &lt;= &gt;= instanceof in</code></td><td>比較</td></tr>
+          <tr><td>↑</td><td><code>== != === !==</code></td><td>等値比較</td></tr>
+          <tr><td>↑</td><td><code>&amp; ^ |</code></td><td>ビット演算</td></tr>
+          <tr><td>↑</td><td><code>&amp;&amp;</code></td><td>論理AND</td></tr>
+          <tr><td>↑</td><td><code>||</code></td><td>論理OR</td></tr>
+          <tr><td>低</td><td><code>??</code></td><td>Nullish Coalescing</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ===== デモ1：演算子プレイグラウンド ===== -->
+  <div class="demo-card">
+    <h3>🎮 デモ①：演算子プレイグラウンド</h3>
+    <p class="demo-desc">JavaScript の式を入力して結果を確認できます。プリセットボタンで試験頻出の式をすぐ試せます。</p>
+    <div class="pg-presets">
+      <button class="preset-btn" onclick="setPreset(&quot;'3' + 4 - 1&quot;)">'3' + 4 - 1</button>
+      <button class="preset-btn" onclick="setPreset('2 ** 10')">2 ** 10</button>
+      <button class="preset-btn" onclick="setPreset('null ?? &quot;default&quot;')">null ?? "default"</button>
+      <button class="preset-btn" onclick="setPreset('0 ?? &quot;default&quot;')">0 ?? "default"</button>
+      <button class="preset-btn" onclick="setPreset('0 || &quot;default&quot;')">0 || "default"</button>
+      <button class="preset-btn" onclick="setPreset('null?.foo?.bar')">null?.foo?.bar</button>
+      <button class="preset-btn" onclick="setPreset('5 & 3')">5 & 3</button>
+      <button class="preset-btn" onclick="setPreset('5 | 3')">5 | 3</button>
+      <button class="preset-btn" onclick="setPreset('~5')">~5</button>
+      <button class="preset-btn" onclick="setPreset('typeof null')">typeof null</button>
+      <button class="preset-btn" onclick="setPreset('1 + 2 + &quot;3&quot;')">1 + 2 + "3"</button>
+      <button class="preset-btn" onclick="setPreset('&quot;3&quot; + 2 + 1')">"3" + 2 + 1</button>
+    </div>
+    <div class="pg-input-row">
+      <input class="pg-input" id="pgInput" placeholder="例: 2 ** 8, null ?? 'hi', typeof []" value="'3' + 4 - 1">
+      <button class="run-btn" onclick="runPlayground()">▶ 実行</button>
+    </div>
+    <div class="pg-result" id="pgResult"></div>
+  </div>
+
+  <!-- ===== デモ2：ビット演算ビジュアライザ ===== -->
+  <div class="demo-card">
+    <h3>🎮 デモ②：ビット演算ビジュアライザ</h3>
+    <p class="demo-desc">2つの整数とビット演算子を選ぶと、2進数で演算過程を視覚化します。</p>
+    <div class="bit-inputs">
+      <div class="bit-field">
+        <label>値 A</label>
+        <input class="bit-num-input" id="bitA" type="number" value="5" min="-128" max="255" oninput="runBitViz()">
+      </div>
+      <div class="bit-field">
+        <label>演算子</label>
+        <select class="bit-op-select" id="bitOp" onchange="runBitViz()">
+          <option value="and">&amp; (AND)</option>
+          <option value="or">| (OR)</option>
+          <option value="xor">^ (XOR)</option>
+          <option value="not">~ (NOT)</option>
+          <option value="lsh">&lt;&lt; (左シフト)</option>
+          <option value="rsh">&gt;&gt; (右シフト)</option>
+        </select>
+      </div>
+      <div class="bit-field" id="bitBWrap">
+        <label>値 B</label>
+        <input class="bit-num-input" id="bitB" type="number" value="3" min="0" max="31" oninput="runBitViz()">
+      </div>
+    </div>
+    <div class="bit-display" id="bitDisplay"></div>
+  </div>
+
+  <!-- ===== デモ3：短絡評価デモ ===== -->
+  <div class="demo-card">
+    <h3>🎮 デモ③：短絡評価（&amp;&amp; / || / ??）動作確認</h3>
+    <p class="demo-desc">左辺の値を入力すると、各演算子での短絡評価の結果をリアルタイムで確認できます。</p>
+    <div class="sc-grid">
+      <div class="sc-card">
+        <h4>&amp;&amp; (AND)</h4>
+        <div class="sc-expr">
+          <span class="kw">left</span> <span class="op">&amp;&amp;</span> <span class="str">"右辺の値"</span>
+        </div>
+        <input class="sc-input" id="scAndInput" placeholder="左辺の値（例: null, 0, 'hi'）" oninput="runShortCircuit()">
+        <div class="sc-result" id="scAndResult">値を入力してください</div>
+      </div>
+      <div class="sc-card">
+        <h4>|| (OR)</h4>
+        <div class="sc-expr">
+          <span class="kw">left</span> <span class="op">||</span> <span class="str">"右辺の値"</span>
+        </div>
+        <input class="sc-input" id="scOrInput" placeholder="左辺の値（例: null, 0, 'hi'）" oninput="runShortCircuit()">
+        <div class="sc-result" id="scOrResult">値を入力してください</div>
+      </div>
+      <div class="sc-card">
+        <h4>?? (Nullish)</h4>
+        <div class="sc-expr">
+          <span class="kw">left</span> <span class="op">??</span> <span class="str">"右辺の値"</span>
+        </div>
+        <input class="sc-input" id="scNcInput" placeholder="左辺の値（例: null, 0, 'hi'）" oninput="runShortCircuit()">
+        <div class="sc-result" id="scNcResult">値を入力してください</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== 演習問題 ===== -->
+  <div class="quiz-section">
+    <h2>✏️ 演習問題</h2>
+
+    <!-- Q1：穴埋め -->
+    <div class="quiz-item">
+      <div class="quiz-q">
+        <span class="q-num">Q1</span>
+        次のコードの実行結果を答えてください。（穴埋め）
+      </div>
+      <div class="code-fill" style="margin-bottom:14px;">
+<span class="fn">console</span>.<span class="fn">log</span>(<span class="num">1</span> <span class="op">+</span> <span class="num">2</span> <span class="op">+</span> <span class="str">'3'</span>);   <span class="comment">// → <input class="fill-input" id="q1a" placeholder="結果"></span>
+<span class="fn">console</span>.<span class="fn">log</span>(<span class="str">'3'</span> <span class="op">+</span> <span class="num">2</span> <span class="op">+</span> <span class="num">1</span>);   <span class="comment">// → <input class="fill-input" id="q1b" placeholder="結果"></span>
+<span class="fn">console</span>.<span class="fn">log</span>(<span class="num">5</span> <span class="op">**</span> <span class="num">2</span>);          <span class="comment">// → <input class="fill-input" id="q1c" placeholder="結果"></span>
+<span class="fn">console</span>.<span class="fn">log</span>(<span class="num">0</span> <span class="op">??</span> <span class="str">'default'</span>); <span class="comment">// → <input class="fill-input" id="q1d" placeholder="結果"></span>
+      </div>
+      <button class="check-btn" onclick="checkQ1()">判定する</button>
+      <div class="feedback" id="fb1"></div>
+    </div>
+
+    <!-- Q2：選択 -->
+    <div class="quiz-item">
+      <div class="quiz-q">
+        <span class="q-num">Q2</span>
+        <code>5 | 3</code> のビット演算の結果として正しいものはどれですか？（選択）
+      </div>
+      <div class="choices">
+        <button class="choice-btn" onclick="checkQ2(this,false)">A. 1</button>
+        <button class="choice-btn" onclick="checkQ2(this,false)">B. 6</button>
+        <button class="choice-btn" onclick="checkQ2(this,true)">C. 7</button>
+        <button class="choice-btn" onclick="checkQ2(this,false)">D. 15</button>
+      </div>
+      <div class="feedback" id="fb2"></div>
+    </div>
+
+    <!-- Q3：チェックボックス -->
+    <div class="quiz-item">
+      <div class="quiz-q">
+        <span class="q-num">Q3</span>
+        演算子の優先順位について<strong>正しい</strong>ものをすべて選んでください。（複数選択）
+      </div>
+      <div class="checkbox-list" id="q3-list">
+        <label class="cb-label"><input type="checkbox" value="a"> <code>*</code> は <code>+</code> より優先順位が高い</label>
+        <label class="cb-label"><input type="checkbox" value="b"> <code>&&</code> は <code>||</code> より優先順位が高い</label>
+        <label class="cb-label"><input type="checkbox" value="c"> <code>??</code> は <code>||</code> より優先順位が高い</label>
+        <label class="cb-label"><input type="checkbox" value="d"> <code>typeof</code> は単項演算子として高い優先順位を持つ</label>
+        <label class="cb-label"><input type="checkbox" value="e"> <code>==</code> は <code>&lt;</code> より優先順位が高い</label>
+      </div>
+      <button class="check-btn" onclick="checkQ3()">判定する</button>
+      <div class="feedback" id="fb3"></div>
+    </div>
+
+    <!-- Q4：コード補完 -->
+    <div class="quiz-item">
+      <div class="quiz-q">
+        <span class="q-num">Q4</span>
+        ユーザーオブジェクトの深いプロパティに安全にアクセスするコードを完成させてください。
+        <code>user</code> が <code>null</code> でも <code>address</code> が存在しなくてもエラーにならないようにします。（コード補完）
+      </div>
+      <div class="code-fill">
+<span class="kw">const</span> user <span class="op">=</span> <span class="kw">null</span>;
+
+<span class="comment">// エラーにならず undefined を返す</span>
+<span class="kw">const</span> city <span class="op">=</span> user<input class="fill-input" id="q4a" placeholder="演算子">address<input class="fill-input" id="q4b" placeholder="演算子">city;
+
+<span class="fn">console</span>.<span class="fn">log</span>(city); <span class="out">// undefined</span>
+      </div>
+      <button class="check-btn" onclick="checkQ4()">判定する</button>
+      <div class="feedback" id="fb4"></div>
+    </div>
+
+  </div>
+
+  <!-- 完了ボタン -->
+  <div class="complete-area">
+    <button class="complete-btn" id="completeBtn" onclick="markComplete()">
+      ✅ セクション 2-3 を完了にする
+    </button>
+    <div class="complete-msg" id="completeMsg"></div>
+  </div>
+
+  <!-- ページナビ -->
+  <nav class="page-nav">
+    <a class="nav-btn prev" href="02_variables.html">← 2-2 変数と型</a>
+    <a class="nav-btn index" href="index.html">📋 Chapter 2 目次</a>
+    <a class="nav-btn next" href="04_control.html">2-4 制御文 →</a>
+  </nav>
+
+  <footer>
+    <p>HTML5 Professional Level 2 試験対策サイト &copy; 2026</p>
+  </footer>
+
+  <script>
+    // ── コピーボタン ──
+    function copyCode(btn) {
+      const pre = btn.nextElementSibling;
+      navigator.clipboard.writeText(pre.innerText).then(() => {
+        btn.textContent = 'copied!';
+        btn.classList.add('copied');
+        setTimeout(() => { btn.textContent = 'copy'; btn.classList.remove('copied'); }, 2000);
+      });
+    }
+
+    // ── デモ①：演算子プレイグラウンド ──
+    function setPreset(expr) {
+      document.getElementById('pgInput').value = expr;
+      runPlayground();
+    }
+
+    function runPlayground() {
+      const expr = document.getElementById('pgInput').value.trim();
+      const box  = document.getElementById('pgResult');
+      if (!expr) { box.innerHTML = '<span style="color:#718096;">式を入力してください</span>'; return; }
+      try {
+        const result = Function('"use strict"; return (' + expr + ')')();
+        const t = result === null ? 'null' : typeof result;
+        const disp = result === undefined ? 'undefined'
+                   : result === null      ? 'null'
+                   : typeof result === 'string' ? `"${result}"`
+                   : String(result);
+        box.innerHTML =
+          `<span style="color:#9f7aea;">結果：</span><span style="color:#fbd38d;">${disp}</span>` +
+          `<span style="color:#68d391;margin-left:16px;">（型: ${t}）</span>`;
+      } catch(e) {
+        box.innerHTML = `<span style="color:#fc8181;">エラー: ${e.message}</span>`;
+      }
+    }
+
+    // ── デモ②：ビット演算ビジュアライザ ──
+    function toBits8(n) {
+      const bits = [];
+      const unsigned = n >>> 0;
+      for (let i = 7; i >= 0; i--) bits.push((unsigned >> i) & 1);
+      return bits;
+    }
+
+    function renderBitRow(label, bits, cls) {
+      const cells = bits.map(b =>
+        `<div class="bit-cell ${cls ? (b ? 'result-one' : 'result-zero') : (b ? 'one' : 'zero')}">${b}</div>`
+      ).join('');
+      return `<div class="bit-row">
+        <div class="bit-row-label">${label}</div>
+        <div class="bit-cells">${cells}</div>
+        <div class="bit-dec">${parseInt(bits.join(''), 2)}</div>
+      </div>`;
+    }
+
+    function runBitViz() {
+      const a   = parseInt(document.getElementById('bitA').value) || 0;
+      const b   = parseInt(document.getElementById('bitB').value) || 0;
+      const op  = document.getElementById('bitOp').value;
+      const wrap = document.getElementById('bitBWrap');
+      const box  = document.getElementById('bitDisplay');
+
+      const isUnary = op === 'not';
+      wrap.style.display = isUnary ? 'none' : 'flex';
+
+      let result, opLabel;
+      switch(op) {
+        case 'and': result = a & b;  opLabel = '&amp; (AND)'; break;
+        case 'or':  result = a | b;  opLabel = '| (OR)';  break;
+        case 'xor': result = a ^ b;  opLabel = '^ (XOR)'; break;
+        case 'not': result = ~a;     opLabel = '~ (NOT)'; break;
+        case 'lsh': result = a << b; opLabel = `&lt;&lt; ${b}`; break;
+        case 'rsh': result = a >> b; opLabel = `&gt;&gt; ${b}`; break;
+      }
+
+      const bitsA = toBits8(a);
+      const bitsR = toBits8(result);
+
+      let html = '';
+      html += `<div style="color:#a0aec0;font-size:0.78rem;margin-bottom:10px;">8ビット表示（下位8ビット）</div>`;
+      html += renderBitRow(`A = ${a}`, bitsA, false);
+      if (!isUnary) {
+        const bitsB = toBits8(b);
+        html += renderBitRow(`B = ${b}`, bitsB, false);
+      }
+      html += `<div class="bit-sep"></div>`;
+      html += `<div class="bit-row"><div class="bit-row-label" style="color:#fbd38d;">${opLabel}</div></div>`;
+      html += renderBitRow(`= ${result}`, bitsR, true);
+      html += `<div style="color:#68d391;font-size:0.82rem;margin-top:10px;">
+        10進数: <strong>${result}</strong> &nbsp;|&nbsp; 16進数: 0x${(result >>> 0).toString(16).toUpperCase()}
+      </div>`;
+
+      box.innerHTML = html;
+    }
+
+    // ── デモ③：短絡評価 ──
+    function evalSafe(raw) {
+      if (!raw.trim()) return { ok: false };
+      try {
+        const val = Function('"use strict"; return (' + raw + ')')();
+        return { ok: true, val };
+      } catch(e) {
+        return { ok: false, err: e.message };
+      }
+    }
+
+    function formatVal(v) {
+      if (v === null)      return '<span style="color:#fc8181;">null</span>';
+      if (v === undefined) return '<span style="color:#a0aec0;">undefined</span>';
+      if (typeof v === 'string') return `<span style="color:#fbd38d;">"${v}"</span>`;
+      if (typeof v === 'number') return `<span style="color:#90cdf4;">${v}</span>`;
+      if (typeof v === 'boolean') return `<span style="color:#b794f4;">${v}</span>`;
+      return `<span style="color:#e2e8f0;">${String(v)}</span>`;
+    }
+
+    function runShortCircuit() {
+      const RIGHT = '右辺の値';
+
+      ['And', 'Or', 'Nc'].forEach(id => {
+        const raw = document.getElementById(`sc${id}Input`).value;
+        const box = document.getElementById(`sc${id}Result`);
+        const r   = evalSafe(raw);
+        if (!raw.trim()) { box.innerHTML = '値を入力してください'; return; }
+        if (!r.ok) { box.innerHTML = `<span style="color:#fc8181;">構文エラー</span>`; return; }
+
+        const left = r.val;
+        let result, note;
+
+        if (id === 'And') {
+          result = left && RIGHT;
+          const isFalsy = !left;
+          note = isFalsy
+            ? `左辺 ${formatVal(left)} は <span style="color:#fc8181;">Falsy</span> → 左辺をそのまま返す（右辺は評価しない）`
+            : `左辺 ${formatVal(left)} は <span style="color:#68d391;">Truthy</span> → 右辺 "${RIGHT}" を返す`;
+        } else if (id === 'Or') {
+          result = left || RIGHT;
+          const isTruthy = !!left;
+          note = isTruthy
+            ? `左辺 ${formatVal(left)} は <span style="color:#68d391;">Truthy</span> → 左辺をそのまま返す（右辺は評価しない）`
+            : `左辺 ${formatVal(left)} は <span style="color:#fc8181;">Falsy</span> → 右辺 "${RIGHT}" を返す`;
+        } else {
+          result = left ?? RIGHT;
+          const isNullish = left === null || left === undefined;
+          note = isNullish
+            ? `左辺 ${formatVal(left)} は <span style="color:#fc8181;">null/undefined</span> → 右辺 "${RIGHT}" を返す`
+            : `左辺 ${formatVal(left)} は null/undefined <span style="color:#68d391;">ではない</span> → 左辺をそのまま返す`;
+        }
+
+        const dispResult = result === RIGHT
+          ? `<span style="color:#fbd38d;">"${RIGHT}"</span>`
+          : formatVal(left);
+
+        box.innerHTML = `結果: ${dispResult}<br><small style="color:#718096;">${note}</small>`;
+      });
+    }
+
+    // ── Q1 穴埋め ──
+    function checkQ1() {
+      const ans = [
+        { id: 'q1a', correct: ['"33"', '33', "'33'"] },
+        { id: 'q1b', correct: ['"321"', '321', "'321'"] },
+        { id: 'q1c', correct: ['25'] },
+        { id: 'q1d', correct: ['0'] },
+      ];
+      let allOk = true;
+      ans.forEach(a => {
+        const el  = document.getElementById(a.id);
+        const val = el.value.trim();
+        const ok  = a.correct.some(c => val === c);
+        el.classList.toggle('correct', ok);
+        el.classList.toggle('wrong', !ok);
+        if (!ok) allOk = false;
+      });
+      const fb = document.getElementById('fb1');
+      fb.className = 'feedback show ' + (allOk ? 'ok' : 'ng');
+      fb.innerHTML = allOk
+        ? '✅ 完璧！ 1+2+"3"→"33"、"3"+2+1→"321"、5**2→25、0??→0 です。'
+        : '❌ 解説：① 1+2=3（数値）→ 3+"3"="33"（文字列）② "3"+2="32"→"32"+1="321" ③ 5**2=25 ④ 0は null/undefined でないので ?? は右辺を返さず 0';
+    }
+
+    // ── Q2 選択 ──
+    function checkQ2(btn, isCorrect) {
+      document.querySelectorAll('.choice-btn').forEach(b => b.disabled = true);
+      btn.classList.add(isCorrect ? 'correct' : 'wrong');
+      const fb = document.getElementById('fb2');
+      fb.className = 'feedback show ' + (isCorrect ? 'ok' : 'ng');
+      fb.innerHTML = isCorrect
+        ? '✅ 正解！ 5(0101) | 3(0011) = 0111 = 7 です。ORはどちらか1のビットを立てます。'
+        : '❌ 不正解。5=0101、3=0011 → OR → 0111 = 7 です。ANDなら0001=1、XORなら0110=6です。';
+    }
+
+    // ── Q3 チェックボックス ──
+    function checkQ3() {
+      const correct = new Set(['a', 'b', 'd']);
+      const labels  = document.querySelectorAll('#q3-list .cb-label');
+      let ok = 0;
+      labels.forEach(label => {
+        const cb = label.querySelector('input');
+        cb.disabled = true;
+        const checked = cb.checked;
+        const should  = correct.has(cb.value);
+        if (checked && should)    { label.classList.add('correct'); ok++; }
+        else if (checked && !should) label.classList.add('wrong');
+        else if (!checked && should) label.classList.add('wrong');
+      });
+      const allOk = ok === correct.size &&
+        [...labels].filter(l => l.querySelector('input').checked).length === correct.size;
+      const fb = document.getElementById('fb3');
+      fb.className = 'feedback show ' + (allOk ? 'ok' : 'ng');
+      fb.innerHTML = allOk
+        ? '✅ 完璧！ 正解は a・b・d です。'
+        : '❌ 正解は a(*>+)・b(&&>||)・d(typeofは高優先)。<br>c: ?? は || より優先順位が<strong>低い</strong>。e: == は < より優先順位が<strong>低い</strong>（比較演算子の方が高い）。';
+    }
+
+    // ── Q4 コード補完 ──
+    function checkQ4() {
+      const a = document.getElementById('q4a').value.trim();
+      const b = document.getElementById('q4b').value.trim();
+      const okA = a === '?.' || a === '?.';
+      const okB = b === '?.' || b === '?.';
+      document.getElementById('q4a').classList.toggle('correct', okA);
+      document.getElementById('q4a').classList.toggle('wrong', !okA);
+      document.getElementById('q4b').classList.toggle('correct', okB);
+      document.getElementById('q4b').classList.toggle('wrong', !okB);
+      const allOk = okA && okB;
+      const fb = document.getElementById('fb4');
+      fb.className = 'feedback show ' + (allOk ? 'ok' : 'ng');
+      fb.innerHTML = allOk
+        ? '✅ 正解！ <code>user?.address?.city</code> のように <code>?.</code>（オプショナルチェーン）を使うと、途中のプロパティが null/undefined でもエラーにならず undefined を返します。'
+        : '❌ 不正解。両方に <code>?.</code>（オプショナルチェーン）を使います。<code>user?.address?.city</code> と書くことで安全にアクセスできます。';
+    }
+
+    // ── 完了ボタン ──
+    function markComplete() {
+      localStorage.setItem('html5lv2_ch2_03', 'done');
+      const btn = document.getElementById('completeBtn');
+      btn.textContent = '🎉 完了済み！';
+      btn.classList.add('done');
+      btn.disabled = true;
+      document.getElementById('completeMsg').textContent = '進捗が保存されました。次のセクションへ進みましょう！';
+    }
+
+    // ── 初期化 ──
+    window.addEventListener('DOMContentLoaded', () => {
+      runPlayground();
+      runBitViz();
+      if (localStorage.getItem('html5lv2_ch2_03') === 'done') {
+        const btn = document.getElementById('completeBtn');
+        btn.textContent = '🎉 完了済み！';
+        btn.classList.add('done');
+        btn.disabled = true;
+        document.getElementById('completeMsg').textContent = 'このセクションは完了済みです。';
+      }
+    });
+  </script>
+
+</body>
+</html>

@@ -1,0 +1,1044 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>2-2 変数と型 | Chapter 2 | HTML5 Level 2 試験対策</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Segoe UI', 'Helvetica Neue', sans-serif;
+      max-width: 960px;
+      margin: 40px auto;
+      padding: 0 24px;
+      background: #f0f4f8;
+      color: #2d3748;
+      line-height: 1.8;
+    }
+    .breadcrumb { font-size: 0.85rem; color: #718096; margin-bottom: 24px; }
+    .breadcrumb a { color: #553c9a; text-decoration: none; }
+    .breadcrumb a:hover { text-decoration: underline; }
+    .breadcrumb span { margin: 0 6px; }
+
+    .chapter-header {
+      background: linear-gradient(135deg, #553c9a, #9f7aea);
+      border-radius: 16px; padding: 36px 36px 32px;
+      color: #fff; margin-bottom: 32px;
+      position: relative; overflow: hidden;
+    }
+    .chapter-header::before {
+      content: ''; position: absolute;
+      top: -50px; right: -50px;
+      width: 200px; height: 200px;
+      background: rgba(255,255,255,0.07); border-radius: 50%;
+    }
+    .chapter-header h1 { font-size: 1.75rem; font-weight: 700; margin-bottom: 8px; position: relative; z-index: 1; }
+    .chapter-header p  { font-size: 0.95rem; opacity: 0.9; margin-bottom: 18px; position: relative; z-index: 1; }
+    .badge-row { display: flex; flex-wrap: wrap; gap: 8px; position: relative; z-index: 1; }
+    .badge {
+      background: rgba(255,255,255,0.2);
+      border: 1px solid rgba(255,255,255,0.35);
+      border-radius: 20px; padding: 3px 13px;
+      font-size: 0.78rem; font-weight: 600;
+    }
+
+    .section-nav {
+      background: #fff; border-radius: 12px;
+      padding: 20px 24px; margin-bottom: 32px;
+      box-shadow: 0 2px 12px rgba(85,60,154,0.07);
+    }
+    .section-nav h3 { font-size: 0.85rem; color: #9f7aea; font-weight: 700; margin-bottom: 12px; letter-spacing: 0.06em; }
+    .section-nav ul { list-style: none; display: flex; flex-direction: column; gap: 4px; }
+    .section-nav ul li a {
+      font-size: 0.88rem; color: #553c9a; text-decoration: none;
+      padding: 4px 10px; border-radius: 6px; display: block; transition: background 0.15s;
+    }
+    .section-nav ul li a:hover { background: #f3e8ff; }
+    .section-nav ul li.current a { font-weight: 700; color: #44337a; background: #ede9fe; }
+
+    .content-card {
+      background: #fff; border-radius: 14px;
+      padding: 32px 36px; margin-bottom: 28px;
+      box-shadow: 0 2px 12px rgba(85,60,154,0.07);
+    }
+    .content-card h2 {
+      font-size: 1.25rem; font-weight: 700; color: #553c9a;
+      margin-bottom: 18px; padding-bottom: 10px;
+      border-bottom: 2px solid #e9d8fd;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .content-card h3 { font-size: 1rem; font-weight: 700; color: #44337a; margin: 22px 0 10px; }
+    .content-card p  { font-size: 0.95rem; color: #4a5568; margin-bottom: 14px; }
+    .content-card ul, .content-card ol { padding-left: 1.4em; margin-bottom: 14px; font-size: 0.93rem; color: #4a5568; }
+    .content-card li { margin-bottom: 6px; }
+
+    .tbl-wrap { overflow-x: auto; margin: 16px 0; }
+    table { width: 100%; border-collapse: collapse; font-size: 0.88rem; }
+    th { background: linear-gradient(135deg, #553c9a, #9f7aea); color: #fff; padding: 10px 14px; text-align: left; font-weight: 600; }
+    td { padding: 9px 14px; border-bottom: 1px solid #e2e8f0; color: #4a5568; }
+    tr:hover td { background: #faf5ff; }
+    tr:last-child td { border-bottom: none; }
+
+    .code-block {
+      background: #1a202c; border-radius: 10px;
+      padding: 20px 22px; margin: 16px 0;
+      position: relative; overflow-x: auto;
+    }
+    .code-block pre {
+      font-family: 'Consolas', 'Monaco', monospace;
+      font-size: 0.88rem; line-height: 1.7;
+      color: #e2e8f0; white-space: pre;
+    }
+    .copy-btn {
+      position: absolute; top: 10px; right: 12px;
+      background: #4a5568; color: #e2e8f0;
+      border: none; border-radius: 6px;
+      padding: 4px 12px; font-size: 0.75rem;
+      cursor: pointer; transition: background 0.15s;
+    }
+    .copy-btn:hover { background: #9f7aea; }
+    .copy-btn.copied { background: #48bb78; color: #fff; }
+
+    .comment { color: #68d391; }
+    .kw      { color: #b794f4; }
+    .fn      { color: #f6ad55; }
+    .str     { color: #fbd38d; }
+    .num     { color: #90cdf4; }
+    .op      { color: #fc8181; }
+    .out     { color: #a0aec0; }
+
+    .info-box { border-radius: 10px; padding: 16px 20px; margin: 16px 0; font-size: 0.9rem; }
+    .info-box.tip   { background: #f0fff4; border-left: 4px solid #48bb78; color: #276749; }
+    .info-box.warn  { background: #fffbeb; border-left: 4px solid #f6ad55; color: #744210; }
+    .info-box.point { background: #faf5ff; border-left: 4px solid #9f7aea; color: #44337a; }
+
+    /* ── デモカード ── */
+    .demo-card {
+      background: #faf5ff; border: 2px solid #d6bcfa;
+      border-radius: 14px; padding: 28px 30px; margin-bottom: 28px;
+    }
+    .demo-card h3 {
+      font-size: 1rem; font-weight: 700; color: #553c9a;
+      margin-bottom: 18px; display: flex; align-items: center; gap: 8px;
+    }
+
+    /* var/let/const プレイグラウンド */
+    .playground-tabs {
+      display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap;
+    }
+    .tab-btn {
+      padding: 7px 18px; border-radius: 8px;
+      border: 2px solid #c4b5fd; background: #fff;
+      color: #553c9a; font-weight: 700; font-size: 0.85rem;
+      cursor: pointer; transition: all 0.15s;
+    }
+    .tab-btn.active { background: #553c9a; color: #fff; border-color: #553c9a; }
+    .tab-btn:hover:not(.active) { background: #ede9fe; }
+
+    .scope-visual {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 14px; margin-bottom: 16px;
+    }
+    @media(max-width:600px){ .scope-visual { grid-template-columns: 1fr; } }
+
+    .scope-box {
+      border-radius: 10px; padding: 16px;
+      font-family: 'Consolas', monospace; font-size: 0.82rem;
+      line-height: 1.8; position: relative;
+    }
+    .scope-box.global { background: #1a202c; color: #e2e8f0; border: 2px solid #4a5568; }
+    .scope-box.func   { background: #1e2a3a; color: #e2e8f0; border: 2px solid #553c9a; margin-left: 16px; }
+    .scope-box.block  { background: #1e2a3a; color: #e2e8f0; border: 2px solid #9f7aea; margin-left: 32px; }
+    .scope-label {
+      position: absolute; top: -10px; left: 12px;
+      background: #553c9a; color: #fff;
+      font-size: 0.7rem; font-weight: 700;
+      padding: 1px 8px; border-radius: 4px;
+      font-family: 'Segoe UI', sans-serif;
+    }
+    .scope-label.func  { background: #553c9a; }
+    .scope-label.block { background: #9f7aea; }
+    .scope-label.global{ background: #4a5568; }
+
+    .scope-result {
+      background: #fff; border-radius: 8px;
+      padding: 14px 16px; font-size: 0.88rem;
+      color: #4a5568; border-left: 3px solid #9f7aea;
+      margin-top: 10px;
+    }
+
+    /* 型変換シミュレーター */
+    .conv-grid {
+      display: grid; grid-template-columns: 1fr auto 1fr;
+      gap: 12px; align-items: center; margin-bottom: 16px;
+    }
+    @media(max-width:560px){ .conv-grid { grid-template-columns: 1fr; } }
+
+    .conv-input-wrap label {
+      display: block; font-size: 0.8rem;
+      font-weight: 700; color: #553c9a; margin-bottom: 6px;
+    }
+    .conv-input {
+      width: 100%; padding: 10px 14px;
+      border: 2px solid #c4b5fd; border-radius: 8px;
+      font-size: 0.95rem; color: #2d3748;
+      background: #fff; transition: border-color 0.15s;
+    }
+    .conv-input:focus { outline: none; border-color: #553c9a; }
+
+    .conv-select {
+      padding: 10px 14px; border: 2px solid #c4b5fd;
+      border-radius: 8px; font-size: 0.88rem;
+      color: #553c9a; font-weight: 700;
+      background: #fff; cursor: pointer;
+    }
+    .conv-arrow {
+      font-size: 1.4rem; color: #9f7aea;
+      text-align: center; font-weight: 700;
+    }
+
+    .conv-result-box {
+      background: #1a202c; border-radius: 10px;
+      padding: 16px 18px; font-family: 'Consolas', monospace;
+      font-size: 0.9rem; color: #e2e8f0; min-height: 80px;
+    }
+    .conv-row { display: flex; gap: 10px; margin-bottom: 6px; align-items: baseline; }
+    .conv-label { color: #9f7aea; font-size: 0.8rem; width: 130px; flex-shrink: 0; }
+    .conv-val   { color: #fbd38d; }
+    .conv-type  { color: #68d391; font-size: 0.78rem; }
+
+    /* typeof/instanceof チェッカー */
+    .checker-input-row {
+      display: flex; gap: 10px; margin-bottom: 14px; flex-wrap: wrap;
+    }
+    .checker-input {
+      flex: 1; min-width: 160px;
+      padding: 10px 14px; border: 2px solid #c4b5fd;
+      border-radius: 8px; font-size: 0.95rem;
+      font-family: 'Consolas', monospace;
+      color: #2d3748; background: #fff;
+    }
+    .checker-input:focus { outline: none; border-color: #553c9a; }
+    .run-btn {
+      padding: 10px 22px; background: linear-gradient(135deg, #553c9a, #9f7aea);
+      color: #fff; border: none; border-radius: 8px;
+      font-size: 0.88rem; font-weight: 700; cursor: pointer;
+      transition: opacity 0.15s;
+    }
+    .run-btn:hover { opacity: 0.88; }
+    .checker-result {
+      background: #1a202c; border-radius: 10px;
+      padding: 16px 18px; font-family: 'Consolas', monospace;
+      font-size: 0.88rem; color: #e2e8f0; min-height: 60px;
+    }
+
+    /* ── 演習問題 ── */
+    .quiz-section {
+      background: #fff; border-radius: 14px;
+      padding: 32px 36px; margin-bottom: 28px;
+      box-shadow: 0 2px 12px rgba(85,60,154,0.07);
+    }
+    .quiz-section h2 {
+      font-size: 1.2rem; font-weight: 700; color: #553c9a;
+      margin-bottom: 24px; padding-bottom: 10px;
+      border-bottom: 2px solid #e9d8fd;
+    }
+    .quiz-item {
+      margin-bottom: 32px; padding-bottom: 28px;
+      border-bottom: 1px dashed #e2e8f0;
+    }
+    .quiz-item:last-child { border-bottom: none; margin-bottom: 0; }
+    .quiz-q {
+      font-size: 0.95rem; font-weight: 700; color: #2d3748;
+      margin-bottom: 14px; background: #faf5ff;
+      padding: 12px 16px; border-radius: 8px;
+      border-left: 4px solid #9f7aea;
+    }
+    .quiz-q .q-num {
+      display: inline-block; background: #553c9a;
+      color: #fff; border-radius: 6px;
+      padding: 1px 9px; font-size: 0.8rem; margin-right: 8px;
+    }
+    .blank-input {
+      border: 2px solid #c4b5fd; border-radius: 6px;
+      padding: 4px 10px; font-size: 0.9rem;
+      font-family: 'Consolas', monospace;
+      color: #2d3748; background: #faf5ff; width: 130px;
+      transition: border-color 0.15s;
+    }
+    .blank-input:focus { outline: none; border-color: #553c9a; }
+    .blank-input.correct { border-color: #48bb78; background: #f0fff4; }
+    .blank-input.wrong   { border-color: #fc8181; background: #fff5f5; }
+
+    .choices { display: flex; flex-direction: column; gap: 8px; }
+    .choice-btn {
+      padding: 10px 16px; border-radius: 8px;
+      border: 2px solid #e2e8f0; background: #fff;
+      color: #2d3748; font-size: 0.9rem;
+      cursor: pointer; text-align: left; transition: all 0.15s;
+    }
+    .choice-btn:hover:not(:disabled) { border-color: #9f7aea; background: #faf5ff; }
+    .choice-btn.correct { border-color: #48bb78; background: #f0fff4; color: #276749; font-weight: 700; }
+    .choice-btn.wrong   { border-color: #fc8181; background: #fff5f5; color: #c53030; }
+
+    .checkbox-list { display: flex; flex-direction: column; gap: 8px; }
+    .cb-label {
+      display: flex; align-items: center; gap: 10px;
+      padding: 10px 14px; border-radius: 8px;
+      border: 2px solid #e2e8f0; background: #fff;
+      cursor: pointer; font-size: 0.9rem; transition: all 0.15s;
+    }
+    .cb-label:hover { border-color: #9f7aea; background: #faf5ff; }
+    .cb-label input[type="checkbox"] { width: 16px; height: 16px; accent-color: #553c9a; }
+    .cb-label.correct { border-color: #48bb78; background: #f0fff4; }
+    .cb-label.wrong   { border-color: #fc8181; background: #fff5f5; }
+
+    .code-fill {
+      background: #1a202c; border-radius: 10px;
+      padding: 18px 20px; font-family: 'Consolas', 'Monaco', monospace;
+      font-size: 0.88rem; line-height: 1.9;
+      color: #e2e8f0; margin-bottom: 12px;
+    }
+    .fill-input {
+      background: #2d3748; border: 1px solid #9f7aea;
+      border-radius: 4px; color: #fbd38d;
+      font-family: 'Consolas', monospace;
+      font-size: 0.88rem; padding: 1px 8px; width: 150px;
+    }
+    .fill-input:focus { outline: none; border-color: #b794f4; }
+    .fill-input.correct { border-color: #48bb78; background: #1c3a2a; color: #68d391; }
+    .fill-input.wrong   { border-color: #fc8181; background: #3a1c1c; color: #fc8181; }
+
+    .check-btn {
+      margin-top: 12px; padding: 9px 22px;
+      background: linear-gradient(135deg, #553c9a, #9f7aea);
+      color: #fff; border: none; border-radius: 8px;
+      font-size: 0.88rem; font-weight: 700;
+      cursor: pointer; transition: opacity 0.15s;
+    }
+    .check-btn:hover { opacity: 0.88; }
+    .feedback {
+      margin-top: 10px; padding: 10px 16px;
+      border-radius: 8px; font-size: 0.88rem; display: none;
+    }
+    .feedback.show { display: block; }
+    .feedback.ok { background: #f0fff4; color: #276749; border-left: 4px solid #48bb78; }
+    .feedback.ng { background: #fff5f5; color: #c53030; border-left: 4px solid #fc8181; }
+
+    .complete-area { text-align: center; padding: 32px 0 8px; }
+    .complete-btn {
+      padding: 14px 40px;
+      background: linear-gradient(135deg, #553c9a, #9f7aea);
+      color: #fff; border: none; border-radius: 12px;
+      font-size: 1rem; font-weight: 700; cursor: pointer;
+      transition: opacity 0.15s, transform 0.15s;
+      box-shadow: 0 4px 16px rgba(85,60,154,0.3);
+    }
+    .complete-btn:hover { opacity: 0.9; transform: translateY(-2px); }
+    .complete-btn.done { background: linear-gradient(135deg, #38a169, #68d391); }
+    .complete-msg { margin-top: 12px; font-size: 0.9rem; color: #718096; }
+
+    .page-nav {
+      display: flex; justify-content: space-between;
+      align-items: center; gap: 12px;
+      margin-top: 40px; flex-wrap: wrap;
+    }
+    .nav-btn {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 12px 22px; border-radius: 10px;
+      font-size: 0.9rem; font-weight: 600;
+      text-decoration: none; transition: background 0.18s, transform 0.18s;
+    }
+    .nav-btn.prev  { background: #e9d8fd; color: #553c9a; }
+    .nav-btn.prev:hover  { background: #d6bcfa; transform: translateX(-2px); }
+    .nav-btn.index { background: linear-gradient(135deg, #553c9a, #9f7aea); color: #fff; }
+    .nav-btn.index:hover { opacity: 0.9; }
+    .nav-btn.next  { background: #553c9a; color: #fff; }
+    .nav-btn.next:hover  { background: #44337a; transform: translateX(2px); }
+
+    footer {
+      text-align: center; font-size: 0.8rem; color: #a0aec0;
+      margin-top: 48px; padding-top: 24px;
+      border-top: 1px solid #e2e8f0;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- パンくずナビ -->
+  <nav class="breadcrumb">
+    <a href="../index.html">🏠 HTML5 Level 2</a>
+    <span>›</span>
+    <a href="index.html">Chapter 2</a>
+    <span>›</span>
+    <strong>2-2 変数と型</strong>
+  </nav>
+
+  <!-- 章ヘッダー -->
+  <header class="chapter-header">
+    <h1>📦 2-2 変数と型</h1>
+    <p>var / let / const の違い、7つのプリミティブ型、型変換、スコープを完全マスターする。</p>
+    <div class="badge-row">
+      <span class="badge">📦 var/let/const</span>
+      <span class="badge">🔢 型システム</span>
+      <span class="badge">🔄 型変換</span>
+      <span class="badge">🔭 スコープ</span>
+      <span class="badge">✏️ 演習4問</span>
+    </div>
+  </header>
+
+  <!-- セクションナビ -->
+  <nav class="section-nav">
+    <h3>📋 CHAPTER 2 セクション一覧</h3>
+    <ul>
+      <li><a href="01_js_ecma.html">2-1 JavaScriptとは</a></li>
+      <li class="current"><a href="02_variables.html">2-2 変数と型</a></li>
+      <li><a href="03_expressions.html">2-3 式と演算子</a></li>
+      <li><a href="04_control.html">2-4 制御文</a></li>
+      <li><a href="05_arrays.html">2-5 配列</a></li>
+      <li><a href="06_objects.html">2-6 オブジェクト</a></li>
+      <li><a href="07_functions.html">2-7 関数</a></li>
+      <li><a href="08_global.html">2-8 グローバルオブジェクトとCallオブジェクト</a></li>
+    </ul>
+  </nav>
+
+  <!-- ===== 1. var/let/const ===== -->
+  <div class="content-card">
+    <h2>📦 変数・定数の宣言：var / let / const</h2>
+
+    <p>JavaScriptには変数・定数を宣言するキーワードが3つあります。現代のコードでは <strong>let / const を優先</strong>して使います。</p>
+
+    <div class="tbl-wrap">
+      <table>
+        <thead>
+          <tr><th>キーワード</th><th>再宣言</th><th>再代入</th><th>スコープ</th><th>巻き上げ（Hoisting）</th><th>推奨</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>var</strong></td>
+            <td>✅ 可</td><td>✅ 可</td>
+            <td>関数スコープ</td>
+            <td>宣言のみ巻き上げ（undefined）</td>
+            <td>❌ 非推奨</td>
+          </tr>
+          <tr>
+            <td><strong>let</strong></td>
+            <td>❌ 不可</td><td>✅ 可</td>
+            <td>ブロックスコープ</td>
+            <td>TDZ（一時的デッドゾーン）</td>
+            <td>✅ 推奨</td>
+          </tr>
+          <tr>
+            <td><strong>const</strong></td>
+            <td>❌ 不可</td><td>❌ 不可</td>
+            <td>ブロックスコープ</td>
+            <td>TDZ（一時的デッドゾーン）</td>
+            <td>✅ 最推奨</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="code-block">
+      <button class="copy-btn" onclick="copyCode(this)">copy</button>
+      <pre><span class="comment">// var：関数スコープ・再宣言可・巻き上げあり</span>
+<span class="kw">var</span> x <span class="op">=</span> <span class="num">10</span>;
+<span class="kw">var</span> x <span class="op">=</span> <span class="num">20</span>;  <span class="comment">// 再宣言OK（バグの温床）</span>
+<span class="fn">console</span>.<span class="fn">log</span>(x); <span class="out">// 20</span>
+
+<span class="comment">// let：ブロックスコープ・再宣言不可</span>
+<span class="kw">let</span> y <span class="op">=</span> <span class="num">10</span>;
+<span class="comment">// let y = 20; // SyntaxError: 再宣言不可</span>
+y <span class="op">=</span> <span class="num">20</span>;  <span class="comment">// 再代入はOK</span>
+
+<span class="comment">// const：再宣言・再代入ともに不可</span>
+<span class="kw">const</span> PI <span class="op">=</span> <span class="num">3.14159</span>;
+<span class="comment">// PI = 3; // TypeError: 再代入不可</span>
+
+<span class="comment">// ただしconstのオブジェクト・配列の中身は変更可</span>
+<span class="kw">const</span> obj <span class="op">=</span> { name: <span class="str">'Alice'</span> };
+obj.name <span class="op">=</span> <span class="str">'Bob'</span>;  <span class="comment">// OK（プロパティの変更は可）</span>
+<span class="comment">// obj = {}; // TypeError: 変数自体への再代入は不可</span></pre>
+    </div>
+
+    <h3>巻き上げ（Hoisting）と TDZ</h3>
+    <div class="code-block">
+      <button class="copy-btn" onclick="copyCode(this)">copy</button>
+      <pre><span class="comment">// var の巻き上げ：宣言が先頭に移動し undefined で初期化</span>
+<span class="fn">console</span>.<span class="fn">log</span>(a); <span class="out">// undefined（エラーにならない）</span>
+<span class="kw">var</span> a <span class="op">=</span> <span class="num">5</span>;
+
+<span class="comment">// let/const の TDZ（Temporal Dead Zone）</span>
+<span class="comment">// console.log(b); // ReferenceError: Cannot access 'b' before initialization</span>
+<span class="kw">let</span> b <span class="op">=</span> <span class="num">5</span>;</pre>
+    </div>
+
+    <div class="info-box point">
+      <strong>💡 試験ポイント：</strong>
+      <code>let</code> と <code>const</code> も巻き上げは発生しますが、<strong>TDZ（一時的デッドゾーン）</strong>により
+      宣言前にアクセスすると <code>ReferenceError</code> になります。
+      <code>var</code> のように <code>undefined</code> にはなりません。
+    </div>
+  </div>
+
+  <!-- ===== 2. データ型 ===== -->
+  <div class="content-card">
+    <h2>🔢 データ型（Types）</h2>
+
+    <p>JavaScriptの型は <strong>プリミティブ型</strong>（7種）と <strong>オブジェクト型</strong> に大別されます。</p>
+
+    <div class="tbl-wrap">
+      <table>
+        <thead>
+          <tr><th>分類</th><th>型名</th><th>例</th><th>typeof の結果</th></tr>
+        </thead>
+        <tbody>
+          <tr><td rowspan="7"><strong>プリミティブ</strong></td><td>number</td><td><code>42, 3.14, NaN, Infinity</code></td><td><code>"number"</code></td></tr>
+          <tr><td>string</td><td><code>"hello", 'world', `template`</code></td><td><code>"string"</code></td></tr>
+          <tr><td>boolean</td><td><code>true, false</code></td><td><code>"boolean"</code></td></tr>
+          <tr><td>null</td><td><code>null</code></td><td><code>"object"</code> ⚠️</td></tr>
+          <tr><td>undefined</td><td><code>undefined</code></td><td><code>"undefined"</code></td></tr>
+          <tr><td>symbol</td><td><code>Symbol('id')</code></td><td><code>"symbol"</code></td></tr>
+          <tr><td>bigint</td><td><code>9007199254740991n</code></td><td><code>"bigint"</code></td></tr>
+          <tr><td><strong>オブジェクト</strong></td><td>object</td><td><code>{}, [], function(){}</code></td><td><code>"object"</code> / <code>"function"</code></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="info-box warn">
+      <strong>⚠️ 有名なバグ：</strong>
+      <code>typeof null</code> は <code>"object"</code> を返します。これはJavaScript初期の仕様バグで、
+      後方互換性のため修正されていません。null チェックには <code>value === null</code> を使いましょう。
+    </div>
+
+    <h3>特殊な数値：NaN / Infinity</h3>
+    <div class="code-block">
+      <button class="copy-btn" onclick="copyCode(this)">copy</button>
+      <pre><span class="comment">// NaN (Not a Number)：数値演算が失敗した結果</span>
+<span class="fn">console</span>.<span class="fn">log</span>(<span class="num">0</span> <span class="op">/</span> <span class="num">0</span>);          <span class="out">// NaN</span>
+<span class="fn">console</span>.<span class="fn">log</span>(<span class="fn">parseInt</span>(<span class="str">'abc'</span>)); <span class="out">// NaN</span>
+<span class="fn">console</span>.<span class="fn">log</span>(<span class="kw">typeof</span> <span class="num">NaN</span>);      <span class="out">// "number"（NaNはnumber型！）</span>
+
+<span class="comment">// NaN は自分自身と等しくない（唯一の例外）</span>
+<span class="fn">console</span>.<span class="fn">log</span>(<span class="num">NaN</span> <span class="op">===</span> <span class="num">NaN</span>);    <span class="out">// false</span>
+<span class="fn">console</span>.<span class="fn">log</span>(<span class="fn">isNaN</span>(<span class="num">NaN</span>));      <span class="out">// true</span>
+<span class="fn">console</span>.<span class="fn">log</span>(Number.<span class="fn">isNaN</span>(<span class="num">NaN</span>)); <span class="out">// true（より厳密）</span>
+
+<span class="comment">// Infinity</span>
+<span class="fn">console</span>.<span class="fn">log</span>(<span class="num">1</span> <span class="op">/</span> <span class="num">0</span>);           <span class="out">// Infinity</span>
+<span class="fn">console</span>.<span class="fn">log</span>(<span class="op">-</span><span class="num">1</span> <span class="op">/</span> <span class="num">0</span>);          <span class="out">// -Infinity</span>
+<span class="fn">console</span>.<span class="fn">log</span>(<span class="fn">isFinite</span>(<span class="num">Infinity</span>)); <span class="out">// false</span></pre>
+    </div>
+  </div>
+
+  <!-- ===== 3. 型変換 ===== -->
+  <div class="content-card">
+    <h2>🔄 型変換（Type Conversion）</h2>
+
+    <h3>暗黙の型変換（型強制）</h3>
+    <div class="code-block">
+      <button class="copy-btn" onclick="copyCode(this)">copy</button>
+      <pre><span class="comment">// 文字列との + は文字列結合</span>
+<span class="fn">console</span>.<span class="fn">log</span>(<span class="str">'3'</span> <span class="op">+</span> <span class="num">4</span>);    <span class="out">// "34"（文字列）</span>
+<span class="fn">console</span>.<span class="fn">log</span>(<span class="num">3</span> <span class="op">+</span> <span class="str">'4'</span>);    <span class="out">// "34"（文字列）</span>
+
+<span class="comment">// - * / は数値に変換して計算</span>
+<span class="fn">console</span>.<span class="fn">log</span>(<span class="str">'6'</span> <span class="op">-</span> <span class="num">2</span>);    <span class="out">// 4（数値）</span>
+<span class="fn">console</span>.<span class="fn">log</span>(<span class="str">'3'</span> <span class="op">*</span> <span class="str">'2'</span>);   <span class="out">// 6（数値）</span>
+
+<span class="comment">// == は型変換あり、=== は型変換なし（厳密比較）</span>
+<span class="fn">console</span>.<span class="fn">log</span>(<span class="num">0</span> <span class="op">==</span>  <span class="str">''</span>);   <span class="out">// true（型変換あり）</span>
+<span class="fn">console</span>.<span class="fn">log</span>(<span class="num">0</span> <span class="op">===</span> <span class="str">''</span>);   <span class="out">// false（型変換なし）</span>
+<span class="fn">console</span>.<span class="fn">log</span>(<span class="kw">null</span> <span class="op">==</span> <span class="kw">undefined</span>);  <span class="out">// true</span>
+<span class="fn">console</span>.<span class="fn">log</span>(<span class="kw">null</span> <span class="op">===</span> <span class="kw">undefined</span>); <span class="out">// false</span></pre>
+    </div>
+
+    <h3>明示的な型変換</h3>
+    <div class="code-block">
+      <button class="copy-btn" onclick="copyCode(this)">copy</button>
+      <pre><span class="comment">// → 数値へ変換</span>
+<span class="fn">console</span>.<span class="fn">log</span>(<span class="fn">Number</span>(<span class="str">'42'</span>));    <span class="out">// 42</span>
+<span class="fn">console</span>.<span class="fn">log</span>(<span class="fn">Number</span>(<span class="str">''</span>));      <span class="out">// 0</span>
+<span class="fn">console</span>.<span class="fn">log</span>(<span class="fn">Number</span>(<span class="kw">true</span>));    <span class="out">// 1</span>
+<span class="fn">console</span>.<span class="fn">log</span>(<span class="fn">Number</span>(<span class="kw">false</span>));   <span class="out">// 0</span>
+<span class="fn">console</span>.<span class="fn">log</span>(<span class="fn">Number</span>(<span class="kw">null</span>));    <span class="out">// 0</span>
+<span class="fn">console</span>.<span class="fn">log</span>(<span class="fn">Number</span>(<span class="kw">undefined</span>)); <span class="out">// NaN</span>
+<span class="fn">console</span>.<span class="fn">log</span>(<span class="fn">parseInt</span>(<span class="str">'42px'</span>)); <span class="out">// 42（先頭の数値部分のみ）</span>
+
+<span class="comment">// → 文字列へ変換</span>
+<span class="fn">console</span>.<span class="fn">log</span>(<span class="fn">String</span>(<span class="num">42</span>));      <span class="out">// "42"</span>
+<span class="fn">console</span>.<span class="fn">log</span>((<span class="num">42</span>).<span class="fn">toString</span>()); <span class="out">// "42"</span>
+<span class="fn">console</span>.<span class="fn">log</span>((<span class="num">255</span>).<span class="fn">toString</span>(<span class="num">16</span>)); <span class="out">// "ff"（16進数）</span>
+
+<span class="comment">// → 真偽値へ変換（Falsy値に注意）</span>
+<span class="fn">console</span>.<span class="fn">log</span>(<span class="fn">Boolean</span>(<span class="num">0</span>));      <span class="out">// false（Falsy）</span>
+<span class="fn">console</span>.<span class="fn">log</span>(<span class="fn">Boolean</span>(<span class="str">''</span>));     <span class="out">// false（Falsy）</span>
+<span class="fn">console</span>.<span class="fn">log</span>(<span class="fn">Boolean</span>(<span class="kw">null</span>));   <span class="out">// false（Falsy）</span>
+<span class="fn">console</span>.<span class="fn">log</span>(<span class="fn">Boolean</span>(<span class="str">'0'</span>));    <span class="out">// true（文字列は空でなければTruthy）</span>
+<span class="fn">console</span>.<span class="fn">log</span>(<span class="fn">Boolean</span>([]));     <span class="out">// true（空配列もTruthy）</span></pre>
+    </div>
+
+    <h3>Falsy 値（false と評価される値）</h3>
+    <div class="tbl-wrap">
+      <table>
+        <thead><tr><th>Falsy 値</th><th>説明</th></tr></thead>
+        <tbody>
+          <tr><td><code>false</code></td><td>boolean の false</td></tr>
+          <tr><td><code>0</code> / <code>-0</code> / <code>0n</code></td><td>数値のゼロ・BigIntのゼロ</td></tr>
+          <tr><td><code>""</code> / <code>''</code> / <code>``</code></td><td>空文字列</td></tr>
+          <tr><td><code>null</code></td><td>値が存在しない</td></tr>
+          <tr><td><code>undefined</code></td><td>未定義</td></tr>
+          <tr><td><code>NaN</code></td><td>非数値</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ===== 4. スコープ ===== -->
+  <div class="content-card">
+    <h2>🔭 変数のスコープ</h2>
+
+    <p>スコープとは変数が参照できる有効範囲のことです。</p>
+
+    <div class="tbl-wrap">
+      <table>
+        <thead><tr><th>スコープ種別</th><th>説明</th><th>対象キーワード</th></tr></thead>
+        <tbody>
+          <tr><td><strong>グローバルスコープ</strong></td><td>どこからでも参照可能</td><td>var / let / const（関数・ブロック外）</td></tr>
+          <tr><td><strong>関数スコープ</strong></td><td>関数内でのみ参照可能</td><td>var / let / const（関数内）</td></tr>
+          <tr><td><strong>ブロックスコープ</strong></td><td>{ } ブロック内でのみ参照可能</td><td>let / const のみ</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="code-block">
+      <button class="copy-btn" onclick="copyCode(this)">copy</button>
+      <pre><span class="kw">var</span>   globalVar <span class="op">=</span> <span class="str">'global'</span>;
+<span class="kw">let</span>   globalLet <span class="op">=</span> <span class="str">'global'</span>;
+
+<span class="kw">function</span> <span class="fn">outer</span>() {
+  <span class="kw">var</span> funcVar <span class="op">=</span> <span class="str">'function'</span>;
+  <span class="kw">let</span> funcLet <span class="op">=</span> <span class="str">'function'</span>;
+
+  <span class="kw">if</span> (<span class="kw">true</span>) {
+    <span class="kw">var</span>   blockVar <span class="op">=</span> <span class="str">'block'</span>; <span class="comment">// varは関数スコープ→outer全体で有効</span>
+    <span class="kw">let</span>   blockLet <span class="op">=</span> <span class="str">'block'</span>; <span class="comment">// letはブロックスコープ→{}内のみ</span>
+    <span class="kw">const</span> blockConst <span class="op">=</span> <span class="str">'block'</span>;
+  }
+
+  <span class="fn">console</span>.<span class="fn">log</span>(blockVar);  <span class="out">// "block"（varはブロック外でも有効）</span>
+  <span class="comment">// console.log(blockLet); // ReferenceError（ブロック外は参照不可）</span>
+}
+
+<span class="comment">// console.log(funcVar); // ReferenceError（関数外は参照不可）</span></pre>
+    </div>
+  </div>
+
+  <!-- ===== デモ1：var/let/const プレイグラウンド ===== -->
+  <div class="demo-card">
+    <h3>🎮 デモ①：var / let / const スコープ比較</h3>
+    <p style="font-size:0.88rem;color:#553c9a;margin-bottom:16px;">
+      タブを切り替えて、各キーワードのスコープの違いを確認しましょう。
+    </p>
+    <div class="playground-tabs">
+      <button class="tab-btn active" onclick="showScope('var')">var</button>
+      <button class="tab-btn" onclick="showScope('let')">let</button>
+      <button class="tab-btn" onclick="showScope('const')">const</button>
+    </div>
+    <div id="scope-display"></div>
+  </div>
+
+  <!-- ===== デモ2：型変換シミュレーター ===== -->
+  <div class="demo-card">
+    <h3>🎮 デモ②：型変換シミュレーター</h3>
+    <p style="font-size:0.88rem;color:#553c9a;margin-bottom:16px;">
+      値を入力して変換先の型を選ぶと、変換結果をリアルタイムで確認できます。
+    </p>
+    <div class="conv-grid">
+      <div class="conv-input-wrap">
+        <label>入力値</label>
+        <input class="conv-input" id="convInput" placeholder="例: 42, 'hello', true, null" oninput="runConvert()">
+      </div>
+      <div class="conv-arrow">→</div>
+      <div class="conv-input-wrap">
+        <label>変換先の型</label>
+        <select class="conv-select" id="convTarget" onchange="runConvert()">
+          <option value="all">すべて表示</option>
+          <option value="number">Number()</option>
+          <option value="string">String()</option>
+          <option value="boolean">Boolean()</option>
+        </select>
+      </div>
+    </div>
+    <div class="conv-result-box" id="convResult">
+      <span style="color:#718096;">← 値を入力してください</span>
+    </div>
+  </div>
+
+  <!-- ===== デモ3：typeof / instanceof チェッカー ===== -->
+  <div class="demo-card">
+    <h3>🎮 デモ③：typeof / instanceof チェッカー</h3>
+    <p style="font-size:0.88rem;color:#553c9a;margin-bottom:16px;">
+      JavaScript の式を入力して typeof / instanceof の結果を確認しましょう。
+    </p>
+    <div class="checker-input-row">
+      <input class="checker-input" id="checkerInput" placeholder="例: null, [], 42, 'hello', true" value="null">
+      <button class="run-btn" onclick="runChecker()">▶ 実行</button>
+    </div>
+    <div class="checker-result" id="checkerResult"></div>
+  </div>
+
+  <!-- ===== 演習問題 ===== -->
+  <div class="quiz-section">
+    <h2>✏️ 演習問題</h2>
+
+    <!-- Q1：穴埋め -->
+    <div class="quiz-item">
+      <div class="quiz-q">
+        <span class="q-num">Q1</span>
+        次の文章の空欄を埋めてください。（穴埋め）
+      </div>
+      <p style="font-size:0.92rem;color:#4a5568;margin-bottom:14px;">
+        <code>var</code> はスコープが
+        <input class="blank-input" id="q1a" placeholder="？？？"> スコープであり、
+        宣言前にアクセスすると <input class="blank-input" id="q1b" placeholder="？？？"> が返る。
+        一方 <code>let</code> と <code>const</code> は
+        <input class="blank-input" id="q1c" placeholder="？？？"> スコープであり、
+        宣言前のアクセスは <input class="blank-input" id="q1d" placeholder="？？？"> になる。
+      </p>
+      <button class="check-btn" onclick="checkQ1()">判定する</button>
+      <div class="feedback" id="fb1"></div>
+    </div>
+
+    <!-- Q2：選択 -->
+    <div class="quiz-item">
+      <div class="quiz-q">
+        <span class="q-num">Q2</span>
+        次のコードの実行結果として正しいものはどれですか？（選択）
+      </div>
+      <div class="code-fill" style="margin-bottom:14px;">
+<span class="fn">console</span>.<span class="fn">log</span>(<span class="str">'3'</span> <span class="op">+</span> <span class="num">4</span> <span class="op">-</span> <span class="num">1</span>);
+      </div>
+      <div class="choices">
+        <button class="choice-btn" onclick="checkQ2(this,false)">A. 6（数値）</button>
+        <button class="choice-btn" onclick="checkQ2(this,true)">B. 33（数値）</button>
+        <button class="choice-btn" onclick="checkQ2(this,false)">C. "341"（文字列）</button>
+        <button class="choice-btn" onclick="checkQ2(this,false)">D. NaN</button>
+      </div>
+      <div class="feedback" id="fb2"></div>
+    </div>
+
+    <!-- Q3：チェックボックス -->
+    <div class="quiz-item">
+      <div class="quiz-q">
+        <span class="q-num">Q3</span>
+        <strong>Falsy（false と評価される）</strong>値をすべて選んでください。（複数選択）
+      </div>
+      <div class="checkbox-list" id="q3-list">
+        <label class="cb-label"><input type="checkbox" value="a"> <code>0</code></label>
+        <label class="cb-label"><input type="checkbox" value="b"> <code>""</code>（空文字列）</label>
+        <label class="cb-label"><input type="checkbox" value="c"> <code>[]</code>（空配列）</label>
+        <label class="cb-label"><input type="checkbox" value="d"> <code>null</code></label>
+        <label class="cb-label"><input type="checkbox" value="e"> <code>undefined</code></label>
+        <label class="cb-label"><input type="checkbox" value="f"> <code>"0"</code>（文字列のゼロ）</label>
+        <label class="cb-label"><input type="checkbox" value="g"> <code>NaN</code></label>
+      </div>
+      <button class="check-btn" onclick="checkQ3()">判定する</button>
+      <div class="feedback" id="fb3"></div>
+    </div>
+
+    <!-- Q4：コード補完 -->
+    <div class="quiz-item">
+      <div class="quiz-q">
+        <span class="q-num">Q4</span>
+        変数 <code>x</code> が <code>NaN</code> かどうかを<strong>正確に</strong>判定するコードを完成させてください。（コード補完）
+      </div>
+      <div class="code-fill">
+<span class="kw">const</span> x <span class="op">=</span> <span class="fn">parseInt</span>(<span class="str">'abc'</span>);
+
+<span class="comment">// NaNを正確に判定する（グローバルのisNaNは不正確なため）</span>
+<span class="kw">if</span> (Number.<span class="fn"><input class="fill-input" id="q4a" placeholder="メソッド名">(x)</span>) {
+  <span class="fn">console</span>.<span class="fn">log</span>(<span class="str">'NaNです'</span>);
+}
+      </div>
+      <button class="check-btn" onclick="checkQ4()">判定する</button>
+      <div class="feedback" id="fb4"></div>
+    </div>
+
+  </div>
+
+  <!-- 完了ボタン -->
+  <div class="complete-area">
+    <button class="complete-btn" id="completeBtn" onclick="markComplete()">
+      ✅ セクション 2-2 を完了にする
+    </button>
+    <div class="complete-msg" id="completeMsg"></div>
+  </div>
+
+  <!-- ページナビ -->
+  <nav class="page-nav">
+    <a class="nav-btn prev" href="01_js_ecma.html">← 2-1 JavaScriptとは</a>
+    <a class="nav-btn index" href="index.html">📋 Chapter 2 目次</a>
+    <a class="nav-btn next" href="03_expressions.html">2-3 式と演算子 →</a>
+  </nav>
+
+  <footer>
+    <p>HTML5 Professional Level 2 試験対策サイト &copy; 2026</p>
+  </footer>
+
+  <script>
+    // ── コピーボタン ──
+    function copyCode(btn) {
+      const pre = btn.nextElementSibling;
+      navigator.clipboard.writeText(pre.innerText).then(() => {
+        btn.textContent = 'copied!';
+        btn.classList.add('copied');
+        setTimeout(() => { btn.textContent = 'copy'; btn.classList.remove('copied'); }, 2000);
+      });
+    }
+
+    // ── デモ①：スコープ比較 ──
+    const scopeData = {
+      var: {
+        title: 'var のスコープ（関数スコープ）',
+        boxes: [
+          {
+            cls: 'global', label: 'グローバルスコープ',
+            code: `<span class="kw">var</span> x <span class="op">=</span> <span class="str">'global'</span>; <span class="comment">// どこからでも参照可</span>`
+          },
+          {
+            cls: 'func', label: '関数スコープ',
+            code: `<span class="kw">function</span> <span class="fn">fn</span>() {\n  <span class="kw">var</span> x <span class="op">=</span> <span class="str">'func'</span>;\n  <span class="kw">if</span>(<span class="kw">true</span>) {\n    <span class="kw">var</span> y <span class="op">=</span> <span class="str">'block'</span>; <span class="comment">// varはブロック外でも有効</span>\n  }\n  <span class="fn">console</span>.<span class="fn">log</span>(y); <span class="out">// "block" ← ブロック外でも参照可！</span>\n}`
+          }
+        ],
+        result: '⚠️ var はブロック {} を無視して関数全体で有効です。意図しない変数の漏れが起きやすいため、現代のコードでは使用を避けましょう。再宣言も可能なためバグの温床になります。'
+      },
+      let: {
+        title: 'let のスコープ（ブロックスコープ）',
+        boxes: [
+          {
+            cls: 'global', label: 'グローバルスコープ',
+            code: `<span class="kw">let</span> x <span class="op">=</span> <span class="str">'global'</span>;`
+          },
+          {
+            cls: 'func', label: '関数スコープ',
+            code: `<span class="kw">function</span> <span class="fn">fn</span>() {\n  <span class="kw">let</span> x <span class="op">=</span> <span class="str">'func'</span>;\n  <span class="kw">if</span>(<span class="kw">true</span>) {\n    <span class="kw">let</span> y <span class="op">=</span> <span class="str">'block'</span>; <span class="comment">// ブロック内のみ有効</span>\n    <span class="fn">console</span>.<span class="fn">log</span>(y); <span class="out">// "block" ← ブロック内はOK</span>\n  }\n  <span class="comment">// console.log(y); // ReferenceError！</span>\n}`
+          }
+        ],
+        result: '✅ let はブロック {} 内でのみ有効です。再宣言は不可ですが再代入は可能。ループカウンタなど値が変わる変数に使いましょう。'
+      },
+      const: {
+        title: 'const のスコープ（ブロックスコープ・再代入不可）',
+        boxes: [
+          {
+            cls: 'global', label: 'グローバルスコープ',
+            code: `<span class="kw">const</span> PI <span class="op">=</span> <span class="num">3.14159</span>; <span class="comment">// 再代入不可</span>`
+          },
+          {
+            cls: 'func', label: '関数スコープ',
+            code: `<span class="kw">function</span> <span class="fn">fn</span>() {\n  <span class="kw">const</span> obj <span class="op">=</span> { name: <span class="str">'Alice'</span> };\n  obj.name <span class="op">=</span> <span class="str">'Bob'</span>; <span class="comment">// プロパティ変更はOK</span>\n  <span class="comment">// obj = {}; // TypeError：再代入は不可</span>\n  <span class="kw">if</span>(<span class="kw">true</span>) {\n    <span class="kw">const</span> y <span class="op">=</span> <span class="str">'block'</span>; <span class="comment">// ブロック内のみ</span>\n  }\n}`
+          }
+        ],
+        result: '✅ const はブロックスコープで再代入不可。ただしオブジェクト・配列の中身（プロパティ・要素）は変更できます。基本的に const を優先して使いましょう。'
+      }
+    };
+
+    function showScope(key) {
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      event.target.classList.add('active');
+      const d = scopeData[key];
+      let html = `<div class="scope-visual">`;
+      d.boxes.forEach(b => {
+        html += `<div class="scope-box ${b.cls}">
+          <div class="scope-label ${b.cls}">${b.label}</div>
+          <pre style="white-space:pre-wrap;font-size:0.8rem;">${b.code}</pre>
+        </div>`;
+      });
+      html += `</div><div class="scope-result">${d.result}</div>`;
+      document.getElementById('scope-display').innerHTML = html;
+    }
+    showScope('var');
+
+    // ── デモ②：型変換シミュレーター ──
+    function runConvert() {
+      const raw = document.getElementById('convInput').value;
+      const target = document.getElementById('convTarget').value;
+      const box = document.getElementById('convResult');
+
+      if (!raw.trim()) {
+        box.innerHTML = '<span style="color:#718096;">← 値を入力してください</span>';
+        return;
+      }
+
+      let val;
+      try {
+        val = Function('"use strict"; return (' + raw + ')')();
+      } catch(e) {
+        box.innerHTML = `<span style="color:#fc8181;">構文エラー: ${e.message}</span>`;
+        return;
+      }
+
+      const originalType = typeof val === 'object' && val === null ? 'null' : typeof val;
+
+      const rows = [];
+
+      const addRow = (label, result, resultType) => {
+        rows.push(`<div class="conv-row">
+          <span class="conv-label">${label}</span>
+          <span class="conv-val">${String(result) === 'undefined' ? 'undefined' : JSON.stringify(result) ?? String(result)}</span>
+          <span class="conv-type">&nbsp;(${resultType})</span>
+        </div>`);
+      };
+
+      addRow('元の値:', val === null ? 'null' : val, originalType);
+
+      if (target === 'all' || target === 'number') {
+        const n = Number(val);
+        addRow('Number():', n, typeof n);
+      }
+      if (target === 'all' || target === 'string') {
+        const s = String(val);
+        addRow('String():', s, typeof s);
+      }
+      if (target === 'all' || target === 'boolean') {
+        const b = Boolean(val);
+        addRow('Boolean():', b, typeof b);
+      }
+      if (target === 'all') {
+        addRow('typeof:', typeof val, 'string');
+      }
+
+      box.innerHTML = rows.join('');
+    }
+
+    // ── デモ③：typeof/instanceof チェッカー ──
+    function runChecker() {
+      const raw = document.getElementById('checkerInput').value.trim();
+      const box = document.getElementById('checkerResult');
+      if (!raw) { box.innerHTML = '<span style="color:#718096;">値を入力してください</span>'; return; }
+
+      let val;
+      try {
+        val = Function('"use strict"; return (' + raw + ')')();
+      } catch(e) {
+        box.innerHTML = `<span style="color:#fc8181;">構文エラー: ${e.message}</span>`;
+        return;
+      }
+
+      const typeofResult = typeof val;
+      const isNull = val === null;
+      const isArray = Array.isArray(val);
+      const isFunc = typeof val === 'function';
+
+      let html = '';
+      const row = (label, val, color) =>
+        `<div style="display:flex;gap:12px;margin-bottom:6px;">
+           <span style="color:#9f7aea;width:200px;flex-shrink:0;">${label}</span>
+           <span style="color:${color};">${val}</span>
+         </div>`;
+
+      html += row('typeof:', `"${typeofResult}"`, '#fbd38d');
+      html += row('=== null:', String(isNull), isNull ? '#fc8181' : '#68d391');
+      html += row('Array.isArray():', String(isArray), isArray ? '#68d391' : '#a0aec0');
+      html += row('instanceof Object:', String(!isNull && typeofResult === 'object' || isFunc), '#90cdf4');
+      html += row('Boolean変換:', String(Boolean(val)), Boolean(val) ? '#68d391' : '#fc8181');
+
+      box.innerHTML = html;
+    }
+
+    // 初期実行
+    window.addEventListener('DOMContentLoaded', () => {
+      runChecker();
+      if (localStorage.getItem('html5lv2_ch2_02') === 'done') {
+        const btn = document.getElementById('completeBtn');
+        btn.textContent = '🎉 完了済み！';
+        btn.classList.add('done');
+        btn.disabled = true;
+        document.getElementById('completeMsg').textContent = 'このセクションは完了済みです。';
+      }
+    });
+
+    // ── Q1 穴埋め ──
+    function checkQ1() {
+      const ans = [
+        { id: 'q1a', correct: ['関数'] },
+        { id: 'q1b', correct: ['undefined'] },
+        { id: 'q1c', correct: ['ブロック'] },
+        { id: 'q1d', correct: ['ReferenceError', 'エラー', 'TDZ'] },
+      ];
+      let allOk = true;
+      ans.forEach(a => {
+        const el = document.getElementById(a.id);
+        const val = el.value.trim();
+        const ok = a.correct.some(c => val.includes(c));
+        el.classList.toggle('correct', ok);
+        el.classList.toggle('wrong', !ok);
+        if (!ok) allOk = false;
+      });
+      const fb = document.getElementById('fb1');
+      fb.className = 'feedback show ' + (allOk ? 'ok' : 'ng');
+      fb.innerHTML = allOk
+        ? '✅ 正解！ var は関数スコープ・undefined、let/const はブロックスコープ・ReferenceError です。'
+        : '❌ キーワード：var→「関数」スコープ・「undefined」、let/const→「ブロック」スコープ・「ReferenceError」';
+    }
+
+    // ── Q2 選択 ──
+    function checkQ2(btn, isCorrect) {
+      document.querySelectorAll('.choice-btn').forEach(b => b.disabled = true);
+      btn.classList.add(isCorrect ? 'correct' : 'wrong');
+      const fb = document.getElementById('fb2');
+      fb.className = 'feedback show ' + (isCorrect ? 'ok' : 'ng');
+      fb.innerHTML = isCorrect
+        ? "✅ 正解！ '3' + 4 は文字列結合で \"34\"、\"34\" - 1 は数値変換されて 33 になります。"
+        : "❌ 不正解。'3' + 4 → \"34\"（文字列）、\"34\" - 1 → 33（数値）。+ は文字列優先、- は数値変換です。";
+    }
+
+    // ── Q3 チェックボックス ──
+    function checkQ3() {
+      const correct = new Set(['a', 'b', 'd', 'e', 'g']);
+      const labels = document.querySelectorAll('#q3-list .cb-label');
+      let ok = 0, total = correct.size;
+      labels.forEach(label => {
+        const cb = label.querySelector('input');
+        cb.disabled = true;
+        const checked = cb.checked;
+        const should = correct.has(cb.value);
+        if (checked && should)   { label.classList.add('correct'); ok++; }
+        else if (checked && !should) label.classList.add('wrong');
+        else if (!checked && should) label.classList.add('wrong');
+      });
+      const allOk = ok === total &&
+        [...labels].filter(l => l.querySelector('input').checked).length === total;
+      const fb = document.getElementById('fb3');
+      fb.className = 'feedback show ' + (allOk ? 'ok' : 'ng');
+      fb.innerHTML = allOk
+        ? '✅ 完璧！ Falsy値は 0, "", null, undefined, NaN（と false, -0, 0n）です。'
+        : '❌ 正解は a(0)・b("")・d(null)・e(undefined)・g(NaN) の5つ。<br>c([]空配列) と f("0"文字列) は Truthy です。';
+    }
+
+    // ── Q4 コード補完 ──
+    function checkQ4() {
+      const val = document.getElementById('q4a').value.trim();
+      const ok = val === 'isNaN';
+      document.getElementById('q4a').classList.toggle('correct', ok);
+      document.getElementById('q4a').classList.toggle('wrong', !ok);
+      const fb = document.getElementById('fb4');
+      fb.className = 'feedback show ' + (ok ? 'ok' : 'ng');
+      fb.innerHTML = ok
+        ? '✅ 正解！ <code>Number.isNaN()</code> はグローバルの <code>isNaN()</code> と異なり、型変換を行わず厳密に NaN のみを判定します。'
+        : '❌ 不正解。答えは <code>isNaN</code> です。<code>Number.isNaN(x)</code> は x が本当に NaN のときだけ true を返します。グローバルの <code>isNaN("abc")</code> は true を返してしまいますが、<code>Number.isNaN("abc")</code> は false です。';
+    }
+
+    // ── 完了ボタン ──
+    function markComplete() {
+      localStorage.setItem('html5lv2_ch2_02', 'done');
+      const btn = document.getElementById('completeBtn');
+      btn.textContent = '🎉 完了済み！';
+      btn.classList.add('done');
+      btn.disabled = true;
+      document.getElementById('completeMsg').textContent = '進捗が保存されました。次のセクションへ進みましょう！';
+    }
+  </script>
+
+</body>
+</html>
