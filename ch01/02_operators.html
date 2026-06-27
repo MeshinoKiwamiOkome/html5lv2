@@ -1,0 +1,1341 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>1-2 さまざまな演算 | HTML5プロフェッショナル Level 2</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; }
+    body {
+      font-family: 'Segoe UI', 'Helvetica Neue', sans-serif;
+      max-width: 960px; margin: 40px auto; padding: 0 24px;
+      background: #f0f4f8; color: #2d3748; line-height: 1.8;
+    }
+    .breadcrumb {
+      font-size: 0.82em; color: #a0aec0; margin-bottom: 20px;
+      font-family: 'Consolas','Monaco',monospace;
+    }
+    .breadcrumb a { color: #2c7a7b; text-decoration: none; }
+    .breadcrumb a:hover { text-decoration: underline; }
+
+    .chapter-header {
+      background: linear-gradient(135deg, #1a365d, #2c7a7b);
+      border-radius: 12px; padding: 32px 32px 24px;
+      margin-bottom: 32px; color: #fff;
+      box-shadow: 0 4px 18px rgba(44,122,123,0.35);
+    }
+    .chapter-header .ch-num {
+      font-size: 0.8em; font-family: 'Consolas','Monaco',monospace;
+      opacity: 0.85; letter-spacing: 0.08em; margin-bottom: 6px;
+    }
+    .chapter-header h1 { margin: 0 0 10px; font-size: 1.6em; color: #fff; border: none; padding: 0; }
+    .chapter-header p  { margin: 0; font-size: 0.92em; opacity: 0.88; }
+    .badge-row { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 14px; }
+    .badge {
+      background: rgba(255,255,255,0.18);
+      border: 1px solid rgba(255,255,255,0.35);
+      border-radius: 20px; padding: 3px 12px;
+      font-size: 0.76em; font-weight: bold;
+    }
+
+    .section-nav {
+      background: #fff; border: 1px solid #bee3f8;
+      border-radius: 10px; padding: 18px 22px;
+      margin-bottom: 32px; box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+    }
+    .section-nav h2 { margin: 0 0 12px; font-size: 0.92em; color: #1a365d; border: none; padding: 0; }
+    .section-nav ol { margin: 0; padding-left: 20px; font-size: 0.9em; }
+    .section-nav ol li { margin: 4px 0; }
+    .section-nav ol li a { color: #2c7a7b; text-decoration: none; }
+    .section-nav ol li a:hover { text-decoration: underline; }
+    .section-nav ol li.current a { color: #1a365d; font-weight: bold; }
+
+    h2 { color: #1a365d; margin-top: 48px; border-left: 5px solid #2c7a7b; padding-left: 12px; }
+    h3 { color: #2c7a7b; margin-top: 28px; }
+
+    code {
+      background: #edf2f7; padding: 2px 6px;
+      border-radius: 4px; font-size: 0.93em;
+      font-family: 'Consolas','Monaco',monospace;
+    }
+    pre {
+      background: #1a202c; color: #e2e8f0;
+      padding: 18px 20px; border-radius: 8px;
+      overflow-x: auto; font-size: 0.88em;
+      line-height: 1.7; font-family: 'Consolas','Monaco',monospace;
+    }
+    pre .comment { color: #68d391; }
+    pre .kw      { color: #90cdf4; }
+    pre .str     { color: #fbd38d; }
+    pre .num     { color: #fc8181; }
+    pre .fn      { color: #b794f4; }
+    pre .op      { color: #f6ad55; }
+    pre .out     { color: #a0aec0; }
+
+    .pre-wrap { position: relative; margin: 14px 0; }
+    .copy-btn {
+      position: absolute; top: 8px; right: 8px;
+      background: #4a5568; color: #e2e8f0;
+      border: none; border-radius: 4px;
+      padding: 4px 10px; font-size: 0.75em;
+      cursor: pointer; font-family: 'Consolas','Monaco',monospace;
+      transition: background 0.2s; z-index: 1;
+    }
+    .copy-btn:hover { background: #2c7a7b; }
+
+    .note {
+      background: #fff; border: 1px dashed #81e6d9;
+      border-radius: 6px; padding: 14px 18px;
+      font-size: 0.93em; color: #4a5568; margin: 14px 0;
+    }
+    .note strong { color: #1a365d; }
+    .warn {
+      background: #fffaf0; border: 1px solid #f6ad55;
+      border-left: 5px solid #f6ad55; border-radius: 6px;
+      padding: 14px 18px; font-size: 0.93em; color: #744210; margin: 14px 0;
+    }
+    .good {
+      background: #f0fff4; border: 1px solid #68d391;
+      border-left: 5px solid #48bb78; border-radius: 6px;
+      padding: 14px 18px; font-size: 0.93em; color: #276749; margin: 14px 0;
+    }
+    .demo-box {
+      background: #fff; border: 1px solid #bee3f8;
+      border-radius: 8px; padding: 20px 24px;
+      margin: 12px 0 28px; box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+    }
+
+    /* ===== 電卓UI ===== */
+    .calc-wrap {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      margin: 14px 0;
+    }
+    .calc-box {
+      background: #1a202c; border-radius: 10px;
+      padding: 18px; font-family: 'Consolas','Monaco',monospace;
+    }
+    .calc-display {
+      background: #0d1117; border-radius: 6px;
+      padding: 10px 14px; margin-bottom: 12px;
+      font-size: 1.1em; color: #68d391;
+      min-height: 48px; word-break: break-all;
+      line-height: 1.5;
+    }
+    .calc-display .expr { color: #a0aec0; font-size: 0.8em; display: block; }
+    .calc-display .result { color: #68d391; font-size: 1.1em; font-weight: bold; }
+    .calc-inputs { display: flex; flex-direction: column; gap: 8px; }
+    .calc-row { display: flex; gap: 8px; align-items: center; }
+    .calc-row label {
+      color: #a0aec0; font-size: 0.82em; min-width: 20px;
+    }
+    .calc-input {
+      flex: 1; background: #2d3748; border: 1px solid #4a5568;
+      border-radius: 4px; padding: 6px 10px;
+      color: #e2e8f0; font-family: 'Consolas','Monaco',monospace;
+      font-size: 0.9em; outline: none;
+    }
+    .calc-input:focus { border-color: #2c7a7b; }
+    .calc-op-btns {
+      display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px;
+    }
+    .calc-op-btn {
+      padding: 6px 14px; border-radius: 6px;
+      border: 1px solid #4a5568; background: #2d3748;
+      color: #e2e8f0; font-family: 'Consolas','Monaco',monospace;
+      font-size: 0.88em; cursor: pointer;
+      transition: all 0.15s;
+    }
+    .calc-op-btn:hover  { background: #2c7a7b; border-color: #2c7a7b; }
+    .calc-op-btn.active { background: #2c7a7b; border-color: #68d391; color: #fff; }
+
+    /* ===== 短縮記法カード ===== */
+    .shorthand-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 12px; margin: 14px 0;
+    }
+    .shorthand-card {
+      background: #1a202c; border-radius: 8px;
+      padding: 14px 16px; cursor: pointer;
+      border: 2px solid #2d3748;
+      transition: border-color 0.15s, transform 0.15s;
+      font-family: 'Consolas','Monaco',monospace;
+    }
+    .shorthand-card:hover {
+      border-color: #2c7a7b;
+      transform: translateY(-2px);
+    }
+    .shorthand-card.active { border-color: #68d391; }
+    .sh-op   { color: #f6ad55; font-size: 1.1em; font-weight: bold; margin-bottom: 4px; }
+    .sh-long { color: #a0aec0; font-size: 0.82em; margin-bottom: 2px; }
+    .sh-desc { color: #e2e8f0; font-size: 0.8em; }
+
+    /* ===== 文字列連結ビジュアル ===== */
+    .concat-visual {
+      display: flex; align-items: center;
+      gap: 8px; flex-wrap: wrap;
+      justify-content: center; margin: 16px 0;
+    }
+    .concat-box {
+      border-radius: 6px; padding: 10px 16px;
+      font-family: 'Consolas','Monaco',monospace;
+      font-size: 0.9em; font-weight: bold;
+      text-align: center; min-width: 80px;
+    }
+    .concat-op {
+      font-size: 1.4em; color: #f6ad55; font-weight: bold;
+    }
+    .concat-result {
+      background: #276749; color: #c6f6d5;
+      border: 2px solid #68d391;
+    }
+
+    /* ===== インタラクティブデモ ===== */
+    .interactive-demo {
+      background: #ebf8ff; border: 1px solid #bee3f8;
+      border-radius: 8px; padding: 16px 20px; margin: 14px 0;
+    }
+    .demo-label {
+      font-size: 0.85em; font-weight: bold;
+      color: #1a365d; margin-bottom: 10px;
+    }
+    .demo-input-row {
+      display: flex; gap: 10px; align-items: center;
+      flex-wrap: wrap; margin-bottom: 10px;
+    }
+    .demo-input {
+      border: 2px solid #bee3f8; border-radius: 6px;
+      padding: 7px 12px; font-size: 0.9em;
+      font-family: 'Consolas','Monaco',monospace;
+      color: #2d3748; background: #fff; flex: 1; min-width: 80px;
+    }
+    .demo-input:focus { border-color: #2c7a7b; outline: none; }
+    .demo-btn {
+      background: #2c7a7b; color: #fff; border: none;
+      border-radius: 6px; padding: 8px 18px;
+      font-size: 0.88em; font-weight: bold; cursor: pointer;
+      transition: background 0.2s; white-space: nowrap;
+    }
+    .demo-btn:hover { background: #1a365d; }
+    .demo-output {
+      background: #1a202c; color: #68d391;
+      border-radius: 6px; padding: 10px 14px;
+      font-family: 'Consolas','Monaco',monospace;
+      font-size: 0.85em; min-height: 40px;
+      white-space: pre-wrap; line-height: 1.7;
+    }
+
+    /* ===== JSコンソール ===== */
+    .js-console {
+      background: #1a202c; border-radius: 10px;
+      overflow: hidden; margin: 16px 0;
+      box-shadow: 0 4px 14px rgba(0,0,0,0.25);
+    }
+    .js-console-bar {
+      background: #2d3748; padding: 8px 16px;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .js-console-bar .dot { width: 12px; height: 12px; border-radius: 50%; }
+    .dot-red    { background: #fc8181; }
+    .dot-yellow { background: #f6ad55; }
+    .dot-green  { background: #68d391; }
+    .js-console-bar span {
+      font-size: 0.78em; color: #a0aec0;
+      font-family: 'Consolas','Monaco',monospace; margin-left: 6px;
+    }
+    .js-console-output {
+      padding: 14px 16px; min-height: 80px;
+      font-family: 'Consolas','Monaco',monospace;
+      font-size: 0.85em; line-height: 1.8;
+      max-height: 260px; overflow-y: auto;
+    }
+    .log-line   { color: #e2e8f0; }
+    .log-info   { color: #90cdf4; }
+    .log-warn   { color: #f6ad55; }
+    .log-error  { color: #fc8181; }
+    .log-result { color: #68d391; }
+    .log-prompt { color: #a0aec0; }
+    .js-console-input-row {
+      display: flex; align-items: center;
+      border-top: 1px solid #2d3748; padding: 8px 12px; gap: 8px;
+    }
+    .js-console-input-row span {
+      color: #68d391; font-family: 'Consolas','Monaco',monospace;
+      font-size: 0.9em; flex-shrink: 0;
+    }
+    .js-console-input {
+      flex: 1; background: transparent; border: none; outline: none;
+      color: #e2e8f0; font-family: 'Consolas','Monaco',monospace;
+      font-size: 0.88em; caret-color: #68d391;
+    }
+    .js-console-run {
+      background: #2c7a7b; color: #fff; border: none;
+      border-radius: 4px; padding: 4px 12px;
+      font-size: 0.78em; font-weight: bold; cursor: pointer;
+      transition: background 0.2s;
+    }
+    .js-console-run:hover { background: #1a365d; }
+    .js-console-clear {
+      background: #4a5568; color: #e2e8f0; border: none;
+      border-radius: 4px; padding: 4px 10px;
+      font-size: 0.78em; cursor: pointer; transition: background 0.2s;
+    }
+    .js-console-clear:hover { background: #718096; }
+
+    /* ===== テーブル ===== */
+    table.ref-table {
+      border-collapse: collapse; width: 100%;
+      background: #fff; border-radius: 8px;
+      overflow: hidden; box-shadow: 0 2px 6px rgba(0,0,0,0.07);
+      margin: 14px 0; font-size: 0.9em;
+    }
+    table.ref-table th, table.ref-table td {
+      border: 1px solid #bee3f8; padding: 10px 14px; text-align: left;
+    }
+    table.ref-table thead tr { background: #1a365d; color: #fff; }
+    table.ref-table tbody tr:nth-child(even) { background: #ebf8ff; }
+
+    /* ===== 演習問題 ===== */
+    .quiz-section {
+      background: #ebf8ff; border-left: 6px solid #4299e1;
+      border-radius: 0 8px 8px 0; padding: 24px 28px; margin: 48px 0 32px;
+    }
+    .quiz-section > h2 { margin-top: 0; color: #1a365d; border-left-color: #4299e1; }
+    .quiz-block {
+      background: #fff; border: 1px solid #bee3f8;
+      border-radius: 8px; padding: 18px 22px; margin-bottom: 22px;
+    }
+    .quiz-block h3 { margin-top: 0; color: #1a365d; }
+    .quiz-block input[type="text"],
+    .quiz-block select {
+      border: 2px solid #bee3f8; border-radius: 6px;
+      padding: 8px 12px; font-size: 0.95em;
+      width: 100%; max-width: 440px; margin: 6px 0;
+      outline: none; font-family: 'Consolas','Monaco',monospace;
+      transition: border-color 0.2s;
+    }
+    .quiz-block input[type="text"]:focus,
+    .quiz-block select:focus { border-color: #2c7a7b; }
+    .quiz-block label { display: block; margin: 8px 0 2px; font-weight: bold; color: #4a5568; }
+    .quiz-block label.checkbox-label {
+      display: flex; align-items: flex-start; gap: 8px;
+      font-weight: normal; cursor: pointer; margin: 6px 0;
+    }
+    .quiz-block label.checkbox-label input { margin-top: 3px; flex-shrink: 0; }
+    .btn {
+      display: inline-block; padding: 9px 20px;
+      border-radius: 6px; border: none; cursor: pointer;
+      font-size: 0.95em; font-weight: bold;
+      transition: opacity 0.2s; margin-top: 8px;
+    }
+    .btn:hover { opacity: 0.85; }
+    .btn-teal { background: #2c7a7b; color: #fff; }
+    .btn-done { background: #48bb78; color: #fff; }
+    .result-msg {
+      margin-top: 10px; padding: 10px 14px;
+      border-radius: 6px; font-weight: bold; display: none;
+    }
+    .result-msg.correct { background: #c6f6d5; color: #276749; display: block; }
+    .result-msg.wrong   { background: #fed7d7; color: #9b2335; display: block; }
+    .result-msg.info    { background: #bee3f8; color: #1a365d; display: block; }
+
+    .page-nav {
+      display: flex; justify-content: space-between;
+      align-items: center; margin-top: 48px;
+      padding-top: 20px; border-top: 2px solid #bee3f8;
+      gap: 12px; flex-wrap: wrap;
+    }
+    .page-nav a {
+      display: inline-block; padding: 10px 20px;
+      border-radius: 8px; text-decoration: none;
+      font-weight: bold; font-size: 0.9em; transition: opacity 0.2s;
+    }
+    .page-nav a:hover { opacity: 0.8; }
+    .page-nav .prev { background: #edf2f7; color: #4a5568; }
+    .page-nav .next { background: #2c7a7b; color: #fff; }
+    .page-nav .home { background: #fff; color: #2c7a7b; border: 2px solid #2c7a7b; }
+
+    .complete-section {
+      background: #f0fff4; border: 2px solid #48bb78;
+      border-radius: 10px; padding: 20px 24px;
+      margin-top: 40px; text-align: center;
+    }
+    .complete-section p { margin: 0 0 12px; color: #276749; font-weight: bold; }
+
+    footer {
+      margin-top: 48px; padding-top: 16px;
+      border-top: 2px solid #bee3f8;
+      font-size: 0.82em; color: #a0aec0; text-align: center;
+    }
+    footer a { color: #2c7a7b; text-decoration: none; }
+    footer a:hover { text-decoration: underline; }
+
+    @media (max-width: 600px) {
+      body { font-size: 0.84em; }
+      .chapter-header { padding: 20px 16px; }
+      .chapter-header h1 { font-size: 1.2em; }
+      .calc-wrap { grid-template-columns: 1fr; }
+      .shorthand-grid { grid-template-columns: repeat(2, 1fr); }
+      .quiz-section { padding: 16px 12px; }
+      .quiz-block { padding: 14px 12px; }
+      .page-nav { flex-direction: column; align-items: stretch; }
+      .page-nav a { text-align: center; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- パンくず -->
+<div class="breadcrumb">
+  <a href="../index.html">🏠 HTML5 Level 2</a> ›
+  Chapter 1：速習JavaScript入門 › 1-2 さまざまな演算
+</div>
+
+<!-- ヘッダー -->
+<div class="chapter-header">
+  <div class="ch-num">CHAPTER 01 › SECTION 02</div>
+  <h1>🔢 1-2 さまざまな演算</h1>
+  <p>加算・減算・乗算・除算・剰余などの算術演算子と、
+  コードを短く書ける短縮記法、文字列の連結を
+  インタラクティブな電卓デモで体験しながら学びます。</p>
+  <div class="badge-row">
+    <span class="badge">+ - * / %</span>
+    <span class="badge">**（べき乗）</span>
+    <span class="badge">+=  -=  *=</span>
+    <span class="badge">++  --</span>
+    <span class="badge">文字列連結</span>
+    <span class="badge">テンプレートリテラル</span>
+  </div>
+</div>
+
+<!-- セクションナビ -->
+<div class="section-nav">
+  <h2>📋 Chapter 1 のセクション</h2>
+  <ol>
+    <li><a href="01_variables.html">1-1 変数の宣言と値の代入</a></li>
+    <li class="current"><a href="02_operators.html">1-2 さまざまな演算</a></li>
+    <li><a href="03_types.html">1-3 型とオブジェクト</a></li>
+    <li><a href="04_functions.html">1-4 関数</a></li>
+    <li><a href="05_scope.html">1-5 スコープ</a></li>
+    <li><a href="06_conditions.html">1-6 条件分岐</a></li>
+    <li><a href="07_loops.html">1-7 繰り返しの処理</a></li>
+    <li><a href="08_classes.html">1-8 オブジェクトとクラス</a></li>
+    <li><a href="09_dom.html">1-9 HTMLの操作</a></li>
+    <li><a href="10_events.html">1-10 イベントと非同期処理</a></li>
+    <li><a href="11_html5.html">1-11 HTML5とJavaScript</a></li>
+  </ol>
+</div>
+
+
+<!-- ============================================================ -->
+<!-- PART 1: 値の加算 -->
+<!-- ============================================================ -->
+<h2 id="addition">① 値の加算</h2>
+
+<div class="note">
+  <strong>重要ポイント：<code>+</code> 演算子は数値の加算と文字列の連結の両方に使われます。</strong><br>
+  オペランド（演算対象）の型によって動作が変わるため注意が必要です。
+</div>
+
+<div class="demo-box">
+  <h3>🧮 インタラクティブ電卓（加算）</h3>
+  <div class="interactive-demo">
+    <div class="demo-label">2つの数値を入力して加算を試してみましょう</div>
+    <div class="demo-input-row">
+      <input class="demo-input" id="add-a" type="number" value="10" style="max-width:100px;">
+      <span style="font-size:1.4em; color:#f6ad55; font-weight:bold;">+</span>
+      <input class="demo-input" id="add-b" type="number" value="5"  style="max-width:100px;">
+      <button class="demo-btn" onclick="runAdd()">▶ 計算</button>
+    </div>
+    <div class="demo-output" id="add-output">← 数値を入力して計算してみましょう</div>
+  </div>
+
+  <div class="pre-wrap">
+    <button class="copy-btn" onclick="copyPre(this)">copy</button>
+<pre>
+<span class="comment">// 数値の加算</span>
+<span class="kw">let</span> a = <span class="num">10</span>;
+<span class="kw">let</span> b = <span class="num">5</span>;
+<span class="kw">let</span> sum = a <span class="op">+</span> b;
+console.<span class="fn">log</span>(sum); <span class="out">// → 15</span>
+
+<span class="comment">// 変数を使わずに直接計算</span>
+console.<span class="fn">log</span>(<span class="num">100</span> <span class="op">+</span> <span class="num">200</span>); <span class="out">// → 300</span>
+console.<span class="fn">log</span>(<span class="num">3.14</span> <span class="op">+</span> <span class="num">1.5</span>); <span class="out">// → 4.640000000000001（浮動小数点の誤差）</span>
+
+<span class="comment">// 数値と文字列の + は文字列連結になる（注意！）</span>
+console.<span class="fn">log</span>(<span class="num">10</span> <span class="op">+</span> <span class="str">"5"</span>);  <span class="out">// → "105"（文字列）</span>
+console.<span class="fn">log</span>(<span class="str">"10"</span> <span class="op">+</span> <span class="num">5</span>);  <span class="out">// → "105"（文字列）</span>
+</pre>
+  </div>
+
+  <div class="warn">
+    ⚠️ <strong>浮動小数点の誤差に注意</strong><br>
+    <code>0.1 + 0.2</code> は <code>0.30000000000000004</code> になります。
+    これはJavaScriptに限らず、IEEE 754 浮動小数点数を使うすべての言語で起きる現象です。
+    金額計算などでは整数に変換してから計算するか、専用ライブラリを使いましょう。
+  </div>
+</div>
+
+
+<!-- ============================================================ -->
+<!-- PART 2: そのほかの計算 -->
+<!-- ============================================================ -->
+<h2 id="arithmetic">② そのほかの計算</h2>
+
+<div class="note">
+  <strong>重要ポイント：JavaScriptには加算以外にも減算・乗算・除算・剰余・べき乗の演算子があります。</strong>
+</div>
+
+<div class="demo-box">
+  <h3>🎮 全演算子を試せる電卓</h3>
+  <div class="calc-wrap">
+    <div class="calc-box">
+      <div class="calc-display">
+        <span class="expr" id="calc-expr">式を選んで計算してみましょう</span>
+        <span class="result" id="calc-result"></span>
+      </div>
+      <div class="calc-inputs">
+        <div class="calc-row">
+          <label>A</label>
+          <input class="calc-input" id="calc-a" type="number" value="10">
+        </div>
+        <div class="calc-row">
+          <label>B</label>
+          <input class="calc-input" id="calc-b" type="number" value="3">
+        </div>
+      </div>
+      <div class="calc-op-btns">
+        <button class="calc-op-btn" onclick="calcOp('+' ,this)">+</button>
+        <button class="calc-op-btn" onclick="calcOp('-' ,this)">-</button>
+        <button class="calc-op-btn" onclick="calcOp('*' ,this)">*</button>
+        <button class="calc-op-btn" onclick="calcOp('/' ,this)">/</button>
+        <button class="calc-op-btn" onclick="calcOp('%' ,this)">%</button>
+        <button class="calc-op-btn" onclick="calcOp('**',this)">**</button>
+      </div>
+    </div>
+
+    <div style="background:#fff; border:1px solid #bee3f8; border-radius:10px; padding:16px;">
+      <h3 style="margin:0 0 12px; color:#1a365d; font-size:0.95em;">演算子の説明</h3>
+      <table class="ref-table" style="margin:0; font-size:0.85em;">
+        <thead><tr><th>演算子</th><th>意味</th><th>例</th><th>結果</th></tr></thead>
+        <tbody>
+          <tr><td><code>+</code></td><td>加算</td><td><code>10 + 3</code></td><td>13</td></tr>
+          <tr><td><code>-</code></td><td>減算</td><td><code>10 - 3</code></td><td>7</td></tr>
+          <tr><td><code>*</code></td><td>乗算</td><td><code>10 * 3</code></td><td>30</td></tr>
+          <tr><td><code>/</code></td><td>除算</td><td><code>10 / 3</code></td><td>3.333...</td></tr>
+          <tr><td><code>%</code></td><td>剰余（余り）</td><td><code>10 % 3</code></td><td>1</td></tr>
+          <tr><td><code>**</code></td><td>べき乗</td><td><code>10 ** 3</code></td><td>1000</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="pre-wrap">
+    <button class="copy-btn" onclick="copyPre(this)">copy</button>
+<pre>
+<span class="kw">let</span> a = <span class="num">10</span>;
+<span class="kw">let</span> b = <span class="num">3</span>;
+
+console.<span class="fn">log</span>(a <span class="op">-</span> b);  <span class="out">// → 7    （減算）</span>
+console.<span class="fn">log</span>(a <span class="op">*</span> b);  <span class="out">// → 30   （乗算）</span>
+console.<span class="fn">log</span>(a <span class="op">/</span> b);  <span class="out">// → 3.3333...（除算）</span>
+console.<span class="fn">log</span>(a <span class="op">%</span> b);  <span class="out">// → 1    （剰余：10 ÷ 3 の余り）</span>
+console.<span class="fn">log</span>(a <span class="op">**</span> b); <span class="out">// → 1000 （べき乗：10の3乗）</span>
+
+<span class="comment">// 剰余（%）の活用例：偶数・奇数の判定</span>
+console.<span class="fn">log</span>(<span class="num">7</span> <span class="op">%</span> <span class="num">2</span>); <span class="out">// → 1（奇数）</span>
+console.<span class="fn">log</span>(<span class="num">8</span> <span class="op">%</span> <span class="num">2</span>); <span class="out">// → 0（偶数）</span>
+
+<span class="comment">// Math オブジェクトも活用できる</span>
+console.<span class="fn">log</span>(Math.<span class="fn">floor</span>(<span class="num">10</span> <span class="op">/</span> <span class="num">3</span>)); <span class="out">// → 3  （切り捨て）</span>
+console.<span class="fn">log</span>(Math.<span class="fn">round</span>(<span class="num">3.7</span>));      <span class="out">// → 4  （四捨五入）</span>
+console.<span class="fn">log</span>(Math.<span class="fn">abs</span>(<span class="op">-</span><span class="num">5</span>));         <span class="out">// → 5  （絶対値）</span>
+console.<span class="fn">log</span>(Math.<span class="fn">sqrt</span>(<span class="num">16</span>));        <span class="out">// → 4  （平方根）</span>
+</pre>
+  </div>
+
+  <h3>剰余（%）の活用シーン</h3>
+  <div class="interactive-demo">
+    <div class="demo-label">💡 剰余を使った偶数・奇数判定を試してみよう</div>
+    <div class="demo-input-row">
+      <input class="demo-input" id="mod-num" type="number" value="7" style="max-width:100px;">
+      <button class="demo-btn" onclick="runMod()">▶ 判定</button>
+    </div>
+    <div class="demo-output" id="mod-output">← 数値を入力して判定してみましょう</div>
+  </div>
+</div>
+
+
+<!-- ============================================================ -->
+<!-- PART 3: 計算のための短縮記法 -->
+<!-- ============================================================ -->
+<h2 id="shorthand">③ 計算のための短縮記法</h2>
+
+<div class="note">
+  <strong>重要ポイント：<code>+=</code> や <code>++</code> などの短縮記法を使うと、変数への演算と代入を一度に書けます。</strong><br>
+  試験でも頻出のため、各記法の動作を正確に理解しましょう。
+</div>
+
+<div class="demo-box">
+  <h3>短縮記法カード（クリックで詳細表示）</h3>
+  <div class="shorthand-grid">
+    <div class="shorthand-card" onclick="showShorthand('add-assign',this)">
+      <div class="sh-op">+=</div>
+      <div class="sh-long">x = x + n</div>
+      <div class="sh-desc">加算代入</div>
+    </div>
+    <div class="shorthand-card" onclick="showShorthand('sub-assign',this)">
+      <div class="sh-op">-=</div>
+      <div class="sh-long">x = x - n</div>
+      <div class="sh-desc">減算代入</div>
+    </div>
+    <div class="shorthand-card" onclick="showShorthand('mul-assign',this)">
+      <div class="sh-op">*=</div>
+      <div class="sh-long">x = x * n</div>
+      <div class="sh-desc">乗算代入</div>
+    </div>
+    <div class="shorthand-card" onclick="showShorthand('div-assign',this)">
+      <div class="sh-op">/=</div>
+      <div class="sh-long">x = x / n</div>
+      <div class="sh-desc">除算代入</div>
+    </div>
+    <div class="shorthand-card" onclick="showShorthand('mod-assign',this)">
+      <div class="sh-op">%=</div>
+      <div class="sh-long">x = x % n</div>
+      <div class="sh-desc">剰余代入</div>
+    </div>
+    <div class="shorthand-card" onclick="showShorthand('pow-assign',this)">
+      <div class="sh-op">**=</div>
+      <div class="sh-long">x = x ** n</div>
+      <div class="sh-desc">べき乗代入</div>
+    </div>
+    <div class="shorthand-card" onclick="showShorthand('inc-pre',this)">
+      <div class="sh-op">++x</div>
+      <div class="sh-long">x = x + 1（前置）</div>
+      <div class="sh-desc">前置インクリメント</div>
+    </div>
+    <div class="shorthand-card" onclick="showShorthand('inc-post',this)">
+      <div class="sh-op">x++</div>
+      <div class="sh-long">x = x + 1（後置）</div>
+      <div class="sh-desc">後置インクリメント</div>
+    </div>
+    <div class="shorthand-card" onclick="showShorthand('dec-pre',this)">
+      <div class="sh-op">--x</div>
+      <div class="sh-long">x = x - 1（前置）</div>
+      <div class="sh-desc">前置デクリメント</div>
+    </div>
+    <div class="shorthand-card" onclick="showShorthand('dec-post',this)">
+      <div class="sh-op">x--</div>
+      <div class="sh-long">x = x - 1（後置）</div>
+      <div class="sh-desc">後置デクリメント</div>
+    </div>
+  </div>
+
+  <!-- 詳細パネル -->
+  <div id="shorthand-detail" style="display:none; margin-top:12px;
+    background:#1a202c; border-radius:8px; padding:16px 20px;
+    font-family:'Consolas','Monaco',monospace; font-size:0.85em; line-height:1.9;">
+  </div>
+
+  <h3>インクリメント・デクリメントの前置と後置の違い（重要！）</h3>
+  <div class="interactive-demo">
+    <div class="demo-label">前置（++x）と後置（x++）の違いを確認しよう</div>
+    <div class="demo-input-row">
+      <select class="demo-input" id="inc-type" style="flex:0 0 auto; width:200px;">
+        <option value="pre">前置インクリメント（++x）</option>
+        <option value="post">後置インクリメント（x++）</option>
+        <option value="pre-dec">前置デクリメント（--x）</option>
+        <option value="post-dec">後置デクリメント（x--）</option>
+      </select>
+      <input class="demo-input" id="inc-val" type="number" value="5" style="max-width:80px;">
+      <button class="demo-btn" onclick="runIncDec()">▶ 実行</button>
+    </div>
+    <div class="demo-output" id="inc-output">← 種類と初期値を選んで実行してみましょう</div>
+  </div>
+
+  <div class="pre-wrap">
+    <button class="copy-btn" onclick="copyPre(this)">copy</button>
+<pre>
+<span class="comment">// 短縮記法の基本</span>
+<span class="kw">let</span> x = <span class="num">10</span>;
+x <span class="op">+=</span> <span class="num">5</span>;   console.<span class="fn">log</span>(x); <span class="out">// → 15</span>
+x <span class="op">-=</span> <span class="num">3</span>;   console.<span class="fn">log</span>(x); <span class="out">// → 12</span>
+x <span class="op">*=</span> <span class="num">2</span>;   console.<span class="fn">log</span>(x); <span class="out">// → 24</span>
+x <span class="op">/=</span> <span class="num">4</span>;   console.<span class="fn">log</span>(x); <span class="out">// → 6</span>
+x <span class="op">%=</span> <span class="num">4</span>;   console.<span class="fn">log</span>(x); <span class="out">// → 2</span>
+
+<span class="comment">// 前置インクリメント：先に +1 してから値を返す</span>
+<span class="kw">let</span> a = <span class="num">5</span>;
+console.<span class="fn">log</span>(<span class="op">++</span>a); <span class="out">// → 6（+1した値を返す）</span>
+console.<span class="fn">log</span>(a);   <span class="out">// → 6</span>
+
+<span class="comment">// 後置インクリメント：現在の値を返してから +1 する</span>
+<span class="kw">let</span> b = <span class="num">5</span>;
+console.<span class="fn">log</span>(b<span class="op">++</span>); <span class="out">// → 5（元の値を返す）</span>
+console.<span class="fn">log</span>(b);   <span class="out">// → 6（その後 +1 される）</span>
+</pre>
+  </div>
+</div>
+
+
+<!-- ============================================================ -->
+<!-- PART 4: 文字列と連結 -->
+<!-- ============================================================ -->
+<h2 id="string">④ 文字列と連結</h2>
+
+<div class="note">
+  <strong>重要ポイント：文字列は <code>+</code> で連結できます。また ES6 以降は<code>`テンプレートリテラル`</code>を使うとより簡潔に書けます。</strong>
+</div>
+
+<div class="demo-box">
+  <h3>文字列連結のビジュアル</h3>
+  <div class="concat-visual" id="concat-visual">
+    <div class="concat-box" style="background:#2b4c7e; color:#90cdf4; border:2px solid #4299e1;">
+      "Hello"
+    </div>
+    <div class="concat-op">+</div>
+    <div class="concat-box" style="background:#276749; color:#9ae6b4; border:2px solid #48bb78;">
+      " World"
+    </div>
+    <div class="concat-op">=</div>
+    <div class="concat-box concat-result">"Hello World"</div>
+  </div>
+
+  <h3>インタラクティブ：文字列を連結してみよう</h3>
+  <div class="interactive-demo">
+    <div class="demo-label">2つの文字列を入力して連結を試してみましょう</div>
+    <div class="demo-input-row">
+      <input class="demo-input" id="str-a" type="text" value="Hello" placeholder="文字列1">
+      <span style="font-size:1.4em; color:#f6ad55; font-weight:bold;">+</span>
+      <input class="demo-input" id="str-b" type="text" value=" World" placeholder="文字列2">
+      <button class="demo-btn" onclick="runConcat()">▶ 連結</button>
+    </div>
+    <div class="demo-output" id="concat-output">← 文字列を入力して連結してみましょう</div>
+  </div>
+
+  <div class="pre-wrap">
+    <button class="copy-btn" onclick="copyPre(this)">copy</button>
+<pre>
+<span class="comment">// 文字列の連結（+ 演算子）</span>
+<span class="kw">let</span> firstName = <span class="str">"太郎"</span>;
+<span class="kw">let</span> lastName  = <span class="str">"山田"</span>;
+<span class="kw">let</span> fullName  = lastName <span class="op">+</span> <span class="str">" "</span> <span class="op">+</span> firstName;
+console.<span class="fn">log</span>(fullName); <span class="out">// → "山田 太郎"</span>
+
+<span class="comment">// 数値を文字列に変換して連結</span>
+<span class="kw">let</span> age = <span class="num">25</span>;
+console.<span class="fn">log</span>(<span class="str">"年齢："</span> <span class="op">+</span> age <span class="op">+</span> <span class="str">"歳"</span>); <span class="out">// → "年齢：25歳"</span>
+
+<span class="comment">// テンプレートリテラル（ES6〜）バッククォートを使う</span>
+<span class="kw">let</span> name = <span class="str">"Alice"</span>;
+<span class="kw">let</span> score = <span class="num">95</span>;
+console.<span class="fn">log</span>(<span class="str">`${name}さんのスコアは${score}点です。`</span>);
+<span class="out">// → "Aliceさんのスコアは95点です。"</span>
+
+<span class="comment">// テンプレートリテラルでは式も埋め込める</span>
+console.<span class="fn">log</span>(<span class="str">`10 + 20 = ${10 + 20}`</span>); <span class="out">// → "10 + 20 = 30"</span>
+
+<span class="comment">// 複数行の文字列（テンプレートリテラルなら改行もそのまま）</span>
+<span class="kw">let</span> message = <span class="str">`こんにちは、
+${name}さん！
+今日もよろしくお願いします。`</span>;
+console.<span class="fn">log</span>(message);
+</pre>
+  </div>
+
+  <h3>+ 演算子と文字列の型変換（重要！）</h3>
+  <div class="interactive-demo">
+    <div class="demo-label">数値と文字列を + で計算するとどうなる？</div>
+    <div class="demo-input-row">
+      <input class="demo-input" id="mixed-a" type="text" value="10"  placeholder="値1" style="max-width:100px;">
+      <select class="demo-input" id="mixed-type-a" style="flex:0 0 auto; width:120px;">
+        <option value="num">数値</option>
+        <option value="str">文字列</option>
+      </select>
+      <span style="font-size:1.4em; color:#f6ad55; font-weight:bold;">+</span>
+      <input class="demo-input" id="mixed-b" type="text" value="5"   placeholder="値2" style="max-width:100px;">
+      <select class="demo-input" id="mixed-type-b" style="flex:0 0 auto; width:120px;">
+        <option value="num">数値</option>
+        <option value="str">文字列</option>
+      </select>
+      <button class="demo-btn" onclick="runMixed()">▶ 実行</button>
+    </div>
+    <div class="demo-output" id="mixed-output">← 型の組み合わせを変えて試してみましょう</div>
+  </div>
+
+  <h3>テンプレートリテラル vs 文字列連結</h3>
+  <table class="ref-table">
+    <thead><tr><th>方法</th><th>コード例</th><th>特徴</th></tr></thead>
+    <tbody>
+      <tr>
+        <td>+ 演算子</td>
+        <td><code>"名前：" + name + "、年齢：" + age</code></td>
+        <td>古い書き方。変数が多いと読みにくい</td>
+      </tr>
+      <tr>
+        <td>テンプレートリテラル</td>
+        <td><code>`名前：${name}、年齢：${age}`</code></td>
+        <td>ES6〜。読みやすく式も埋め込める。<strong>推奨</strong></td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+
+<!-- ============================================================ -->
+<!-- まとめ -->
+<!-- ============================================================ -->
+<h2>📌 まとめ</h2>
+<div class="demo-box">
+  <table class="ref-table">
+    <thead><tr><th>分類</th><th>演算子</th><th>説明</th><th>例</th></tr></thead>
+    <tbody>
+      <tr><td rowspan="6">算術演算子</td><td><code>+</code></td><td>加算</td><td><code>5 + 3 → 8</code></td></tr>
+      <tr><td><code>-</code></td><td>減算</td><td><code>5 - 3 → 2</code></td></tr>
+      <tr><td><code>*</code></td><td>乗算</td><td><code>5 * 3 → 15</code></td></tr>
+      <tr><td><code>/</code></td><td>除算</td><td><code>5 / 2 → 2.5</code></td></tr>
+      <tr><td><code>%</code></td><td>剰余</td><td><code>5 % 3 → 2</code></td></tr>
+      <tr><td><code>**</code></td><td>べき乗</td><td><code>2 ** 8 → 256</code></td></tr>
+      <tr><td rowspan="6">短縮記法</td><td><code>+=</code></td><td>加算代入</td><td><code>x += 3</code></td></tr>
+      <tr><td><code>-=</code></td><td>減算代入</td><td><code>x -= 3</code></td></tr>
+      <tr><td><code>*=</code></td><td>乗算代入</td><td><code>x *= 2</code></td></tr>
+      <tr><td><code>/=</code></td><td>除算代入</td><td><code>x /= 2</code></td></tr>
+      <tr><td><code>++</code></td><td>インクリメント</td><td><code>x++ / ++x</code></td></tr>
+      <tr><td><code>--</code></td><td>デクリメント</td><td><code>x-- / --x</code></td></tr>
+      <tr><td rowspan="2">文字列</td><td><code>+</code></td><td>文字列連結</td><td><code>"Hello" + " World"</code></td></tr>
+      <tr><td><code>`${}`</code></td><td>テンプレートリテラル</td><td><code>`Hello ${name}`</code></td></tr>
+    </tbody>
+  </table>
+</div>
+
+
+<!-- ============================================================ -->
+<!-- 演習問題 -->
+<!-- ============================================================ -->
+<div class="quiz-section">
+  <h2>🖊️ 演習問題</h2>
+
+  <!-- Q1 -->
+  <div class="quiz-block">
+    <h3>Q1. 穴埋め問題</h3>
+    <p>以下のコードの実行結果を答えてください。</p>
+    <label>① <code>console.log(10 % 3);</code> の結果：</label>
+    <input type="text" id="q1a" placeholder="数値">
+    <label>② <code>console.log(2 ** 10);</code> の結果：</label>
+    <input type="text" id="q1b" placeholder="数値">
+    <label>③ <code>let x = 5; x += 3; console.log(x);</code> の結果：</label>
+    <input type="text" id="q1c" placeholder="数値">
+    <label>④ <code>console.log("3" + 4);</code> の結果（型も意識して）：</label>
+    <input type="text" id="q1d" placeholder="値">
+    <br>
+    <button class="btn btn-teal" onclick="checkQ1()">答え合わせ</button>
+    <div class="result-msg" id="q1-result"></div>
+    <script>
+      function checkQ1() {
+        const a = document.getElementById('q1a').value.trim();
+        const b = document.getElementById('q1b').value.trim();
+        const c = document.getElementById('q1c').value.trim();
+        const d = document.getElementById('q1d').value.trim().replace(/['"]/g,'');
+        const r = document.getElementById('q1-result');
+        const ca = a === '1';
+        const cb = b === '1024';
+        const cc = c === '8';
+        const cd = d === '34';
+        const count = [ca,cb,cc,cd].filter(Boolean).length;
+        if (count === 4) {
+          r.className = 'result-msg correct';
+          r.textContent = '✅ 全問正解！完璧です！';
+        } else {
+          r.className = 'result-msg wrong';
+          r.innerHTML = `❌ ${count}/4 問正解。<br>` +
+            `① ${ca?'✅':'❌ 1（10÷3の余り）'}　` +
+            `② ${cb?'✅':'❌ 1024（2の10乗）'}　` +
+            `③ ${cc?'✅':'❌ 8（5+3）'}　` +
+            `④ ${cd?'✅':'❌ "34"（文字列 "3" + 数値 4 = 文字列連結）'}`;
+        }
+      }
+    </script>
+  </div>
+
+  <!-- Q2 -->
+  <div class="quiz-block">
+    <h3>Q2. 選択問題</h3>
+    <p>以下のコードを実行した結果として正しいものはどれですか？</p>
+    <div class="pre-wrap" style="margin-bottom:12px;">
+<pre style="margin:0;">
+<span class="kw">let</span> x = <span class="num">5</span>;
+console.<span class="fn">log</span>(x<span class="op">++</span>);
+console.<span class="fn">log</span>(x);
+</pre>
+    </div>
+    <select id="q2">
+      <option value="">-- 選択してください --</option>
+      <option value="a">6 と 6 が出力される</option>
+      <option value="b">5 と 5 が出力される</option>
+      <option value="c">5 と 6 が出力される</option>
+      <option value="d">6 と 5 が出力される</option>
+    </select>
+    <br>
+    <button class="btn btn-teal" onclick="checkQ2()">答え合わせ</button>
+    <div class="result-msg" id="q2-result"></div>
+    <script>
+      function checkQ2() {
+        const v = document.getElementById('q2').value;
+        const r = document.getElementById('q2-result');
+        if (v === 'c') {
+          r.className = 'result-msg correct';
+          r.innerHTML = '✅ 正解！<br><br>' +
+            '<strong>後置インクリメント（x++）の動作：</strong><br>' +
+            '1. <code>console.log(x++)</code>：現在の値 <strong>5</strong> を返してから x を 6 にする<br>' +
+            '2. <code>console.log(x)</code>：すでに 6 になっているので <strong>6</strong> を出力<br><br>' +
+            '前置（++x）なら「6 と 6」になります。この違いは試験頻出です！';
+        } else if (v === '') {
+          r.className = 'result-msg info';
+          r.textContent = '⚠️ 選択肢を選んでください。';
+        } else {
+          r.className = 'result-msg wrong';
+          r.innerHTML = '❌ 不正解。<br>' +
+            '後置インクリメント <code>x++</code> は「<strong>現在の値を返してから +1</strong>」します。<br>' +
+            'なので最初の log は 5、次の log は 6 になります。';
+        }
+      }
+    </script>
+  </div>
+
+  <!-- Q3 -->
+  <div class="quiz-block">
+    <h3>Q3. 正誤チェックボックス問題</h3>
+    <p><strong>正しい記述</strong>をすべて選んでください。</p>
+    <label class="checkbox-label"><input type="checkbox" id="q3a">
+      ① <code>10 % 4</code> の結果は <code>2</code> である</label>
+    <label class="checkbox-label"><input type="checkbox" id="q3b">
+      ② <code>"5" + 3</code> の結果は数値の <code>8</code> になる</label>
+    <label class="checkbox-label"><input type="checkbox" id="q3c">
+      ③ テンプレートリテラルはバッククォート（<code>`</code>）で囲む</label>
+    <label class="checkbox-label"><input type="checkbox" id="q3d">
+      ④ <code>x *= 2</code> は <code>x = x * 2</code> と同じ意味である</label>
+    <label class="checkbox-label"><input type="checkbox" id="q3e">
+      ⑤ <code>++x</code>（前置）は現在の値を返してから +1 する</label>
+    <label class="checkbox-label"><input type="checkbox" id="q3f">
+      ⑥ <code>2 ** 8</code> の結果は <code>256</code> である</label>
+    <br>
+    <button class="btn btn-teal" onclick="checkQ3()">答え合わせ</button>
+    <div class="result-msg" id="q3-result"></div>
+    <script>
+      function checkQ3() {
+        const r = document.getElementById('q3-result');
+        const checks = {
+          a: document.getElementById('q3a').checked,
+          b: document.getElementById('q3b').checked,
+          c: document.getElementById('q3c').checked,
+          d: document.getElementById('q3d').checked,
+          e: document.getElementById('q3e').checked,
+          f: document.getElementById('q3f').checked,
+        };
+        // 正解：①③④⑥（a,c,d,f）
+        // ② "5"+3 は "53"（文字列）
+        // ⑤ 前置は +1してから値を返す（後置が「返してから+1」）
+        const correct = { a:true, b:false, c:true, d:true, e:false, f:true };
+        const allOk = Object.keys(correct).every(k => checks[k] === correct[k]);
+        if (allOk) {
+          r.className = 'result-msg correct';
+          r.innerHTML = '✅ 全問正解！完璧です！';
+        } else {
+          r.className = 'result-msg wrong';
+          r.innerHTML =
+            '❌ 不正解の項目があります。<br><br>' +
+            '<strong>正しい記述：</strong>①③④⑥<br><br>' +
+            '<strong>誤った記述：</strong><br>' +
+            '・② <code>"5" + 3</code> は文字列連結になり <strong>"53"（文字列）</strong> になります。数値の 8 にはなりません。<br>' +
+            '・⑤ <strong>前置（++x）</strong>は「+1してから値を返す」です。「返してから+1」は後置（x++）の動作です。';
+        }
+      }
+    </script>
+  </div>
+
+  <!-- Q4 コンソール実践 -->
+  <div class="quiz-block">
+    <h3>Q4. コンソール実践問題</h3>
+    <p>テンプレートリテラルを使って、以下の出力を生成するコードを下のコンソールで試してください。</p>
+    <div style="background:#1a202c; border-radius:6px; padding:10px 14px;
+      font-family:'Consolas','Monaco',monospace; font-size:0.88em; color:#68d391; margin:10px 0;">
+      私の名前はAliceで、25歳です。来年は26歳になります。
+    </div>
+    <p style="font-size:0.88em; color:#718096;">
+      ヒント：<code>let name = "Alice"; let age = 25;</code> を使い、
+      <code>`...${name}...${age}...${age+1}...`</code> の形式で書いてみましょう。
+    </p>
+    <div class="js-console" id="console-q4">
+      <div class="js-console-bar">
+        <div class="dot dot-red"></div>
+        <div class="dot dot-yellow"></div>
+        <div class="dot dot-green"></div>
+        <span>Practice Console</span>
+      </div>
+      <div class="js-console-output" id="console-q4-output">
+        <div class="log-info">// テンプレートリテラルを試してみましょう</div>
+        <div class="log-info">// let name = "Alice"; let age = 25;</div>
+      </div>
+      <div class="js-console-input-row">
+        <span>&gt;</span>
+        <input class="js-console-input" id="console-q4-input"
+               placeholder="let name = 'Alice'; let age = 25; console.log(`...`);" type="text">
+        <button class="js-console-clear" onclick="clearConsole('q4')">クリア</button>
+        <button class="js-console-run"   onclick="runConsole('q4')">▶ 実行</button>
+      </div>
+    </div>
+    <label style="margin-top:12px; display:block;">コンソールで確認できたら、使った記法を選んでください：</label>
+    <select id="q4-sel">
+      <option value="">-- 選択してください --</option>
+      <option value="a">+ 演算子による文字列連結</option>
+      <option value="b">テンプレートリテラル（バッククォート）</option>
+      <option value="c">String() 関数による変換</option>
+    </select>
+    <br>
+    <button class="btn btn-teal" onclick="checkQ4()">答え合わせ</button>
+    <div class="result-msg" id="q4-result"></div>
+    <script>
+      function checkQ4() {
+        const v = document.getElementById('q4-sel').value;
+        const r = document.getElementById('q4-result');
+        if (v === 'b') {
+          r.className = 'result-msg correct';
+          r.innerHTML = '✅ 正解！<br><br>' +
+            '模範解答：<br>' +
+            '<code>let name = "Alice"; let age = 25;</code><br>' +
+            '<code>console.log(`私の名前は${name}で、${age}歳です。来年は${age+1}歳になります。`);</code><br><br>' +
+            'テンプレートリテラルでは <code>${式}</code> の中に計算式も書けるのがポイントです！';
+        } else if (v === '') {
+          r.className = 'result-msg info';
+          r.textContent = '⚠️ 選択肢を選んでください。';
+        } else {
+          r.className = 'result-msg wrong';
+          r.innerHTML = '❌ 不正解。<br>' +
+            'この問題ではテンプレートリテラル（バッククォート）を使うのが正解です。<br>' +
+            '<code>`私の名前は${name}で、${age}歳です。来年は${age+1}歳になります。`</code>';
+        }
+      }
+    </script>
+  </div>
+
+</div><!-- /quiz-section -->
+
+
+<!-- 完了ボタン -->
+<div class="complete-section">
+  <p>🎉 「1-2 さまざまな演算」の学習が完了したら記録しましょう！</p>
+  <button class="btn btn-done" onclick="markComplete()">✅ このセクションを完了にする</button>
+  <div id="complete-msg" style="margin-top:10px; font-size:0.88em; color:#276749; display:none;">
+    進捗を保存しました！トップページの進捗バーに反映されます。
+  </div>
+</div>
+
+<!-- ページナビ -->
+<div class="page-nav">
+  <a class="prev" href="01_variables.html">← 1-1 変数の宣言と値の代入</a>
+  <a class="home" href="../index.html">🏠 目次へ</a>
+  <a class="next" href="03_types.html">次へ：1-3 型とオブジェクト →</a>
+</div>
+
+<!-- フッター -->
+<footer>
+  <p>
+    HTML5プロフェッショナル Level 2 学習サイト ／
+    <a href="../index.html">🏠 目次</a> ／
+    <a href="../exam/index.html">📝 模擬試験</a> ／
+    <a href="https://github.com/MeshinoKiwamiOkome/html5lv2" target="_blank">GitHub</a>
+  </p>
+  <p style="margin-top:4px;">© MeshinoKiwamiOkome</p>
+</footer>
+
+
+<!-- ============================================================ -->
+<!-- JavaScript -->
+<!-- ============================================================ -->
+<script>
+  /* ===== コピーボタン ===== */
+  function copyPre(btn) {
+    const pre = btn.nextElementSibling;
+    navigator.clipboard.writeText(pre.innerText || pre.textContent).then(() => {
+      btn.textContent = 'copied!';
+      setTimeout(() => btn.textContent = 'copy', 1800);
+    });
+  }
+
+  /* ===== 加算デモ ===== */
+  function runAdd() {
+    const a   = parseFloat(document.getElementById('add-a').value) || 0;
+    const b   = parseFloat(document.getElementById('add-b').value) || 0;
+    const out = document.getElementById('add-output');
+    const sum = a + b;
+    out.style.color = '#68d391';
+    out.textContent =
+      `> let a = ${a};\n` +
+      `> let b = ${b};\n` +
+      `> let sum = a + b;\n` +
+      `> console.log(sum);\n` +
+      `  ${sum}` +
+      (String(sum).includes('.') && String(sum).length > 6
+        ? '\n  ⚠ 浮動小数点の誤差が発生しています' : '');
+  }
+
+  /* ===== 電卓デモ ===== */
+  function calcOp(op, btn) {
+    document.querySelectorAll('.calc-op-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    const a = parseFloat(document.getElementById('calc-a').value) || 0;
+    const b = parseFloat(document.getElementById('calc-b').value) || 0;
+    let result, desc;
+    switch(op) {
+      case '+':  result = a + b;   desc = '加算';   break;
+      case '-':  result = a - b;   desc = '減算';   break;
+      case '*':  result = a * b;   desc = '乗算';   break;
+      case '/':  result = b !== 0 ? a / b : 'Infinity'; desc = '除算'; break;
+      case '%':  result = b !== 0 ? a % b : 'NaN'; desc = '剰余';   break;
+      case '**': result = a ** b;  desc = 'べき乗'; break;
+    }
+    document.getElementById('calc-expr').textContent   = `${a} ${op} ${b}  （${desc}）`;
+    document.getElementById('calc-result').textContent = `= ${result}`;
+  }
+
+  /* ===== 剰余デモ ===== */
+  function runMod() {
+    const n   = parseInt(document.getElementById('mod-num').value) || 0;
+    const out = document.getElementById('mod-output');
+    const rem = n % 2;
+    out.style.color = rem === 0 ? '#90cdf4' : '#f6ad55';
+    out.textContent =
+      `> let n = ${n};\n` +
+      `> console.log(n % 2);\n` +
+      `  ${rem}\n` +
+      `  → ${n} は${rem === 0 ? '偶数（余り 0）' : '奇数（余り 1）'}です\n\n` +
+      `// 活用例：3の倍数かどうか\n` +
+      `> console.log(${n} % 3);\n` +
+      `  ${n % 3}  → ${n % 3 === 0 ? `${n} は3の倍数です` : `${n} は3の倍数ではありません`}`;
+  }
+
+  /* ===== 短縮記法詳細 ===== */
+  const shData = {
+    'add-assign': {
+      color: '#68d391',
+      text: `// += 加算代入\nlet x = 10;\nx += 5;  // x = x + 5 と同じ\nconsole.log(x); // → 15\n\n// ループカウンタによく使う\nlet total = 0;\ntotal += 100;  // → 100\ntotal += 200;  // → 300\ntotal += 50;   // → 350`
+    },
+    'sub-assign': {
+      color: '#fc8181',
+      text: `// -= 減算代入\nlet x = 10;\nx -= 3;  // x = x - 3 と同じ\nconsole.log(x); // → 7\n\n// 残り枚数のカウントダウン\nlet tickets = 100;\ntickets -= 5;  // 5枚使用 → 95\ntickets -= 10; // 10枚使用 → 85`
+    },
+    'mul-assign': {
+      color: '#f6ad55',
+      text: `// *= 乗算代入\nlet x = 3;\nx *= 4;  // x = x * 4 と同じ\nconsole.log(x); // → 12\n\n// 利率の計算\nlet price = 1000;\nprice *= 1.1;  // 10%増し → 1100\nprice *= 1.1;  // さらに10%増し → 1210`
+    },
+    'div-assign': {
+      color: '#90cdf4',
+      text: `// /= 除算代入\nlet x = 100;\nx /= 4;  // x = x / 4 と同じ\nconsole.log(x); // → 25\n\n// 半分にする\nlet value = 256;\nvalue /= 2;  // → 128\nvalue /= 2;  // → 64\nvalue /= 2;  // → 32`
+    },
+    'mod-assign': {
+      color: '#b794f4',
+      text: `// %= 剰余代入\nlet x = 17;\nx %= 5;  // x = x % 5 と同じ\nconsole.log(x); // → 2\n\n// 循環するインデックス\nlet index = 0;\nindex = (index + 1) % 3;  // → 1\nindex = (index + 1) % 3;  // → 2\nindex = (index + 1) % 3;  // → 0（循環）`
+    },
+    'pow-assign': {
+      color: '#fbd38d',
+      text: `// **= べき乗代入\nlet x = 2;\nx **= 8;  // x = x ** 8 と同じ\nconsole.log(x); // → 256\n\n// 2の累乗\nlet val = 1;\nval **= 2;  // 1² = 1\nval = 2;\nval **= 10; // 2¹⁰ = 1024`
+    },
+    'inc-pre': {
+      color: '#68d391',
+      text: `// 前置インクリメント（++x）\n// 先に +1 してから値を返す\nlet x = 5;\nconsole.log(++x); // → 6（+1した値を返す）\nconsole.log(x);   // → 6\n\n// 代入と組み合わせた場合\nlet a = 5;\nlet b = ++a;  // a を +1 してから b に代入\nconsole.log(a); // → 6\nconsole.log(b); // → 6`
+    },
+    'inc-post': {
+      color: '#f6ad55',
+      text: `// 後置インクリメント（x++）\n// 現在の値を返してから +1 する\nlet x = 5;\nconsole.log(x++); // → 5（元の値を返す）\nconsole.log(x);   // → 6（その後 +1）\n\n// 代入と組み合わせた場合\nlet a = 5;\nlet b = a++;  // 元の値を b に代入してから a を +1\nconsole.log(a); // → 6\nconsole.log(b); // → 5（元の値）`
+    },
+    'dec-pre': {
+      color: '#fc8181',
+      text: `// 前置デクリメント（--x）\n// 先に -1 してから値を返す\nlet x = 5;\nconsole.log(--x); // → 4（-1した値を返す）\nconsole.log(x);   // → 4\n\n// カウントダウン\nlet count = 3;\nconsole.log(--count); // → 2\nconsole.log(--count); // → 1\nconsole.log(--count); // → 0`
+    },
+    'dec-post': {
+      color: '#90cdf4',
+      text: `// 後置デクリメント（x--）\n// 現在の値を返してから -1 する\nlet x = 5;\nconsole.log(x--); // → 5（元の値を返す）\nconsole.log(x);   // → 4（その後 -1）\n\n// 残り回数の表示\nlet lives = 3;\nconsole.log("残り" + lives-- + "回"); // → "残り3回"\nconsole.log("残り" + lives-- + "回"); // → "残り2回"\nconsole.log("残り" + lives-- + "回"); // → "残り1回"`
+    },
+  };
+
+  function showShorthand(key, card) {
+    document.querySelectorAll('.shorthand-card').forEach(c => c.classList.remove('active'));
+    const detail = document.getElementById('shorthand-detail');
+    if (detail.dataset.current === key && detail.style.display !== 'none') {
+      detail.style.display = 'none'; detail.dataset.current = ''; return;
+    }
+    card.classList.add('active');
+    detail.dataset.current = key;
+    detail.style.display = 'block';
+    const d = shData[key];
+    detail.style.color = d.color;
+    detail.textContent = d.text;
+    detail.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }
+
+  /* ===== インクリメント/デクリメントデモ ===== */
+  function runIncDec() {
+    const type = document.getElementById('inc-type').value;
+    const val  = parseInt(document.getElementById('inc-val').value) || 0;
+    const out  = document.getElementById('inc-output');
+    let x = val;
+    let returned, after;
+
+    if (type === 'pre')     { returned = ++x; after = x; }
+    else if (type === 'post'){ returned = x++; after = x; }
+    else if (type === 'pre-dec')  { returned = --x; after = x; }
+    else                    { returned = x--; after = x; }
+
+    const opMap = { pre:'++x（前置インクリメント）', post:'x++（後置インクリメント）',
+                    'pre-dec':'--x（前置デクリメント）', 'post-dec':'x--（後置デクリメント）' };
+    const descMap = {
+      pre:      `先に +1 してから値を返す → ${returned}`,
+      post:     `元の値 ${returned} を返してから +1 する`,
+      'pre-dec':`先に -1 してから値を返す → ${returned}`,
+      'post-dec':`元の値 ${returned} を返してから -1 する`,
+    };
+
+    out.style.color = '#68d391';
+    out.textContent =
+      `> let x = ${val};\n` +
+      `> console.log(${type.includes('pre') && !type.includes('dec') ? '++x' :
+                       type === 'post' ? 'x++' :
+                       type === 'pre-dec' ? '--x' : 'x--'});\n` +
+      `  ${returned}  ← ${descMap[type]}\n` +
+      `> console.log(x);\n` +
+      `  ${after}  ← 最終的な x の値`;
+  }
+
+  /* ===== 文字列連結デモ ===== */
+  function runConcat() {
+    const a   = document.getElementById('str-a').value;
+    const b   = document.getElementById('str-b').value;
+    const out = document.getElementById('concat-output');
+    out.style.color = '#68d391';
+    out.textContent =
+      `> let a = "${a}";\n` +
+      `> let b = "${b}";\n\n` +
+      `// + 演算子\n` +
+      `> console.log(a + b);\n` +
+      `  "${a + b}"\n\n` +
+      `// テンプレートリテラル\n` +
+      `> console.log(\`\${a}\${b}\`);\n` +
+      `  "${a + b}"`;
+
+    // ビジュアルも更新
+    const boxes = document.querySelectorAll('#concat-visual .concat-box');
+    if (boxes[0]) boxes[0].textContent = `"${a}"`;
+    if (boxes[1]) boxes[1].textContent = `"${b}"`;
+    if (boxes[2]) boxes[2].textContent = `"${a + b}"`;
+  }
+
+  /* ===== 型混在デモ ===== */
+  function runMixed() {
+    const rawA  = document.getElementById('mixed-a').value;
+    const rawB  = document.getElementById('mixed-b').value;
+    const typeA = document.getElementById('mixed-type-a').value;
+    const typeB = document.getElementById('mixed-type-b').value;
+    const out   = document.getElementById('mixed-output');
+
+    const a = typeA === 'num' ? parseFloat(rawA) : rawA;
+    const b = typeB === 'num' ? parseFloat(rawB) : rawB;
+    const result = a + b;
+    const resultType = typeof result;
+
+    const codeA = typeA === 'num' ? rawA : `"${rawA}"`;
+    const codeB = typeB === 'num' ? rawB : `"${rawB}"`;
+
+    out.style.color = resultType === 'string' ? '#f6ad55' : '#68d391';
+    out.textContent =
+      `> console.log(${codeA} + ${codeB});\n` +
+      `  ${resultType === 'string' ? '"' + result + '"' : result}\n\n` +
+      `型：${typeA === 'num' ? 'number' : 'string'} + ${typeB === 'num' ? 'number' : 'string'} = ${resultType}\n` +
+      (resultType === 'string'
+        ? `⚠ 文字列が含まれると + は「文字列連結」になります！`
+        : `✅ 両方 number なので「数値の加算」になります。`);
+  }
+
+  /* ===== JSコンソール ===== */
+  function runConsole(id) {
+    const input  = document.getElementById(`console-${id}-input`);
+    const output = document.getElementById(`console-${id}-output`);
+    const code   = input.value.trim();
+    if (!code) return;
+
+    const promptLine = document.createElement('div');
+    promptLine.className = 'log-prompt';
+    promptLine.textContent = '> ' + code;
+    output.appendChild(promptLine);
+
+    const origLog   = console.log;
+    const origWarn  = console.warn;
+    const origError = console.error;
+    const origInfo  = console.info;
+
+    function addLine(cls, ...args) {
+      const line = document.createElement('div');
+      line.className = cls;
+      line.textContent = args.map(a => {
+        if (typeof a === 'object' && a !== null) {
+          try { return JSON.stringify(a, null, 2); } catch(e) { return String(a); }
+        }
+        return String(a);
+      }).join(' ');
+      output.appendChild(line);
+    }
+
+    console.log   = (...a) => { addLine('log-line',  ...a); origLog(...a);   };
+    console.warn  = (...a) => { addLine('log-warn',  ...a); origWarn(...a);  };
+    console.error = (...a) => { addLine('log-error', ...a); origError(...a); };
+    console.info  = (...a) => { addLine('log-info',  ...a); origInfo(...a);  };
+
+    try {
+      const result = eval(code);
+      if (result !== undefined) {
+        addLine('log-result', '← ' + (typeof result === 'object' ?
+          JSON.stringify(result) : String(result)));
+      }
+    } catch(e) {
+      addLine('log-error', e.toString());
+    }
+
+    console.log   = origLog;
+    console.warn  = origWarn;
+    console.error = origError;
+    console.info  = origInfo;
+
+    input.value = '';
+    output.scrollTop = output.scrollHeight;
+  }
+
+  function clearConsole(id) {
+    document.getElementById(`console-${id}-output`).innerHTML =
+      '<div class="log-info">// クリアしました</div>';
+  }
+
+  document.querySelectorAll('.js-console-input').forEach(el => {
+    el.addEventListener('keydown', e => {
+      if (e.key === 'Enter') {
+        const id = el.id.replace('console-','').replace('-input','');
+        runConsole(id);
+      }
+    });
+  });
+
+  /* ===== 完了ボタン ===== */
+  function markComplete() {
+    const current = parseInt(localStorage.getItem('html5lv2_ch1') || '0', 10);
+    const newVal  = Math.min(100, current + 9);
+    localStorage.setItem('html5lv2_ch1', String(newVal));
+    document.getElementById('complete-msg').style.display = 'block';
+  }
+  if (parseInt(localStorage.getItem('html5lv2_ch1') || '0') >= 18) {
+    document.getElementById('complete-msg').style.display = 'block';
+  }
+</script>
+
+</body>
+</html>
