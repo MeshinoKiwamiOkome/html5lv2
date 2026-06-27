@@ -1,0 +1,976 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>2-5 配列 | Chapter 2 | HTML5 Level 2 試験対策</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Segoe UI', 'Helvetica Neue', sans-serif;
+      max-width: 960px; margin: 40px auto; padding: 0 24px;
+      background: #f0f4f8; color: #2d3748; line-height: 1.8;
+    }
+    .breadcrumb { font-size: 0.85rem; color: #718096; margin-bottom: 24px; }
+    .breadcrumb a { color: #553c9a; text-decoration: none; }
+    .breadcrumb a:hover { text-decoration: underline; }
+    .breadcrumb span { margin: 0 6px; }
+
+    .chapter-header {
+      background: linear-gradient(135deg, #553c9a, #9f7aea);
+      border-radius: 16px; padding: 36px 36px 32px;
+      color: #fff; margin-bottom: 32px;
+      position: relative; overflow: hidden;
+    }
+    .chapter-header::before {
+      content: ''; position: absolute; top: -50px; right: -50px;
+      width: 200px; height: 200px;
+      background: rgba(255,255,255,0.07); border-radius: 50%;
+    }
+    .chapter-header h1 { font-size: 1.75rem; font-weight: 700; margin-bottom: 8px; position: relative; z-index: 1; }
+    .chapter-header p  { font-size: 0.95rem; opacity: 0.9; margin-bottom: 18px; position: relative; z-index: 1; }
+    .badge-row { display: flex; flex-wrap: wrap; gap: 8px; position: relative; z-index: 1; }
+    .badge {
+      background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.35);
+      border-radius: 20px; padding: 3px 13px; font-size: 0.78rem; font-weight: 600;
+    }
+
+    .section-nav {
+      background: #fff; border-radius: 12px; padding: 20px 24px;
+      margin-bottom: 32px; box-shadow: 0 2px 12px rgba(85,60,154,0.07);
+    }
+    .section-nav h3 { font-size: 0.85rem; color: #9f7aea; font-weight: 700; margin-bottom: 12px; letter-spacing: 0.06em; }
+    .section-nav ul { list-style: none; display: flex; flex-direction: column; gap: 4px; }
+    .section-nav ul li a {
+      font-size: 0.88rem; color: #553c9a; text-decoration: none;
+      padding: 4px 10px; border-radius: 6px; display: block; transition: background 0.15s;
+    }
+    .section-nav ul li a:hover { background: #f3e8ff; }
+    .section-nav ul li.current a { font-weight: 700; color: #44337a; background: #ede9fe; }
+
+    .content-card {
+      background: #fff; border-radius: 14px; padding: 32px 36px;
+      margin-bottom: 28px; box-shadow: 0 2px 12px rgba(85,60,154,0.07);
+    }
+    .content-card h2 {
+      font-size: 1.25rem; font-weight: 700; color: #553c9a;
+      margin-bottom: 18px; padding-bottom: 10px;
+      border-bottom: 2px solid #e9d8fd;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .content-card h3 { font-size: 1rem; font-weight: 700; color: #44337a; margin: 22px 0 10px; }
+    .content-card p  { font-size: 0.95rem; color: #4a5568; margin-bottom: 14px; }
+    .content-card ul, .content-card ol { padding-left: 1.4em; margin-bottom: 14px; font-size: 0.93rem; color: #4a5568; }
+    .content-card li { margin-bottom: 6px; }
+
+    .tbl-wrap { overflow-x: auto; margin: 16px 0; }
+    table { width: 100%; border-collapse: collapse; font-size: 0.88rem; }
+    th { background: linear-gradient(135deg, #553c9a, #9f7aea); color: #fff; padding: 10px 14px; text-align: left; font-weight: 600; }
+    td { padding: 9px 14px; border-bottom: 1px solid #e2e8f0; color: #4a5568; }
+    tr:hover td { background: #faf5ff; }
+    tr:last-child td { border-bottom: none; }
+
+    .code-block {
+      background: #1a202c; border-radius: 10px; padding: 20px 22px;
+      margin: 16px 0; position: relative; overflow-x: auto;
+    }
+    .code-block pre {
+      font-family: 'Consolas', 'Monaco', monospace;
+      font-size: 0.88rem; line-height: 1.7; color: #e2e8f0; white-space: pre;
+    }
+    .copy-btn {
+      position: absolute; top: 10px; right: 12px;
+      background: #4a5568; color: #e2e8f0; border: none; border-radius: 6px;
+      padding: 4px 12px; font-size: 0.75rem; cursor: pointer; transition: background 0.15s;
+    }
+    .copy-btn:hover { background: #9f7aea; }
+    .copy-btn.copied { background: #48bb78; color: #fff; }
+
+    .comment { color: #68d391; }
+    .kw      { color: #b794f4; }
+    .fn      { color: #f6ad55; }
+    .str     { color: #fbd38d; }
+    .num     { color: #90cdf4; }
+    .op      { color: #fc8181; }
+    .out     { color: #a0aec0; }
+
+    .info-box { border-radius: 10px; padding: 16px 20px; margin: 16px 0; font-size: 0.9rem; }
+    .info-box.tip   { background: #f0fff4; border-left: 4px solid #48bb78; color: #276749; }
+    .info-box.warn  { background: #fffbeb; border-left: 4px solid #f6ad55; color: #744210; }
+    .info-box.point { background: #faf5ff; border-left: 4px solid #9f7aea; color: #44337a; }
+
+    /* ── デモカード ── */
+    .demo-card {
+      background: #faf5ff; border: 2px solid #d6bcfa;
+      border-radius: 14px; padding: 28px 30px; margin-bottom: 28px;
+    }
+    .demo-card h3 {
+      font-size: 1rem; font-weight: 700; color: #553c9a;
+      margin-bottom: 6px; display: flex; align-items: center; gap: 8px;
+    }
+    .demo-desc { font-size: 0.88rem; color: #553c9a; margin-bottom: 18px; }
+
+    /* 配列メソッドプレイグラウンド */
+    .method-tabs {
+      display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 16px;
+    }
+    .method-tab {
+      padding: 5px 14px; border-radius: 20px;
+      border: 2px solid #c4b5fd; background: #fff;
+      color: #553c9a; font-size: 0.82rem; font-weight: 700;
+      cursor: pointer; transition: all 0.15s;
+    }
+    .method-tab.active { background: #553c9a; color: #fff; border-color: #553c9a; }
+    .method-tab:hover:not(.active) { background: #ede9fe; }
+
+    .pg-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    @media(max-width:600px){ .pg-layout { grid-template-columns: 1fr; } }
+
+    .pg-input-area {
+      background: #1a202c; border-radius: 10px; padding: 16px 18px;
+    }
+    .pg-input-area label {
+      display: block; font-size: 0.78rem; font-weight: 700;
+      color: #9f7aea; margin-bottom: 6px; font-family: 'Segoe UI', sans-serif;
+    }
+    .pg-textarea {
+      width: 100%; background: #2d3748; border: 1px solid #4a5568;
+      border-radius: 6px; color: #fbd38d; font-family: 'Consolas', monospace;
+      font-size: 0.85rem; padding: 8px 10px; resize: vertical; min-height: 70px;
+    }
+    .pg-textarea:focus { outline: none; border-color: #9f7aea; }
+
+    .run-btn {
+      margin-top: 10px; width: 100%; padding: 10px;
+      background: linear-gradient(135deg, #553c9a, #9f7aea);
+      color: #fff; border: none; border-radius: 8px;
+      font-size: 0.88rem; font-weight: 700; cursor: pointer; transition: opacity 0.15s;
+    }
+    .run-btn:hover { opacity: 0.88; }
+
+    .pg-output-area {
+      background: #1a202c; border-radius: 10px; padding: 16px 18px;
+    }
+    .pg-output-area label {
+      display: block; font-size: 0.78rem; font-weight: 700;
+      color: #68d391; margin-bottom: 6px; font-family: 'Segoe UI', sans-serif;
+    }
+    .pg-output {
+      font-family: 'Consolas', monospace; font-size: 0.85rem;
+      color: #e2e8f0; line-height: 1.8; min-height: 100px;
+    }
+    .method-desc {
+      background: #fff; border-radius: 8px; padding: 12px 14px;
+      font-size: 0.85rem; color: #4a5568; margin-top: 12px;
+      border-left: 3px solid #9f7aea;
+    }
+
+    /* map/filter/reduce ビジュアライザ */
+    .viz-tabs {
+      display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap;
+    }
+    .viz-tab {
+      padding: 7px 18px; border-radius: 8px;
+      border: 2px solid #c4b5fd; background: #fff;
+      color: #553c9a; font-weight: 700; font-size: 0.85rem;
+      cursor: pointer; transition: all 0.15s;
+    }
+    .viz-tab.active { background: #553c9a; color: #fff; border-color: #553c9a; }
+    .viz-tab:hover:not(.active) { background: #ede9fe; }
+
+    .viz-area { overflow-x: auto; }
+    .viz-pipeline {
+      display: flex; flex-direction: column; gap: 12px; min-width: 500px;
+    }
+    .viz-row {
+      display: flex; align-items: center; gap: 8px;
+    }
+    .viz-label {
+      width: 90px; font-size: 0.78rem; font-weight: 700;
+      color: #9f7aea; flex-shrink: 0; text-align: right;
+    }
+    .viz-arrow { color: #c4b5fd; font-size: 1.1rem; flex-shrink: 0; }
+    .viz-cells { display: flex; gap: 6px; flex-wrap: wrap; }
+    .viz-cell {
+      min-width: 44px; height: 44px; border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      font-family: 'Consolas', monospace; font-size: 0.85rem;
+      font-weight: 700; transition: all 0.3s;
+    }
+    .viz-cell.input   { background: #2d3748; color: #e2e8f0; border: 2px solid #4a5568; }
+    .viz-cell.kept    { background: #553c9a; color: #fff; border: 2px solid #44337a; }
+    .viz-cell.removed { background: #2d3748; color: #718096; border: 2px dashed #4a5568; text-decoration: line-through; }
+    .viz-cell.mapped  { background: #48bb78; color: #fff; border: 2px solid #276749; }
+    .viz-cell.accum   { background: #f6ad55; color: #fff; border: 2px solid #c05621; }
+    .viz-fn {
+      background: #1a202c; border-radius: 8px; padding: 8px 14px;
+      font-family: 'Consolas', monospace; font-size: 0.82rem;
+      color: #e2e8f0; margin: 4px 0;
+    }
+    .viz-result-label {
+      font-size: 0.82rem; font-weight: 700; color: #68d391; margin-top: 8px;
+    }
+
+    /* ── 演習問題 ── */
+    .quiz-section {
+      background: #fff; border-radius: 14px; padding: 32px 36px;
+      margin-bottom: 28px; box-shadow: 0 2px 12px rgba(85,60,154,0.07);
+    }
+    .quiz-section h2 {
+      font-size: 1.2rem; font-weight: 700; color: #553c9a;
+      margin-bottom: 24px; padding-bottom: 10px; border-bottom: 2px solid #e9d8fd;
+    }
+    .quiz-item { margin-bottom: 32px; padding-bottom: 28px; border-bottom: 1px dashed #e2e8f0; }
+    .quiz-item:last-child { border-bottom: none; margin-bottom: 0; }
+    .quiz-q {
+      font-size: 0.95rem; font-weight: 700; color: #2d3748;
+      margin-bottom: 14px; background: #faf5ff;
+      padding: 12px 16px; border-radius: 8px; border-left: 4px solid #9f7aea;
+    }
+    .quiz-q .q-num {
+      display: inline-block; background: #553c9a; color: #fff;
+      border-radius: 6px; padding: 1px 9px; font-size: 0.8rem; margin-right: 8px;
+    }
+    .blank-input {
+      border: 2px solid #c4b5fd; border-radius: 6px; padding: 4px 10px;
+      font-size: 0.9rem; font-family: 'Consolas', monospace;
+      color: #2d3748; background: #faf5ff; width: 130px; transition: border-color 0.15s;
+    }
+    .blank-input:focus { outline: none; border-color: #553c9a; }
+    .blank-input.correct { border-color: #48bb78; background: #f0fff4; }
+    .blank-input.wrong   { border-color: #fc8181; background: #fff5f5; }
+
+    .choices { display: flex; flex-direction: column; gap: 8px; }
+    .choice-btn {
+      padding: 10px 16px; border-radius: 8px; border: 2px solid #e2e8f0;
+      background: #fff; color: #2d3748; font-size: 0.9rem;
+      cursor: pointer; text-align: left; transition: all 0.15s;
+    }
+    .choice-btn:hover:not(:disabled) { border-color: #9f7aea; background: #faf5ff; }
+    .choice-btn.correct { border-color: #48bb78; background: #f0fff4; color: #276749; font-weight: 700; }
+    .choice-btn.wrong   { border-color: #fc8181; background: #fff5f5; color: #c53030; }
+
+    .checkbox-list { display: flex; flex-direction: column; gap: 8px; }
+    .cb-label {
+      display: flex; align-items: center; gap: 10px;
+      padding: 10px 14px; border-radius: 8px;
+      border: 2px solid #e2e8f0; background: #fff;
+      cursor: pointer; font-size: 0.9rem; transition: all 0.15s;
+    }
+    .cb-label:hover { border-color: #9f7aea; background: #faf5ff; }
+    .cb-label input[type="checkbox"] { width: 16px; height: 16px; accent-color: #553c9a; }
+    .cb-label.correct { border-color: #48bb78; background: #f0fff4; }
+    .cb-label.wrong   { border-color: #fc8181; background: #fff5f5; }
+
+    .code-fill {
+      background: #1a202c; border-radius: 10px; padding: 18px 20px;
+      font-family: 'Consolas', 'Monaco', monospace;
+      font-size: 0.88rem; line-height: 1.9; color: #e2e8f0; margin-bottom: 12px;
+    }
+    .fill-input {
+      background: #2d3748; border: 1px solid #9f7aea; border-radius: 4px;
+      color: #fbd38d; font-family: 'Consolas', monospace;
+      font-size: 0.88rem; padding: 1px 8px; width: 140px;
+    }
+    .fill-input:focus { outline: none; border-color: #b794f4; }
+    .fill-input.correct { border-color: #48bb78; background: #1c3a2a; color: #68d391; }
+    .fill-input.wrong   { border-color: #fc8181; background: #3a1c1c; color: #fc8181; }
+
+    .check-btn {
+      margin-top: 12px; padding: 9px 22px;
+      background: linear-gradient(135deg, #553c9a, #9f7aea);
+      color: #fff; border: none; border-radius: 8px;
+      font-size: 0.88rem; font-weight: 700; cursor: pointer; transition: opacity 0.15s;
+    }
+    .check-btn:hover { opacity: 0.88; }
+    .feedback { margin-top: 10px; padding: 10px 16px; border-radius: 8px; font-size: 0.88rem; display: none; }
+    .feedback.show { display: block; }
+    .feedback.ok { background: #f0fff4; color: #276749; border-left: 4px solid #48bb78; }
+    .feedback.ng { background: #fff5f5; color: #c53030; border-left: 4px solid #fc8181; }
+
+    .complete-area { text-align: center; padding: 32px 0 8px; }
+    .complete-btn {
+      padding: 14px 40px; background: linear-gradient(135deg, #553c9a, #9f7aea);
+      color: #fff; border: none; border-radius: 12px;
+      font-size: 1rem; font-weight: 700; cursor: pointer;
+      transition: opacity 0.15s, transform 0.15s;
+      box-shadow: 0 4px 16px rgba(85,60,154,0.3);
+    }
+    .complete-btn:hover { opacity: 0.9; transform: translateY(-2px); }
+    .complete-btn.done { background: linear-gradient(135deg, #38a169, #68d391); }
+    .complete-msg { margin-top: 12px; font-size: 0.9rem; color: #718096; }
+
+    .page-nav {
+      display: flex; justify-content: space-between; align-items: center;
+      gap: 12px; margin-top: 40px; flex-wrap: wrap;
+    }
+    .nav-btn {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 12px 22px; border-radius: 10px;
+      font-size: 0.9rem; font-weight: 600; text-decoration: none;
+      transition: background 0.18s, transform 0.18s;
+    }
+    .nav-btn.prev  { background: #e9d8fd; color: #553c9a; }
+    .nav-btn.prev:hover  { background: #d6bcfa; transform: translateX(-2px); }
+    .nav-btn.index { background: linear-gradient(135deg, #553c9a, #9f7aea); color: #fff; }
+    .nav-btn.index:hover { opacity: 0.9; }
+    .nav-btn.next  { background: #553c9a; color: #fff; }
+    .nav-btn.next:hover  { background: #44337a; transform: translateX(2px); }
+
+    footer {
+      text-align: center; font-size: 0.8rem; color: #a0aec0;
+      margin-top: 48px; padding-top: 24px; border-top: 1px solid #e2e8f0;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- パンくずナビ -->
+  <nav class="breadcrumb">
+    <a href="../index.html">🏠 HTML5 Level 2</a>
+    <span>›</span>
+    <a href="index.html">Chapter 2</a>
+    <span>›</span>
+    <strong>2-5 配列</strong>
+  </nav>
+
+  <!-- 章ヘッダー -->
+  <header class="chapter-header">
+    <h1>📋 2-5 配列</h1>
+    <p>配列メソッド（map / filter / reduce 等）、スプレッド構文、分割代入を実践的にマスターする。</p>
+    <div class="badge-row">
+      <span class="badge">📋 配列メソッド</span>
+      <span class="badge">🔄 map / filter / reduce</span>
+      <span class="badge">✨ スプレッド構文</span>
+      <span class="badge">📦 分割代入</span>
+      <span class="badge">✏️ 演習4問</span>
+    </div>
+  </header>
+
+  <!-- セクションナビ -->
+  <nav class="section-nav">
+    <h3>📋 CHAPTER 2 セクション一覧</h3>
+    <ul>
+      <li><a href="01_js_ecma.html">2-1 JavaScriptとは</a></li>
+      <li><a href="02_variables.html">2-2 変数と型</a></li>
+      <li><a href="03_expressions.html">2-3 式と演算子</a></li>
+      <li><a href="04_control.html">2-4 制御文</a></li>
+      <li class="current"><a href="05_arrays.html">2-5 配列</a></li>
+      <li><a href="06_objects.html">2-6 オブジェクト</a></li>
+      <li><a href="07_functions.html">2-7 関数</a></li>
+      <li><a href="08_global.html">2-8 グローバルオブジェクトとCallオブジェクト</a></li>
+    </ul>
+  </nav>
+
+  <!-- ===== 1. 配列の基本 ===== -->
+  <div class="content-card">
+    <h2>📋 配列の基本</h2>
+
+    <p>配列はインデックス（0始まり）で要素にアクセスするオブジェクトです。</p>
+
+    <div class="code-block">
+      <button class="copy-btn" onclick="copyCode(this)">copy</button>
+      <pre><span class="comment">// 配列リテラル</span>
+<span class="kw">const</span> fruits <span class="op">=</span> [<span class="str">'apple'</span>, <span class="str">'banana'</span>, <span class="str">'cherry'</span>];
+<span class="fn">console</span>.<span class="fn">log</span>(fruits[<span class="num">0</span>]);      <span class="out">// "apple"</span>
+<span class="fn">console</span>.<span class="fn">log</span>(fruits.<span class="fn">length</span>);  <span class="out">// 3</span>
+<span class="fn">console</span>.<span class="fn">log</span>(fruits.<span class="fn">at</span>(<span class="op">-</span><span class="num">1</span>));   <span class="out">// "cherry"（末尾要素、ES2022）</span>
+
+<span class="comment">// 多次元配列</span>
+<span class="kw">const</span> matrix <span class="op">=</span> [[<span class="num">1</span>,<span class="num">2</span>],[<span class="num">3</span>,<span class="num">4</span>],[<span class="num">5</span>,<span class="num">6</span>]];
+<span class="fn">console</span>.<span class="fn">log</span>(matrix[<span class="num">1</span>][<span class="num">0</span>]);   <span class="out">// 3</span>
+
+<span class="comment">// Array コンストラクタ</span>
+<span class="kw">const</span> arr1 <span class="op">=</span> <span class="kw">new</span> <span class="fn">Array</span>(<span class="num">3</span>);       <span class="out">// [empty × 3]（長さ3の空配列）</span>
+<span class="kw">const</span> arr2 <span class="op">=</span> Array.<span class="fn">from</span>({length:<span class="num">3</span>}, (_,i) <span class="op">=&gt;</span> i); <span class="out">// [0, 1, 2]</span></pre>
+    </div>
+
+    <h3>スプレッド構文と分割代入</h3>
+    <div class="code-block">
+      <button class="copy-btn" onclick="copyCode(this)">copy</button>
+      <pre><span class="comment">// スプレッド構文：配列を展開</span>
+<span class="kw">const</span> a <span class="op">=</span> [<span class="num">1</span>, <span class="num">2</span>, <span class="num">3</span>];
+<span class="kw">const</span> b <span class="op">=</span> [<span class="num">4</span>, <span class="num">5</span>, <span class="num">6</span>];
+<span class="kw">const</span> merged <span class="op">=</span> [...a, ...b];    <span class="out">// [1, 2, 3, 4, 5, 6]</span>
+<span class="kw">const</span> copy   <span class="op">=</span> [...a];           <span class="out">// シャローコピー</span>
+
+<span class="comment">// 分割代入（Destructuring）</span>
+<span class="kw">const</span> [first, second, ...rest] <span class="op">=</span> [<span class="num">10</span>, <span class="num">20</span>, <span class="num">30</span>, <span class="num">40</span>];
+<span class="fn">console</span>.<span class="fn">log</span>(first);  <span class="out">// 10</span>
+<span class="fn">console</span>.<span class="fn">log</span>(second); <span class="out">// 20</span>
+<span class="fn">console</span>.<span class="fn">log</span>(rest);   <span class="out">// [30, 40]</span>
+
+<span class="comment">// デフォルト値付き分割代入</span>
+<span class="kw">const</span> [x <span class="op">=</span> <span class="num">0</span>, y <span class="op">=</span> <span class="num">0</span>, z <span class="op">=</span> <span class="num">99</span>] <span class="op">=</span> [<span class="num">1</span>, <span class="num">2</span>];
+<span class="fn">console</span>.<span class="fn">log</span>(z); <span class="out">// 99（未定義なのでデフォルト値）</span>
+
+<span class="comment">// 変数の入れ替え</span>
+<span class="kw">let</span> p <span class="op">=</span> <span class="num">1</span>, q <span class="op">=</span> <span class="num">2</span>;
+[p, q] <span class="op">=</span> [q, p];
+<span class="fn">console</span>.<span class="fn">log</span>(p, q); <span class="out">// 2 1</span></pre>
+    </div>
+  </div>
+
+  <!-- ===== 2. 配列メソッド ===== -->
+  <div class="content-card">
+    <h2>🔧 配列メソッド一覧</h2>
+
+    <h3>追加・削除（破壊的メソッド）</h3>
+    <div class="tbl-wrap">
+      <table>
+        <thead><tr><th>メソッド</th><th>説明</th><th>戻り値</th><th>破壊的</th></tr></thead>
+        <tbody>
+          <tr><td><code>push(...items)</code></td><td>末尾に追加</td><td>新しい length</td><td>✅</td></tr>
+          <tr><td><code>pop()</code></td><td>末尾を削除</td><td>削除した要素</td><td>✅</td></tr>
+          <tr><td><code>unshift(...items)</code></td><td>先頭に追加</td><td>新しい length</td><td>✅</td></tr>
+          <tr><td><code>shift()</code></td><td>先頭を削除</td><td>削除した要素</td><td>✅</td></tr>
+          <tr><td><code>splice(start, del, ...items)</code></td><td>任意位置で削除・挿入</td><td>削除した要素の配列</td><td>✅</td></tr>
+          <tr><td><code>sort(fn)</code></td><td>並び替え</td><td>元の配列</td><td>✅</td></tr>
+          <tr><td><code>reverse()</code></td><td>逆順</td><td>元の配列</td><td>✅</td></tr>
+          <tr><td><code>fill(val, start, end)</code></td><td>要素を埋める</td><td>元の配列</td><td>✅</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>変換・検索（非破壊的メソッド）</h3>
+    <div class="tbl-wrap">
+      <table>
+        <thead><tr><th>メソッド</th><th>説明</th><th>戻り値</th><th>破壊的</th></tr></thead>
+        <tbody>
+          <tr><td><code>map(fn)</code></td><td>各要素を変換</td><td>新しい配列</td><td>❌</td></tr>
+          <tr><td><code>filter(fn)</code></td><td>条件に合う要素を抽出</td><td>新しい配列</td><td>❌</td></tr>
+          <tr><td><code>reduce(fn, init)</code></td><td>累積処理</td><td>累積値</td><td>❌</td></tr>
+          <tr><td><code>find(fn)</code></td><td>条件に合う最初の要素</td><td>要素 or undefined</td><td>❌</td></tr>
+          <tr><td><code>findIndex(fn)</code></td><td>条件に合う最初のインデックス</td><td>インデックス or -1</td><td>❌</td></tr>
+          <tr><td><code>indexOf(val)</code></td><td>値の最初のインデックス</td><td>インデックス or -1</td><td>❌</td></tr>
+          <tr><td><code>includes(val)</code></td><td>値が含まれるか</td><td>boolean</td><td>❌</td></tr>
+          <tr><td><code>some(fn)</code></td><td>1つでも条件を満たすか</td><td>boolean</td><td>❌</td></tr>
+          <tr><td><code>every(fn)</code></td><td>すべて条件を満たすか</td><td>boolean</td><td>❌</td></tr>
+          <tr><td><code>slice(start, end)</code></td><td>部分配列を取得</td><td>新しい配列</td><td>❌</td></tr>
+          <tr><td><code>concat(...arr)</code></td><td>配列を結合</td><td>新しい配列</td><td>❌</td></tr>
+          <tr><td><code>join(sep)</code></td><td>文字列に変換</td><td>文字列</td><td>❌</td></tr>
+          <tr><td><code>flat(depth)</code></td><td>ネストを平坦化</td><td>新しい配列</td><td>❌</td></tr>
+          <tr><td><code>flatMap(fn)</code></td><td>map後にflat(1)</td><td>新しい配列</td><td>❌</td></tr>
+          <tr><td><code>forEach(fn)</code></td><td>各要素を処理（戻り値なし）</td><td>undefined</td><td>❌</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="code-block">
+      <button class="copy-btn" onclick="copyCode(this)">copy</button>
+      <pre><span class="kw">const</span> nums <span class="op">=</span> [<span class="num">1</span>, <span class="num">2</span>, <span class="num">3</span>, <span class="num">4</span>, <span class="num">5</span>];
+
+<span class="comment">// map：各要素を2倍に変換</span>
+<span class="fn">console</span>.<span class="fn">log</span>(nums.<span class="fn">map</span>(n <span class="op">=&gt;</span> n <span class="op">*</span> <span class="num">2</span>));         <span class="out">// [2, 4, 6, 8, 10]</span>
+
+<span class="comment">// filter：偶数のみ抽出</span>
+<span class="fn">console</span>.<span class="fn">log</span>(nums.<span class="fn">filter</span>(n <span class="op">=&gt;</span> n <span class="op">%</span> <span class="num">2</span> <span class="op">===</span> <span class="num">0</span>)); <span class="out">// [2, 4]</span>
+
+<span class="comment">// reduce：合計を計算</span>
+<span class="fn">console</span>.<span class="fn">log</span>(nums.<span class="fn">reduce</span>((acc, n) <span class="op">=&gt;</span> acc <span class="op">+</span> n, <span class="num">0</span>)); <span class="out">// 15</span>
+
+<span class="comment">// find：最初に3より大きい要素</span>
+<span class="fn">console</span>.<span class="fn">log</span>(nums.<span class="fn">find</span>(n <span class="op">=&gt;</span> n <span class="op">&gt;</span> <span class="num">3</span>));          <span class="out">// 4</span>
+
+<span class="comment">// some / every</span>
+<span class="fn">console</span>.<span class="fn">log</span>(nums.<span class="fn">some</span>(n <span class="op">=&gt;</span> n <span class="op">&gt;</span> <span class="num">4</span>));          <span class="out">// true（5が4より大きい）</span>
+<span class="fn">console</span>.<span class="fn">log</span>(nums.<span class="fn">every</span>(n <span class="op">&gt;</span> <span class="num">0</span>));             <span class="out">// true（全て0より大きい）</span>
+
+<span class="comment">// flat：ネスト配列を平坦化</span>
+<span class="fn">console</span>.<span class="fn">log</span>([<span class="num">1</span>,[<span class="num">2</span>,[<span class="num">3</span>]]].<span class="fn">flat</span>());            <span class="out">// [1, 2, [3]]（深さ1）</span>
+<span class="fn">console</span>.<span class="fn">log</span>([<span class="num">1</span>,[<span class="num">2</span>,[<span class="num">3</span>]]].<span class="fn">flat</span>(<span class="num">Infinity</span>));   <span class="out">// [1, 2, 3]（全て展開）</span>
+
+<span class="comment">// sort：数値ソートは比較関数が必要</span>
+<span class="fn">console</span>.<span class="fn">log</span>([<span class="num">10</span>,<span class="num">9</span>,<span class="num">2</span>].<span class="fn">sort</span>());              <span class="out">// [10, 2, 9]（文字列比較！）</span>
+<span class="fn">console</span>.<span class="fn">log</span>([<span class="num">10</span>,<span class="num">9</span>,<span class="num">2</span>].<span class="fn">sort</span>((a,b) <span class="op">=&gt;</span> a<span class="op">-</span>b)); <span class="out">// [2, 9, 10]（数値昇順）</span></pre>
+    </div>
+
+    <div class="info-box warn">
+      <strong>⚠️ 試験頻出：sort() の落とし穴</strong><br>
+      引数なしの <code>sort()</code> は要素を<strong>文字列として比較</strong>します。
+      数値を正しくソートするには <code>sort((a, b) =&gt; a - b)</code>（昇順）または
+      <code>sort((a, b) =&gt; b - a)</code>（降順）と比較関数を渡す必要があります。
+    </div>
+  </div>
+
+  <!-- ===== デモ①：配列メソッドプレイグラウンド ===== -->
+  <div class="demo-card">
+    <h3>🎮 デモ①：配列メソッド プレイグラウンド</h3>
+    <p class="demo-desc">メソッドを選んで配列と引数を入力すると、実行結果をリアルタイムで確認できます。</p>
+
+    <div class="method-tabs" id="methodTabs"></div>
+
+    <div class="pg-layout">
+      <div class="pg-input-area">
+        <label>対象配列</label>
+        <textarea class="pg-textarea" id="pgArray" rows="2">[1, 2, 3, 4, 5]</textarea>
+        <label style="margin-top:10px;">コールバック / 引数</label>
+        <textarea class="pg-textarea" id="pgCallback" rows="2">n => n * 2</textarea>
+        <button class="run-btn" onclick="runMethod()">▶ 実行</button>
+      </div>
+      <div class="pg-output-area">
+        <label>実行結果</label>
+        <div class="pg-output" id="pgOutput">メソッドを選んで実行してください</div>
+      </div>
+    </div>
+    <div class="method-desc" id="methodDesc"></div>
+  </div>
+
+  <!-- ===== デモ②：map/filter/reduce ビジュアライザ ===== -->
+  <div class="demo-card">
+    <h3>🎮 デモ②：map / filter / reduce ビジュアライザ</h3>
+    <p class="demo-desc">配列 [1, 2, 3, 4, 5] に対して各メソッドがどう処理するかをセルで視覚化します。</p>
+
+    <div class="viz-tabs">
+      <button class="viz-tab active" onclick="showViz('map', this)">map</button>
+      <button class="viz-tab" onclick="showViz('filter', this)">filter</button>
+      <button class="viz-tab" onclick="showViz('reduce', this)">reduce</button>
+    </div>
+    <div class="viz-area" id="vizArea"></div>
+  </div>
+
+  <!-- ===== 演習問題 ===== -->
+  <div class="quiz-section">
+    <h2>✏️ 演習問題</h2>
+
+    <!-- Q1：穴埋め -->
+    <div class="quiz-item">
+      <div class="quiz-q">
+        <span class="q-num">Q1</span>
+        配列メソッドの戻り値について空欄を埋めてください。（穴埋め）
+      </div>
+      <p style="font-size:0.92rem;color:#4a5568;margin-bottom:14px;">
+        <code>push()</code> の戻り値は配列の新しい
+        <input class="blank-input" id="q1a" placeholder="？？？"> である。
+        <code>pop()</code> の戻り値は
+        <input class="blank-input" id="q1b" placeholder="？？？"> した要素である。
+        <code>forEach()</code> の戻り値は
+        <input class="blank-input" id="q1c" placeholder="？？？"> である。
+        <code>filter()</code> の戻り値は条件を満たす要素からなる
+        <input class="blank-input" id="q1d" placeholder="？？？"> である。
+      </p>
+      <button class="check-btn" onclick="checkQ1()">判定する</button>
+      <div class="feedback" id="fb1"></div>
+    </div>
+
+    <!-- Q2：選択 -->
+    <div class="quiz-item">
+      <div class="quiz-q">
+        <span class="q-num">Q2</span>
+        次のコードの実行結果として正しいものはどれですか？（選択）
+      </div>
+      <div class="code-fill" style="margin-bottom:14px;">
+<span class="kw">const</span> result <span class="op">=</span> [<span class="num">1</span>, <span class="num">2</span>, <span class="num">3</span>, <span class="num">4</span>, <span class="num">5</span>]
+  .<span class="fn">filter</span>(n <span class="op">=&gt;</span> n <span class="op">%</span> <span class="num">2</span> <span class="op">!==</span> <span class="num">0</span>)
+  .<span class="fn">reduce</span>((acc, n) <span class="op">=&gt;</span> acc <span class="op">+</span> n, <span class="num">0</span>);
+<span class="fn">console</span>.<span class="fn">log</span>(result);
+      </div>
+      <div class="choices">
+        <button class="choice-btn" onclick="checkQ2(this,false)">A. 6</button>
+        <button class="choice-btn" onclick="checkQ2(this,true)">B. 9</button>
+        <button class="choice-btn" onclick="checkQ2(this,false)">C. 15</button>
+        <button class="choice-btn" onclick="checkQ2(this,false)">D. [1, 3, 5]</button>
+      </div>
+      <div class="feedback" id="fb2"></div>
+    </div>
+
+    <!-- Q3：チェックボックス -->
+    <div class="quiz-item">
+      <div class="quiz-q">
+        <span class="q-num">Q3</span>
+        <strong>破壊的メソッド</strong>（元の配列を変更する）をすべて選んでください。（複数選択）
+      </div>
+      <div class="checkbox-list" id="q3-list">
+        <label class="cb-label"><input type="checkbox" value="a"> <code>push()</code></label>
+        <label class="cb-label"><input type="checkbox" value="b"> <code>map()</code></label>
+        <label class="cb-label"><input type="checkbox" value="c"> <code>splice()</code></label>
+        <label class="cb-label"><input type="checkbox" value="d"> <code>filter()</code></label>
+        <label class="cb-label"><input type="checkbox" value="e"> <code>sort()</code></label>
+        <label class="cb-label"><input type="checkbox" value="f"> <code>slice()</code></label>
+        <label class="cb-label"><input type="checkbox" value="g"> <code>reverse()</code></label>
+      </div>
+      <button class="check-btn" onclick="checkQ3()">判定する</button>
+      <div class="feedback" id="fb3"></div>
+    </div>
+
+    <!-- Q4：コード補完 -->
+    <div class="quiz-item">
+      <div class="quiz-q">
+        <span class="q-num">Q4</span>
+        偶数のみを取り出して2倍にし、合計を求めるコードを完成させてください。（コード補完）
+      </div>
+      <div class="code-fill">
+<span class="kw">const</span> nums <span class="op">=</span> [<span class="num">1</span>, <span class="num">2</span>, <span class="num">3</span>, <span class="num">4</span>, <span class="num">5</span>, <span class="num">6</span>];
+
+<span class="kw">const</span> result <span class="op">=</span> nums
+  .<span class="fn"><input class="fill-input" id="q4a" placeholder="メソッド名">(n => n % 2 === 0)</span>
+  .<span class="fn"><input class="fill-input" id="q4b" placeholder="メソッド名">(n => n * 2)</span>
+  .<span class="fn"><input class="fill-input" id="q4c" placeholder="メソッド名">((acc, n) => acc + n, 0)</span>;
+
+<span class="fn">console</span>.<span class="fn">log</span>(result); <span class="out">// 24</span>
+      </div>
+      <button class="check-btn" onclick="checkQ4()">判定する</button>
+      <div class="feedback" id="fb4"></div>
+    </div>
+
+  </div>
+
+  <!-- 完了ボタン -->
+  <div class="complete-area">
+    <button class="complete-btn" id="completeBtn" onclick="markComplete()">
+      ✅ セクション 2-5 を完了にする
+    </button>
+    <div class="complete-msg" id="completeMsg"></div>
+  </div>
+
+  <!-- ページナビ -->
+  <nav class="page-nav">
+    <a class="nav-btn prev" href="04_control.html">← 2-4 制御文</a>
+    <a class="nav-btn index" href="index.html">📋 Chapter 2 目次</a>
+    <a class="nav-btn next" href="06_objects.html">2-6 オブジェクト →</a>
+  </nav>
+
+  <footer>
+    <p>HTML5 Professional Level 2 試験対策サイト &copy; 2026</p>
+  </footer>
+
+  <script>
+    // ── コピーボタン ──
+    function copyCode(btn) {
+      const pre = btn.nextElementSibling;
+      navigator.clipboard.writeText(pre.innerText).then(() => {
+        btn.textContent = 'copied!';
+        btn.classList.add('copied');
+        setTimeout(() => { btn.textContent = 'copy'; btn.classList.remove('copied'); }, 2000);
+      });
+    }
+
+    // ── デモ①：配列メソッドプレイグラウンド ──
+    const methodDefs = [
+      {
+        name: 'map', label: 'map()',
+        defaultArr: '[1, 2, 3, 4, 5]',
+        defaultCb:  'n => n * 2',
+        desc: '<strong>map(fn)</strong>：各要素を fn で変換した<strong>新しい配列</strong>を返します。元の配列は変更しません。',
+        run: (arr, cb) => arr.map(cb)
+      },
+      {
+        name: 'filter', label: 'filter()',
+        defaultArr: '[1, 2, 3, 4, 5]',
+        defaultCb:  'n => n % 2 === 0',
+        desc: '<strong>filter(fn)</strong>：fn が true を返す要素のみからなる<strong>新しい配列</strong>を返します。',
+        run: (arr, cb) => arr.filter(cb)
+      },
+      {
+        name: 'reduce', label: 'reduce()',
+        defaultArr: '[1, 2, 3, 4, 5]',
+        defaultCb:  '(acc, n) => acc + n, 0',
+        desc: '<strong>reduce(fn, init)</strong>：左から累積処理を行い<strong>単一の値</strong>を返します。init は初期値です。',
+        run: (arr, cbStr) => {
+          const parts = cbStr.split(/,\s*(?=\d|'|"|\[|\{)/);
+          const fn   = Function('"use strict"; return (' + parts[0].trim() + ')')();
+          const init = parts.length > 1 ? Function('"use strict"; return (' + parts.slice(1).join(',').trim() + ')')() : undefined;
+          return init !== undefined ? arr.reduce(fn, init) : arr.reduce(fn);
+        }
+      },
+      {
+        name: 'find', label: 'find()',
+        defaultArr: '[1, 2, 3, 4, 5]',
+        defaultCb:  'n => n > 3',
+        desc: '<strong>find(fn)</strong>：条件を満たす<strong>最初の要素</strong>を返します。見つからない場合は undefined。',
+        run: (arr, cb) => arr.find(cb)
+      },
+      {
+        name: 'findIndex', label: 'findIndex()',
+        defaultArr: '[10, 20, 30, 40]',
+        defaultCb:  'n => n > 25',
+        desc: '<strong>findIndex(fn)</strong>：条件を満たす最初の要素の<strong>インデックス</strong>を返します。見つからない場合は -1。',
+        run: (arr, cb) => arr.findIndex(cb)
+      },
+      {
+        name: 'some', label: 'some()',
+        defaultArr: '[1, 2, 3, 4, 5]',
+        defaultCb:  'n => n > 4',
+        desc: '<strong>some(fn)</strong>：1つでも条件を満たす要素があれば <strong>true</strong>、なければ false を返します。',
+        run: (arr, cb) => arr.some(cb)
+      },
+      {
+        name: 'every', label: 'every()',
+        defaultArr: '[2, 4, 6, 8]',
+        defaultCb:  'n => n % 2 === 0',
+        desc: '<strong>every(fn)</strong>：<strong>すべての</strong>要素が条件を満たせば true、1つでも満たさなければ false。',
+        run: (arr, cb) => arr.every(cb)
+      },
+      {
+        name: 'flat', label: 'flat()',
+        defaultArr: '[[1,2],[3,[4,5]]]',
+        defaultCb:  '1',
+        desc: '<strong>flat(depth)</strong>：ネストした配列を指定した深さまで平坦化した<strong>新しい配列</strong>を返します。',
+        run: (arr, depthStr) => arr.flat(Number(depthStr) || 1)
+      },
+      {
+        name: 'sort', label: 'sort()',
+        defaultArr: '[10, 9, 2, 21, 3]',
+        defaultCb:  '(a, b) => a - b',
+        desc: '<strong>sort(fn)</strong>：配列を<strong>破壊的に</strong>並び替えます。比較関数なしは文字列順になるため数値には必ず比較関数を渡しましょう。',
+        run: (arr, cb) => [...arr].sort(cb)
+      },
+      {
+        name: 'splice', label: 'splice()',
+        defaultArr: '[1, 2, 3, 4, 5]',
+        defaultCb:  '1, 2',
+        desc: '<strong>splice(start, deleteCount, ...items)</strong>：指定位置から要素を削除・挿入します（<strong>破壊的</strong>）。戻り値は削除した要素の配列。',
+        run: (arr, argsStr) => {
+          const copy = [...arr];
+          const args = Function('"use strict"; return [' + argsStr + ']')();
+          const removed = copy.splice(...args);
+          return { removed, result: copy };
+        }
+      },
+    ];
+
+    let currentMethod = methodDefs[0];
+
+    function buildMethodTabs() {
+      const container = document.getElementById('methodTabs');
+      container.innerHTML = methodDefs.map((m, i) =>
+        `<button class="method-tab ${i === 0 ? 'active' : ''}"
+          onclick="selectMethod('${m.name}', this)">${m.label}</button>`
+      ).join('');
+    }
+
+    function selectMethod(name, btn) {
+      document.querySelectorAll('.method-tab').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      currentMethod = methodDefs.find(m => m.name === name);
+      document.getElementById('pgArray').value    = currentMethod.defaultArr;
+      document.getElementById('pgCallback').value = currentMethod.defaultCb;
+      document.getElementById('methodDesc').innerHTML = currentMethod.desc;
+      runMethod();
+    }
+
+    function runMethod() {
+      const arrStr = document.getElementById('pgArray').value.trim();
+      const cbStr  = document.getElementById('pgCallback').value.trim();
+      const out    = document.getElementById('pgOutput');
+      try {
+        const arr = Function('"use strict"; return (' + arrStr + ')')();
+        let cb;
+        if (!['reduce','flat','splice'].includes(currentMethod.name)) {
+          cb = Function('"use strict"; return (' + cbStr + ')')();
+        }
+        const result = currentMethod.run(arr, cb || cbStr);
+
+        if (currentMethod.name === 'splice') {
+          out.innerHTML =
+            `<span style="color:#9f7aea;">削除された要素:</span> <span style="color:#fc8181;">${JSON.stringify(result.removed)}</span>\n` +
+            `<span style="color:#9f7aea;">変更後の配列:</span>  <span style="color:#68d391;">${JSON.stringify(result.result)}</span>`;
+        } else {
+          const disp = result === undefined ? 'undefined' : JSON.stringify(result);
+          const color = typeof result === 'boolean' ? '#b794f4'
+                      : Array.isArray(result)       ? '#68d391'
+                      : typeof result === 'number'  ? '#90cdf4'
+                      : '#fbd38d';
+          out.innerHTML =
+            `<span style="color:#9f7aea;">戻り値:</span> <span style="color:${color};">${disp}</span>\n` +
+            `<span style="color:#9f7aea;">型:</span>     <span style="color:#a0aec0;">${Array.isArray(result) ? 'Array' : typeof result}</span>`;
+        }
+      } catch(e) {
+        out.innerHTML = `<span style="color:#fc8181;">エラー: ${e.message}</span>`;
+      }
+    }
+
+    // ── デモ②：map/filter/reduce ビジュアライザ ──
+    const INPUT = [1, 2, 3, 4, 5];
+
+    function cell(val, cls) {
+      return `<div class="viz-cell ${cls}">${val}</div>`;
+    }
+
+    const vizData = {
+      map: () => {
+        const fn = n => n * 2;
+        const output = INPUT.map(fn);
+        return `
+          <div class="viz-pipeline">
+            <div class="viz-fn">const fn = n => n * 2;</div>
+            <div class="viz-row">
+              <div class="viz-label">入力配列</div>
+              <div class="viz-arrow">→</div>
+              <div class="viz-cells">${INPUT.map(v => cell(v,'input')).join('')}</div>
+            </div>
+            <div class="viz-row">
+              <div class="viz-label">fn 適用後</div>
+              <div class="viz-arrow">→</div>
+              <div class="viz-cells">${output.map(v => cell(v,'mapped')).join('')}</div>
+            </div>
+            <div class="viz-result-label">結果: [${output.join(', ')}]（新しい配列・元の配列は変更なし）</div>
+          </div>`;
+      },
+      filter: () => {
+        const fn = n => n % 2 === 0;
+        return `
+          <div class="viz-pipeline">
+            <div class="viz-fn">const fn = n => n % 2 === 0; // 偶数のみ</div>
+            <div class="viz-row">
+              <div class="viz-label">入力配列</div>
+              <div class="viz-arrow">→</div>
+              <div class="viz-cells">${INPUT.map(v => cell(v,'input')).join('')}</div>
+            </div>
+            <div class="viz-row">
+              <div class="viz-label">判定結果</div>
+              <div class="viz-arrow">→</div>
+              <div class="viz-cells">${INPUT.map(v => cell(fn(v)?'✅':'❌', fn(v)?'kept':'removed')).join('')}</div>
+            </div>
+            <div class="viz-row">
+              <div class="viz-label">フィルタ後</div>
+              <div class="viz-arrow">→</div>
+              <div class="viz-cells">${INPUT.filter(fn).map(v => cell(v,'kept')).join('')}</div>
+            </div>
+            <div class="viz-result-label">結果: [${INPUT.filter(fn).join(', ')}]（条件を満たす要素のみ）</div>
+          </div>`;
+      },
+      reduce: () => {
+        let acc = 0;
+        const steps = INPUT.map(n => {
+          const prev = acc;
+          acc += n;
+          return { n, prev, acc };
+        });
+        return `
+          <div class="viz-pipeline">
+            <div class="viz-fn">const fn = (acc, n) => acc + n; // 初期値: 0</div>
+            <div class="viz-row">
+              <div class="viz-label">入力配列</div>
+              <div class="viz-arrow">→</div>
+              <div class="viz-cells">${INPUT.map(v => cell(v,'input')).join('')}</div>
+            </div>
+            ${steps.map((s,i) => `
+            <div class="viz-row">
+              <div class="viz-label">step ${i+1}</div>
+              <div class="viz-arrow">→</div>
+              <div class="viz-cells">
+                ${cell(s.prev,'accum')}
+                <div style="color:#a0aec0;display:flex;align-items:center;padding:0 4px;">+</div>
+                ${cell(s.n,'input')}
+                <div style="color:#a0aec0;display:flex;align-items:center;padding:0 4px;">=</div>
+                ${cell(s.acc,'mapped')}
+              </div>
+            </div>`).join('')}
+            <div class="viz-result-label">結果: ${acc}（単一の累積値）</div>
+          </div>`;
+      }
+    };
+
+    function showViz(type, btn) {
+      document.querySelectorAll('.viz-tab').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      document.getElementById('vizArea').innerHTML = vizData[type]();
+    }
+
+    // ── Q1 穴埋め ──
+    function checkQ1() {
+      const ans = [
+        { id: 'q1a', correct: ['length', '長さ'] },
+        { id: 'q1b', correct: ['削除', '取り出し', '取り除い'] },
+        { id: 'q1c', correct: ['undefined'] },
+        { id: 'q1d', correct: ['新しい配列', '配列'] },
+      ];
+      let allOk = true;
+      ans.forEach(a => {
+        const el  = document.getElementById(a.id);
+        const val = el.value.trim();
+        const ok  = a.correct.some(c => val.includes(c));
+        el.classList.toggle('correct', ok);
+        el.classList.toggle('wrong', !ok);
+        if (!ok) allOk = false;
+      });
+      const fb = document.getElementById('fb1');
+      fb.className = 'feedback show ' + (allOk ? 'ok' : 'ng');
+      fb.innerHTML = allOk
+        ? '✅ 正解！ push→length、pop→削除した要素、forEach→undefined、filter→新しい配列 です。'
+        : '❌ 解説：push()→新しい<strong>length</strong>、pop()→<strong>削除した要素</strong>、forEach()→<strong>undefined</strong>、filter()→<strong>新しい配列</strong>';
+    }
+
+    // ── Q2 選択 ──
+    function checkQ2(btn, isCorrect) {
+      document.querySelectorAll('.choice-btn').forEach(b => b.disabled = true);
+      btn.classList.add(isCorrect ? 'correct' : 'wrong');
+      const fb = document.getElementById('fb2');
+      fb.className = 'feedback show ' + (isCorrect ? 'ok' : 'ng');
+      fb.innerHTML = isCorrect
+        ? '✅ 正解！ filter(奇数) → [1,3,5]、reduce(合計) → 1+3+5 = 9 です。'
+        : '❌ 不正解。filter(n%2!==0) で奇数 [1,3,5] を抽出し、reduce で合計すると 1+3+5=9 です。';
+    }
+
+    // ── Q3 チェックボックス ──
+    function checkQ3() {
+      const correct = new Set(['a', 'c', 'e', 'g']);
+      const labels  = document.querySelectorAll('#q3-list .cb-label');
+      let ok = 0;
+      labels.forEach(label => {
+        const cb = label.querySelector('input');
+        cb.disabled = true;
+        const checked = cb.checked;
+        const should  = correct.has(cb.value);
+        if (checked && should)       { label.classList.add('correct'); ok++; }
+        else if (checked && !should)   label.classList.add('wrong');
+        else if (!checked && should)   label.classList.add('wrong');
+      });
+      const allOk = ok === correct.size &&
+        [...labels].filter(l => l.querySelector('input').checked).length === correct.size;
+      const fb = document.getElementById('fb3');
+      fb.className = 'feedback show ' + (allOk ? 'ok' : 'ng');
+      fb.innerHTML = allOk
+        ? '✅ 完璧！ 破壊的メソッドは push・splice・sort・reverse（＋shift/unshift/pop/fill）です。'
+        : '❌ 正解は a(push)・c(splice)・e(sort)・g(reverse)。<br>map・filter・slice は元の配列を変更しない<strong>非破壊的</strong>メソッドです。';
+    }
+
+    // ── Q4 コード補完 ──
+    function checkQ4() {
+      const a = document.getElementById('q4a').value.trim();
+      const b = document.getElementById('q4b').value.trim();
+      const c = document.getElementById('q4c').value.trim();
+      const okA = a === 'filter';
+      const okB = b === 'map';
+      const okC = c === 'reduce';
+      [['q4a',okA],['q4b',okB],['q4c',okC]].forEach(([id,ok]) => {
+        document.getElementById(id).classList.toggle('correct', ok);
+        document.getElementById(id).classList.toggle('wrong', !ok);
+      });
+      const allOk = okA && okB && okC;
+      const fb = document.getElementById('fb4');
+      fb.className = 'feedback show ' + (allOk ? 'ok' : 'ng');
+      fb.innerHTML = allOk
+        ? '✅ 正解！ filter(偶数抽出) → map(2倍) → reduce(合計) の順です。偶数[2,4,6]→2倍[4,8,12]→合計24。'
+        : '❌ 不正解。順番は <code>filter</code>（偶数を抽出）→ <code>map</code>（2倍に変換）→ <code>reduce</code>（合計）です。';
+    }
+
+    // ── 完了ボタン ──
+    function markComplete() {
+      localStorage.setItem('html5lv2_ch2_05', 'done');
+      const btn = document.getElementById('completeBtn');
+      btn.textContent = '🎉 完了済み！';
+      btn.classList.add('done');
+      btn.disabled = true;
+      document.getElementById('completeMsg').textContent = '進捗が保存されました。次のセクションへ進みましょう！';
+    }
+
+    // ── 初期化 ──
+    window.addEventListener('DOMContentLoaded', () => {
+      buildMethodTabs();
+      document.getElementById('methodDesc').innerHTML = methodDefs[0].desc;
+      runMethod();
+      showViz('map', document.querySelector('.viz-tab.active'));
+      if (localStorage.getItem('html5lv2_ch2_05') === 'done') {
+        const btn = document.getElementById('completeBtn');
+        btn.textContent = '🎉 完了済み！';
+        btn.classList.add('done');
+        btn.disabled = true;
+        document.getElementById('completeMsg').textContent = 'このセクションは完了済みです。';
+      }
+    });
+  </script>
+
+</body>
+</html>

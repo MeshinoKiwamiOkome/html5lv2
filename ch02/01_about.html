@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chapter 2：JavaScriptの文法 | HTML5 Level 2 試験対策</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Segoe UI', 'Helvetica Neue', sans-serif;
+      max-width: 960px;
+      margin: 40px auto;
+      padding: 0 24px;
+      background: #f0f4f8;
+      color: #2d3748;
+      line-height: 1.8;
+    }
+
+    /* ── パンくずナビ ── */
+    .breadcrumb {
+      font-size: 0.85rem;
+      color: #718096;
+      margin-bottom: 24px;
+    }
+    .breadcrumb a {
+      color: #553c9a;
+      text-decoration: none;
+    }
+    .breadcrumb a:hover { text-decoration: underline; }
+    .breadcrumb span { margin: 0 6px; }
+
+    /* ── 章ヘッダー ── */
+    .chapter-header {
+      background: linear-gradient(135deg, #553c9a, #9f7aea);
+      border-radius: 16px;
+      padding: 40px 36px;
+      color: #fff;
+      margin-bottom: 36px;
+      position: relative;
+      overflow: hidden;
+    }
+    .chapter-header::before {
+      content: '';
+      position: absolute;
+      top: -60px; right: -60px;
+      width: 220px; height: 220px;
+      background: rgba(255,255,255,0.07);
+      border-radius: 50%;
+    }
+    .chapter-header::after {
+      content: '';
+      position: absolute;
+      bottom: -40px; left: -40px;
+      width: 160px; height: 160px;
+      background: rgba(255,255,255,0.05);
+      border-radius: 50%;
+    }
+    .chapter-header h1 {
+      font-size: 2rem;
+      font-weight: 700;
+      margin-bottom: 10px;
+      position: relative; z-index: 1;
+    }
+    .chapter-header p {
+      font-size: 1rem;
+      opacity: 0.9;
+      position: relative; z-index: 1;
+      margin-bottom: 20px;
+    }
+    .badge-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      position: relative; z-index: 1;
+    }
+    .badge {
+      background: rgba(255,255,255,0.2);
+      border: 1px solid rgba(255,255,255,0.35);
+      border-radius: 20px;
+      padding: 4px 14px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      backdrop-filter: blur(4px);
+    }
+
+    /* ── 進捗バー ── */
+    .progress-card {
+      background: #fff;
+      border-radius: 12px;
+      padding: 24px 28px;
+      margin-bottom: 32px;
+      box-shadow: 0 2px 12px rgba(85,60,154,0.08);
+    }
+    .progress-card h2 {
+      font-size: 1rem;
+      color: #553c9a;
+      margin-bottom: 14px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .progress-bar-wrap {
+      background: #e9d8fd;
+      border-radius: 99px;
+      height: 14px;
+      overflow: hidden;
+      margin-bottom: 8px;
+    }
+    .progress-bar-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #553c9a, #9f7aea);
+      border-radius: 99px;
+      transition: width 0.6s ease;
+      width: 0%;
+    }
+    .progress-text {
+      font-size: 0.85rem;
+      color: #718096;
+      text-align: right;
+    }
+
+    /* ── セクションカード一覧 ── */
+    .section-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(420px, 1fr));
+      gap: 20px;
+      margin-bottom: 40px;
+    }
+    @media (max-width: 600px) {
+      .section-grid { grid-template-columns: 1fr; }
+    }
+
+    .section-card {
+      background: #fff;
+      border-radius: 14px;
+      padding: 24px 26px;
+      box-shadow: 0 2px 12px rgba(85,60,154,0.07);
+      border-left: 5px solid #c4b5fd;
+      text-decoration: none;
+      color: inherit;
+      display: block;
+      transition: transform 0.18s, box-shadow 0.18s, border-color 0.18s;
+      position: relative;
+    }
+    .section-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 28px rgba(85,60,154,0.15);
+      border-color: #553c9a;
+    }
+    .section-card.done {
+      border-color: #48bb78;
+    }
+    .section-card.done::after {
+      content: '✅ 完了';
+      position: absolute;
+      top: 16px; right: 18px;
+      font-size: 0.75rem;
+      color: #276749;
+      background: #c6f6d5;
+      border-radius: 20px;
+      padding: 2px 10px;
+      font-weight: 700;
+    }
+
+    .card-num {
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: #9f7aea;
+      letter-spacing: 0.08em;
+      margin-bottom: 6px;
+      text-transform: uppercase;
+    }
+    .card-title {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: #2d3748;
+      margin-bottom: 10px;
+    }
+    .card-desc {
+      font-size: 0.85rem;
+      color: #718096;
+      line-height: 1.6;
+      margin-bottom: 14px;
+    }
+    .card-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+    .tag {
+      background: #f3e8ff;
+      color: #553c9a;
+      border-radius: 6px;
+      padding: 2px 9px;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+
+    /* ── 学習のヒント ── */
+    .hint-box {
+      background: linear-gradient(135deg, #f3e8ff, #ede9fe);
+      border-radius: 12px;
+      padding: 24px 28px;
+      margin-bottom: 32px;
+      border-left: 5px solid #553c9a;
+    }
+    .hint-box h3 {
+      font-size: 1rem;
+      color: #553c9a;
+      margin-bottom: 12px;
+    }
+    .hint-box ul {
+      list-style: none;
+      padding: 0;
+    }
+    .hint-box ul li {
+      font-size: 0.9rem;
+      color: #4a5568;
+      padding: 4px 0;
+      padding-left: 1.4em;
+      position: relative;
+    }
+    .hint-box ul li::before {
+      content: '💡';
+      position: absolute;
+      left: 0;
+      font-size: 0.85em;
+    }
+
+    /* ── 前後ナビ ── */
+    .page-nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      margin-top: 40px;
+      flex-wrap: wrap;
+    }
+    .nav-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 12px 22px;
+      border-radius: 10px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      text-decoration: none;
+      transition: background 0.18s, transform 0.18s;
+    }
+    .nav-btn.prev {
+      background: #e9d8fd;
+      color: #553c9a;
+    }
+    .nav-btn.prev:hover { background: #d6bcfa; transform: translateX(-2px); }
+    .nav-btn.home {
+      background: linear-gradient(135deg, #553c9a, #9f7aea);
+      color: #fff;
+    }
+    .nav-btn.home:hover { opacity: 0.9; }
+    .nav-btn.next {
+      background: #553c9a;
+      color: #fff;
+    }
+    .nav-btn.next:hover { background: #44337a; transform: translateX(2px); }
+
+    /* ── フッター ── */
+    footer {
+      text-align: center;
+      font-size: 0.8rem;
+      color: #a0aec0;
+      margin-top: 48px;
+      padding-top: 24px;
+      border-top: 1px solid #e2e8f0;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- パンくずナビ -->
+  <nav class="breadcrumb">
+    <a href="../index.html">🏠 HTML5 Level 2</a>
+    <span>›</span>
+    <strong>Chapter 2：JavaScriptの文法</strong>
+  </nav>
+
+  <!-- 章ヘッダー -->
+  <header class="chapter-header">
+    <h1>📖 Chapter 2：JavaScriptの文法</h1>
+    <p>変数・型・演算子・制御文・配列・オブジェクト・関数まで、試験頻出の文法を体系的にマスターしよう。</p>
+    <div class="badge-row">
+      <span class="badge">📝 8セクション</span>
+      <span class="badge">🎮 インタラクティブデモ付き</span>
+      <span class="badge">✏️ 各セクション4問</span>
+      <span class="badge">🏆 総まとめ試験あり</span>
+      <span class="badge">⏱ 目安：4〜6時間</span>
+    </div>
+  </header>
+
+  <!-- 進捗バー -->
+  <div class="progress-card">
+    <h2>📊 Chapter 2 学習進捗</h2>
+    <div class="progress-bar-wrap">
+      <div class="progress-bar-fill" id="progressFill"></div>
+    </div>
+    <div class="progress-text" id="progressText">0 / 8 セクション完了</div>
+  </div>
+
+  <!-- セクションカード -->
+  <div class="section-grid" id="sectionGrid">
+
+    <a class="section-card" href="01_js_ecma.html" id="card-01">
+      <div class="card-num">Section 2-1</div>
+      <div class="card-title">⚡ JavaScriptとは</div>
+      <div class="card-desc">ECMAScriptとの関係、scriptタグの配置、defer/async属性、厳格モードを学ぶ。</div>
+      <div class="card-tags">
+        <span class="tag">ECMAScript</span>
+        <span class="tag">defer/async</span>
+        <span class="tag">use strict</span>
+      </div>
+    </a>
+
+    <a class="section-card" href="02_variables.html" id="card-02">
+      <div class="card-num">Section 2-2</div>
+      <div class="card-title">📦 変数と型</div>
+      <div class="card-desc">var/let/constの違い、7つのプリミティブ型、型変換、スコープ、NaN/Infinityを習得。</div>
+      <div class="card-tags">
+        <span class="tag">let/const</span>
+        <span class="tag">型変換</span>
+        <span class="tag">スコープ</span>
+        <span class="tag">typeof</span>
+      </div>
+    </a>
+
+    <a class="section-card" href="03_expressions.html" id="card-03">
+      <div class="card-num">Section 2-3</div>
+      <div class="card-title">🔢 式と演算子</div>
+      <div class="card-desc">算術・ビット・論理・三項演算子、オプショナルチェーン、Nullish Coalescingを理解する。</div>
+      <div class="card-tags">
+        <span class="tag">ビット演算</span>
+        <span class="tag">?.</span>
+        <span class="tag">??</span>
+        <span class="tag">短絡評価</span>
+      </div>
+    </a>
+
+    <a class="section-card" href="04_control.html" id="card-04">
+      <div class="card-num">Section 2-4</div>
+      <div class="card-title">🔀 制御文</div>
+      <div class="card-desc">if/switch/while/for/for...of、break/continue、try/catch/finally、エラーオブジェクトを学ぶ。</div>
+      <div class="card-tags">
+        <span class="tag">switch</span>
+        <span class="tag">for...of</span>
+        <span class="tag">try/catch</span>
+        <span class="tag">Error</span>
+      </div>
+    </a>
+
+    <a class="section-card" href="05_arrays.html" id="card-05">
+      <div class="card-num">Section 2-5</div>
+      <div class="card-title">📋 配列</div>
+      <div class="card-desc">配列メソッド（map/filter/reduce等）、スプレッド構文、分割代入を実践的に習得。</div>
+      <div class="card-tags">
+        <span class="tag">map/filter</span>
+        <span class="tag">reduce</span>
+        <span class="tag">スプレッド</span>
+        <span class="tag">分割代入</span>
+      </div>
+    </a>
+
+    <a class="section-card" href="06_objects.html" id="card-06">
+      <div class="card-num">Section 2-6</div>
+      <div class="card-title">🧩 オブジェクト</div>
+      <div class="card-desc">プロトタイプチェーン、class構文（extends/super）、Object静的メソッド、プライベートフィールドを学ぶ。</div>
+      <div class="card-tags">
+        <span class="tag">prototype</span>
+        <span class="tag">class</span>
+        <span class="tag">extends</span>
+        <span class="tag">Object.keys</span>
+      </div>
+    </a>
+
+    <a class="section-card" href="07_functions.html" id="card-07">
+      <div class="card-num">Section 2-7</div>
+      <div class="card-title">🔧 関数</div>
+      <div class="card-desc">関数定義の4方式、アロー関数のthis、call/apply/bind、ジェネレータ、高階関数を習得。</div>
+      <div class="card-tags">
+        <span class="tag">アロー関数</span>
+        <span class="tag">call/apply</span>
+        <span class="tag">IIFE</span>
+        <span class="tag">generator</span>
+      </div>
+    </a>
+
+    <a class="section-card" href="08_global.html" id="card-08">
+      <div class="card-num">Section 2-8</div>
+      <div class="card-title">🌐 グローバルオブジェクトとCallオブジェクト</div>
+      <div class="card-desc">スコープチェーン、クロージャ、グローバル関数、Mathオブジェクト、総まとめ試験（20問）。</div>
+      <div class="card-tags">
+        <span class="tag">クロージャ</span>
+        <span class="tag">Math</span>
+        <span class="tag">parseInt</span>
+        <span class="tag">総まとめ</span>
+      </div>
+    </a>
+
+  </div>
+
+  <!-- 学習のヒント -->
+  <div class="hint-box">
+    <h3>🎯 Chapter 2 学習のヒント</h3>
+    <ul>
+      <li>2-1〜2-4 は基礎固め。特に <strong>スコープ・型変換・制御フロー</strong> は試験頻出です。</li>
+      <li>2-5・2-6 の <strong>配列メソッドとプロトタイプ</strong> は実装問題でよく問われます。</li>
+      <li>2-7 の <strong>アロー関数の this</strong> と <strong>call/apply/bind</strong> の違いは必ず押さえましょう。</li>
+      <li>2-8 の <strong>クロージャとスコープチェーン</strong> は Level 2 最重要トピックのひとつです。</li>
+      <li>各セクション末尾の演習問題を解いてから「完了」ボタンを押すと進捗が記録されます。</li>
+    </ul>
+  </div>
+
+  <!-- ページナビ -->
+  <nav class="page-nav">
+    <a class="nav-btn prev" href="../ch01/index.html">← Chapter 1 へ</a>
+    <a class="nav-btn home" href="../index.html">🏠 サイトトップ</a>
+    <a class="nav-btn next" href="01_js_ecma.html">2-1 を始める →</a>
+  </nav>
+
+  <footer>
+    <p>HTML5 Professional Level 2 試験対策サイト &copy; 2026</p>
+  </footer>
+
+  <script>
+    // ── 進捗バー & カード完了表示 ──
+    const keys = [
+      'html5lv2_ch2_01',
+      'html5lv2_ch2_02',
+      'html5lv2_ch2_03',
+      'html5lv2_ch2_04',
+      'html5lv2_ch2_05',
+      'html5lv2_ch2_06',
+      'html5lv2_ch2_07',
+      'html5lv2_ch2_08',
+    ];
+
+    function updateProgress() {
+      let done = 0;
+      keys.forEach((key, i) => {
+        if (localStorage.getItem(key) === 'done') {
+          done++;
+          const num = String(i + 1).padStart(2, '0');
+          const card = document.getElementById('card-' + num);
+          if (card) card.classList.add('done');
+        }
+      });
+      const pct = Math.round((done / keys.length) * 100);
+      document.getElementById('progressFill').style.width = pct + '%';
+      document.getElementById('progressText').textContent =
+        done + ' / ' + keys.length + ' セクション完了（' + pct + '%）';
+    }
+
+    updateProgress();
+  </script>
+
+</body>
+</html>

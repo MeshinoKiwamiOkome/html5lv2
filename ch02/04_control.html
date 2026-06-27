@@ -1,0 +1,1158 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>2-4 制御文 | Chapter 2 | HTML5 Level 2 試験対策</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Segoe UI', 'Helvetica Neue', sans-serif;
+      max-width: 960px; margin: 40px auto; padding: 0 24px;
+      background: #f0f4f8; color: #2d3748; line-height: 1.8;
+    }
+    .breadcrumb { font-size: 0.85rem; color: #718096; margin-bottom: 24px; }
+    .breadcrumb a { color: #553c9a; text-decoration: none; }
+    .breadcrumb a:hover { text-decoration: underline; }
+    .breadcrumb span { margin: 0 6px; }
+
+    .chapter-header {
+      background: linear-gradient(135deg, #553c9a, #9f7aea);
+      border-radius: 16px; padding: 36px 36px 32px;
+      color: #fff; margin-bottom: 32px;
+      position: relative; overflow: hidden;
+    }
+    .chapter-header::before {
+      content: ''; position: absolute; top: -50px; right: -50px;
+      width: 200px; height: 200px;
+      background: rgba(255,255,255,0.07); border-radius: 50%;
+    }
+    .chapter-header h1 { font-size: 1.75rem; font-weight: 700; margin-bottom: 8px; position: relative; z-index: 1; }
+    .chapter-header p  { font-size: 0.95rem; opacity: 0.9; margin-bottom: 18px; position: relative; z-index: 1; }
+    .badge-row { display: flex; flex-wrap: wrap; gap: 8px; position: relative; z-index: 1; }
+    .badge {
+      background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.35);
+      border-radius: 20px; padding: 3px 13px; font-size: 0.78rem; font-weight: 600;
+    }
+
+    .section-nav {
+      background: #fff; border-radius: 12px; padding: 20px 24px;
+      margin-bottom: 32px; box-shadow: 0 2px 12px rgba(85,60,154,0.07);
+    }
+    .section-nav h3 { font-size: 0.85rem; color: #9f7aea; font-weight: 700; margin-bottom: 12px; letter-spacing: 0.06em; }
+    .section-nav ul { list-style: none; display: flex; flex-direction: column; gap: 4px; }
+    .section-nav ul li a {
+      font-size: 0.88rem; color: #553c9a; text-decoration: none;
+      padding: 4px 10px; border-radius: 6px; display: block; transition: background 0.15s;
+    }
+    .section-nav ul li a:hover { background: #f3e8ff; }
+    .section-nav ul li.current a { font-weight: 700; color: #44337a; background: #ede9fe; }
+
+    .content-card {
+      background: #fff; border-radius: 14px; padding: 32px 36px;
+      margin-bottom: 28px; box-shadow: 0 2px 12px rgba(85,60,154,0.07);
+    }
+    .content-card h2 {
+      font-size: 1.25rem; font-weight: 700; color: #553c9a;
+      margin-bottom: 18px; padding-bottom: 10px;
+      border-bottom: 2px solid #e9d8fd;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .content-card h3 { font-size: 1rem; font-weight: 700; color: #44337a; margin: 22px 0 10px; }
+    .content-card p  { font-size: 0.95rem; color: #4a5568; margin-bottom: 14px; }
+    .content-card ul, .content-card ol { padding-left: 1.4em; margin-bottom: 14px; font-size: 0.93rem; color: #4a5568; }
+    .content-card li { margin-bottom: 6px; }
+
+    .tbl-wrap { overflow-x: auto; margin: 16px 0; }
+    table { width: 100%; border-collapse: collapse; font-size: 0.88rem; }
+    th { background: linear-gradient(135deg, #553c9a, #9f7aea); color: #fff; padding: 10px 14px; text-align: left; font-weight: 600; }
+    td { padding: 9px 14px; border-bottom: 1px solid #e2e8f0; color: #4a5568; }
+    tr:hover td { background: #faf5ff; }
+    tr:last-child td { border-bottom: none; }
+
+    .code-block {
+      background: #1a202c; border-radius: 10px; padding: 20px 22px;
+      margin: 16px 0; position: relative; overflow-x: auto;
+    }
+    .code-block pre {
+      font-family: 'Consolas', 'Monaco', monospace;
+      font-size: 0.88rem; line-height: 1.7; color: #e2e8f0; white-space: pre;
+    }
+    .copy-btn {
+      position: absolute; top: 10px; right: 12px;
+      background: #4a5568; color: #e2e8f0; border: none; border-radius: 6px;
+      padding: 4px 12px; font-size: 0.75rem; cursor: pointer; transition: background 0.15s;
+    }
+    .copy-btn:hover { background: #9f7aea; }
+    .copy-btn.copied { background: #48bb78; color: #fff; }
+
+    .comment { color: #68d391; }
+    .kw      { color: #b794f4; }
+    .fn      { color: #f6ad55; }
+    .str     { color: #fbd38d; }
+    .num     { color: #90cdf4; }
+    .op      { color: #fc8181; }
+    .out     { color: #a0aec0; }
+
+    .info-box { border-radius: 10px; padding: 16px 20px; margin: 16px 0; font-size: 0.9rem; }
+    .info-box.tip   { background: #f0fff4; border-left: 4px solid #48bb78; color: #276749; }
+    .info-box.warn  { background: #fffbeb; border-left: 4px solid #f6ad55; color: #744210; }
+    .info-box.point { background: #faf5ff; border-left: 4px solid #9f7aea; color: #44337a; }
+
+    /* ── デモカード ── */
+    .demo-card {
+      background: #faf5ff; border: 2px solid #d6bcfa;
+      border-radius: 14px; padding: 28px 30px; margin-bottom: 28px;
+    }
+    .demo-card h3 {
+      font-size: 1rem; font-weight: 700; color: #553c9a;
+      margin-bottom: 6px; display: flex; align-items: center; gap: 8px;
+    }
+    .demo-desc { font-size: 0.88rem; color: #553c9a; margin-bottom: 18px; }
+
+    /* switch フォールスルービジュアライザ */
+    .sw-controls { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 18px; align-items: flex-end; }
+    .sw-field { display: flex; flex-direction: column; gap: 4px; }
+    .sw-field label { font-size: 0.8rem; font-weight: 700; color: #553c9a; }
+    .sw-select, .sw-toggle {
+      padding: 8px 14px; border: 2px solid #c4b5fd; border-radius: 8px;
+      font-size: 0.9rem; color: #553c9a; font-weight: 700;
+      background: #fff; cursor: pointer;
+    }
+    .run-btn {
+      padding: 10px 22px; background: linear-gradient(135deg, #553c9a, #9f7aea);
+      color: #fff; border: none; border-radius: 8px;
+      font-size: 0.88rem; font-weight: 700; cursor: pointer; transition: opacity 0.15s;
+      align-self: flex-end;
+    }
+    .run-btn:hover { opacity: 0.88; }
+
+    .sw-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    @media(max-width:600px){ .sw-layout { grid-template-columns: 1fr; } }
+
+    .sw-code {
+      background: #1a202c; border-radius: 10px; padding: 16px 18px;
+      font-family: 'Consolas', monospace; font-size: 0.82rem;
+      line-height: 1.8; color: #e2e8f0; overflow-x: auto;
+    }
+    .sw-code .hl { background: rgba(159,122,234,0.3); border-left: 3px solid #9f7aea; display: block; margin: 0 -18px; padding: 0 18px; }
+    .sw-code .hl-exec { background: rgba(72,187,120,0.2); border-left: 3px solid #48bb78; display: block; margin: 0 -18px; padding: 0 18px; }
+
+    .sw-trace {
+      background: #fff; border-radius: 10px; padding: 16px 18px;
+      font-size: 0.88rem; color: #4a5568;
+    }
+    .sw-trace h4 { font-size: 0.85rem; font-weight: 700; color: #553c9a; margin-bottom: 10px; }
+    .trace-step {
+      display: flex; gap: 10px; align-items: flex-start;
+      padding: 6px 0; border-bottom: 1px dashed #e2e8f0; font-size: 0.83rem;
+    }
+    .trace-step:last-child { border-bottom: none; }
+    .trace-icon { font-size: 1rem; flex-shrink: 0; margin-top: 1px; }
+    .trace-text { color: #4a5568; }
+    .trace-text strong { color: #553c9a; }
+
+    /* try/catch/finally アニメーション */
+    .tcf-controls { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 18px; }
+    .tcf-btn {
+      padding: 8px 18px; border-radius: 8px; border: 2px solid #c4b5fd;
+      background: #fff; color: #553c9a; font-weight: 700; font-size: 0.85rem;
+      cursor: pointer; transition: all 0.15s;
+    }
+    .tcf-btn.active { background: #553c9a; color: #fff; border-color: #553c9a; }
+    .tcf-btn:hover:not(.active) { background: #ede9fe; }
+
+    .tcf-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    @media(max-width:600px){ .tcf-layout { grid-template-columns: 1fr; } }
+
+    .tcf-blocks { display: flex; flex-direction: column; gap: 8px; }
+    .tcf-block {
+      border-radius: 10px; padding: 14px 16px;
+      font-family: 'Consolas', monospace; font-size: 0.82rem;
+      line-height: 1.7; border: 2px solid transparent;
+      transition: all 0.3s;
+    }
+    .tcf-block.try-blk     { background: #1a202c; color: #e2e8f0; border-color: #4a5568; }
+    .tcf-block.catch-blk   { background: #1a202c; color: #e2e8f0; border-color: #4a5568; }
+    .tcf-block.finally-blk { background: #1a202c; color: #e2e8f0; border-color: #4a5568; }
+    .tcf-block.active-try     { border-color: #68d391; box-shadow: 0 0 12px rgba(104,211,145,0.3); }
+    .tcf-block.active-catch   { border-color: #fc8181; box-shadow: 0 0 12px rgba(252,129,129,0.3); }
+    .tcf-block.active-finally { border-color: #f6ad55; box-shadow: 0 0 12px rgba(246,173,85,0.3); }
+    .tcf-block .blk-label {
+      font-family: 'Segoe UI', sans-serif; font-size: 0.75rem;
+      font-weight: 700; margin-bottom: 6px;
+    }
+    .tcf-block.try-blk .blk-label     { color: #68d391; }
+    .tcf-block.catch-blk .blk-label   { color: #fc8181; }
+    .tcf-block.finally-blk .blk-label { color: #f6ad55; }
+
+    .tcf-flow {
+      background: #fff; border-radius: 10px; padding: 16px 18px;
+    }
+    .tcf-flow h4 { font-size: 0.85rem; font-weight: 700; color: #553c9a; margin-bottom: 12px; }
+    .flow-step {
+      display: flex; gap: 8px; align-items: center;
+      padding: 7px 10px; border-radius: 6px; margin-bottom: 6px;
+      font-size: 0.83rem; transition: all 0.3s;
+    }
+    .flow-step.pending  { background: #f7fafc; color: #a0aec0; }
+    .flow-step.running  { background: #faf5ff; color: #553c9a; font-weight: 700; border: 1px solid #c4b5fd; }
+    .flow-step.done-ok  { background: #f0fff4; color: #276749; }
+    .flow-step.done-err { background: #fff5f5; color: #c53030; }
+    .flow-step.done-fin { background: #fffbeb; color: #744210; }
+    .flow-icon { font-size: 1rem; }
+
+    /* for...in vs for...of */
+    .forin-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    @media(max-width:580px){ .forin-grid { grid-template-columns: 1fr; } }
+    .forin-card {
+      background: #1a202c; border-radius: 10px; padding: 16px 18px;
+      font-family: 'Consolas', monospace; font-size: 0.82rem;
+      line-height: 1.8; color: #e2e8f0;
+    }
+    .forin-card h4 {
+      font-family: 'Segoe UI', sans-serif; font-size: 0.85rem;
+      font-weight: 700; color: #9f7aea; margin-bottom: 10px;
+    }
+    .forin-result {
+      background: #fff; border-radius: 8px; padding: 12px 14px;
+      font-size: 0.85rem; color: #4a5568; margin-top: 10px;
+    }
+    .forin-input {
+      width: 100%; padding: 8px 12px; border: 2px solid #c4b5fd;
+      border-radius: 6px; font-size: 0.88rem; font-family: 'Consolas', monospace;
+      margin-bottom: 10px;
+    }
+    .forin-input:focus { outline: none; border-color: #553c9a; }
+
+    /* ── 演習問題 ── */
+    .quiz-section {
+      background: #fff; border-radius: 14px; padding: 32px 36px;
+      margin-bottom: 28px; box-shadow: 0 2px 12px rgba(85,60,154,0.07);
+    }
+    .quiz-section h2 {
+      font-size: 1.2rem; font-weight: 700; color: #553c9a;
+      margin-bottom: 24px; padding-bottom: 10px; border-bottom: 2px solid #e9d8fd;
+    }
+    .quiz-item { margin-bottom: 32px; padding-bottom: 28px; border-bottom: 1px dashed #e2e8f0; }
+    .quiz-item:last-child { border-bottom: none; margin-bottom: 0; }
+    .quiz-q {
+      font-size: 0.95rem; font-weight: 700; color: #2d3748;
+      margin-bottom: 14px; background: #faf5ff;
+      padding: 12px 16px; border-radius: 8px; border-left: 4px solid #9f7aea;
+    }
+    .quiz-q .q-num {
+      display: inline-block; background: #553c9a; color: #fff;
+      border-radius: 6px; padding: 1px 9px; font-size: 0.8rem; margin-right: 8px;
+    }
+    .blank-input {
+      border: 2px solid #c4b5fd; border-radius: 6px; padding: 4px 10px;
+      font-size: 0.9rem; font-family: 'Consolas', monospace;
+      color: #2d3748; background: #faf5ff; width: 130px; transition: border-color 0.15s;
+    }
+    .blank-input:focus { outline: none; border-color: #553c9a; }
+    .blank-input.correct { border-color: #48bb78; background: #f0fff4; }
+    .blank-input.wrong   { border-color: #fc8181; background: #fff5f5; }
+
+    .choices { display: flex; flex-direction: column; gap: 8px; }
+    .choice-btn {
+      padding: 10px 16px; border-radius: 8px; border: 2px solid #e2e8f0;
+      background: #fff; color: #2d3748; font-size: 0.9rem;
+      cursor: pointer; text-align: left; transition: all 0.15s;
+    }
+    .choice-btn:hover:not(:disabled) { border-color: #9f7aea; background: #faf5ff; }
+    .choice-btn.correct { border-color: #48bb78; background: #f0fff4; color: #276749; font-weight: 700; }
+    .choice-btn.wrong   { border-color: #fc8181; background: #fff5f5; color: #c53030; }
+
+    .checkbox-list { display: flex; flex-direction: column; gap: 8px; }
+    .cb-label {
+      display: flex; align-items: center; gap: 10px;
+      padding: 10px 14px; border-radius: 8px;
+      border: 2px solid #e2e8f0; background: #fff;
+      cursor: pointer; font-size: 0.9rem; transition: all 0.15s;
+    }
+    .cb-label:hover { border-color: #9f7aea; background: #faf5ff; }
+    .cb-label input[type="checkbox"] { width: 16px; height: 16px; accent-color: #553c9a; }
+    .cb-label.correct { border-color: #48bb78; background: #f0fff4; }
+    .cb-label.wrong   { border-color: #fc8181; background: #fff5f5; }
+
+    .code-fill {
+      background: #1a202c; border-radius: 10px; padding: 18px 20px;
+      font-family: 'Consolas', 'Monaco', monospace;
+      font-size: 0.88rem; line-height: 1.9; color: #e2e8f0; margin-bottom: 12px;
+    }
+    .fill-input {
+      background: #2d3748; border: 1px solid #9f7aea; border-radius: 4px;
+      color: #fbd38d; font-family: 'Consolas', monospace;
+      font-size: 0.88rem; padding: 1px 8px; width: 140px;
+    }
+    .fill-input:focus { outline: none; border-color: #b794f4; }
+    .fill-input.correct { border-color: #48bb78; background: #1c3a2a; color: #68d391; }
+    .fill-input.wrong   { border-color: #fc8181; background: #3a1c1c; color: #fc8181; }
+
+    .check-btn {
+      margin-top: 12px; padding: 9px 22px;
+      background: linear-gradient(135deg, #553c9a, #9f7aea);
+      color: #fff; border: none; border-radius: 8px;
+      font-size: 0.88rem; font-weight: 700; cursor: pointer; transition: opacity 0.15s;
+    }
+    .check-btn:hover { opacity: 0.88; }
+    .feedback { margin-top: 10px; padding: 10px 16px; border-radius: 8px; font-size: 0.88rem; display: none; }
+    .feedback.show { display: block; }
+    .feedback.ok { background: #f0fff4; color: #276749; border-left: 4px solid #48bb78; }
+    .feedback.ng { background: #fff5f5; color: #c53030; border-left: 4px solid #fc8181; }
+
+    .complete-area { text-align: center; padding: 32px 0 8px; }
+    .complete-btn {
+      padding: 14px 40px; background: linear-gradient(135deg, #553c9a, #9f7aea);
+      color: #fff; border: none; border-radius: 12px;
+      font-size: 1rem; font-weight: 700; cursor: pointer;
+      transition: opacity 0.15s, transform 0.15s;
+      box-shadow: 0 4px 16px rgba(85,60,154,0.3);
+    }
+    .complete-btn:hover { opacity: 0.9; transform: translateY(-2px); }
+    .complete-btn.done { background: linear-gradient(135deg, #38a169, #68d391); }
+    .complete-msg { margin-top: 12px; font-size: 0.9rem; color: #718096; }
+
+    .page-nav {
+      display: flex; justify-content: space-between; align-items: center;
+      gap: 12px; margin-top: 40px; flex-wrap: wrap;
+    }
+    .nav-btn {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 12px 22px; border-radius: 10px;
+      font-size: 0.9rem; font-weight: 600; text-decoration: none;
+      transition: background 0.18s, transform 0.18s;
+    }
+    .nav-btn.prev  { background: #e9d8fd; color: #553c9a; }
+    .nav-btn.prev:hover  { background: #d6bcfa; transform: translateX(-2px); }
+    .nav-btn.index { background: linear-gradient(135deg, #553c9a, #9f7aea); color: #fff; }
+    .nav-btn.index:hover { opacity: 0.9; }
+    .nav-btn.next  { background: #553c9a; color: #fff; }
+    .nav-btn.next:hover  { background: #44337a; transform: translateX(2px); }
+
+    footer {
+      text-align: center; font-size: 0.8rem; color: #a0aec0;
+      margin-top: 48px; padding-top: 24px; border-top: 1px solid #e2e8f0;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- パンくずナビ -->
+  <nav class="breadcrumb">
+    <a href="../index.html">🏠 HTML5 Level 2</a>
+    <span>›</span>
+    <a href="index.html">Chapter 2</a>
+    <span>›</span>
+    <strong>2-4 制御文</strong>
+  </nav>
+
+  <!-- 章ヘッダー -->
+  <header class="chapter-header">
+    <h1>🔀 2-4 制御文</h1>
+    <p>if / switch / while / for / try-catch-finally、エラーオブジェクトを完全マスターする。</p>
+    <div class="badge-row">
+      <span class="badge">🔀 if / switch</span>
+      <span class="badge">🔁 while / for</span>
+      <span class="badge">⚠️ try / catch</span>
+      <span class="badge">🚨 Error オブジェクト</span>
+      <span class="badge">✏️ 演習4問</span>
+    </div>
+  </header>
+
+  <!-- セクションナビ -->
+  <nav class="section-nav">
+    <h3>📋 CHAPTER 2 セクション一覧</h3>
+    <ul>
+      <li><a href="01_js_ecma.html">2-1 JavaScriptとは</a></li>
+      <li><a href="02_variables.html">2-2 変数と型</a></li>
+      <li><a href="03_expressions.html">2-3 式と演算子</a></li>
+      <li class="current"><a href="04_control.html">2-4 制御文</a></li>
+      <li><a href="05_arrays.html">2-5 配列</a></li>
+      <li><a href="06_objects.html">2-6 オブジェクト</a></li>
+      <li><a href="07_functions.html">2-7 関数</a></li>
+      <li><a href="08_global.html">2-8 グローバルオブジェクトとCallオブジェクト</a></li>
+    </ul>
+  </nav>
+
+  <!-- ===== 1. 条件分岐 ===== -->
+  <div class="content-card">
+    <h2>🔀 条件分岐：if / switch</h2>
+
+    <h3>if / else if / else</h3>
+    <div class="code-block">
+      <button class="copy-btn" onclick="copyCode(this)">copy</button>
+      <pre><span class="kw">const</span> score <span class="op">=</span> <span class="num">75</span>;
+
+<span class="kw">if</span> (score <span class="op">&gt;=</span> <span class="num">90</span>) {
+  <span class="fn">console</span>.<span class="fn">log</span>(<span class="str">'A'</span>);
+} <span class="kw">else if</span> (score <span class="op">&gt;=</span> <span class="num">70</span>) {
+  <span class="fn">console</span>.<span class="fn">log</span>(<span class="str">'B'</span>); <span class="out">// ← 実行される</span>
+} <span class="kw">else if</span> (score <span class="op">&gt;=</span> <span class="num">50</span>) {
+  <span class="fn">console</span>.<span class="fn">log</span>(<span class="str">'C'</span>);
+} <span class="kw">else</span> {
+  <span class="fn">console</span>.<span class="fn">log</span>(<span class="str">'D'</span>);
+}</pre>
+    </div>
+
+    <h3>switch 文とフォールスルー</h3>
+    <p>
+      <code>switch</code> 文は <code>break</code> を書かないと次の <code>case</code> に処理が
+      <strong>フォールスルー（fall through）</strong> します。試験頻出の注意点です。
+    </p>
+    <div class="code-block">
+      <button class="copy-btn" onclick="copyCode(this)">copy</button>
+      <pre><span class="kw">const</span> day <span class="op">=</span> <span class="num">2</span>;
+
+<span class="kw">switch</span> (day) {
+  <span class="kw">case</span> <span class="num">1</span>:
+    <span class="fn">console</span>.<span class="fn">log</span>(<span class="str">'月曜'</span>);
+    <span class="kw">break</span>;           <span class="comment">// ← breakで次のcaseへ落ちない</span>
+  <span class="kw">case</span> <span class="num">2</span>:
+    <span class="fn">console</span>.<span class="fn">log</span>(<span class="str">'火曜'</span>); <span class="out">// ← 実行</span>
+    <span class="comment">// break がない！→ フォールスルー</span>
+  <span class="kw">case</span> <span class="num">3</span>:
+    <span class="fn">console</span>.<span class="fn">log</span>(<span class="str">'水曜'</span>); <span class="out">// ← フォールスルーで実行される</span>
+    <span class="kw">break</span>;
+  <span class="kw">default</span>:
+    <span class="fn">console</span>.<span class="fn">log</span>(<span class="str">'その他'</span>);
+}
+<span class="comment">// 出力: "火曜" → "水曜"</span>
+
+<span class="comment">// フォールスルーを意図的に使う例（複数caseで同じ処理）</span>
+<span class="kw">switch</span> (day) {
+  <span class="kw">case</span> <span class="num">6</span>:
+  <span class="kw">case</span> <span class="num">7</span>:
+    <span class="fn">console</span>.<span class="fn">log</span>(<span class="str">'週末'</span>); <span class="comment">// 6と7で同じ処理</span>
+    <span class="kw">break</span>;
+  <span class="kw">default</span>:
+    <span class="fn">console</span>.<span class="fn">log</span>(<span class="str">'平日'</span>);
+}</pre>
+    </div>
+
+    <div class="info-box warn">
+      <strong>⚠️ 試験頻出：</strong>
+      switch 文の <code>case</code> は <strong>厳密等価（===）</strong> で比較します。
+      <code>break</code> を忘れると意図しないフォールスルーが発生します。
+      <code>default</code> は最後でなくても記述できますが、通常は最後に書きます。
+    </div>
+  </div>
+
+  <!-- ===== 2. ループ ===== -->
+  <div class="content-card">
+    <h2>🔁 ループ：while / for</h2>
+
+    <h3>while / do...while</h3>
+    <div class="code-block">
+      <button class="copy-btn" onclick="copyCode(this)">copy</button>
+      <pre><span class="comment">// while：条件が true の間繰り返す（0回実行の可能性あり）</span>
+<span class="kw">let</span> i <span class="op">=</span> <span class="num">0</span>;
+<span class="kw">while</span> (i <span class="op">&lt;</span> <span class="num">3</span>) {
+  <span class="fn">console</span>.<span class="fn">log</span>(i); <span class="out">// 0, 1, 2</span>
+  i<span class="op">++</span>;
+}
+
+<span class="comment">// do...while：必ず1回は実行してから条件チェック</span>
+<span class="kw">let</span> j <span class="op">=</span> <span class="num">10</span>;
+<span class="kw">do</span> {
+  <span class="fn">console</span>.<span class="fn">log</span>(j); <span class="out">// 10（条件falseでも1回実行）</span>
+  j<span class="op">++</span>;
+} <span class="kw">while</span> (j <span class="op">&lt;</span> <span class="num">3</span>);</pre>
+    </div>
+
+    <h3>for / for...in / for...of</h3>
+    <div class="code-block">
+      <button class="copy-btn" onclick="copyCode(this)">copy</button>
+      <pre><span class="comment">// for：カウンタ制御ループ</span>
+<span class="kw">for</span> (<span class="kw">let</span> i <span class="op">=</span> <span class="num">0</span>; i <span class="op">&lt;</span> <span class="num">3</span>; i<span class="op">++</span>) {
+  <span class="fn">console</span>.<span class="fn">log</span>(i); <span class="out">// 0, 1, 2</span>
+}
+
+<span class="comment">// for...in：オブジェクトのキー（プロパティ名）を列挙</span>
+<span class="kw">const</span> obj <span class="op">=</span> { a: <span class="num">1</span>, b: <span class="num">2</span>, c: <span class="num">3</span> };
+<span class="kw">for</span> (<span class="kw">const</span> key <span class="kw">in</span> obj) {
+  <span class="fn">console</span>.<span class="fn">log</span>(key, obj[key]); <span class="out">// "a" 1, "b" 2, "c" 3</span>
+}
+
+<span class="comment">// for...of：イテラブル（配列・文字列・Map・Set等）の値を列挙</span>
+<span class="kw">const</span> arr <span class="op">=</span> [<span class="num">10</span>, <span class="num">20</span>, <span class="num">30</span>];
+<span class="kw">for</span> (<span class="kw">const</span> val <span class="kw">of</span> arr) {
+  <span class="fn">console</span>.<span class="fn">log</span>(val); <span class="out">// 10, 20, 30</span>
+}
+
+<span class="comment">// 文字列にも for...of が使える</span>
+<span class="kw">for</span> (<span class="kw">const</span> ch <span class="kw">of</span> <span class="str">'hello'</span>) {
+  <span class="fn">console</span>.<span class="fn">log</span>(ch); <span class="out">// h, e, l, l, o</span>
+}</pre>
+    </div>
+
+    <div class="tbl-wrap">
+      <table>
+        <thead><tr><th>構文</th><th>対象</th><th>取得できるもの</th><th>注意点</th></tr></thead>
+        <tbody>
+          <tr>
+            <td><code>for...in</code></td>
+            <td>オブジェクト</td>
+            <td><strong>キー</strong>（プロパティ名）</td>
+            <td>プロトタイプのプロパティも列挙される場合あり</td>
+          </tr>
+          <tr>
+            <td><code>for...of</code></td>
+            <td>イテラブル（配列・文字列・Map・Set）</td>
+            <td><strong>値</strong></td>
+            <td>通常のオブジェクトには使えない</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>break / continue（ラベル付き）</h3>
+    <div class="code-block">
+      <button class="copy-btn" onclick="copyCode(this)">copy</button>
+      <pre><span class="comment">// break：ループを抜ける</span>
+<span class="kw">for</span> (<span class="kw">let</span> i <span class="op">=</span> <span class="num">0</span>; i <span class="op">&lt;</span> <span class="num">5</span>; i<span class="op">++</span>) {
+  <span class="kw">if</span> (i <span class="op">===</span> <span class="num">3</span>) <span class="kw">break</span>;
+  <span class="fn">console</span>.<span class="fn">log</span>(i); <span class="out">// 0, 1, 2</span>
+}
+
+<span class="comment">// continue：今回の繰り返しをスキップ</span>
+<span class="kw">for</span> (<span class="kw">let</span> i <span class="op">=</span> <span class="num">0</span>; i <span class="op">&lt;</span> <span class="num">5</span>; i<span class="op">++</span>) {
+  <span class="kw">if</span> (i <span class="op">===</span> <span class="num">2</span>) <span class="kw">continue</span>;
+  <span class="fn">console</span>.<span class="fn">log</span>(i); <span class="out">// 0, 1, 3, 4</span>
+}
+
+<span class="comment">// ラベル付き break（ネストしたループを一気に抜ける）</span>
+<span class="fn">outer</span>: <span class="kw">for</span> (<span class="kw">let</span> i <span class="op">=</span> <span class="num">0</span>; i <span class="op">&lt;</span> <span class="num">3</span>; i<span class="op">++</span>) {
+  <span class="kw">for</span> (<span class="kw">let</span> j <span class="op">=</span> <span class="num">0</span>; j <span class="op">&lt;</span> <span class="num">3</span>; j<span class="op">++</span>) {
+    <span class="kw">if</span> (i <span class="op">===</span> <span class="num">1</span> <span class="op">&amp;&amp;</span> j <span class="op">===</span> <span class="num">1</span>) <span class="kw">break</span> <span class="fn">outer</span>;
+    <span class="fn">console</span>.<span class="fn">log</span>(i, j); <span class="out">// (0,0)(0,1)(0,2)(1,0) で終了</span>
+  }
+}</pre>
+    </div>
+  </div>
+
+  <!-- ===== 3. 例外処理 ===== -->
+  <div class="content-card">
+    <h2>⚠️ 例外処理：try / catch / finally / throw</h2>
+
+    <div class="code-block">
+      <button class="copy-btn" onclick="copyCode(this)">copy</button>
+      <pre><span class="comment">// 基本構文</span>
+<span class="kw">try</span> {
+  <span class="comment">// 例外が発生する可能性のあるコード</span>
+  <span class="kw">const</span> result <span class="op">=</span> <span class="fn">JSON</span>.<span class="fn">parse</span>(<span class="str">'invalid json'</span>); <span class="comment">// SyntaxError発生</span>
+} <span class="kw">catch</span> (e) {
+  <span class="comment">// 例外が発生した場合に実行</span>
+  <span class="fn">console</span>.<span class="fn">log</span>(e.name);    <span class="out">// "SyntaxError"</span>
+  <span class="fn">console</span>.<span class="fn">log</span>(e.message); <span class="out">// エラーメッセージ</span>
+} <span class="kw">finally</span> {
+  <span class="comment">// 例外の有無に関わらず必ず実行</span>
+  <span class="fn">console</span>.<span class="fn">log</span>(<span class="str">'クリーンアップ処理'</span>);
+}
+
+<span class="comment">// throw：例外を意図的に投げる</span>
+<span class="kw">function</span> <span class="fn">divide</span>(a, b) {
+  <span class="kw">if</span> (b <span class="op">===</span> <span class="num">0</span>) {
+    <span class="kw">throw</span> <span class="kw">new</span> <span class="fn">RangeError</span>(<span class="str">'0で割ることはできません'</span>);
+  }
+  <span class="kw">return</span> a <span class="op">/</span> b;
+}
+
+<span class="kw">try</span> {
+  <span class="fn">console</span>.<span class="fn">log</span>(<span class="fn">divide</span>(<span class="num">10</span>, <span class="num">0</span>));
+} <span class="kw">catch</span> (e) {
+  <span class="fn">console</span>.<span class="fn">log</span>(e <span class="kw">instanceof</span> RangeError); <span class="out">// true</span>
+  <span class="fn">console</span>.<span class="fn">log</span>(e.message); <span class="out">// "0で割ることはできません"</span>
+}</pre>
+    </div>
+
+    <h3>エラーオブジェクトの種類</h3>
+    <div class="tbl-wrap">
+      <table>
+        <thead><tr><th>エラー型</th><th>発生する状況</th><th>例</th></tr></thead>
+        <tbody>
+          <tr><td><code>Error</code></td><td>汎用エラー（基底クラス）</td><td><code>new Error('msg')</code></td></tr>
+          <tr><td><code>SyntaxError</code></td><td>構文エラー</td><td><code>JSON.parse('bad')</code></td></tr>
+          <tr><td><code>TypeError</code></td><td>型が不正</td><td><code>null.property</code></td></tr>
+          <tr><td><code>RangeError</code></td><td>値が範囲外</td><td><code>new Array(-1)</code></td></tr>
+          <tr><td><code>ReferenceError</code></td><td>未定義の変数を参照</td><td><code>undeclaredVar</code></td></tr>
+          <tr><td><code>URIError</code></td><td>URI 関数の引数が不正</td><td><code>decodeURIComponent('%')</code></td></tr>
+          <tr><td><code>EvalError</code></td><td>eval() 関連（現在はほぼ未使用）</td><td>-</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="info-box point">
+      <strong>💡 試験ポイント：finally の実行タイミング</strong><br>
+      <code>finally</code> ブロックは <strong>try / catch の return 文より後に実行</strong>されます。
+      try 内で return しても finally は必ず実行されます。
+      また <code>catch</code> 節は省略可能（ES2019〜 <code>try {} finally {}</code> の形も可）。
+    </div>
+
+    <div class="code-block">
+      <button class="copy-btn" onclick="copyCode(this)">copy</button>
+      <pre><span class="comment">// finally は return より後に実行される</span>
+<span class="kw">function</span> <span class="fn">test</span>() {
+  <span class="kw">try</span> {
+    <span class="kw">return</span> <span class="str">'try'</span>;
+  } <span class="kw">finally</span> {
+    <span class="fn">console</span>.<span class="fn">log</span>(<span class="str">'finally実行'</span>); <span class="out">// ← returnの前に実行</span>
+  }
+}
+<span class="fn">console</span>.<span class="fn">log</span>(<span class="fn">test</span>()); <span class="out">// "finally実行" → "try"</span>
+
+<span class="comment">// エラーの種類を判別する</span>
+<span class="kw">try</span> {
+  <span class="kw">null</span>.property;
+} <span class="kw">catch</span> (e) {
+  <span class="kw">if</span> (e <span class="kw">instanceof</span> TypeError) {
+    <span class="fn">console</span>.<span class="fn">log</span>(<span class="str">'型エラー'</span>);
+  } <span class="kw">else if</span> (e <span class="kw">instanceof</span> ReferenceError) {
+    <span class="fn">console</span>.<span class="fn">log</span>(<span class="str">'参照エラー'</span>);
+  }
+}</pre>
+    </div>
+  </div>
+
+  <!-- ===== デモ①：switch フォールスルービジュアライザ ===== -->
+  <div class="demo-card">
+    <h3>🎮 デモ①：switch フォールスルー ビジュアライザ</h3>
+    <p class="demo-desc">値と break の有無を選択して、switch 文の実行フローを追跡できます。</p>
+
+    <div class="sw-controls">
+      <div class="sw-field">
+        <label>入力値（day）</label>
+        <select class="sw-select" id="swValue">
+          <option value="1">1（月曜）</option>
+          <option value="2" selected>2（火曜）</option>
+          <option value="3">3（水曜）</option>
+          <option value="4">4（木曜）</option>
+        </select>
+      </div>
+      <div class="sw-field">
+        <label>case 2 の break</label>
+        <select class="sw-select" id="swBreak">
+          <option value="no">なし（フォールスルー）</option>
+          <option value="yes">あり</option>
+        </select>
+      </div>
+      <button class="run-btn" onclick="runSwitch()">▶ 実行</button>
+    </div>
+
+    <div class="sw-layout">
+      <div class="sw-code" id="swCode"></div>
+      <div class="sw-trace">
+        <h4>📋 実行トレース</h4>
+        <div id="swTrace"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== デモ②：try/catch/finally フローアニメーション ===== -->
+  <div class="demo-card">
+    <h3>🎮 デモ②：try / catch / finally 実行フロー</h3>
+    <p class="demo-desc">シナリオを選ぶと try/catch/finally の実行順序をステップで確認できます。</p>
+
+    <div class="tcf-controls">
+      <button class="tcf-btn active" onclick="runTCF('normal', this)">正常実行</button>
+      <button class="tcf-btn" onclick="runTCF('error', this)">例外発生</button>
+      <button class="tcf-btn" onclick="runTCF('return', this)">try内でreturn</button>
+      <button class="tcf-btn" onclick="runTCF('rethrow', this)">catch内でthrow</button>
+    </div>
+
+    <div class="tcf-layout">
+      <div class="tcf-blocks">
+        <div class="tcf-block try-blk" id="tcf-try">
+          <div class="blk-label">try {</div>
+          <span class="kw">  // 処理A</span><br>
+          <span id="tcf-try-line2" class="kw">  // 処理B（エラー発生点）</span><br>
+          <span class="kw">  // 処理C</span><br>
+          <span style="color:#b794f4;">}</span>
+        </div>
+        <div class="tcf-block catch-blk" id="tcf-catch">
+          <div class="blk-label">catch (e) {</div>
+          <span class="kw">  // エラー処理</span><br>
+          <span style="color:#b794f4;">}</span>
+        </div>
+        <div class="tcf-block finally-blk" id="tcf-finally">
+          <div class="blk-label">finally {</div>
+          <span class="kw">  // クリーンアップ</span><br>
+          <span style="color:#b794f4;">}</span>
+        </div>
+      </div>
+      <div class="tcf-flow">
+        <h4>⚡ 実行ステップ</h4>
+        <div id="tcfSteps"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== デモ③：for...in vs for...of ===== -->
+  <div class="demo-card">
+    <h3>🎮 デモ③：for...in vs for...of 比較</h3>
+    <p class="demo-desc">配列・オブジェクトに対して for...in と for...of がどう動くか確認できます。</p>
+    <div class="forin-grid">
+      <div>
+        <input class="forin-input" id="forinTarget"
+          placeholder="対象（例: [10,20,30] または {a:1,b:2}）"
+          value="[10, 20, 30]">
+        <button class="run-btn" style="width:100%;margin-bottom:10px;" onclick="runForIn()">▶ for...in 実行</button>
+        <div class="forin-card">
+          <h4>for...in（キーを列挙）</h4>
+          <div id="forinCode" style="color:#e2e8f0;font-size:0.82rem;line-height:1.8;"></div>
+        </div>
+        <div class="forin-result" id="forinResult">結果がここに表示されます</div>
+      </div>
+      <div>
+        <input class="forin-input" id="forofTarget"
+          placeholder="対象（例: [10,20,30] または 'hello'）"
+          value="[10, 20, 30]">
+        <button class="run-btn" style="width:100%;margin-bottom:10px;" onclick="runForOf()">▶ for...of 実行</button>
+        <div class="forin-card">
+          <h4>for...of（値を列挙）</h4>
+          <div id="forofCode" style="color:#e2e8f0;font-size:0.82rem;line-height:1.8;"></div>
+        </div>
+        <div class="forin-result" id="forofResult">結果がここに表示されます</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== 演習問題 ===== -->
+  <div class="quiz-section">
+    <h2>✏️ 演習問題</h2>
+
+    <!-- Q1：穴埋め -->
+    <div class="quiz-item">
+      <div class="quiz-q">
+        <span class="q-num">Q1</span>
+        switch 文のフォールスルーについて空欄を埋めてください。（穴埋め）
+      </div>
+      <p style="font-size:0.92rem;color:#4a5568;margin-bottom:14px;">
+        switch 文で <code>case</code> の処理が終わった後に次の <code>case</code> へ処理が流れることを
+        <input class="blank-input" id="q1a" placeholder="？？？"> という。
+        これを防ぐには各 <code>case</code> の末尾に
+        <input class="blank-input" id="q1b" placeholder="？？？"> 文を書く。
+        また <code>case</code> の比較は <input class="blank-input" id="q1c" placeholder="？？？">
+        演算子（型変換なし）で行われる。
+      </p>
+      <button class="check-btn" onclick="checkQ1()">判定する</button>
+      <div class="feedback" id="fb1"></div>
+    </div>
+
+    <!-- Q2：選択 -->
+    <div class="quiz-item">
+      <div class="quiz-q">
+        <span class="q-num">Q2</span>
+        次のコードで最後に出力される値はどれですか？（選択）
+      </div>
+      <div class="code-fill" style="margin-bottom:14px;">
+<span class="kw">function</span> <span class="fn">test</span>() {
+  <span class="kw">try</span> {
+    <span class="kw">return</span> <span class="num">1</span>;
+  } <span class="kw">catch</span> (e) {
+    <span class="kw">return</span> <span class="num">2</span>;
+  } <span class="kw">finally</span> {
+    <span class="kw">return</span> <span class="num">3</span>;
+  }
+}
+<span class="fn">console</span>.<span class="fn">log</span>(<span class="fn">test</span>());
+      </div>
+      <div class="choices">
+        <button class="choice-btn" onclick="checkQ2(this,false)">A. 1</button>
+        <button class="choice-btn" onclick="checkQ2(this,false)">B. 2</button>
+        <button class="choice-btn" onclick="checkQ2(this,true)">C. 3</button>
+        <button class="choice-btn" onclick="checkQ2(this,false)">D. undefined</button>
+      </div>
+      <div class="feedback" id="fb2"></div>
+    </div>
+
+    <!-- Q3：チェックボックス -->
+    <div class="quiz-item">
+      <div class="quiz-q">
+        <span class="q-num">Q3</span>
+        ループ制御について<strong>正しい</strong>ものをすべて選んでください。（複数選択）
+      </div>
+      <div class="checkbox-list" id="q3-list">
+        <label class="cb-label"><input type="checkbox" value="a">
+          <code>for...in</code> はオブジェクトのキー（プロパティ名）を列挙する</label>
+        <label class="cb-label"><input type="checkbox" value="b">
+          <code>for...of</code> は通常のオブジェクト（<code>{}</code>）に使える</label>
+        <label class="cb-label"><input type="checkbox" value="c">
+          <code>do...while</code> は条件が最初から false でも必ず1回実行される</label>
+        <label class="cb-label"><input type="checkbox" value="d">
+          ラベル付き <code>break</code> でネストした外側のループを一気に抜けられる</label>
+        <label class="cb-label"><input type="checkbox" value="e">
+          <code>continue</code> はループ全体を終了する</label>
+      </div>
+      <button class="check-btn" onclick="checkQ3()">判定する</button>
+      <div class="feedback" id="fb3"></div>
+    </div>
+
+    <!-- Q4：コード補完 -->
+    <div class="quiz-item">
+      <div class="quiz-q">
+        <span class="q-num">Q4</span>
+        0除算のときに <code>RangeError</code> を投げ、必ずログを出力するコードを完成させてください。（コード補完）
+      </div>
+      <div class="code-fill">
+<span class="kw">function</span> <span class="fn">safeDivide</span>(a, b) {
+  <span class="kw">if</span> (b <span class="op">===</span> <span class="num">0</span>) <span class="kw">throw</span> <span class="kw">new</span> <span class="fn">RangeError</span>(<span class="str">'0除算'</span>);
+  <span class="kw">return</span> a <span class="op">/</span> b;
+}
+
+<input class="fill-input" id="q4a" placeholder="ブロック名"> {
+  <span class="fn">console</span>.<span class="fn">log</span>(<span class="fn">safeDivide</span>(<span class="num">10</span>, <span class="num">0</span>));
+} <input class="fill-input" id="q4b" placeholder="ブロック名"> (e) {
+  <span class="fn">console</span>.<span class="fn">log</span>(e.message);
+} <input class="fill-input" id="q4c" placeholder="ブロック名"> {
+  <span class="fn">console</span>.<span class="fn">log</span>(<span class="str">'処理完了'</span>); <span class="comment">// 必ず実行</span>
+}
+      </div>
+      <button class="check-btn" onclick="checkQ4()">判定する</button>
+      <div class="feedback" id="fb4"></div>
+    </div>
+
+  </div>
+
+  <!-- 完了ボタン -->
+  <div class="complete-area">
+    <button class="complete-btn" id="completeBtn" onclick="markComplete()">
+      ✅ セクション 2-4 を完了にする
+    </button>
+    <div class="complete-msg" id="completeMsg"></div>
+  </div>
+
+  <!-- ページナビ -->
+  <nav class="page-nav">
+    <a class="nav-btn prev" href="03_expressions.html">← 2-3 式と演算子</a>
+    <a class="nav-btn index" href="index.html">📋 Chapter 2 目次</a>
+    <a class="nav-btn next" href="05_arrays.html">2-5 配列 →</a>
+  </nav>
+
+  <footer>
+    <p>HTML5 Professional Level 2 試験対策サイト &copy; 2026</p>
+  </footer>
+
+  <script>
+    // ── コピーボタン ──
+    function copyCode(btn) {
+      const pre = btn.nextElementSibling;
+      navigator.clipboard.writeText(pre.innerText).then(() => {
+        btn.textContent = 'copied!';
+        btn.classList.add('copied');
+        setTimeout(() => { btn.textContent = 'copy'; btn.classList.remove('copied'); }, 2000);
+      });
+    }
+
+    // ── デモ①：switch フォールスルービジュアライザ ──
+    function runSwitch() {
+      const val      = parseInt(document.getElementById('swValue').value);
+      const hasBreak = document.getElementById('swBreak').value === 'yes';
+
+      const cases = [
+        { num: 1, label: '月曜' },
+        { num: 2, label: '火曜' },
+        { num: 3, label: '水曜' },
+        { num: 4, label: '木曜' },
+      ];
+
+      // コード生成
+      let codeHtml = `<span class="kw">switch</span> (day) {\n`;
+      cases.forEach(c => {
+        const isMatch = c.num === val;
+        const isCase2 = c.num === 2;
+        const lineOpen  = `  <span class="kw">case</span> <span class="num">${c.num}</span>:\n`;
+        const lineLog   = `    console.log(<span class="str">'${c.label}'</span>);\n`;
+        const lineBreak = isCase2 && !hasBreak ? '' : `    <span class="kw">break</span>;\n`;
+
+        if (isMatch) {
+          codeHtml += `<span class="hl">${lineOpen}</span>`;
+          codeHtml += `<span class="hl-exec">${lineLog}</span>`;
+          if (lineBreak) codeHtml += `<span class="hl">${lineBreak}</span>`;
+        } else if (isCase2 && !hasBreak && val === 2) {
+          // フォールスルー先
+          codeHtml += `<span class="hl-exec">${lineOpen}</span>`;
+          codeHtml += `<span class="hl-exec">${lineLog}</span>`;
+          codeHtml += `<span class="hl">${`    <span class="kw">break</span>;\n`}</span>`;
+        } else {
+          codeHtml += lineOpen + lineLog;
+          if (c.num !== 2 || hasBreak) codeHtml += `    <span class="kw">break</span>;\n`;
+        }
+      });
+      codeHtml += `  <span class="kw">default</span>:\n    console.log(<span class="str">'その他'</span>);\n}`;
+      document.getElementById('swCode').innerHTML = codeHtml;
+
+      // トレース生成
+      const steps = [];
+      steps.push({ icon: '▶️', text: `<strong>switch(${val})</strong> 評価開始` });
+
+      let executing = false;
+      let output = [];
+
+      cases.forEach(c => {
+        if (c.num === val) {
+          steps.push({ icon: '✅', text: `<strong>case ${c.num}</strong> に一致（=== で比較）` });
+          executing = true;
+        }
+        if (executing) {
+          steps.push({ icon: '⚡', text: `console.log('<strong>${c.label}</strong>') を実行` });
+          output.push(c.label);
+          if (c.num === 2 && !hasBreak) {
+            steps.push({ icon: '⚠️', text: `<strong>break がない</strong> → フォールスルー！次の case へ` });
+          } else {
+            steps.push({ icon: '🛑', text: `<strong>break</strong> → switch を抜ける` });
+            executing = false;
+          }
+        } else if (c.num !== val) {
+          steps.push({ icon: '⏭️', text: `case ${c.num} はスキップ` });
+        }
+      });
+
+      steps.push({ icon: '📤', text: `出力: <strong>${output.map(o => `"${o}"`).join(' → ')}</strong>` });
+
+      document.getElementById('swTrace').innerHTML = steps.map(s =>
+        `<div class="trace-step">
+          <span class="trace-icon">${s.icon}</span>
+          <span class="trace-text">${s.text}</span>
+        </div>`
+      ).join('');
+    }
+
+    // ── デモ②：try/catch/finally フロー ──
+    const tcfScenarios = {
+      normal: {
+        steps: [
+          { label: 'try ブロック開始',       state: 'done-ok',  blk: 'try' },
+          { label: '処理A 実行',             state: 'done-ok',  blk: 'try' },
+          { label: '処理B 実行（正常）',      state: 'done-ok',  blk: 'try' },
+          { label: '処理C 実行',             state: 'done-ok',  blk: 'try' },
+          { label: 'catch はスキップ',        state: 'pending',  blk: null  },
+          { label: 'finally ブロック実行',    state: 'done-fin', blk: 'finally' },
+          { label: '関数終了',               state: 'done-ok',  blk: null  },
+        ]
+      },
+      error: {
+        steps: [
+          { label: 'try ブロック開始',        state: 'done-ok',  blk: 'try' },
+          { label: '処理A 実行',              state: 'done-ok',  blk: 'try' },
+          { label: '処理B で例外発生！',       state: 'done-err', blk: 'try' },
+          { label: 'try を中断',              state: 'done-err', blk: 'try' },
+          { label: 'catch ブロック実行',       state: 'done-err', blk: 'catch' },
+          { label: 'finally ブロック実行',     state: 'done-fin', blk: 'finally' },
+          { label: '関数終了',                state: 'done-ok',  blk: null  },
+        ]
+      },
+      return: {
+        steps: [
+          { label: 'try ブロック開始',        state: 'done-ok',  blk: 'try' },
+          { label: '処理A 実行',              state: 'done-ok',  blk: 'try' },
+          { label: 'return 1 を評価',         state: 'done-ok',  blk: 'try' },
+          { label: 'return 前に finally 実行', state: 'done-fin', blk: 'finally' },
+          { label: 'finally 完了後に return',  state: 'done-ok',  blk: null  },
+          { label: '戻り値: 1',               state: 'done-ok',  blk: null  },
+        ]
+      },
+      rethrow: {
+        steps: [
+          { label: 'try ブロック開始',        state: 'done-ok',  blk: 'try' },
+          { label: '処理B で例外発生！',       state: 'done-err', blk: 'try' },
+          { label: 'catch ブロック実行',       state: 'done-err', blk: 'catch' },
+          { label: 'catch 内で throw（再スロー）', state: 'done-err', blk: 'catch' },
+          { label: 'finally ブロック実行',     state: 'done-fin', blk: 'finally' },
+          { label: '例外が上位に伝播',         state: 'done-err', blk: null  },
+        ]
+      }
+    };
+
+    function runTCF(scenario, btn) {
+      document.querySelectorAll('.tcf-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+
+      // ブロックのハイライトをリセット
+      ['tcf-try','tcf-catch','tcf-finally'].forEach(id => {
+        const el = document.getElementById(id);
+        el.classList.remove('active-try','active-catch','active-finally');
+      });
+
+      const steps = tcfScenarios[scenario].steps;
+      const stepsEl = document.getElementById('tcfSteps');
+
+      // ステップ表示（アニメーション）
+      stepsEl.innerHTML = steps.map((s, i) =>
+        `<div class="flow-step pending" id="tcf-step-${i}">
+          <span class="flow-icon">⬜</span>
+          <span>${s.label}</span>
+        </div>`
+      ).join('');
+
+      let i = 0;
+      const timer = setInterval(() => {
+        if (i >= steps.length) { clearInterval(timer); return; }
+        const s   = steps[i];
+        const el  = document.getElementById(`tcf-step-${i}`);
+        el.className = `flow-step ${s.state}`;
+        el.querySelector('.flow-icon').textContent =
+          s.state === 'done-ok'  ? '✅' :
+          s.state === 'done-err' ? '❌' :
+          s.state === 'done-fin' ? '🔶' : '⬜';
+
+        // ブロックハイライト
+        ['tcf-try','tcf-catch','tcf-finally'].forEach(id => {
+          document.getElementById(id).classList.remove('active-try','active-catch','active-finally');
+        });
+        if (s.blk === 'try')     document.getElementById('tcf-try').classList.add('active-try');
+        if (s.blk === 'catch')   document.getElementById('tcf-catch').classList.add('active-catch');
+        if (s.blk === 'finally') document.getElementById('tcf-finally').classList.add('active-finally');
+
+        i++;
+      }, 500);
+    }
+
+    // ── デモ③：for...in / for...of ──
+    function runForIn() {
+      const raw = document.getElementById('forinTarget').value.trim();
+      const codeEl   = document.getElementById('forinCode');
+      const resultEl = document.getElementById('forinResult');
+      try {
+        const target = Function('"use strict"; return (' + raw + ')')();
+        const keys = [];
+        for (const k in target) keys.push(k);
+        codeEl.innerHTML =
+          `<span class="kw">for</span> (<span class="kw">const</span> key <span class="kw">in</span> target) {<br>` +
+          `&nbsp;&nbsp;console.log(key);<br>}`;
+        resultEl.innerHTML = keys.length
+          ? keys.map(k => `<strong>${k}</strong>`).join(', ')
+          : '<span style="color:#a0aec0;">（列挙できるキーなし）</span>';
+      } catch(e) {
+        resultEl.innerHTML = `<span style="color:#c53030;">エラー: ${e.message}</span>`;
+      }
+    }
+
+    function runForOf() {
+      const raw = document.getElementById('forofTarget').value.trim();
+      const codeEl   = document.getElementById('forofCode');
+      const resultEl = document.getElementById('forofResult');
+      try {
+        const target = Function('"use strict"; return (' + raw + ')')();
+        const vals = [];
+        for (const v of target) vals.push(JSON.stringify(v));
+        codeEl.innerHTML =
+          `<span class="kw">for</span> (<span class="kw">const</span> val <span class="kw">of</span> target) {<br>` +
+          `&nbsp;&nbsp;console.log(val);<br>}`;
+        resultEl.innerHTML = vals.length
+          ? vals.map(v => `<strong>${v}</strong>`).join(', ')
+          : '<span style="color:#a0aec0;">（値なし）</span>';
+      } catch(e) {
+        const msg = e.message.includes('not iterable')
+          ? 'このオブジェクトは iterable ではありません（for...of は使えません）'
+          : e.message;
+        resultEl.innerHTML = `<span style="color:#c53030;">エラー: ${msg}</span>`;
+      }
+    }
+
+    // ── Q1 穴埋め ──
+    function checkQ1() {
+      const ans = [
+        { id: 'q1a', correct: ['フォールスルー', 'fall through', 'fallthrough'] },
+        { id: 'q1b', correct: ['break'] },
+        { id: 'q1c', correct: ['===', '厳密等価', '厳密'] },
+      ];
+      let allOk = true;
+      ans.forEach(a => {
+        const el  = document.getElementById(a.id);
+        const val = el.value.trim();
+        const ok  = a.correct.some(c => val.toLowerCase().includes(c.toLowerCase()));
+        el.classList.toggle('correct', ok);
+        el.classList.toggle('wrong', !ok);
+        if (!ok) allOk = false;
+      });
+      const fb = document.getElementById('fb1');
+      fb.className = 'feedback show ' + (allOk ? 'ok' : 'ng');
+      fb.innerHTML = allOk
+        ? '✅ 正解！ フォールスルー・break・===（厳密等価）がキーワードです。'
+        : '❌ キーワード：①「フォールスルー」②「break」③「===」（厳密等価演算子）';
+    }
+
+    // ── Q2 選択 ──
+    function checkQ2(btn, isCorrect) {
+      document.querySelectorAll('.choice-btn').forEach(b => b.disabled = true);
+      btn.classList.add(isCorrect ? 'correct' : 'wrong');
+      const fb = document.getElementById('fb2');
+      fb.className = 'feedback show ' + (isCorrect ? 'ok' : 'ng');
+      fb.innerHTML = isCorrect
+        ? '✅ 正解！ finally 内の return は try/catch の return を上書きします。finally は必ず実行され、その中の return が最終的な戻り値になります。'
+        : '❌ 不正解。finally ブロック内の <code>return 3</code> が try の <code>return 1</code> を上書きするため、結果は 3 です。';
+    }
+
+    // ── Q3 チェックボックス ──
+    function checkQ3() {
+      const correct = new Set(['a', 'c', 'd']);
+      const labels  = document.querySelectorAll('#q3-list .cb-label');
+      let ok = 0;
+      labels.forEach(label => {
+        const cb = label.querySelector('input');
+        cb.disabled = true;
+        const checked = cb.checked;
+        const should  = correct.has(cb.value);
+        if (checked && should)       { label.classList.add('correct'); ok++; }
+        else if (checked && !should)   label.classList.add('wrong');
+        else if (!checked && should)   label.classList.add('wrong');
+      });
+      const allOk = ok === correct.size &&
+        [...labels].filter(l => l.querySelector('input').checked).length === correct.size;
+      const fb = document.getElementById('fb3');
+      fb.className = 'feedback show ' + (allOk ? 'ok' : 'ng');
+      fb.innerHTML = allOk
+        ? '✅ 完璧！ 正解は a・c・d です。'
+        : '❌ 正解は a(for...inはキー)・c(do...whileは必ず1回)・d(ラベル付きbreak)。<br>b: for...of は通常オブジェクトには使えません（Symbol.iteratorが必要）。<br>e: continue はループ全体ではなく<strong>今回の繰り返しのみ</strong>スキップします。';
+    }
+
+    // ── Q4 コード補完 ──
+    function checkQ4() {
+      const a = document.getElementById('q4a').value.trim().toLowerCase();
+      const b = document.getElementById('q4b').value.trim().toLowerCase();
+      const c = document.getElementById('q4c').value.trim().toLowerCase();
+      const okA = a === 'try';
+      const okB = b === 'catch';
+      const okC = c === 'finally';
+      [['q4a',okA],['q4b',okB],['q4c',okC]].forEach(([id,ok]) => {
+        document.getElementById(id).classList.toggle('correct', ok);
+        document.getElementById(id).classList.toggle('wrong', !ok);
+      });
+      const allOk = okA && okB && okC;
+      const fb = document.getElementById('fb4');
+      fb.className = 'feedback show ' + (allOk ? 'ok' : 'ng');
+      fb.innerHTML = allOk
+        ? '✅ 正解！ try → catch(e) → finally の順番です。finally は例外の有無に関わらず必ず実行されます。'
+        : '❌ 不正解。順番は <code>try</code> → <code>catch</code>(e) → <code>finally</code> です。';
+    }
+
+    // ── 完了ボタン ──
+    function markComplete() {
+      localStorage.setItem('html5lv2_ch2_04', 'done');
+      const btn = document.getElementById('completeBtn');
+      btn.textContent = '🎉 完了済み！';
+      btn.classList.add('done');
+      btn.disabled = true;
+      document.getElementById('completeMsg').textContent = '進捗が保存されました。次のセクションへ進みましょう！';
+    }
+
+    // ── 初期化 ──
+    window.addEventListener('DOMContentLoaded', () => {
+      runSwitch();
+      runTCF('normal', document.querySelector('.tcf-btn.active'));
+      runForIn();
+      runForOf();
+      if (localStorage.getItem('html5lv2_ch2_04') === 'done') {
+        const btn = document.getElementById('completeBtn');
+        btn.textContent = '🎉 完了済み！';
+        btn.classList.add('done');
+        btn.disabled = true;
+        document.getElementById('completeMsg').textContent = 'このセクションは完了済みです。';
+      }
+    });
+  </script>
+
+</body>
+</html>
