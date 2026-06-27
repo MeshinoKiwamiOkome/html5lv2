@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>HTML5プロフェッショナル Level 2 学習サイト</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; }
+    body {
+      font-family: 'Segoe UI', 'Helvetica Neue', sans-serif;
+      max-width: 960px;
+      margin: 40px auto;
+      padding: 0 24px;
+      background: #f0f4f8;
+      color: #2d3748;
+      line-height: 1.8;
+    }
+
+    /* ============ ヘッダー ============ */
+    .site-header {
+      background: linear-gradient(135deg, #1a365d, #2c7a7b);
+      border-radius: 12px;
+      padding: 36px 32px 28px;
+      margin-bottom: 28px;
+      color: #fff;
+      box-shadow: 0 4px 18px rgba(44,122,123,0.3);
+    }
+    .site-header h1 {
+      margin: 0 0 8px;
+      font-size: 1.9em;
+      letter-spacing: 0.03em;
+      border: none;
+      padding: 0;
+      color: #fff;
+    }
+    .site-header p {
+      margin: 0;
+      font-size: 0.95em;
+      opacity: 0.88;
+    }
+    .badge-row {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 16px;
+    }
+    .badge {
+      background: rgba(255,255,255,0.18);
+      border: 1px solid rgba(255,255,255,0.35);
+      border-radius: 20px;
+      padding: 4px 14px;
+      font-size: 0.78em;
+      font-weight: bold;
+      letter-spacing: 0.04em;
+    }
+
+    /* ============ クイックアクセスバー ============ */
+    .quick-access {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+      margin-bottom: 28px;
+    }
+    .qa-card {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      background: #fff;
+      border: 2px solid #bee3f8;
+      border-radius: 12px;
+      padding: 18px 20px;
+      text-decoration: none;
+      color: inherit;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+      transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
+    }
+    .qa-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 6px 20px rgba(44,122,123,0.2);
+      border-color: #2c7a7b;
+    }
+    .qa-card.exam-card { border-color: #bee3f8; }
+    .qa-card.exam-card:hover { border-color: #3182ce; box-shadow: 0 6px 20px rgba(49,130,206,0.2); }
+    .qa-card.dash-card { border-color: #c6f6d5; }
+    .qa-card.dash-card:hover { border-color: #38a169; box-shadow: 0 6px 20px rgba(56,161,105,0.2); }
+    .qa-icon { font-size: 2.2em; flex-shrink: 0; line-height: 1; }
+    .qa-title { font-size: 1.0em; font-weight: bold; color: #1a202c; margin-bottom: 3px; }
+    .qa-desc  { font-size: 0.78em; color: #718096; line-height: 1.5; }
+    .qa-badge {
+      display: inline-block; font-size: 0.70em; font-weight: bold;
+      padding: 2px 8px; border-radius: 10px; margin-top: 4px;
+    }
+    .qa-badge.blue  { background: #ebf8ff; color: #2c5282; }
+    .qa-badge.green { background: #f0fff4; color: #276749; }
+
+    /* ============ 進捗バー ============ */
+    .progress-section {
+      background: #fff;
+      border: 1px solid #bee3f8;
+      border-radius: 10px;
+      padding: 20px 24px;
+      margin-bottom: 28px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+    }
+    .progress-section h2 {
+      margin: 0 0 14px; font-size: 1em;
+      color: #1a365d; border: none; padding: 0;
+    }
+    .progress-bar-wrap {
+      background: #edf2f7; border-radius: 8px;
+      height: 18px; overflow: hidden; margin-bottom: 8px;
+    }
+    .progress-bar {
+      height: 100%;
+      background: linear-gradient(90deg, #2c7a7b, #1a365d);
+      border-radius: 8px;
+      transition: width 0.6s ease;
+    }
+    .progress-label { font-size: 0.82em; color: #718096; text-align: right; }
+    .progress-label span { color: #1a365d; font-weight: bold; }
+
+    /* ============ 章カード ============ */
+    h2.section-title {
+      color: #1a202c;
+      border-bottom: 4px solid #2c7a7b;
+      padding-bottom: 8px;
+      margin-top: 36px;
+      font-size: 1.1em;
+    }
+    .chapter-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 16px;
+      margin-top: 16px;
+    }
+    .chapter-card {
+      background: #fff;
+      border: 1px solid #bee3f8;
+      border-radius: 10px;
+      padding: 20px 22px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+      transition: transform 0.18s ease, box-shadow 0.18s ease;
+      text-decoration: none;
+      color: inherit;
+      display: block;
+    }
+    .chapter-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 6px 18px rgba(44,122,123,0.18);
+      border-color: #2c7a7b;
+    }
+    .chapter-card .chapter-num {
+      font-size: 0.75em; font-weight: bold;
+      color: #2c7a7b;
+      font-family: 'Consolas','Monaco',monospace;
+      margin-bottom: 4px; letter-spacing: 0.06em;
+    }
+    .chapter-card .chapter-title {
+      font-size: 1.02em; font-weight: bold;
+      color: #2d3748; margin-bottom: 10px;
+    }
+    .chapter-card .topic-list {
+      list-style: none; padding: 0; margin: 0;
+      font-size: 0.82em; color: #718096;
+    }
+    .chapter-card .topic-list li {
+      padding: 2px 0 2px 14px; position: relative;
+    }
+    .chapter-card .topic-list li::before {
+      content: '›'; position: absolute; left: 0;
+      color: #2c7a7b; font-weight: bold;
+    }
+    .chapter-card .card-footer {
+      display: flex; align-items: center;
+      justify-content: space-between;
+      margin-top: 14px; padding-top: 10px;
+      border-top: 1px solid #e6fffa;
+    }
+    .chapter-card .card-progress {
+      font-size: 0.75em; color: #2c7a7b;
+      font-family: 'Consolas','Monaco',monospace;
+    }
+    .chapter-card .card-bar-wrap {
+      flex: 1; margin: 0 10px;
+      background: #edf2f7; border-radius: 4px;
+      height: 6px; overflow: hidden;
+    }
+    .chapter-card .card-bar {
+      height: 100%;
+      background: linear-gradient(90deg, #2c7a7b, #1a365d);
+      border-radius: 4px; transition: width 0.5s ease;
+    }
+    .chapter-card .card-check {
+      font-size: 0.75em; color: #718096;
+      font-family: 'Consolas','Monaco',monospace;
+    }
+
+    /* ============ note ============ */
+    .note {
+      background: #fff; border: 1px dashed #81e6d9;
+      border-radius: 6px; padding: 14px 18px;
+      font-size: 0.93em; color: #4a5568; margin-bottom: 14px;
+    }
+    .note strong { color: #1a365d; }
+
+    /* ============ ボタン ============ */
+    .btn {
+      display: inline-block; padding: 9px 20px;
+      border-radius: 6px; border: none; cursor: pointer;
+      font-size: 0.92em; font-weight: bold; transition: opacity 0.2s;
+    }
+    .btn:hover { opacity: 0.82; }
+    .btn-teal    { background: #2c7a7b; color: #fff; }
+    .btn-outline { background: #fff; color: #2c7a7b; border: 2px solid #2c7a7b; }
+
+    /* ============ フッター ============ */
+    footer {
+      margin-top: 56px; padding-top: 20px;
+      border-top: 2px solid #bee3f8;
+      font-size: 0.82em; color: #a0aec0; text-align: center;
+    }
+    footer a { color: #2c7a7b; text-decoration: none; }
+    footer a:hover { text-decoration: underline; }
+
+    /* ============ レスポンシブ ============ */
+    @media (max-width: 600px) {
+      body { font-size: 0.88em; }
+      .site-header { padding: 24px 18px 20px; }
+      .site-header h1 { font-size: 1.4em; }
+      .quick-access { grid-template-columns: 1fr; }
+      .chapter-grid { grid-template-columns: 1fr; }
+    }
+    @media (min-width: 601px) and (max-width: 768px) {
+      body { font-size: 0.93em; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ============ ヘッダー ============ -->
+<header class="site-header">
+  <h1>🌐 HTML5プロフェッショナル Level 2 学習サイト</h1>
+  <p>HTML5プロフェッショナル認定試験 Level 2 の学習コンテンツです。<br>
+  インタラクティブなデモと演習問題で、試験合格を目指しましょう。</p>
+  <div class="badge-row">
+    <span class="badge">HTML5 Level 2</span>
+    <span class="badge">JavaScript</span>
+    <span class="badge">全5章</span>
+    <span class="badge">インタラクティブデモ付き</span>
+    <span class="badge">演習問題付き</span>
+    <span class="badge">GitHub Pages</span>
+  </div>
+</header>
+
+<!-- ============ クイックアクセス ============ -->
+<div class="quick-access">
+  <a class="qa-card exam-card" href="exam/index.html">
+    <div class="qa-icon">📝</div>
+    <div class="qa-body">
+      <div class="qa-title">模擬試験モード</div>
+      <div class="qa-desc">本番形式で実力を確認<br>60問・90分・4つのモード</div>
+      <span class="qa-badge blue">本番 / 練習 / 弱点集中 / 章別</span>
+    </div>
+  </a>
+  <a class="qa-card dash-card" href="exam/dashboard.html">
+    <div class="qa-icon">📊</div>
+    <div class="qa-body">
+      <div class="qa-title">弱点分析ダッシュボード</div>
+      <div class="qa-desc">試験結果を章別に分析<br>レーダーチャートで弱点を把握</div>
+      <span class="qa-badge green">正答率 / レーダーチャート / 推奨学習</span>
+    </div>
+  </a>
+</div>
+
+<!-- ============ 全体進捗 ============ -->
+<div class="progress-section">
+  <h2>📊 学習進捗</h2>
+  <div class="progress-bar-wrap">
+    <div class="progress-bar" id="total-bar" style="width:0%"></div>
+  </div>
+  <div class="progress-label">
+    全体進捗：<span id="total-label">0 / 5</span> 章完了
+  </div>
+  <div style="margin-top:12px; display:flex; gap:10px; flex-wrap:wrap;">
+    <button class="btn btn-outline" onclick="resetProgress()">🔄 進捗をリセット</button>
+  </div>
+</div>
+
+<!-- ============ 使い方 ============ -->
+<div class="note">
+  <strong>📌 このサイトの使い方</strong><br>
+  各章のカードをクリックすると学習ページへ移動します。
+  学習ページ内の「この章を完了にする」ボタンを押すと進捗が記録されます（ブラウザの LocalStorage に保存）。<br>
+  学習後は <a href="exam/index.html" style="color:#1a365d; font-weight:bold;">📝 模擬試験</a> で実力を確認し、
+  <a href="exam/dashboard.html" style="color:#276749; font-weight:bold;">📊 弱点分析</a> で苦手分野を把握しましょう。
+</div>
+
+<!-- ============ 章一覧 ============ -->
+<h2 class="section-title">📚 章一覧</h2>
+<div class="chapter-grid">
+
+  <!-- Chapter 1 -->
+  <a class="chapter-card" href="ch01/01_variables.html" id="card-1">
+    <div class="chapter-num">CHAPTER 01</div>
+    <div class="chapter-title">⚡ 速習JavaScript入門</div>
+    <ul class="topic-list">
+      <li>変数の宣言と値の代入</li>
+      <li>さまざまな演算</li>
+      <li>型とオブジェクト</li>
+      <li>関数・スコープ・条件分岐</li>
+      <li>繰り返し・クラス・DOM・イベント</li>
+    </ul>
+    <div class="card-footer">
+      <span class="card-progress" id="prog-1">0%</span>
+      <div class="card-bar-wrap"><div class="card-bar" id="bar-1" style="width:0%"></div></div>
+      <span class="card-check" id="check-1">未着手</span>
+    </div>
+  </a>
+
+  <!-- Chapter 2 -->
+  <a class="chapter-card" href="ch02/01_about.html" id="card-2">
+    <div class="chapter-num">CHAPTER 02</div>
+    <div class="chapter-title">📖 JavaScriptの文法</div>
+    <ul class="topic-list">
+      <li>JavaScriptとECMAScript</li>
+      <li>変数・型・スコープ</li>
+      <li>式・演算子・制御文</li>
+      <li>配列・オブジェクト・関数</li>
+      <li>グローバルオブジェクト・クロージャ</li>
+    </ul>
+    <div class="card-footer">
+      <span class="card-progress" id="prog-2">0%</span>
+      <div class="card-bar-wrap"><div class="card-bar" id="bar-2" style="width:0%"></div></div>
+      <span class="card-check" id="check-2">未着手</span>
+    </div>
+  </a>
+
+  <!-- Chapter 3 -->
+  <a class="chapter-card" href="ch03/01_events.html" id="card-3">
+    <div class="chapter-num">CHAPTER 03</div>
+    <div class="chapter-title">🌍 WebブラウザのJavaScript API</div>
+    <ul class="topic-list">
+      <li>イベントドリブンモデル</li>
+      <li>DOM操作（取得・生成・削除）</li>
+      <li>ウィンドウオブジェクト・タイマー</li>
+      <li>セレクタAPI・History API</li>
+      <li>テスト・デバッグ</li>
+    </ul>
+    <div class="card-footer">
+      <span class="card-progress" id="prog-3">0%</span>
+      <div class="card-bar-wrap"><div class="card-bar" id="bar-3" style="width:0%"></div></div>
+      <span class="card-check" id="check-3">未着手</span>
+    </div>
+  </a>
+
+  <!-- Chapter 4 -->
+  <a class="chapter-card" href="ch04/01_graphics.html" id="card-4">
+    <div class="chapter-num">CHAPTER 04</div>
+    <div class="chapter-title">🔧 さまざまなHTML関連API</div>
+    <ul class="topic-list">
+      <li>Canvas・SVG・アニメーション</li>
+      <li>audio / video 要素のAPI</li>
+      <li>Web Storage・IndexedDB・File API</li>
+      <li>WebSocket・XHR・非同期処理</li>
+      <li>Geolocation・Web Workers・CORS</li>
+    </ul>
+    <div class="card-footer">
+      <span class="card-progress" id="prog-4">0%</span>
+      <div class="card-bar-wrap"><div class="card-bar" id="bar-4" style="width:0%"></div></div>
+      <span class="card-check" id="check-4">未着手</span>
+    </div>
+  </a>
+
+  <!-- Chapter 5 -->
+  <a class="chapter-card" href="exam/index.html" id="card-5">
+    <div class="chapter-num">CHAPTER 05</div>
+    <div class="chapter-title">📝 Web模擬試験</div>
+    <ul class="topic-list">
+      <li>本番モード（60問・90分）</li>
+      <li>練習モード（解説付き）</li>
+      <li>弱点集中モード</li>
+      <li>章別モード</li>
+    </ul>
+    <div class="card-footer">
+      <span class="card-progress" id="prog-5">0%</span>
+      <div class="card-bar-wrap"><div class="card-bar" id="bar-5" style="width:0%"></div></div>
+      <span class="card-check" id="check-5">未着手</span>
+    </div>
+  </a>
+
+</div><!-- /chapter-grid -->
+
+<!-- ============ フッター ============ -->
+<footer>
+  <p>
+    HTML5プロフェッショナル Level 2 学習サイト ／
+    <a href="exam/index.html">📝 模擬試験</a> ／
+    <a href="exam/dashboard.html">📊 弱点分析</a> ／
+    <a href="https://github.com/MeshinoKiwamiOkome/html5lv2" target="_blank">GitHub リポジトリ</a>
+  </p>
+  <p style="margin-top:4px;">© MeshinoKiwamiOkome</p>
+</footer>
+
+<script>
+  const TOTAL = 5;
+
+  function loadProgress() {
+    let completed = 0;
+    for (let i = 1; i <= TOTAL; i++) {
+      const val = parseInt(localStorage.getItem(`html5lv2_ch${i}`) || '0', 10);
+      const pct = Math.min(100, Math.max(0, val));
+
+      document.getElementById(`bar-${i}`).style.width = pct + '%';
+      document.getElementById(`prog-${i}`).textContent = pct + '%';
+
+      const checkEl = document.getElementById(`check-${i}`);
+      if (pct === 100) {
+        checkEl.textContent = '✅ 完了';
+        checkEl.style.color = '#276749';
+        completed++;
+      } else if (pct > 0) {
+        checkEl.textContent = '学習中';
+        checkEl.style.color = '#c05621';
+      } else {
+        checkEl.textContent = '未着手';
+        checkEl.style.color = '#718096';
+      }
+    }
+    const totalPct = Math.round((completed / TOTAL) * 100);
+    document.getElementById('total-bar').style.width = totalPct + '%';
+    document.getElementById('total-label').textContent = `${completed} / ${TOTAL}`;
+  }
+
+  function resetProgress() {
+    if (!confirm('学習進捗をすべてリセットしますか？')) return;
+    for (let i = 1; i <= TOTAL; i++) {
+      localStorage.removeItem(`html5lv2_ch${i}`);
+    }
+    loadProgress();
+  }
+
+  loadProgress();
+</script>
+
+</body>
+</html>
