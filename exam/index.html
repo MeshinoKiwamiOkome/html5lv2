@@ -36,6 +36,10 @@
   a { color: var(--teal-mid); text-decoration: none; }
   a:hover { text-decoration: underline; }
 
+  /* ── 画面切り替え（核心部分） ── */
+  .screen { display: none; }
+  .screen.active { display: block; }
+
   /* ヘッダー */
   .site-header {
     background: linear-gradient(135deg, #1a365d, #2c7a7b);
@@ -55,7 +59,6 @@
   .container { max-width: 860px; margin: 0 auto; padding: 24px 16px; flex: 1; }
 
   /* ── スタート画面 ── */
-  #screen-start {}
   .info-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
@@ -125,7 +128,7 @@
     transition: opacity .2s, transform .1s;
     margin-top: 8px;
   }
-  .btn-start:hover { opacity: .9; transform: translateY(-1px); }
+  .btn-start:hover:not(:disabled) { opacity: .9; transform: translateY(-1px); }
   .btn-start:disabled { opacity: .5; cursor: not-allowed; transform: none; }
 
   .nav-links {
@@ -140,7 +143,8 @@
   .nav-links a:hover { background: var(--teal-bg); text-decoration: none; }
 
   /* ── 試験画面 ── */
-  #screen-exam { display: none; }
+  /* exam screen は .screen クラスで制御するため
+     内部要素のスタイルのみ定義 */
 
   .exam-header {
     background: linear-gradient(135deg, #1a365d, #2c7a7b);
@@ -164,8 +168,8 @@
     padding: 4px 12px; border-radius: 6px; background: rgba(255,255,255,.15);
     min-width: 80px; text-align: center;
   }
-  .timer.warn  { background: var(--warning); color: #fff; }
-  .timer.danger { background: var(--danger); color: #fff; animation: blink 1s step-start infinite; }
+  .timer.warn   { background: var(--warning); color: #fff; }
+  .timer.danger { background: var(--danger);  color: #fff; animation: blink 1s step-start infinite; }
   @keyframes blink { 50% { opacity: .4; } }
 
   .progress-bar-wrap { padding: 8px 16px; background: #fff; border-bottom: 1px solid var(--border); }
@@ -189,14 +193,12 @@
     display: flex; align-items: center; justify-content: center;
     transition: background .15s;
   }
-  .map-btn.answered  { background: var(--teal-bg); border-color: var(--teal-mid); color: var(--teal-dark); }
-  .map-btn.flagged   { background: #fffbeb; border-color: var(--warning); color: var(--warning); }
-  .map-btn.current   { background: var(--teal-mid); border-color: var(--teal-dark); color: #fff; }
+  .map-btn.answered { background: var(--teal-bg);  border-color: var(--teal-mid); color: var(--teal-dark); }
+  .map-btn.flagged  { background: #fffbeb;          border-color: var(--warning);  color: var(--warning); }
+  .map-btn.current  { background: var(--teal-mid);  border-color: var(--teal-dark); color: #fff; }
   .map-legend { display: flex; gap: 12px; margin-top: 8px; flex-wrap: wrap; }
   .map-legend span { font-size: 11px; color: var(--muted); display: flex; align-items: center; gap: 4px; }
-  .map-legend .dot {
-    width: 12px; height: 12px; border-radius: 3px; display: inline-block;
-  }
+  .map-legend .dot { width: 12px; height: 12px; border-radius: 3px; display: inline-block; }
 
   /* 問題カード */
   .question-area { padding: 16px; }
@@ -241,8 +243,8 @@
   .choice-btn.selected .choice-label { background: var(--teal-mid); color: #fff; }
   .choice-btn.correct  { border-color: var(--success); background: #f0fff4; }
   .choice-btn.correct  .choice-label { background: var(--success); color: #fff; }
-  .choice-btn.wrong    { border-color: var(--danger); background: #fff5f5; }
-  .choice-btn.wrong    .choice-label { background: var(--danger); color: #fff; }
+  .choice-btn.wrong    { border-color: var(--danger);  background: #fff5f5; }
+  .choice-btn.wrong    .choice-label { background: var(--danger);  color: #fff; }
   .choice-btn:disabled { cursor: default; }
 
   .explanation {
@@ -264,7 +266,7 @@
     background: var(--white); color: var(--text); font-size: 14px;
     cursor: pointer; transition: background .2s;
   }
-  .btn-nav:hover { background: var(--teal-bg); border-color: var(--teal-mid); }
+  .btn-nav:hover:not(:disabled) { background: var(--teal-bg); border-color: var(--teal-mid); }
   .btn-nav:disabled { opacity: .4; cursor: not-allowed; }
   .btn-finish {
     margin-left: auto; padding: 10px 20px;
@@ -276,29 +278,24 @@
   .btn-finish:hover { opacity: .88; }
 
   /* ── 結果画面 ── */
-  #screen-result { display: none; }
-
-  .result-hero {
-    text-align: center; padding: 28px 16px 20px;
-  }
+  .result-hero { text-align: center; padding: 28px 16px 20px; }
   .score-circle {
     width: 140px; height: 140px; border-radius: 50%;
     display: inline-flex; flex-direction: column;
     align-items: center; justify-content: center;
     border: 8px solid var(--teal-mid);
     margin-bottom: 12px;
-    position: relative;
   }
-  .score-circle.pass  { border-color: var(--success); }
-  .score-circle.fail  { border-color: var(--danger); }
-  .score-circle .score-num { font-size: 36px; font-weight: 700; color: var(--teal-dark); }
+  .score-circle.pass { border-color: var(--success); }
+  .score-circle.fail { border-color: var(--danger); }
+  .score-circle .score-num   { font-size: 36px; font-weight: 700; color: var(--teal-dark); }
   .score-circle .score-denom { font-size: 14px; color: var(--muted); }
   .verdict {
     display: inline-block; font-size: 18px; font-weight: 700;
     padding: 6px 20px; border-radius: 20px; margin-bottom: 8px;
   }
   .verdict.pass { background: #f0fff4; color: var(--success-dark); border: 2px solid var(--success); }
-  .verdict.fail { background: #fff5f5; color: #c53030; border: 2px solid var(--danger); }
+  .verdict.fail { background: #fff5f5; color: #c53030;             border: 2px solid var(--danger); }
 
   .stats-grid {
     display: grid;
@@ -312,7 +309,6 @@
   .stat-card .s-label { font-size: 11px; color: var(--muted); }
   .stat-card .s-val   { font-size: 24px; font-weight: 700; color: var(--teal-dark); margin-top: 4px; }
 
-  /* カテゴリ別棒グラフ */
   .bar-chart { background: var(--white); border: 1px solid var(--border); border-radius: 10px; padding: 16px; margin: 16px 0; }
   .bar-chart h3 { font-size: 15px; margin-bottom: 14px; color: var(--teal-dark); }
   .bar-row { margin-bottom: 12px; }
@@ -320,7 +316,6 @@
   .bar-track { height: 18px; background: var(--border); border-radius: 4px; overflow: hidden; }
   .bar-fill  { height: 100%; border-radius: 4px; transition: width .5s; display: flex; align-items: center; padding-left: 6px; font-size: 11px; color: #fff; font-weight: 700; }
 
-  /* 問題レビュー */
   .review-section { margin: 16px 0; }
   .review-section h3 { font-size: 15px; color: var(--teal-dark); margin-bottom: 12px; }
   .review-item {
@@ -331,8 +326,8 @@
   .review-item .r-q    { font-size: 14px; font-weight: 600; margin-bottom: 8px; }
   .review-item .r-ans  { font-size: 13px; margin-bottom: 4px; }
   .review-item .r-exp  { font-size: 12px; color: var(--muted); line-height: 1.6; margin-top: 8px; padding-top: 8px; border-top: 1px solid var(--border); }
-  .tag-wrong   { display: inline-block; font-size: 10px; background: #fff5f5; color: #c53030; border: 1px solid var(--danger); border-radius: 4px; padding: 1px 6px; margin-right: 6px; }
-  .tag-skip    { display: inline-block; font-size: 10px; background: #fffbeb; color: #b7791f; border: 1px solid var(--warning); border-radius: 4px; padding: 1px 6px; margin-right: 6px; }
+  .tag-wrong { display: inline-block; font-size: 10px; background: #fff5f5; color: #c53030; border: 1px solid var(--danger); border-radius: 4px; padding: 1px 6px; margin-right: 6px; }
+  .tag-skip  { display: inline-block; font-size: 10px; background: #fffbeb; color: #b7791f; border: 1px solid var(--warning); border-radius: 4px; padding: 1px 6px; margin-right: 6px; }
 
   .action-btns { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 20px; padding-bottom: 8px; }
   .btn-action {
@@ -340,7 +335,7 @@
     cursor: pointer; border: none; transition: opacity .2s, transform .1s;
   }
   .btn-action:hover { opacity: .88; transform: translateY(-1px); }
-  .btn-action.primary { background: linear-gradient(135deg, #1a365d, #2c7a7b); color: #fff; }
+  .btn-action.primary   { background: linear-gradient(135deg, #1a365d, #2c7a7b); color: #fff; }
   .btn-action.secondary { background: var(--white); color: var(--teal-mid); border: 1px solid var(--teal-mid); }
 
   /* フッター */
@@ -372,7 +367,7 @@
 </head>
 <body>
 
-<!-- ヘッダー -->
+<!-- ヘッダー（常時表示） -->
 <header class="site-header">
   <div class="breadcrumb">
     <a href="../index.html">🏠 HTML5 Level 2</a> › 模擬試験
@@ -381,26 +376,16 @@
   <p>HTML5プロフェッショナル Level 2 試験対策</p>
 </header>
 
-<!-- ── スタート画面 ── -->
-<div id="screen-start">
+<!-- ══════════════════════════════════════════
+     スタート画面
+     ══════════════════════════════════════════ -->
+<div id="screen-start" class="screen active">
   <div class="container">
     <div class="info-grid">
-      <div class="info-card">
-        <div class="label">問題数</div>
-        <div class="value">60問</div>
-      </div>
-      <div class="info-card">
-        <div class="label">制限時間</div>
-        <div class="value">90分</div>
-      </div>
-      <div class="info-card">
-        <div class="label">合格ライン</div>
-        <div class="value">65%</div>
-      </div>
-      <div class="info-card">
-        <div class="label">言語</div>
-        <div class="value">日本語</div>
-      </div>
+      <div class="info-card"><div class="label">問題数</div><div class="value">60問</div></div>
+      <div class="info-card"><div class="label">制限時間</div><div class="value">90分</div></div>
+      <div class="info-card"><div class="label">合格ライン</div><div class="value">65%</div></div>
+      <div class="info-card"><div class="label">言語</div><div class="value">日本語</div></div>
     </div>
 
     <h2 style="font-size:15px;color:var(--teal-dark);margin-bottom:12px;">試験モードを選択してください</h2>
@@ -447,8 +432,11 @@
   </div>
 </div>
 
-<!-- ── 試験画面 ── -->
-<div id="screen-exam">
+<!-- ══════════════════════════════════════════
+     試験画面
+     ══════════════════════════════════════════ -->
+<div id="screen-exam" class="screen">
+
   <div class="exam-header">
     <span class="q-counter" id="q-counter">問題 1 / 60</span>
     <button class="btn-icon" id="btn-flag" onclick="toggleFlag()">🚩 フラグ</button>
@@ -489,10 +477,13 @@
     <button class="btn-nav" id="btn-next" onclick="nextQ()">次へ →</button>
     <button class="btn-finish" onclick="confirmFinish()">試験を終了して採点</button>
   </div>
+
 </div>
 
-<!-- ── 結果画面 ── -->
-<div id="screen-result">
+<!-- ══════════════════════════════════════════
+     結果画面
+     ══════════════════════════════════════════ -->
+<div id="screen-result" class="screen">
   <div class="container">
     <div class="result-hero">
       <div class="score-circle" id="score-circle">
@@ -505,22 +496,10 @@
     </div>
 
     <div class="stats-grid">
-      <div class="stat-card">
-        <div class="s-label">正解数</div>
-        <div class="s-val" id="r-correct" style="color:var(--success)">0</div>
-      </div>
-      <div class="stat-card">
-        <div class="s-label">不正解数</div>
-        <div class="s-val" id="r-wrong" style="color:var(--danger)">0</div>
-      </div>
-      <div class="stat-card">
-        <div class="s-label">未解答数</div>
-        <div class="s-val" id="r-skip" style="color:var(--warning)">0</div>
-      </div>
-      <div class="stat-card">
-        <div class="s-label">所要時間</div>
-        <div class="s-val" id="r-time" style="font-size:18px;">0:00</div>
-      </div>
+      <div class="stat-card"><div class="s-label">正解数</div><div class="s-val" id="r-correct" style="color:var(--success)">0</div></div>
+      <div class="stat-card"><div class="s-label">不正解数</div><div class="s-val" id="r-wrong" style="color:var(--danger)">0</div></div>
+      <div class="stat-card"><div class="s-label">未解答数</div><div class="s-val" id="r-skip" style="color:var(--warning)">0</div></div>
+      <div class="stat-card"><div class="s-label">所要時間</div><div class="s-val" id="r-time" style="font-size:18px;">0:00</div></div>
     </div>
 
     <div class="bar-chart">
@@ -534,7 +513,7 @@
     </div>
 
     <div class="action-btns">
-      <button class="btn-action primary" onclick="retryExam()">🔄 もう一度挑戦</button>
+      <button class="btn-action primary"   onclick="retryExam()">🔄 もう一度挑戦</button>
       <button class="btn-action secondary" onclick="location.href='dashboard.html'">📊 弱点分析を見る</button>
       <button class="btn-action secondary" onclick="location.href='../index.html'">🏠 学習トップへ</button>
     </div>
@@ -552,6 +531,15 @@
 </footer>
 
 <script>
+/* ============================================================
+   画面切り替えユーティリティ（修正の核心）
+   ============================================================ */
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(el => el.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo(0, 0);
+}
+
 /* ============================================================
    問題データベース（全60問）
    ============================================================ */
@@ -676,12 +664,12 @@ console.log(typeof result);`,
     this.name = name;
   }
   speak() {
-    return `${this.name} makes a sound.`;
+    return this.name + ' makes a sound.';
   }
 }
 class Dog extends Animal {
   speak() {
-    return `${this.name} barks.`;
+    return this.name + ' barks.';
   }
 }
 const d = new Dog('Rex');
@@ -770,8 +758,10 @@ console.log(0.1 + 0.2);`,
   {
     chapter: 2, category: 'Chapter 2: JavaScriptの文法', color: '#2b6cb0',
     q: '次のコードの出力として正しいものはどれか。',
-    code: `function greet(name = 'World', greeting = 'Hello') {
-  return `${greeting}, ${name}!`;
+    code: `function greet(name, greeting) {
+  if (name === undefined) name = 'World';
+  if (greeting === undefined) greeting = 'Hello';
+  return greeting + ', ' + name + '!';
 }
 console.log(greet());
 console.log(greet('Alice'));
@@ -783,7 +773,7 @@ console.log(greet(undefined, 'Hi'));`,
       'エラーが発生する'
     ],
     answer: 0,
-    explanation: '<strong>正解：Hello, World! / Hello, Alice! / Hi, World!</strong><br>デフォルト引数は引数が渡されないか、undefinedが渡された場合に使用されます。greet()はデフォルト値を使用、greet(\'Alice\')はnameに\'Alice\'、greet(undefined, \'Hi\')はnameにデフォルト\'World\'、greetingに\'Hi\'が使われます。'
+    explanation: '<strong>正解：Hello, World! / Hello, Alice! / Hi, World!</strong><br>引数がundefinedの場合にデフォルト値を設定するパターンです。greet()は両方undefinedなのでデフォルト値を使用、greet(\'Alice\')はnameに\'Alice\'、greet(undefined, \'Hi\')はnameにデフォルト\'World\'、greetingに\'Hi\'が使われます。'
   },
   {
     chapter: 2, category: 'Chapter 2: JavaScriptの文法', color: '#2b6cb0',
@@ -803,15 +793,15 @@ console.log(greet(undefined, 'Hi'));`,
     code: `const obj = { a: 1, b: 2, c: 3 };
 const { a, ...rest } = obj;
 console.log(a);
-console.log(rest);`,
+console.log(JSON.stringify(rest));`,
     choices: [
-      '1 / { b: 2, c: 3 }',
+      '1 / {"b":2,"c":3}',
       '1 / [2, 3]',
-      '{ a: 1 } / { b: 2, c: 3 }',
+      '{"a":1} / {"b":2,"c":3}',
       'エラーが発生する'
     ],
     answer: 0,
-    explanation: '<strong>正解：1 / { b: 2, c: 3 }</strong><br>オブジェクトのデストラクチャリングでスプレッド構文を使うと、残りのプロパティを新しいオブジェクトとして取得できます。aには1が代入され、restには残りのプロパティ{ b: 2, c: 3 }が代入されます。これをオブジェクトの残余プロパティと呼びます。'
+    explanation: '<strong>正解：1 / {"b":2,"c":3}</strong><br>オブジェクトのデストラクチャリングでスプレッド構文を使うと、残りのプロパティを新しいオブジェクトとして取得できます。aには1が代入され、restには残りのプロパティ{ b: 2, c: 3 }が代入されます。これをオブジェクトの残余プロパティと呼びます。'
   },
   {
     chapter: 2, category: 'Chapter 2: JavaScriptの文法', color: '#2b6cb0',
@@ -829,7 +819,7 @@ console.log(rest);`,
     chapter: 2, category: 'Chapter 2: JavaScriptの文法', color: '#2b6cb0',
     q: '次のコードの出力として正しいものはどれか。',
     code: `for (var i = 0; i < 3; i++) {
-  setTimeout(() => console.log(i), 0);
+  setTimeout(function() { console.log(i); }, 0);
 }`,
     choices: ['0 / 1 / 2', '1 / 2 / 3', '3 / 3 / 3', '0 / 0 / 0'],
     answer: 2,
@@ -860,7 +850,7 @@ console.log(parseInt('08'));`,
       '10 / FF / 8'
     ],
     answer: 0,
-    explanation: '<strong>正解：2 / 255 / 8</strong><br>parseInt(\'10\', 2)は2進数の\'10\'を10進数に変換して2を返します。parseInt(\'FF\', 16)は16進数の\'FF\'を10進数に変換して255を返します。parseInt(\'08\')は第2引数がない場合、現代のJavaScriptでは10進数として解釈し8を返します（古い実装では8進数として0を返す場合がありました）。'
+    explanation: '<strong>正解：2 / 255 / 8</strong><br>parseInt(\'10\', 2)は2進数の\'10\'を10進数に変換して2を返します。parseInt(\'FF\', 16)は16進数の\'FF\'を10進数に変換して255を返します。parseInt(\'08\')は第2引数がない場合、現代のJavaScriptでは10進数として解釈し8を返します。'
   },
   {
     chapter: 2, category: 'Chapter 2: JavaScriptの文法', color: '#2b6cb0',
@@ -878,28 +868,28 @@ console.log(parseInt('08'));`,
     chapter: 2, category: 'Chapter 2: JavaScriptの文法', color: '#2b6cb0',
     q: '次のコードの出力として正しいものはどれか。',
     code: `const arr = [1, [2, [3, [4]]]];
-console.log(arr.flat());
-console.log(arr.flat(Infinity));`,
+console.log(arr.flat().length);
+console.log(arr.flat(Infinity).length);`,
     choices: [
-      '[1, 2, 3, 4] / [1, 2, 3, 4]',
-      '[1, 2, [3, [4]]] / [1, 2, 3, 4]',
-      '[1, [2, [3, [4]]]] / [1, 2, 3, 4]',
-      '[1, 2, [3, [4]]] / [1, 2, [3, [4]]]'
+      '4 / 4',
+      '3 / 4',
+      '2 / 4',
+      '3 / 3'
     ],
     answer: 1,
-    explanation: '<strong>正解：[1, 2, [3, [4]]] / [1, 2, 3, 4]</strong><br>Array.flat()はデフォルトで深さ1のネストを展開します。[1, [2, [3, [4]]]]をflat()すると[1, 2, [3, [4]]]になります。flat(Infinity)は全ての深さのネストを展開し[1, 2, 3, 4]になります。flat()はES2019（ES10）で追加されました。'
+    explanation: '<strong>正解：3 / 4</strong><br>Array.flat()はデフォルトで深さ1のネストを展開します。[1, [2, [3, [4]]]]をflat()すると[1, 2, [3, [4]]]（長さ3）になります。flat(Infinity)は全ての深さのネストを展開し[1, 2, 3, 4]（長さ4）になります。flat()はES2019（ES10）で追加されました。'
   },
   {
     chapter: 2, category: 'Chapter 2: JavaScriptの文法', color: '#2b6cb0',
     q: 'Symbolに関する説明として正しいものはどれか。',
     choices: [
-      'Symbol()で作成した値は文字列に変換できる',
+      'Symbol()で作成した値は文字列に暗黙変換できる',
       '同じ引数でSymbol()を呼び出すと同じSymbolが返される',
       'Symbolはオブジェクトのプロパティキーとして使用できる',
       'Symbol.for()とSymbol()は同じ動作をする'
     ],
     answer: 2,
-    explanation: '<strong>正解：Symbolはオブジェクトのプロパティキーとして使用できる</strong><br>Symbolはユニークで変更不可能なプリミティブ値で、オブジェクトのプロパティキーとして使用できます。Symbol()は毎回ユニークな値を返すため、同じ引数でも異なるSymbolになります。Symbol.for()はグローバルSymbolレジストリを使い、同じキーなら同じSymbolを返します。Symbolは直接文字列に変換するとTypeErrorになります。'
+    explanation: '<strong>正解：Symbolはオブジェクトのプロパティキーとして使用できる</strong><br>Symbolはユニークで変更不可能なプリミティブ値で、オブジェクトのプロパティキーとして使用できます。Symbol()は毎回ユニークな値を返すため、同じ引数でも異なるSymbolになります。Symbol.for()はグローバルSymbolレジストリを使い、同じキーなら同じSymbolを返します。Symbolは直接文字列に暗黙変換するとTypeErrorになります。'
   },
 
   /* ===== Chapter 3: WebブラウザのJavaScript API（16問） ===== */
@@ -994,7 +984,7 @@ parent.appendChild(child);`,
   {
     chapter: 3, category: 'Chapter 3: WebブラウザのJavaScript API', color: '#276749',
     q: '次のコードの説明として正しいものはどれか。',
-    code: `document.querySelectorAll('.item').forEach(el => {
+    code: `document.querySelectorAll('.item').forEach(function(el) {
   el.addEventListener('click', function(e) {
     e.stopPropagation();
     console.log(this.textContent);
@@ -1098,10 +1088,10 @@ console.log(parent.children.length);`,
   {
     chapter: 3, category: 'Chapter 3: WebブラウザのJavaScript API', color: '#276749',
     q: '次のコードの説明として正しいものはどれか。',
-    code: `document.addEventListener('DOMContentLoaded', () => {
+    code: `document.addEventListener('DOMContentLoaded', function() {
   console.log('DOM ready');
 });
-window.addEventListener('load', () => {
+window.addEventListener('load', function() {
   console.log('All loaded');
 });`,
     choices: [
@@ -1342,16 +1332,16 @@ ctx.fill();`,
 /* ============================================================
    アプリケーション状態
    ============================================================ */
-let currentMode = null;
-let currentChapter = null;
-let examQuestions = [];
-let currentIndex = 0;
-let answers = [];
-let flags = [];
-let timerInterval = null;
-let timeLeft = 0;
-let startTime = null;
-let mapVisible = false;
+let currentMode     = null;
+let currentChapter  = null;
+let examQuestions   = [];
+let currentIndex    = 0;
+let answers         = [];
+let flags           = [];
+let timerInterval   = null;
+let timeLeft        = 0;
+let startTime       = null;
+let mapVisible      = false;
 
 /* ============================================================
    スタート画面
@@ -1359,7 +1349,7 @@ let mapVisible = false;
 function selectMode(mode) {
   currentMode = mode;
   document.querySelectorAll('.mode-card').forEach(c => c.classList.remove('selected'));
-  document.querySelector(`.mode-card[data-mode="${mode}"]`).classList.add('selected');
+  document.querySelector('.mode-card[data-mode="' + mode + '"]').classList.add('selected');
   document.getElementById('chapter-select-wrap').style.display = mode === 'chapter' ? 'block' : 'none';
   document.getElementById('btn-start').disabled = false;
 }
@@ -1371,7 +1361,7 @@ function startExam() {
 
   if (currentMode === 'chapter') {
     currentChapter = parseInt(document.getElementById('chapter-select').value);
-    pool = ALL_QUESTIONS.filter(q => q.chapter === currentChapter);
+    pool = ALL_QUESTIONS.filter(function(q) { return q.chapter === currentChapter; });
     examQuestions = shuffle(pool).slice(0, Math.min(20, pool.length));
     timeLeft = 30 * 60;
   } else if (currentMode === 'real') {
@@ -1382,40 +1372,46 @@ function startExam() {
     timeLeft = null;
   } else if (currentMode === 'weak') {
     const history = getExamHistory();
-    const weakIds = Object.keys(history).filter(id => {
+    const weakIds = Object.keys(history).filter(function(id) {
       const h = history[id];
       return h.total > 0 && (h.correct / h.total) < 0.6;
     });
     if (weakIds.length < 5) {
       examQuestions = shuffle(pool).slice(0, 30);
     } else {
-      const weakPool = ALL_QUESTIONS.filter((_, i) => weakIds.includes(String(i)));
-      const fill = shuffle(pool.filter((_, i) => !weakIds.includes(String(i))));
-      examQuestions = shuffle([...weakPool, ...fill]).slice(0, 30);
+      const weakPool = ALL_QUESTIONS.filter(function(_, i) { return weakIds.indexOf(String(i)) !== -1; });
+      const fill     = shuffle(ALL_QUESTIONS.filter(function(_, i) { return weakIds.indexOf(String(i)) === -1; }));
+      examQuestions  = shuffle(weakPool.concat(fill)).slice(0, 30);
     }
     timeLeft = 45 * 60;
   }
 
-  answers = new Array(examQuestions.length).fill(null);
-  flags   = new Array(examQuestions.length).fill(false);
+  answers      = new Array(examQuestions.length).fill(null);
+  flags        = new Array(examQuestions.length).fill(false);
   currentIndex = 0;
-  startTime = Date.now();
+  startTime    = Date.now();
+  mapVisible   = false;
+  document.getElementById('map-panel').style.display = 'none';
 
-  document.getElementById('screen-start').style.display = 'none';
-  document.getElementById('screen-exam').style.display  = 'block';
-  document.getElementById('screen-result').style.display = 'none';
+  /* ★ 画面切り替え */
+  showScreen('screen-exam');
 
   buildMapGrid();
   renderQuestion();
-  if (timeLeft !== null) startTimer();
-  else document.getElementById('timer').textContent = '∞';
+
+  if (timeLeft !== null) {
+    startTimer();
+  } else {
+    document.getElementById('timer').textContent = '∞';
+    document.getElementById('timer').className   = 'timer';
+  }
 }
 
 function shuffle(arr) {
-  const a = [...arr];
+  const a = arr.slice();
   for (let i = a.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
-    [a[i], a[j]] = [a[j], a[i]];
+    const t = a[i]; a[i] = a[j]; a[j] = t;
   }
   return a;
 }
@@ -1424,12 +1420,14 @@ function shuffle(arr) {
    タイマー
    ============================================================ */
 function startTimer() {
+  if (timerInterval) clearInterval(timerInterval);
   updateTimerDisplay();
-  timerInterval = setInterval(() => {
+  timerInterval = setInterval(function() {
     timeLeft--;
     updateTimerDisplay();
     if (timeLeft <= 0) {
       clearInterval(timerInterval);
+      timerInterval = null;
       finishExam();
     }
   }, 1000);
@@ -1437,11 +1435,11 @@ function startTimer() {
 
 function updateTimerDisplay() {
   const el = document.getElementById('timer');
-  const m = Math.floor(timeLeft / 60);
-  const s = timeLeft % 60;
-  el.textContent = `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
-  el.className = 'timer';
-  if (timeLeft <= 300) el.classList.add('danger');
+  const m  = Math.floor(timeLeft / 60);
+  const s  = timeLeft % 60;
+  el.textContent = String(m).padStart(2, '0') + ':' + String(s).padStart(2, '0');
+  el.className   = 'timer';
+  if      (timeLeft <= 300) el.classList.add('danger');
   else if (timeLeft <= 600) el.classList.add('warn');
 }
 
@@ -1449,42 +1447,45 @@ function updateTimerDisplay() {
    問題描画
    ============================================================ */
 function renderQuestion() {
-  const q = examQuestions[currentIndex];
+  const q     = examQuestions[currentIndex];
   const total = examQuestions.length;
 
-  document.getElementById('q-counter').textContent = `問題 ${currentIndex + 1} / ${total}`;
+  document.getElementById('q-counter').textContent = '問題 ' + (currentIndex + 1) + ' / ' + total;
 
   const badge = document.getElementById('q-badge');
-  badge.textContent = q.category;
+  badge.textContent      = q.category;
   badge.style.background = q.color;
 
   document.getElementById('q-text').textContent = q.q;
 
   const codeEl = document.getElementById('q-code');
   if (q.code) {
-    codeEl.textContent = q.code;
-    codeEl.style.display = 'block';
+    codeEl.textContent    = q.code;
+    codeEl.style.display  = 'block';
   } else {
-    codeEl.style.display = 'none';
+    codeEl.style.display  = 'none';
   }
 
   const choicesEl = document.getElementById('choices');
   choicesEl.innerHTML = '';
   const labels = ['A', 'B', 'C', 'D'];
-  q.choices.forEach((choice, i) => {
+
+  q.choices.forEach(function(choice, i) {
     const btn = document.createElement('button');
     btn.className = 'choice-btn';
-    btn.innerHTML = `<span class="choice-label">${labels[i]}</span><span>${choice}</span>`;
+    btn.innerHTML =
+      '<span class="choice-label">' + labels[i] + '</span>' +
+      '<span>' + escHtml(choice) + '</span>';
 
     if (currentMode === 'practice' && answers[currentIndex] !== null) {
       btn.disabled = true;
-      if (i === q.answer) btn.classList.add('correct');
+      if (i === q.answer)                  btn.classList.add('correct');
       else if (i === answers[currentIndex]) btn.classList.add('wrong');
     } else if (answers[currentIndex] === i) {
       btn.classList.add('selected');
     }
 
-    btn.addEventListener('click', () => selectAnswer(i));
+    btn.addEventListener('click', function() { selectAnswer(i); });
     choicesEl.appendChild(btn);
   });
 
@@ -1493,6 +1494,7 @@ function renderQuestion() {
     expEl.innerHTML = q.explanation;
     expEl.classList.add('show');
   } else {
+    expEl.innerHTML = '';
     expEl.classList.remove('show');
   }
 
@@ -1511,8 +1513,7 @@ function selectAnswer(i) {
   if (currentMode === 'practice') {
     renderQuestion();
   } else {
-    const btns = document.querySelectorAll('.choice-btn');
-    btns.forEach((b, idx) => {
+    document.querySelectorAll('.choice-btn').forEach(function(b, idx) {
       b.classList.toggle('selected', idx === i);
     });
     updateProgress();
@@ -1521,11 +1522,11 @@ function selectAnswer(i) {
 }
 
 function updateProgress() {
-  const answered = answers.filter(a => a !== null).length;
-  const total = examQuestions.length;
-  const pct = (answered / total) * 100;
-  document.getElementById('progress-fill').style.width = pct + '%';
-  document.getElementById('progress-label').textContent = `${answered} / ${total} 問解答済み`;
+  const answered = answers.filter(function(a) { return a !== null; }).length;
+  const total    = examQuestions.length;
+  const pct      = (answered / total) * 100;
+  document.getElementById('progress-fill').style.width  = pct + '%';
+  document.getElementById('progress-label').textContent = answered + ' / ' + total + ' 問解答済み';
 }
 
 /* ============================================================
@@ -1534,11 +1535,11 @@ function updateProgress() {
 function buildMapGrid() {
   const grid = document.getElementById('map-grid');
   grid.innerHTML = '';
-  examQuestions.forEach((_, i) => {
+  examQuestions.forEach(function(_, i) {
     const btn = document.createElement('button');
-    btn.className = 'map-btn';
+    btn.className   = 'map-btn';
     btn.textContent = i + 1;
-    btn.addEventListener('click', () => {
+    btn.addEventListener('click', function() {
       currentIndex = i;
       renderQuestion();
       if (mapVisible) toggleMap();
@@ -1548,11 +1549,10 @@ function buildMapGrid() {
 }
 
 function updateMapGrid() {
-  const btns = document.querySelectorAll('.map-btn');
-  btns.forEach((btn, i) => {
+  document.querySelectorAll('.map-btn').forEach(function(btn, i) {
     btn.className = 'map-btn';
-    if (i === currentIndex) btn.classList.add('current');
-    else if (flags[i]) btn.classList.add('flagged');
+    if      (i === currentIndex) btn.classList.add('current');
+    else if (flags[i])           btn.classList.add('flagged');
     else if (answers[i] !== null) btn.classList.add('answered');
   });
 }
@@ -1580,9 +1580,9 @@ function nextQ() {
 }
 
 function confirmFinish() {
-  const unanswered = answers.filter(a => a === null).length;
+  const unanswered = answers.filter(function(a) { return a === null; }).length;
   const msg = unanswered > 0
-    ? `未解答の問題が ${unanswered} 問あります。試験を終了して採点しますか？`
+    ? '未解答の問題が ' + unanswered + ' 問あります。試験を終了して採点しますか？'
     : '試験を終了して採点しますか？';
   if (confirm(msg)) finishExam();
 }
@@ -1591,13 +1591,18 @@ function confirmFinish() {
    採点・結果表示
    ============================================================ */
 function finishExam() {
-  if (timerInterval) clearInterval(timerInterval);
+  if (timerInterval) { clearInterval(timerInterval); timerInterval = null; }
 
   const elapsed = Math.floor((Date.now() - startTime) / 1000);
   let correct = 0;
-  const chapterStats = { 1: { correct: 0, total: 0 }, 2: { correct: 0, total: 0 }, 3: { correct: 0, total: 0 }, 4: { correct: 0, total: 0 } };
+  const chapterStats = {
+    1: { correct: 0, total: 0 },
+    2: { correct: 0, total: 0 },
+    3: { correct: 0, total: 0 },
+    4: { correct: 0, total: 0 }
+  };
 
-  examQuestions.forEach((q, i) => {
+  examQuestions.forEach(function(q, i) {
     const ch = q.chapter;
     chapterStats[ch].total++;
     if (answers[i] === q.answer) {
@@ -1606,20 +1611,18 @@ function finishExam() {
     }
   });
 
-  const total = examQuestions.length;
-  const wrong = answers.filter((a, i) => a !== null && a !== examQuestions[i].answer).length;
-  const skipped = answers.filter(a => a === null).length;
-  const score = Math.round((correct / total) * 100);
-  const pass = score >= 65;
+  const total   = examQuestions.length;
+  const wrong   = answers.filter(function(a, i) { return a !== null && a !== examQuestions[i].answer; }).length;
+  const skipped = answers.filter(function(a) { return a === null; }).length;
+  const score   = Math.round((correct / total) * 100);
+  const pass    = score >= 65;
 
-  // LocalStorage 保存
   saveExamHistory(chapterStats);
   saveChapterScores(chapterStats);
   localStorage.setItem('html5lv2_ch5', '100');
 
-  // 結果画面表示
-  document.getElementById('screen-exam').style.display = 'none';
-  document.getElementById('screen-result').style.display = 'block';
+  /* ★ 画面切り替え */
+  showScreen('screen-result');
 
   const circle = document.getElementById('score-circle');
   circle.className = 'score-circle ' + (pass ? 'pass' : 'fail');
@@ -1627,10 +1630,10 @@ function finishExam() {
 
   const verdict = document.getElementById('verdict');
   verdict.textContent = pass ? '✅ 合格' : '❌ 不合格';
-  verdict.className = 'verdict ' + (pass ? 'pass' : 'fail');
+  verdict.className   = 'verdict ' + (pass ? 'pass' : 'fail');
 
   document.getElementById('score-detail').textContent =
-    `${correct}問正解 / ${total}問中（合格ライン：65%）`;
+    correct + '問正解 / ' + total + '問中（合格ライン：65%）';
 
   document.getElementById('r-correct').textContent = correct;
   document.getElementById('r-wrong').textContent   = wrong;
@@ -1638,7 +1641,7 @@ function finishExam() {
 
   const em = Math.floor(elapsed / 60);
   const es = elapsed % 60;
-  document.getElementById('r-time').textContent = `${em}:${String(es).padStart(2,'0')}`;
+  document.getElementById('r-time').textContent = em + ':' + String(es).padStart(2, '0');
 
   renderCategoryBars(chapterStats);
   renderReview();
@@ -1648,53 +1651,53 @@ function renderCategoryBars(stats) {
   const container = document.getElementById('category-bars');
   container.innerHTML = '';
   const cats = [
-    { ch: 1, name: 'Chapter 1: 速習JavaScript入門', color: '#553c9a' },
-    { ch: 2, name: 'Chapter 2: JavaScriptの文法',   color: '#2b6cb0' },
+    { ch: 1, name: 'Chapter 1: 速習JavaScript入門',          color: '#553c9a' },
+    { ch: 2, name: 'Chapter 2: JavaScriptの文法',            color: '#2b6cb0' },
     { ch: 3, name: 'Chapter 3: WebブラウザのJavaScript API', color: '#276749' },
-    { ch: 4, name: 'Chapter 4: さまざまなHTML関連API', color: '#b7791f' },
+    { ch: 4, name: 'Chapter 4: さまざまなHTML関連API',        color: '#b7791f' },
   ];
-  cats.forEach(cat => {
+  cats.forEach(function(cat) {
     const s = stats[cat.ch];
     if (!s || s.total === 0) return;
-    const pct = Math.round((s.correct / s.total) * 100);
+    const pct   = Math.round((s.correct / s.total) * 100);
     const color = pct >= 80 ? '#48bb78' : pct >= 65 ? '#ed8936' : '#fc8181';
-    const row = document.createElement('div');
+    const row   = document.createElement('div');
     row.className = 'bar-row';
-    row.innerHTML = `
-      <div class="bar-label">
-        <span>${cat.name}</span>
-        <span>${s.correct}/${s.total}問</span>
-      </div>
-      <div class="bar-track">
-        <div class="bar-fill" style="width:${pct}%;background:${color};">${pct}%</div>
-      </div>`;
+    row.innerHTML =
+      '<div class="bar-label">' +
+        '<span>' + cat.name + '</span>' +
+        '<span>' + s.correct + '/' + s.total + '問</span>' +
+      '</div>' +
+      '<div class="bar-track">' +
+        '<div class="bar-fill" style="width:' + pct + '%;background:' + color + ';">' + pct + '%</div>' +
+      '</div>';
     container.appendChild(row);
   });
 }
 
 function renderReview() {
-  const list = document.getElementById('review-list');
+  const list   = document.getElementById('review-list');
   list.innerHTML = '';
   const labels = ['A', 'B', 'C', 'D'];
 
-  examQuestions.forEach((q, i) => {
-    const ans = answers[i];
+  examQuestions.forEach(function(q, i) {
+    const ans     = answers[i];
     const isWrong = ans !== null && ans !== q.answer;
     const isSkip  = ans === null;
     if (!isWrong && !isSkip) return;
 
     const item = document.createElement('div');
     item.className = 'review-item';
-    item.innerHTML = `
-      <div class="r-meta">
-        ${isWrong ? '<span class="tag-wrong">不正解</span>' : '<span class="tag-skip">未解答</span>'}
-        <span style="color:var(--muted)">${q.category}</span>
-      </div>
-      <div class="r-q">Q${i+1}. ${q.q}</div>
-      ${q.code ? `<pre class="q-code" style="font-size:12px;margin-bottom:8px;">${escHtml(q.code)}</pre>` : ''}
-      <div class="r-ans" style="color:var(--success)">✅ 正解：${labels[q.answer]}. ${q.choices[q.answer]}</div>
-      ${isWrong ? `<div class="r-ans" style="color:var(--danger)">❌ あなたの解答：${labels[ans]}. ${q.choices[ans]}</div>` : ''}
-      <div class="r-exp">${q.explanation}</div>`;
+    item.innerHTML =
+      '<div class="r-meta">' +
+        (isWrong ? '<span class="tag-wrong">不正解</span>' : '<span class="tag-skip">未解答</span>') +
+        '<span style="color:var(--muted)">' + q.category + '</span>' +
+      '</div>' +
+      '<div class="r-q">Q' + (i + 1) + '. ' + escHtml(q.q) + '</div>' +
+      (q.code ? '<pre class="q-code" style="font-size:12px;margin-bottom:8px;">' + escHtml(q.code) + '</pre>' : '') +
+      '<div class="r-ans" style="color:var(--success)">✅ 正解：' + labels[q.answer] + '. ' + escHtml(q.choices[q.answer]) + '</div>' +
+      (isWrong ? '<div class="r-ans" style="color:var(--danger)">❌ あなたの解答：' + labels[ans] + '. ' + escHtml(q.choices[ans]) + '</div>' : '') +
+      '<div class="r-exp">' + q.explanation + '</div>';
     list.appendChild(item);
   });
 
@@ -1704,40 +1707,41 @@ function renderReview() {
 }
 
 function escHtml(str) {
-  return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;');
 }
 
 /* ============================================================
    LocalStorage 操作
    ============================================================ */
 function getExamHistory() {
-  try {
-    return JSON.parse(localStorage.getItem('html5lv2_exam_history') || '{}');
-  } catch(e) { return {}; }
+  try   { return JSON.parse(localStorage.getItem('html5lv2_exam_history') || '{}'); }
+  catch { return {}; }
 }
 
 function saveExamHistory(chapterStats) {
   const history = getExamHistory();
-  examQuestions.forEach((q, i) => {
+  examQuestions.forEach(function(q, i) {
     const key = String(ALL_QUESTIONS.indexOf(q));
     if (!history[key]) {
       history[key] = { total: 0, correct: 0, wrong: 0, chapter: q.chapter, category: q.category };
     }
     history[key].total++;
     if (answers[i] === q.answer) history[key].correct++;
-    else history[key].wrong++;
+    else                          history[key].wrong++;
   });
   localStorage.setItem('html5lv2_exam_history', JSON.stringify(history));
 }
 
 function saveChapterScores(chapterStats) {
   let stored = {};
-  try {
-    stored = JSON.parse(localStorage.getItem('html5lv2_chapter_scores') || '{}');
-  } catch(e) {}
+  try { stored = JSON.parse(localStorage.getItem('html5lv2_chapter_scores') || '{}'); }
+  catch { stored = {}; }
 
-  [1, 2, 3, 4].forEach(ch => {
-    const key = `ch${ch}`;
+  [1, 2, 3, 4].forEach(function(ch) {
+    const key = 'ch' + ch;
     if (!stored[key]) stored[key] = { correct: 0, total: 0 };
     stored[key].correct += chapterStats[ch].correct;
     stored[key].total   += chapterStats[ch].total;
@@ -1749,12 +1753,11 @@ function saveChapterScores(chapterStats) {
    再挑戦
    ============================================================ */
 function retryExam() {
-  document.getElementById('screen-result').style.display = 'none';
-  document.getElementById('screen-start').style.display  = 'block';
   currentMode = null;
-  document.querySelectorAll('.mode-card').forEach(c => c.classList.remove('selected'));
+  document.querySelectorAll('.mode-card').forEach(function(c) { c.classList.remove('selected'); });
   document.getElementById('btn-start').disabled = true;
   document.getElementById('chapter-select-wrap').style.display = 'none';
+  showScreen('screen-start');
 }
 </script>
 </body>
