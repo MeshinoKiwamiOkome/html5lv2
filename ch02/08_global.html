@@ -1,0 +1,1380 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>2-8 グローバルオブジェクトとCallオブジェクト | Chapter 2 | HTML5 Level 2 試験対策</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Segoe UI', 'Helvetica Neue', sans-serif;
+      max-width: 960px; margin: 40px auto; padding: 0 24px;
+      background: #f0f4f8; color: #2d3748; line-height: 1.8;
+    }
+    .breadcrumb { font-size: 0.85rem; color: #718096; margin-bottom: 24px; }
+    .breadcrumb a { color: #553c9a; text-decoration: none; }
+    .breadcrumb a:hover { text-decoration: underline; }
+    .breadcrumb span { margin: 0 6px; }
+
+    .chapter-header {
+      background: linear-gradient(135deg, #553c9a, #9f7aea);
+      border-radius: 16px; padding: 36px 36px 32px;
+      color: #fff; margin-bottom: 32px;
+      position: relative; overflow: hidden;
+    }
+    .chapter-header::before {
+      content: ''; position: absolute; top: -50px; right: -50px;
+      width: 200px; height: 200px;
+      background: rgba(255,255,255,0.07); border-radius: 50%;
+    }
+    .chapter-header h1 { font-size: 1.75rem; font-weight: 700; margin-bottom: 8px; position: relative; z-index: 1; }
+    .chapter-header p  { font-size: 0.95rem; opacity: 0.9; margin-bottom: 18px; position: relative; z-index: 1; }
+    .badge-row { display: flex; flex-wrap: wrap; gap: 8px; position: relative; z-index: 1; }
+    .badge {
+      background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.35);
+      border-radius: 20px; padding: 3px 13px; font-size: 0.78rem; font-weight: 600;
+    }
+
+    .section-nav {
+      background: #fff; border-radius: 12px; padding: 20px 24px;
+      margin-bottom: 32px; box-shadow: 0 2px 12px rgba(85,60,154,0.07);
+    }
+    .section-nav h3 { font-size: 0.85rem; color: #9f7aea; font-weight: 700; margin-bottom: 12px; letter-spacing: 0.06em; }
+    .section-nav ul { list-style: none; display: flex; flex-direction: column; gap: 4px; }
+    .section-nav ul li a {
+      font-size: 0.88rem; color: #553c9a; text-decoration: none;
+      padding: 4px 10px; border-radius: 6px; display: block; transition: background 0.15s;
+    }
+    .section-nav ul li a:hover { background: #f3e8ff; }
+    .section-nav ul li.current a { font-weight: 700; color: #44337a; background: #ede9fe; }
+
+    .content-card {
+      background: #fff; border-radius: 14px; padding: 32px 36px;
+      margin-bottom: 28px; box-shadow: 0 2px 12px rgba(85,60,154,0.07);
+    }
+    .content-card h2 {
+      font-size: 1.25rem; font-weight: 700; color: #553c9a;
+      margin-bottom: 18px; padding-bottom: 10px;
+      border-bottom: 2px solid #e9d8fd;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .content-card h3 { font-size: 1rem; font-weight: 700; color: #44337a; margin: 22px 0 10px; }
+    .content-card p  { font-size: 0.95rem; color: #4a5568; margin-bottom: 14px; }
+    .content-card ul, .content-card ol { padding-left: 1.4em; margin-bottom: 14px; font-size: 0.93rem; color: #4a5568; }
+    .content-card li { margin-bottom: 6px; }
+
+    .tbl-wrap { overflow-x: auto; margin: 16px 0; }
+    table { width: 100%; border-collapse: collapse; font-size: 0.88rem; }
+    th { background: linear-gradient(135deg, #553c9a, #9f7aea); color: #fff; padding: 10px 14px; text-align: left; font-weight: 600; }
+    td { padding: 9px 14px; border-bottom: 1px solid #e2e8f0; color: #4a5568; }
+    tr:hover td { background: #faf5ff; }
+    tr:last-child td { border-bottom: none; }
+
+    .code-block {
+      background: #1a202c; border-radius: 10px; padding: 20px 22px;
+      margin: 16px 0; position: relative; overflow-x: auto;
+    }
+    .code-block pre {
+      font-family: 'Consolas', 'Monaco', monospace;
+      font-size: 0.88rem; line-height: 1.7; color: #e2e8f0; white-space: pre;
+    }
+    .copy-btn {
+      position: absolute; top: 10px; right: 12px;
+      background: #4a5568; color: #e2e8f0; border: none; border-radius: 6px;
+      padding: 4px 12px; font-size: 0.75rem; cursor: pointer; transition: background 0.15s;
+    }
+    .copy-btn:hover { background: #9f7aea; }
+    .copy-btn.copied { background: #48bb78; color: #fff; }
+
+    .comment { color: #68d391; }
+    .kw      { color: #b794f4; }
+    .fn      { color: #f6ad55; }
+    .str     { color: #fbd38d; }
+    .num     { color: #90cdf4; }
+    .op      { color: #fc8181; }
+    .out     { color: #a0aec0; }
+
+    .info-box { border-radius: 10px; padding: 16px 20px; margin: 16px 0; font-size: 0.9rem; }
+    .info-box.tip   { background: #f0fff4; border-left: 4px solid #48bb78; color: #276749; }
+    .info-box.warn  { background: #fffbeb; border-left: 4px solid #f6ad55; color: #744210; }
+    .info-box.point { background: #faf5ff; border-left: 4px solid #9f7aea; color: #44337a; }
+
+    /* ── デモカード ── */
+    .demo-card {
+      background: #faf5ff; border: 2px solid #d6bcfa;
+      border-radius: 14px; padding: 28px 30px; margin-bottom: 28px;
+    }
+    .demo-card h3 {
+      font-size: 1rem; font-weight: 700; color: #553c9a;
+      margin-bottom: 6px; display: flex; align-items: center; gap: 8px;
+    }
+    .demo-desc { font-size: 0.88rem; color: #553c9a; margin-bottom: 18px; }
+
+    /* クロージャデモ */
+    .closure-demo {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 14px;
+    }
+    @media(max-width:600px){ .closure-demo { grid-template-columns: 1fr; } }
+    .closure-box {
+      background: #1a202c; border-radius: 10px; padding: 16px 18px;
+      font-family: 'Consolas', monospace; font-size: 0.82rem; line-height: 1.8; color: #e2e8f0;
+    }
+    .closure-box h4 {
+      font-family: 'Segoe UI', sans-serif; font-size: 0.82rem;
+      font-weight: 700; color: #9f7aea; margin-bottom: 8px;
+    }
+    .closure-controls {
+      background: #fff; border-radius: 10px; padding: 16px 18px;
+    }
+    .closure-controls h4 {
+      font-size: 0.85rem; font-weight: 700; color: #553c9a; margin-bottom: 12px;
+    }
+    .counter-display {
+      font-size: 2.5rem; font-weight: 700; color: #553c9a;
+      text-align: center; padding: 16px 0; font-family: 'Consolas', monospace;
+    }
+    .counter-btns { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; }
+    .counter-btn {
+      padding: 8px 20px; border-radius: 8px; border: 2px solid #c4b5fd;
+      background: #fff; color: #553c9a; font-weight: 700; font-size: 0.88rem;
+      cursor: pointer; transition: all 0.15s;
+    }
+    .counter-btn:hover { background: #ede9fe; }
+    .counter-btn.inc { background: #553c9a; color: #fff; border-color: #553c9a; }
+    .counter-btn.inc:hover { background: #44337a; }
+    .counter-btn.dec { background: #fc8181; color: #fff; border-color: #e53e3e; }
+    .counter-btn.dec:hover { background: #e53e3e; }
+    .scope-note {
+      margin-top: 10px; font-size: 0.82rem; color: #718096;
+      text-align: center; padding: 8px; background: #faf5ff;
+      border-radius: 6px;
+    }
+
+    /* スコープチェーンビジュアライザ */
+    .scope-chain {
+      display: flex; flex-direction: column; gap: 0;
+    }
+    .scope-node {
+      border-radius: 10px; padding: 14px 18px;
+      font-family: 'Consolas', monospace; font-size: 0.82rem;
+      line-height: 1.7; border: 2px solid transparent;
+      transition: all 0.2s; cursor: pointer; position: relative;
+    }
+    .scope-node.global-scope { background: #1a202c; border-color: #4a5568; color: #e2e8f0; }
+    .scope-node.func-scope   { background: #1e2a3a; border-color: #553c9a; color: #e2e8f0; margin-left: 20px; }
+    .scope-node.inner-scope  { background: #1e2a3a; border-color: #9f7aea; color: #e2e8f0; margin-left: 40px; }
+    .scope-node:hover { box-shadow: 0 0 10px rgba(159,122,234,0.3); }
+    .scope-node .scope-label {
+      position: absolute; top: -10px; left: 12px;
+      font-family: 'Segoe UI', sans-serif; font-size: 0.72rem;
+      font-weight: 700; padding: 1px 8px; border-radius: 4px; color: #fff;
+    }
+    .global-scope .scope-label { background: #4a5568; }
+    .func-scope   .scope-label { background: #553c9a; }
+    .inner-scope  .scope-label { background: #9f7aea; }
+    .scope-connector {
+      width: 3px; height: 16px; background: #553c9a; margin-left: 30px;
+    }
+    .scope-result-box {
+      background: #fff; border-radius: 8px; padding: 12px 16px;
+      font-size: 0.85rem; color: #4a5568; margin-top: 12px;
+      border-left: 3px solid #9f7aea;
+    }
+    .scope-tabs { display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap; }
+    .scope-tab {
+      padding: 6px 16px; border-radius: 8px; border: 2px solid #c4b5fd;
+      background: #fff; color: #553c9a; font-weight: 700; font-size: 0.83rem;
+      cursor: pointer; transition: all 0.15s;
+    }
+    .scope-tab.active { background: #553c9a; color: #fff; border-color: #553c9a; }
+    .scope-tab:hover:not(.active) { background: #ede9fe; }
+
+    /* Math プレイグラウンド */
+    .math-grid {
+      display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 10px; margin-bottom: 14px;
+    }
+    .math-btn {
+      padding: 8px 12px; border-radius: 8px; border: 2px solid #c4b5fd;
+      background: #fff; color: #553c9a; font-family: 'Consolas', monospace;
+      font-size: 0.82rem; font-weight: 700; cursor: pointer; transition: all 0.15s;
+      text-align: left;
+    }
+    .math-btn:hover { background: #ede9fe; border-color: #9f7aea; }
+    .math-btn.active { background: #553c9a; color: #fff; border-color: #553c9a; }
+    .math-input-row { display: flex; gap: 10px; margin-bottom: 12px; flex-wrap: wrap; align-items: center; }
+    .math-input {
+      flex: 1; min-width: 120px; padding: 9px 12px;
+      border: 2px solid #c4b5fd; border-radius: 8px;
+      font-family: 'Consolas', monospace; font-size: 0.9rem;
+      color: #2d3748; background: #fff;
+    }
+    .math-input:focus { outline: none; border-color: #553c9a; }
+    .run-btn {
+      padding: 9px 20px; background: linear-gradient(135deg, #553c9a, #9f7aea);
+      color: #fff; border: none; border-radius: 8px;
+      font-size: 0.88rem; font-weight: 700; cursor: pointer; transition: opacity 0.15s;
+    }
+    .run-btn:hover { opacity: 0.88; }
+    .math-result {
+      background: #1a202c; border-radius: 10px; padding: 14px 16px;
+      font-family: 'Consolas', monospace; font-size: 0.88rem;
+      color: #e2e8f0; min-height: 48px;
+    }
+
+    /* ── ミニ試験 ── */
+    .exam-section {
+      background: linear-gradient(135deg, #553c9a, #44337a);
+      border-radius: 16px; padding: 32px 36px; margin-bottom: 28px; color: #fff;
+    }
+    .exam-section h2 {
+      font-size: 1.3rem; font-weight: 700; margin-bottom: 8px;
+    }
+    .exam-section p { font-size: 0.9rem; opacity: 0.9; margin-bottom: 24px; }
+    .exam-progress {
+      background: rgba(255,255,255,0.2); border-radius: 99px;
+      height: 10px; margin-bottom: 24px; overflow: hidden;
+    }
+    .exam-progress-fill {
+      height: 100%; background: #68d391; border-radius: 99px;
+      transition: width 0.4s ease; width: 0%;
+    }
+    .exam-q-num {
+      font-size: 0.82rem; font-weight: 700; opacity: 0.8; margin-bottom: 8px;
+    }
+    .exam-question {
+      font-size: 1rem; font-weight: 700; margin-bottom: 16px;
+      background: rgba(255,255,255,0.1); border-radius: 10px; padding: 14px 16px;
+    }
+    .exam-choices { display: flex; flex-direction: column; gap: 8px; margin-bottom: 16px; }
+    .exam-choice {
+      padding: 10px 16px; border-radius: 8px;
+      border: 2px solid rgba(255,255,255,0.3);
+      background: rgba(255,255,255,0.1);
+      color: #fff; font-size: 0.9rem; cursor: pointer;
+      text-align: left; transition: all 0.15s;
+    }
+    .exam-choice:hover:not(:disabled) { background: rgba(255,255,255,0.2); border-color: rgba(255,255,255,0.6); }
+    .exam-choice.correct { background: rgba(72,187,120,0.4); border-color: #68d391; font-weight: 700; }
+    .exam-choice.wrong   { background: rgba(252,129,129,0.3); border-color: #fc8181; }
+    .exam-feedback {
+      padding: 10px 14px; border-radius: 8px; font-size: 0.88rem;
+      margin-bottom: 12px; display: none;
+    }
+    .exam-feedback.show { display: block; }
+    .exam-feedback.ok { background: rgba(72,187,120,0.3); border-left: 4px solid #68d391; }
+    .exam-feedback.ng { background: rgba(252,129,129,0.2); border-left: 4px solid #fc8181; }
+    .exam-next-btn {
+      padding: 10px 28px; background: #fff; color: #553c9a;
+      border: none; border-radius: 8px; font-size: 0.9rem; font-weight: 700;
+      cursor: pointer; transition: opacity 0.15s; display: none;
+    }
+    .exam-next-btn.show { display: inline-block; }
+    .exam-next-btn:hover { opacity: 0.88; }
+    .exam-result {
+      text-align: center; padding: 20px 0; display: none;
+    }
+    .exam-result.show { display: block; }
+    .exam-score {
+      font-size: 3rem; font-weight: 700; margin-bottom: 8px;
+    }
+    .exam-score-label { font-size: 1rem; opacity: 0.9; margin-bottom: 20px; }
+    .exam-restart-btn {
+      padding: 12px 32px; background: #fff; color: #553c9a;
+      border: none; border-radius: 10px; font-size: 0.95rem; font-weight: 700;
+      cursor: pointer; transition: opacity 0.15s;
+    }
+    .exam-restart-btn:hover { opacity: 0.88; }
+
+    /* チェックリスト */
+    .checklist-card {
+      background: #fff; border-radius: 14px; padding: 28px 32px;
+      margin-bottom: 28px; box-shadow: 0 2px 12px rgba(85,60,154,0.07);
+    }
+    .checklist-card h2 {
+      font-size: 1.1rem; font-weight: 700; color: #553c9a;
+      margin-bottom: 18px; padding-bottom: 10px; border-bottom: 2px solid #e9d8fd;
+    }
+    .checklist-grid {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 8px;
+    }
+    @media(max-width:600px){ .checklist-grid { grid-template-columns: 1fr; } }
+    .check-item {
+      display: flex; align-items: center; gap: 10px;
+      padding: 8px 12px; border-radius: 8px; border: 2px solid #e2e8f0;
+      font-size: 0.85rem; color: #4a5568; cursor: pointer; transition: all 0.15s;
+    }
+    .check-item:hover { border-color: #9f7aea; background: #faf5ff; }
+    .check-item.checked { border-color: #48bb78; background: #f0fff4; color: #276749; }
+    .check-item input[type="checkbox"] { width: 16px; height: 16px; accent-color: #553c9a; flex-shrink: 0; }
+    .checklist-progress { margin-top: 14px; }
+    .cl-bar-wrap { background: #e9d8fd; border-radius: 99px; height: 10px; overflow: hidden; margin-bottom: 6px; }
+    .cl-bar-fill { height: 100%; background: linear-gradient(90deg, #553c9a, #9f7aea); border-radius: 99px; transition: width 0.4s; }
+    .cl-text { font-size: 0.82rem; color: #718096; text-align: right; }
+
+    /* ── 演習問題 ── */
+    .quiz-section {
+      background: #fff; border-radius: 14px; padding: 32px 36px;
+      margin-bottom: 28px; box-shadow: 0 2px 12px rgba(85,60,154,0.07);
+    }
+    .quiz-section h2 {
+      font-size: 1.2rem; font-weight: 700; color: #553c9a;
+      margin-bottom: 24px; padding-bottom: 10px; border-bottom: 2px solid #e9d8fd;
+    }
+    .quiz-item { margin-bottom: 32px; padding-bottom: 28px; border-bottom: 1px dashed #e2e8f0; }
+    .quiz-item:last-child { border-bottom: none; margin-bottom: 0; }
+    .quiz-q {
+      font-size: 0.95rem; font-weight: 700; color: #2d3748;
+      margin-bottom: 14px; background: #faf5ff;
+      padding: 12px 16px; border-radius: 8px; border-left: 4px solid #9f7aea;
+    }
+    .quiz-q .q-num {
+      display: inline-block; background: #553c9a; color: #fff;
+      border-radius: 6px; padding: 1px 9px; font-size: 0.8rem; margin-right: 8px;
+    }
+    .blank-input {
+      border: 2px solid #c4b5fd; border-radius: 6px; padding: 4px 10px;
+      font-size: 0.9rem; font-family: 'Consolas', monospace;
+      color: #2d3748; background: #faf5ff; width: 140px; transition: border-color 0.15s;
+    }
+    .blank-input:focus { outline: none; border-color: #553c9a; }
+    .blank-input.correct { border-color: #48bb78; background: #f0fff4; }
+    .blank-input.wrong   { border-color: #fc8181; background: #fff5f5; }
+
+    .choices { display: flex; flex-direction: column; gap: 8px; }
+    .choice-btn {
+      padding: 10px 16px; border-radius: 8px; border: 2px solid #e2e8f0;
+      background: #fff; color: #2d3748; font-size: 0.9rem;
+      cursor: pointer; text-align: left; transition: all 0.15s;
+    }
+    .choice-btn:hover:not(:disabled) { border-color: #9f7aea; background: #faf5ff; }
+    .choice-btn.correct { border-color: #48bb78; background: #f0fff4; color: #276749; font-weight: 700; }
+    .choice-btn.wrong   { border-color: #fc8181; background: #fff5f5; color: #c53030; }
+
+    .checkbox-list { display: flex; flex-direction: column; gap: 8px; }
+    .cb-label {
+      display: flex; align-items: center; gap: 10px;
+      padding: 10px 14px; border-radius: 8px;
+      border: 2px solid #e2e8f0; background: #fff;
+      cursor: pointer; font-size: 0.9rem; transition: all 0.15s;
+    }
+    .cb-label:hover { border-color: #9f7aea; background: #faf5ff; }
+    .cb-label input[type="checkbox"] { width: 16px; height: 16px; accent-color: #553c9a; }
+    .cb-label.correct { border-color: #48bb78; background: #f0fff4; }
+    .cb-label.wrong   { border-color: #fc8181; background: #fff5f5; }
+
+    .code-fill {
+      background: #1a202c; border-radius: 10px; padding: 18px 20px;
+      font-family: 'Consolas', 'Monaco', monospace;
+      font-size: 0.88rem; line-height: 1.9; color: #e2e8f0; margin-bottom: 12px;
+    }
+    .fill-input {
+      background: #2d3748; border: 1px solid #9f7aea; border-radius: 4px;
+      color: #fbd38d; font-family: 'Consolas', monospace;
+      font-size: 0.88rem; padding: 1px 8px; width: 150px;
+    }
+    .fill-input:focus { outline: none; border-color: #b794f4; }
+    .fill-input.correct { border-color: #48bb78; background: #1c3a2a; color: #68d391; }
+    .fill-input.wrong   { border-color: #fc8181; background: #3a1c1c; color: #fc8181; }
+
+    .check-btn {
+      margin-top: 12px; padding: 9px 22px;
+      background: linear-gradient(135deg, #553c9a, #9f7aea);
+      color: #fff; border: none; border-radius: 8px;
+      font-size: 0.88rem; font-weight: 700; cursor: pointer; transition: opacity 0.15s;
+    }
+    .check-btn:hover { opacity: 0.88; }
+    .feedback { margin-top: 10px; padding: 10px 16px; border-radius: 8px; font-size: 0.88rem; display: none; }
+    .feedback.show { display: block; }
+    .feedback.ok { background: #f0fff4; color: #276749; border-left: 4px solid #48bb78; }
+    .feedback.ng { background: #fff5f5; color: #c53030; border-left: 4px solid #fc8181; }
+
+    .complete-area { text-align: center; padding: 32px 0 8px; }
+    .complete-btn {
+      padding: 14px 40px; background: linear-gradient(135deg, #553c9a, #9f7aea);
+      color: #fff; border: none; border-radius: 12px;
+      font-size: 1rem; font-weight: 700; cursor: pointer;
+      transition: opacity 0.15s, transform 0.15s;
+      box-shadow: 0 4px 16px rgba(85,60,154,0.3);
+    }
+    .complete-btn:hover { opacity: 0.9; transform: translateY(-2px); }
+    .complete-btn.done { background: linear-gradient(135deg, #38a169, #68d391); }
+    .complete-msg { margin-top: 12px; font-size: 0.9rem; color: #718096; }
+
+    .page-nav {
+      display: flex; justify-content: space-between; align-items: center;
+      gap: 12px; margin-top: 40px; flex-wrap: wrap;
+    }
+    .nav-btn {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 12px 22px; border-radius: 10px;
+      font-size: 0.9rem; font-weight: 600; text-decoration: none;
+      transition: background 0.18s, transform 0.18s;
+    }
+    .nav-btn.prev  { background: #e9d8fd; color: #553c9a; }
+    .nav-btn.prev:hover  { background: #d6bcfa; transform: translateX(-2px); }
+    .nav-btn.index { background: linear-gradient(135deg, #553c9a, #9f7aea); color: #fff; }
+    .nav-btn.index:hover { opacity: 0.9; }
+    .nav-btn.next  { background: #48bb78; color: #fff; }
+    .nav-btn.next:hover  { background: #38a169; transform: translateX(2px); }
+
+    footer {
+      text-align: center; font-size: 0.8rem; color: #a0aec0;
+      margin-top: 48px; padding-top: 24px; border-top: 1px solid #e2e8f0;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- パンくずナビ -->
+  <nav class="breadcrumb">
+    <a href="../index.html">🏠 HTML5 Level 2</a>
+    <span>›</span>
+    <a href="index.html">Chapter 2</a>
+    <span>›</span>
+    <strong>2-8 グローバルオブジェクトとCallオブジェクト</strong>
+  </nav>
+
+  <!-- 章ヘッダー -->
+  <header class="chapter-header">
+    <h1>🌐 2-8 グローバルオブジェクトとCallオブジェクト</h1>
+    <p>スコープチェーン・クロージャ・グローバル関数・Math オブジェクト、そして Chapter 2 総まとめ試験（20問）。</p>
+    <div class="badge-row">
+      <span class="badge">🌐 グローバルオブジェクト</span>
+      <span class="badge">🔒 クロージャ</span>
+      <span class="badge">🔭 スコープチェーン</span>
+      <span class="badge">📐 Math オブジェクト</span>
+      <span class="badge">🏆 総まとめ試験 20問</span>
+    </div>
+  </header>
+
+  <!-- セクションナビ -->
+  <nav class="section-nav">
+    <h3>📋 CHAPTER 2 セクション一覧</h3>
+    <ul>
+      <li><a href="01_js_ecma.html">2-1 JavaScriptとは</a></li>
+      <li><a href="02_variables.html">2-2 変数と型</a></li>
+      <li><a href="03_expressions.html">2-3 式と演算子</a></li>
+      <li><a href="04_control.html">2-4 制御文</a></li>
+      <li><a href="05_arrays.html">2-5 配列</a></li>
+      <li><a href="06_objects.html">2-6 オブジェクト</a></li>
+      <li><a href="07_functions.html">2-7 関数</a></li>
+      <li class="current"><a href="08_global.html">2-8 グローバルオブジェクトとCallオブジェクト</a></li>
+    </ul>
+  </nav>
+
+  <!-- ===== 1. グローバルオブジェクト / Callオブジェクト ===== -->
+  <div class="content-card">
+    <h2>🌐 グローバルオブジェクトと Call オブジェクト</h2>
+
+    <p>
+      JavaScriptには実行環境が自動的に生成する2種類の特殊なオブジェクトがあります。
+    </p>
+
+    <div class="tbl-wrap">
+      <table>
+        <thead><tr><th>オブジェクト</th><th>生成タイミング</th><th>役割</th><th>ブラウザでの名前</th></tr></thead>
+        <tbody>
+          <tr>
+            <td><strong>グローバルオブジェクト</strong></td>
+            <td>スクリプト実行開始時</td>
+            <td>グローバル変数・関数を保持。トップレベルの <code>this</code></td>
+            <td><code>window</code> / <code>globalThis</code></td>
+          </tr>
+          <tr>
+            <td><strong>Call オブジェクト</strong><br>（実行コンテキスト）</td>
+            <td>関数呼び出しごと</td>
+            <td>ローカル変数・引数・<code>arguments</code> を保持</td>
+            <td>-（内部的な概念）</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="code-block">
+      <button class="copy-btn" onclick="copyCode(this)">copy</button>
+      <pre><span class="comment">// グローバルオブジェクト</span>
+<span class="fn">console</span>.<span class="fn">log</span>(<span class="kw">typeof</span> window);      <span class="out">// "object"（ブラウザ）</span>
+<span class="fn">console</span>.<span class="fn">log</span>(<span class="kw">typeof</span> globalThis);  <span class="out">// "object"（全環境共通・ES2020）</span>
+
+<span class="comment">// varで宣言したグローバル変数はwindowのプロパティになる</span>
+<span class="kw">var</span> x <span class="op">=</span> <span class="num">42</span>;
+<span class="fn">console</span>.<span class="fn">log</span>(window.x); <span class="out">// 42</span>
+
+<span class="comment">// let/constはwindowのプロパティにならない</span>
+<span class="kw">let</span> y <span class="op">=</span> <span class="num">10</span>;
+<span class="fn">console</span>.<span class="fn">log</span>(window.y); <span class="out">// undefined</span>
+
+<span class="comment">// Call オブジェクト（実行コンテキスト）のイメージ</span>
+<span class="kw">function</span> <span class="fn">outer</span>(a) {       <span class="comment">// Call オブジェクト①: { a, b, inner }</span>
+  <span class="kw">let</span> b <span class="op">=</span> <span class="num">2</span>;
+  <span class="kw">function</span> <span class="fn">inner</span>(c) {    <span class="comment">// Call オブジェクト②: { c } + outer参照</span>
+    <span class="kw">return</span> a <span class="op">+</span> b <span class="op">+</span> c;  <span class="comment">// スコープチェーンで a, b を探す</span>
+  }
+  <span class="kw">return</span> <span class="fn">inner</span>(<span class="num">3</span>);
+}
+<span class="fn">console</span>.<span class="fn">log</span>(<span class="fn">outer</span>(<span class="num">1</span>)); <span class="out">// 6</span></pre>
+    </div>
+  </div>
+
+  <!-- ===== 2. スコープチェーン ===== -->
+  <div class="content-card">
+    <h2>🔭 スコープチェーンと名前解決</h2>
+
+    <p>
+      変数を参照するとき、JavaScriptは<strong>現在のスコープ → 外側のスコープ → ... → グローバルスコープ</strong>
+      の順に変数を探します。この仕組みを<strong>スコープチェーン</strong>といいます。
+    </p>
+
+    <div class="code-block">
+      <button class="copy-btn" onclick="copyCode(this)">copy</button>
+      <pre><span class="kw">const</span> x <span class="op">=</span> <span class="str">'global'</span>;       <span class="comment">// グローバルスコープ</span>
+
+<span class="kw">function</span> <span class="fn">outer</span>() {
+  <span class="kw">const</span> x <span class="op">=</span> <span class="str">'outer'</span>;     <span class="comment">// outer のスコープ（グローバルを隠す）</span>
+  <span class="kw">const</span> y <span class="op">=</span> <span class="str">'from outer'</span>;
+
+  <span class="kw">function</span> <span class="fn">inner</span>() {
+    <span class="kw">const</span> z <span class="op">=</span> <span class="str">'from inner'</span>;
+    <span class="fn">console</span>.<span class="fn">log</span>(x); <span class="out">// "outer"（outer のスコープで発見）</span>
+    <span class="fn">console</span>.<span class="fn">log</span>(y); <span class="out">// "from outer"（outer のスコープで発見）</span>
+    <span class="fn">console</span>.<span class="fn">log</span>(z); <span class="out">// "from inner"（自身のスコープで発見）</span>
+  }
+  <span class="fn">inner</span>();
+}
+<span class="fn">outer</span>();
+
+<span class="comment">// with 文（非推奨・試験対策として把握）</span>
+<span class="comment">// with はオブジェクトをスコープチェーンの先頭に追加する</span>
+<span class="comment">// strict mode では SyntaxError になる</span>
+<span class="kw">const</span> obj <span class="op">=</span> { a: <span class="num">1</span>, b: <span class="num">2</span> };
+<span class="comment">// with (obj) { console.log(a + b); } // 3（非推奨）</span></pre>
+    </div>
+
+    <div class="info-box warn">
+      <strong>⚠️ with 文について：</strong>
+      <code>with</code> 文はオブジェクトのプロパティをスコープチェーンの先頭に追加しますが、
+      パフォーマンス低下・デバッグ困難・strict mode での禁止などの理由から<strong>非推奨</strong>です。
+      試験では「with 文は strict mode で使えない」という点を押さえましょう。
+    </div>
+  </div>
+
+  <!-- ===== 3. クロージャ ===== -->
+  <div class="content-card">
+    <h2>🔒 クロージャ（Closure）</h2>
+
+    <p>
+      <strong>クロージャ</strong>とは、関数が定義されたスコープの変数を、
+      そのスコープが終了した後も参照し続けられる仕組みです。
+    </p>
+
+    <div class="code-block">
+      <button class="copy-btn" onclick="copyCode(this)">copy</button>
+      <pre><span class="comment">// クロージャの基本例</span>
+<span class="kw">function</span> <span class="fn">makeCounter</span>() {
+  <span class="kw">let</span> count <span class="op">=</span> <span class="num">0</span>;  <span class="comment">// この変数がクロージャに閉じ込められる</span>
+
+  <span class="kw">return</span> {
+    <span class="fn">increment</span>() { count<span class="op">++</span>; },
+    <span class="fn">decrement</span>() { count<span class="op">--</span>; },
+    <span class="fn">getCount</span>()  { <span class="kw">return</span> count; }
+  };
+}
+
+<span class="kw">const</span> counter <span class="op">=</span> <span class="fn">makeCounter</span>();
+counter.<span class="fn">increment</span>();
+counter.<span class="fn">increment</span>();
+counter.<span class="fn">increment</span>();
+counter.<span class="fn">decrement</span>();
+<span class="fn">console</span>.<span class="fn">log</span>(counter.<span class="fn">getCount</span>()); <span class="out">// 2</span>
+
+<span class="comment">// count は外から直接アクセスできない（プライベート変数）</span>
+<span class="fn">console</span>.<span class="fn">log</span>(counter.count); <span class="out">// undefined</span>
+
+<span class="comment">// 独立したカウンター（それぞれ別のクロージャ）</span>
+<span class="kw">const</span> c1 <span class="op">=</span> <span class="fn">makeCounter</span>();
+<span class="kw">const</span> c2 <span class="op">=</span> <span class="fn">makeCounter</span>();
+c1.<span class="fn">increment</span>();
+<span class="fn">console</span>.<span class="fn">log</span>(c1.<span class="fn">getCount</span>()); <span class="out">// 1</span>
+<span class="fn">console</span>.<span class="fn">log</span>(c2.<span class="fn">getCount</span>()); <span class="out">// 0（独立している）</span></pre>
+    </div>
+
+    <div class="info-box point">
+      <strong>💡 クロージャの用途</strong><br>
+      ① <strong>プライベート変数の実現</strong>（外部から直接変更できない変数）<br>
+      ② <strong>状態の保持</strong>（関数呼び出し間で値を維持）<br>
+      ③ <strong>カリー化・部分適用</strong>（関数を返す高階関数）<br>
+      ④ <strong>モジュールパターン</strong>（IIFE + クロージャでカプセル化）
+    </div>
+
+    <div class="info-box warn">
+      <strong>⚠️ メモリリークに注意：</strong>
+      クロージャが大きなオブジェクトへの参照を保持し続けると、
+      ガーベジコレクションが解放できずメモリリークの原因になります。
+      不要になったクロージャは参照を切りましょう。
+    </div>
+  </div>
+
+  <!-- ===== 4. グローバル関数 ===== -->
+  <div class="content-card">
+    <h2>🛠 グローバル関数</h2>
+
+    <div class="tbl-wrap">
+      <table>
+        <thead><tr><th>関数</th><th>説明</th><th>例</th><th>結果</th></tr></thead>
+        <tbody>
+          <tr><td><code>parseInt(str, radix)</code></td><td>文字列を整数に変換</td><td><code>parseInt('42px')</code></td><td><code>42</code></td></tr>
+          <tr><td><code>parseFloat(str)</code></td><td>文字列を浮動小数点数に変換</td><td><code>parseFloat('3.14abc')</code></td><td><code>3.14</code></td></tr>
+          <tr><td><code>isNaN(val)</code></td><td>NaN かどうか（型変換あり）</td><td><code>isNaN('abc')</code></td><td><code>true</code></td></tr>
+          <tr><td><code>isFinite(val)</code></td><td>有限数かどうか</td><td><code>isFinite(Infinity)</code></td><td><code>false</code></td></tr>
+          <tr><td><code>encodeURIComponent(str)</code></td><td>URI コンポーネントをエンコード</td><td><code>encodeURIComponent('a b')</code></td><td><code>'a%20b'</code></td></tr>
+          <tr><td><code>decodeURIComponent(str)</code></td><td>URI コンポーネントをデコード</td><td><code>decodeURIComponent('a%20b')</code></td><td><code>'a b'</code></td></tr>
+          <tr><td><code>encodeURI(str)</code></td><td>URI 全体をエンコード（/ : 等は変換しない）</td><td><code>encodeURI('http://a b')</code></td><td><code>'http://a%20b'</code></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="code-block">
+      <button class="copy-btn" onclick="copyCode(this)">copy</button>
+      <pre><span class="comment">// parseInt の基数指定</span>
+<span class="fn">console</span>.<span class="fn">log</span>(<span class="fn">parseInt</span>(<span class="str">'ff'</span>, <span class="num">16</span>));  <span class="out">// 255（16進数）</span>
+<span class="fn">console</span>.<span class="fn">log</span>(<span class="fn">parseInt</span>(<span class="str">'10'</span>, <span class="num">2</span>));   <span class="out">// 2（2進数）</span>
+<span class="fn">console</span>.<span class="fn">log</span>(<span class="fn">parseInt</span>(<span class="str">'0x1A'</span>));   <span class="out">// 26（16進数プレフィックス自動認識）</span>
+
+<span class="comment">// isNaN vs Number.isNaN の違い</span>
+<span class="fn">console</span>.<span class="fn">log</span>(<span class="fn">isNaN</span>(<span class="str">'abc'</span>));         <span class="out">// true（型変換してからチェック）</span>
+<span class="fn">console</span>.<span class="fn">log</span>(Number.<span class="fn">isNaN</span>(<span class="str">'abc'</span>));  <span class="out">// false（型変換しない・厳密）</span>
+<span class="fn">console</span>.<span class="fn">log</span>(Number.<span class="fn">isNaN</span>(<span class="num">NaN</span>));   <span class="out">// true</span>
+
+<span class="comment">// URI エンコード</span>
+<span class="kw">const</span> query <span class="op">=</span> <span class="str">'name=山田 太郎&age=30'</span>;
+<span class="fn">console</span>.<span class="fn">log</span>(<span class="fn">encodeURIComponent</span>(query));
+<span class="out">// "name%3D%E5%B1%B1%E7%94%B0%20%E5%A4%AA%E9%83%8E%26age%3D30"</span></pre>
+    </div>
+  </div>
+
+  <!-- ===== 5. Math オブジェクト ===== -->
+  <div class="content-card">
+    <h2>📐 Math オブジェクト</h2>
+
+    <div class="tbl-wrap">
+      <table>
+        <thead><tr><th>メソッド / プロパティ</th><th>説明</th><th>例</th><th>結果</th></tr></thead>
+        <tbody>
+          <tr><td><code>Math.PI</code></td><td>円周率 π</td><td><code>Math.PI</code></td><td><code>3.14159...</code></td></tr>
+          <tr><td><code>Math.floor(x)</code></td><td>切り捨て（床関数）</td><td><code>Math.floor(4.9)</code></td><td><code>4</code></td></tr>
+          <tr><td><code>Math.ceil(x)</code></td><td>切り上げ（天井関数）</td><td><code>Math.ceil(4.1)</code></td><td><code>5</code></td></tr>
+          <tr><td><code>Math.round(x)</code></td><td>四捨五入</td><td><code>Math.round(4.5)</code></td><td><code>5</code></td></tr>
+          <tr><td><code>Math.trunc(x)</code></td><td>小数部を切り捨て（符号維持）</td><td><code>Math.trunc(-4.9)</code></td><td><code>-4</code></td></tr>
+          <tr><td><code>Math.abs(x)</code></td><td>絶対値</td><td><code>Math.abs(-5)</code></td><td><code>5</code></td></tr>
+          <tr><td><code>Math.max(...)</code></td><td>最大値</td><td><code>Math.max(1,3,2)</code></td><td><code>3</code></td></tr>
+          <tr><td><code>Math.min(...)</code></td><td>最小値</td><td><code>Math.min(1,3,2)</code></td><td><code>1</code></td></tr>
+          <tr><td><code>Math.pow(x,y)</code></td><td>べき乗（x の y 乗）</td><td><code>Math.pow(2,8)</code></td><td><code>256</code></td></tr>
+          <tr><td><code>Math.sqrt(x)</code></td><td>平方根</td><td><code>Math.sqrt(16)</code></td><td><code>4</code></td></tr>
+          <tr><td><code>Math.random()</code></td><td>0以上1未満の乱数</td><td><code>Math.random()</code></td><td><code>0.xxx...</code></td></tr>
+          <tr><td><code>Math.sign(x)</code></td><td>符号（1 / 0 / -1）</td><td><code>Math.sign(-5)</code></td><td><code>-1</code></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="code-block">
+      <button class="copy-btn" onclick="copyCode(this)">copy</button>
+      <pre><span class="comment">// よく使うパターン</span>
+
+<span class="comment">// 0〜9 のランダム整数</span>
+<span class="kw">const</span> rand <span class="op">=</span> Math.<span class="fn">floor</span>(Math.<span class="fn">random</span>() <span class="op">*</span> <span class="num">10</span>);
+
+<span class="comment">// min〜max のランダム整数</span>
+<span class="kw">function</span> <span class="fn">randInt</span>(min, max) {
+  <span class="kw">return</span> Math.<span class="fn">floor</span>(Math.<span class="fn">random</span>() <span class="op">*</span> (max <span class="op">-</span> min <span class="op">+</span> <span class="num">1</span>)) <span class="op">+</span> min;
+}
+
+<span class="comment">// floor vs trunc（負の数で違いが出る）</span>
+<span class="fn">console</span>.<span class="fn">log</span>(Math.<span class="fn">floor</span>(<span class="op">-</span><span class="num">4.1</span>)); <span class="out">// -5（より小さい整数へ）</span>
+<span class="fn">console</span>.<span class="fn">log</span>(Math.<span class="fn">trunc</span>(<span class="op">-</span><span class="num">4.1</span>)); <span class="out">// -4（ゼロ方向へ切り捨て）</span>
+
+<span class="comment">// 配列の最大値（スプレッド構文）</span>
+<span class="kw">const</span> arr <span class="op">=</span> [<span class="num">3</span>, <span class="num">1</span>, <span class="num">4</span>, <span class="num">1</span>, <span class="num">5</span>, <span class="num">9</span>];
+<span class="fn">console</span>.<span class="fn">log</span>(Math.<span class="fn">max</span>(...arr)); <span class="out">// 9</span></pre>
+    </div>
+  </div>
+
+  <!-- ===== デモ①：クロージャ カウンターデモ ===== -->
+  <div class="demo-card">
+    <h3>🎮 デモ①：クロージャ カウンター</h3>
+    <p class="demo-desc">makeCounter() が返すオブジェクトを操作して、クロージャで count 変数が保持されることを確認しましょう。</p>
+    <div class="closure-demo">
+      <div class="closure-box">
+        <h4>makeCounter() の実装</h4>
+        <span class="kw">function</span> <span class="fn">makeCounter</span>() {<br>
+        &nbsp;&nbsp;<span class="kw">let</span> count <span class="op">=</span> <span class="num">0</span>; <span class="comment">// クロージャ変数</span><br>
+        &nbsp;&nbsp;<span class="kw">return</span> {<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;<span class="fn">increment</span>() { count<span class="op">++</span>; },<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;<span class="fn">decrement</span>() { count<span class="op">--</span>; },<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;<span class="fn">reset</span>()     { count <span class="op">=</span> <span class="num">0</span>; },<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;<span class="fn">getCount</span>()  { <span class="kw">return</span> count; }<br>
+        &nbsp;&nbsp;};<br>
+        }
+      </div>
+      <div class="closure-controls">
+        <h4>🔢 カウンター操作</h4>
+        <div class="counter-display" id="counterDisplay">0</div>
+        <div class="counter-btns">
+          <button class="counter-btn inc" onclick="counterOp('inc')">+ increment</button>
+          <button class="counter-btn dec" onclick="counterOp('dec')">- decrement</button>
+          <button class="counter-btn" onclick="counterOp('reset')">↺ reset</button>
+        </div>
+        <div class="scope-note" id="counterNote">
+          count は外から直接アクセスできません（counter.count → undefined）
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== デモ②：スコープチェーンビジュアライザ ===== -->
+  <div class="demo-card">
+    <h3>🎮 デモ②：スコープチェーン ビジュアライザ</h3>
+    <p class="demo-desc">変数の名前解決がどのスコープで行われるか確認しましょう。</p>
+    <div class="scope-tabs">
+      <button class="scope-tab active" onclick="showScopeChain('basic', this)">基本</button>
+      <button class="scope-tab" onclick="showScopeChain('shadow', this)">シャドーイング</button>
+      <button class="scope-tab" onclick="showScopeChain('closure', this)">クロージャ</button>
+    </div>
+    <div id="scopeChainDisplay"></div>
+  </div>
+
+  <!-- ===== デモ③：Math プレイグラウンド ===== -->
+  <div class="demo-card">
+    <h3>🎮 デモ③：Math メソッド プレイグラウンド</h3>
+    <p class="demo-desc">メソッドを選んで数値を入力すると結果を確認できます。</p>
+    <div class="math-grid" id="mathBtns"></div>
+    <div class="math-input-row">
+      <input class="math-input" id="mathInput" type="text" placeholder="数値（例: 4.7, -3.2）" value="4.7">
+      <input class="math-input" id="mathInput2" type="text" placeholder="第2引数（任意）" value="">
+      <button class="run-btn" onclick="runMath()">▶ 実行</button>
+    </div>
+    <div class="math-result" id="mathResult"></div>
+  </div>
+
+  <!-- ===== 演習問題 ===== -->
+  <div class="quiz-section">
+    <h2>✏️ 演習問題</h2>
+
+    <!-- Q1：穴埋め -->
+    <div class="quiz-item">
+      <div class="quiz-q">
+        <span class="q-num">Q1</span>
+        クロージャについて空欄を埋めてください。（穴埋め）
+      </div>
+      <p style="font-size:0.92rem;color:#4a5568;margin-bottom:14px;">
+        クロージャとは、関数が <input class="blank-input" id="q1a" placeholder="？？？">
+        されたスコープの変数を、そのスコープが終了した後も
+        <input class="blank-input" id="q1b" placeholder="？？？"> し続けられる仕組みである。
+        クロージャを使うと外部から直接アクセスできない
+        <input class="blank-input" id="q1c" placeholder="？？？"> 変数を実現できる。
+        ただし不要になったクロージャが大きなオブジェクトを参照し続けると
+        <input class="blank-input" id="q1d" placeholder="？？？"> の原因になる。
+      </p>
+      <button class="check-btn" onclick="checkQ1()">判定する</button>
+      <div class="feedback" id="fb1"></div>
+    </div>
+
+    <!-- Q2：選択 -->
+    <div class="quiz-item">
+      <div class="quiz-q">
+        <span class="q-num">Q2</span>
+        次のコードの実行結果として正しいものはどれですか？（選択）
+      </div>
+      <div class="code-fill" style="margin-bottom:14px;">
+<span class="fn">console</span>.<span class="fn">log</span>(Math.<span class="fn">floor</span>(<span class="op">-</span><span class="num">4.1</span>));
+<span class="fn">console</span>.<span class="fn">log</span>(Math.<span class="fn">trunc</span>(<span class="op">-</span><span class="num">4.1</span>));
+      </div>
+      <div class="choices">
+        <button class="choice-btn" onclick="checkQ2(this,false)">A. -4 と -4</button>
+        <button class="choice-btn" onclick="checkQ2(this,true)">B. -5 と -4</button>
+        <button class="choice-btn" onclick="checkQ2(this,false)">C. -4 と -5</button>
+        <button class="choice-btn" onclick="checkQ2(this,false)">D. -5 と -5</button>
+      </div>
+      <div class="feedback" id="fb2"></div>
+    </div>
+
+    <!-- Q3：チェックボックス -->
+    <div class="quiz-item">
+      <div class="quiz-q">
+        <span class="q-num">Q3</span>
+        Math オブジェクトのメソッドについて<strong>正しい</strong>ものをすべて選んでください。（複数選択）
+      </div>
+      <div class="checkbox-list" id="q3-list">
+        <label class="cb-label"><input type="checkbox" value="a">
+          <code>Math.random()</code> は 0 以上 1 未満の乱数を返す</label>
+        <label class="cb-label"><input type="checkbox" value="b">
+          <code>Math.round(4.5)</code> は 4 を返す</label>
+        <label class="cb-label"><input type="checkbox" value="c">
+          <code>Math.max()</code>（引数なし）は <code>-Infinity</code> を返す</label>
+        <label class="cb-label"><input type="checkbox" value="d">
+          <code>Math.floor(-4.1)</code> は <code>-5</code> を返す</label>
+        <label class="cb-label"><input type="checkbox" value="e">
+          <code>Math.pow(2, 10)</code> と <code>2 ** 10</code> は同じ結果を返す</label>
+      </div>
+      <button class="check-btn" onclick="checkQ3()">判定する</button>
+      <div class="feedback" id="fb3"></div>
+    </div>
+
+    <!-- Q4：コード補完 -->
+    <div class="quiz-item">
+      <div class="quiz-q">
+        <span class="q-num">Q4</span>
+        スコープチェーンを利用したクロージャで、プライベートなカウンターを作るコードを完成させてください。（コード補完）
+      </div>
+      <div class="code-fill">
+<span class="kw">function</span> <span class="fn">makeCounter</span>() {
+  <input class="fill-input" id="q4a" placeholder="宣言"> count <span class="op">=</span> <span class="num">0</span>;
+  <span class="kw">return</span> <span class="kw">function</span>() {
+    <span class="kw">return</span> <input class="fill-input" id="q4b" placeholder="式">;
+  };
+}
+<span class="kw">const</span> next <span class="op">=</span> <span class="fn">makeCounter</span>();
+<span class="fn">console</span>.<span class="fn">log</span>(<span class="fn">next</span>()); <span class="out">// 1</span>
+<span class="fn">console</span>.<span class="fn">log</span>(<span class="fn">next</span>()); <span class="out">// 2</span>
+<span class="fn">console</span>.<span class="fn">log</span>(<span class="fn">next</span>()); <span class="out">// 3</span>
+      </div>
+      <button class="check-btn" onclick="checkQ4()">判定する</button>
+      <div class="feedback" id="fb4"></div>
+    </div>
+  </div>
+
+  <!-- ===== ミニ試験（20問） ===== -->
+  <div class="exam-section" id="examSection">
+    <h2>🏆 Chapter 2 総まとめ試験（20問）</h2>
+    <p>Chapter 2 全セクションから出題します。合格ラインは 16/20（80%）です。</p>
+    <div class="exam-progress">
+      <div class="exam-progress-fill" id="examProgressFill"></div>
+    </div>
+    <div id="examBody"></div>
+  </div>
+
+  <!-- ===== 学習チェックリスト ===== -->
+  <div class="checklist-card">
+    <h2>✅ Chapter 2 学習チェックリスト</h2>
+    <div class="checklist-grid" id="checklistGrid"></div>
+    <div class="checklist-progress">
+      <div class="cl-bar-wrap"><div class="cl-bar-fill" id="clFill"></div></div>
+      <div class="cl-text" id="clText">0 / 20 項目完了</div>
+    </div>
+  </div>
+
+  <!-- 完了ボタン -->
+  <div class="complete-area">
+    <button class="complete-btn" id="completeBtn" onclick="markComplete()">
+      ✅ セクション 2-8 を完了にする
+    </button>
+    <div class="complete-msg" id="completeMsg"></div>
+  </div>
+
+  <!-- ページナビ -->
+  <nav class="page-nav">
+    <a class="nav-btn prev" href="07_functions.html">← 2-7 関数</a>
+    <a class="nav-btn index" href="index.html">📋 Chapter 2 目次</a>
+    <a class="nav-btn next" href="../index.html">🏠 サイトトップへ →</a>
+  </nav>
+
+  <footer>
+    <p>HTML5 Professional Level 2 試験対策サイト &copy; 2026</p>
+  </footer>
+
+  <script>
+    // ── コピーボタン ──
+    function copyCode(btn) {
+      const pre = btn.nextElementSibling;
+      navigator.clipboard.writeText(pre.innerText).then(() => {
+        btn.textContent = 'copied!';
+        btn.classList.add('copied');
+        setTimeout(() => { btn.textContent = 'copy'; btn.classList.remove('copied'); }, 2000);
+      });
+    }
+
+    // ── デモ①：クロージャカウンター ──
+    const counter = (() => {
+      let count = 0;
+      return {
+        increment() { count++; },
+        decrement() { count--; },
+        reset()     { count = 0; },
+        getCount()  { return count; }
+      };
+    })();
+
+    function counterOp(op) {
+      if (op === 'inc')   counter.increment();
+      if (op === 'dec')   counter.decrement();
+      if (op === 'reset') counter.reset();
+      const val = counter.getCount();
+      const el  = document.getElementById('counterDisplay');
+      el.textContent = val;
+      el.style.color = val > 0 ? '#553c9a' : val < 0 ? '#e53e3e' : '#718096';
+      document.getElementById('counterNote').textContent =
+        `count = ${val}（外部から counter.count でアクセスすると undefined）`;
+    }
+
+    // ── デモ②：スコープチェーンビジュアライザ ──
+    const scopeChainData = {
+      basic: {
+        nodes: [
+          { cls: 'global-scope', label: 'グローバルスコープ',
+            code: `const x = 'global';\nconst y = 'global-y';` },
+          { cls: 'func-scope', label: 'outer() スコープ',
+            code: `const z = 'outer-z';\n// x はここにない → 上へ` },
+          { cls: 'inner-scope', label: 'inner() スコープ',
+            code: `console.log(x); // "global"\nconsole.log(z); // "outer-z"` },
+        ],
+        result: '変数 x は inner → outer → グローバルの順に探され、グローバルスコープで発見されます。z は outer スコープで発見されます。'
+      },
+      shadow: {
+        nodes: [
+          { cls: 'global-scope', label: 'グローバルスコープ',
+            code: `const x = 'global'; // ①` },
+          { cls: 'func-scope', label: 'outer() スコープ',
+            code: `const x = 'outer';  // ② グローバルをシャドー\nconsole.log(x); // "outer"` },
+          { cls: 'inner-scope', label: 'inner() スコープ',
+            code: `const x = 'inner';  // ③ outerをシャドー\nconsole.log(x); // "inner"` },
+        ],
+        result: 'シャドーイング：内側のスコープで同名変数を宣言すると外側の変数が隠れます。inner() では ③ が使われ、outer() では ② が使われます。'
+      },
+      closure: {
+        nodes: [
+          { cls: 'global-scope', label: 'グローバルスコープ',
+            code: `const counter = makeCounter();` },
+          { cls: 'func-scope', label: 'makeCounter() スコープ（終了後も保持）',
+            code: `let count = 0; // クロージャ変数\n// makeCounter は終了したが count は生きている` },
+          { cls: 'inner-scope', label: '返された関数のスコープ',
+            code: `// count を参照できる（クロージャ）\nreturn ++count;` },
+        ],
+        result: 'クロージャ：makeCounter() が終了しても、返された関数が count への参照を保持しているため、ガーベジコレクションされず count は生き続けます。'
+      }
+    };
+
+    function showScopeChain(key, btn) {
+      document.querySelectorAll('.scope-tab').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      const data = scopeChainData[key];
+      let html = '<div class="scope-chain">';
+      data.nodes.forEach((n, i) => {
+        html += `<div class="scope-node ${n.cls}">
+          <div class="scope-label">${n.label}</div>
+          <pre style="white-space:pre-wrap;font-size:0.8rem;margin-top:4px;">${n.code}</pre>
+        </div>`;
+        if (i < data.nodes.length - 1) {
+          html += '<div class="scope-connector"></div>';
+        }
+      });
+      html += '</div>';
+      html += `<div class="scope-result-box">💡 ${data.result}</div>`;
+      document.getElementById('scopeChainDisplay').innerHTML = html;
+    }
+
+    // ── デモ③：Math プレイグラウンド ──
+    const mathMethods = [
+      { name: 'Math.floor(x)',    fn: (a)    => Math.floor(a),    args: 1 },
+      { name: 'Math.ceil(x)',     fn: (a)    => Math.ceil(a),     args: 1 },
+      { name: 'Math.round(x)',    fn: (a)    => Math.round(a),    args: 1 },
+      { name: 'Math.trunc(x)',    fn: (a)    => Math.trunc(a),    args: 1 },
+      { name: 'Math.abs(x)',      fn: (a)    => Math.abs(a),      args: 1 },
+      { name: 'Math.sqrt(x)',     fn: (a)    => Math.sqrt(a),     args: 1 },
+      { name: 'Math.pow(x,y)',    fn: (a, b) => Math.pow(a, b),   args: 2 },
+      { name: 'Math.max(x,y)',    fn: (a, b) => Math.max(a, b),   args: 2 },
+      { name: 'Math.min(x,y)',    fn: (a, b) => Math.min(a, b),   args: 2 },
+      { name: 'Math.sign(x)',     fn: (a)    => Math.sign(a),     args: 1 },
+      { name: 'Math.random()',    fn: ()     => Math.random(),     args: 0 },
+      { name: 'Math.log(x)',      fn: (a)    => Math.log(a),      args: 1 },
+    ];
+    let currentMath = mathMethods[0];
+
+    function buildMathBtns() {
+      document.getElementById('mathBtns').innerHTML = mathMethods.map((m, i) =>
+        `<button class="math-btn ${i === 0 ? 'active' : ''}"
+          onclick="selectMath('${m.name}', this)">${m.name}</button>`
+      ).join('');
+    }
+
+    function selectMath(name, btn) {
+      document.querySelectorAll('.math-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      currentMath = mathMethods.find(m => m.name === name);
+      document.getElementById('mathInput2').style.display =
+        currentMath.args >= 2 ? 'block' : 'none';
+      runMath();
+    }
+
+    function runMath() {
+      const a   = parseFloat(document.getElementById('mathInput').value);
+      const b   = parseFloat(document.getElementById('mathInput2').value);
+      const box = document.getElementById('mathResult');
+      try {
+        const result = currentMath.args === 0 ? currentMath.fn()
+                     : currentMath.args === 1 ? currentMath.fn(a)
+                     : currentMath.fn(a, b);
+        box.innerHTML =
+          `<span style="color:#9f7aea;">${currentMath.name}</span> → ` +
+          `<span style="color:#68d391;font-size:1.1rem;font-weight:700;">${result}</span>`;
+      } catch(e) {
+        box.innerHTML = `<span style="color:#fc8181;">エラー: ${e.message}</span>`;
+      }
+    }
+
+    // ── ミニ試験（20問） ──
+    const examQuestions = [
+      { q: 'ECMAScript の標準化を担う団体はどれですか？',
+        choices: ['W3C', 'ECMA International', 'IEEE', 'ISO'],
+        ans: 1, exp: 'JavaScriptの標準仕様 ECMA-262 は ECMA International が策定しています。' },
+      { q: 'let と const の共通点として正しいものはどれですか？',
+        choices: ['再代入が可能', '関数スコープを持つ', 'ブロックスコープを持つ', '巻き上げが発生しない'],
+        ans: 2, exp: 'let と const はどちらもブロックスコープを持ちます。TDZ により宣言前アクセスは ReferenceError になります。' },
+      { q: 'typeof null の結果はどれですか？',
+        choices: ['"null"', '"undefined"', '"object"', '"boolean"'],
+        ans: 2, exp: 'typeof null は "object" を返します。これはJavaScript初期の仕様バグで、後方互換性のため修正されていません。' },
+      { q: '\'3\' + 4 の結果はどれですか？',
+        choices: ['7（数値）', '"34"（文字列）', 'NaN', '"7"（文字列）'],
+        ans: 1, exp: '+ 演算子は文字列が含まれると文字列結合になります。\'3\' + 4 = "34" です。' },
+      { q: 'defer 属性の説明として正しいものはどれですか？',
+        choices: [
+          'DL完了次第すぐ実行する',
+          'HTML解析完了後に記述順を保証して実行する',
+          'インラインスクリプトにも有効',
+          'HTML解析をブロックして即時実行する'
+        ],
+        ans: 1, exp: 'defer はHTML解析と並行してDLし、解析完了後に記述順を保証して実行します。' },
+      { q: 'Array.prototype.filter() の戻り値はどれですか？',
+        choices: ['undefined', '最初にマッチした要素', '条件を満たす要素の新しい配列', '条件を満たす要素数'],
+        ans: 2, exp: 'filter() は条件を満たす要素からなる新しい配列を返します。元の配列は変更しません。' },
+      { q: '[1,2,3].reduce((acc,n) => acc+n, 0) の結果はどれですか？',
+        choices: ['[1,2,3]', '6', '0', '3'],
+        ans: 1, exp: 'reduce は左から累積処理します。0+1+2+3 = 6 です。' },
+      { q: 'アロー関数について正しいものはどれですか？',
+        choices: [
+          'new でコンストラクタとして使える',
+          '自身の this を持たず定義時の外側の this を引き継ぐ',
+          'arguments オブジェクトが使える',
+          'function 文と同様に巻き上げが発生する'
+        ],
+        ans: 1, exp: 'アロー関数は自身の this を持たず、定義時の外側スコープの this を引き継ぎます。' },
+      { q: 'Object.freeze() について正しいものはどれですか？',
+        choices: [
+          'ネストしたオブジェクトも再帰的に凍結する',
+          'プロパティの追加・変更・削除が不可になる',
+          'const と同じ効果を持つ',
+          '凍結後も配列の要素は変更できる'
+        ],
+        ans: 1, exp: 'Object.freeze() はシャロー凍結で、直接のプロパティの追加・変更・削除を禁止します。ネストは凍結されません。' },
+      { q: 'クロージャの説明として正しいものはどれですか？',
+        choices: [
+          '関数の実行が終わると変数は必ず解放される',
+          '関数が定義されたスコープの変数をスコープ終了後も参照できる仕組み',
+          'グローバル変数のみ参照できる',
+          'クロージャはメモリリークを起こさない'
+        ],
+        ans: 1, exp: 'クロージャは定義されたスコープの変数をスコープ終了後も参照し続けられます。不適切な使用はメモリリークの原因になります。' },
+      { q: 'Math.floor(-4.7) の結果はどれですか？',
+        choices: ['-4', '-5', '4', '5'],
+        ans: 1, exp: 'Math.floor は床関数（より小さい整数へ）です。-4.7 より小さい整数は -5 です。' },
+      { q: 'try-catch-finally について正しいものはどれですか？',
+        choices: [
+          'finally は例外が発生した場合のみ実行される',
+          'finally は try/catch の return より後に実行される',
+          'catch は省略できない',
+          'throw で投げられるのは Error オブジェクトのみ'
+        ],
+        ans: 1, exp: 'finally は例外の有無・return の有無に関わらず必ず実行されます。また throw は任意の値を投げられます。' },
+      { q: 'for...in と for...of の違いとして正しいものはどれですか？',
+        choices: [
+          'for...in は値を、for...of はキーを列挙する',
+          'for...in はキーを、for...of は値を列挙する',
+          '両方とも配列にのみ使える',
+          '両方とも通常のオブジェクトに使える'
+        ],
+        ans: 1, exp: 'for...in はオブジェクトのキー（プロパティ名）を、for...of はイテラブルの値を列挙します。' },
+      { q: 'call / apply / bind の説明として正しいものはどれですか？',
+        choices: [
+          'apply は引数をカンマ区切りで渡す',
+          'bind は this を固定した新しい関数を返す',
+          'call は引数を配列で渡す',
+          'bind は即時実行する'
+        ],
+        ans: 1, exp: 'bind は this を固定した新しい関数を返します（遅延実行）。call は個別引数で即時実行、apply は配列引数で即時実行です。' },
+      { q: 'switch 文の case 比較に使われる演算子はどれですか？',
+        choices: ['==（緩い等価）', '===（厳密等価）', '>=', 'Object.is()'],
+        ans: 1, exp: 'switch 文の case は === （厳密等価）で比較されます。型変換は行われません。' },
+      { q: 'class 構文の extends を使ったサブクラスで constructor を定義する場合の必須事項はどれですか？',
+        choices: [
+          'super() を最後に呼ぶ',
+          'this を使う前に super() を呼ぶ',
+          'super() は省略できる',
+          'super() は任意のタイミングで呼べる'
+        ],
+        ans: 1, exp: 'extends を使ったサブクラスでは this を使う前に super() を呼ぶ必要があります。呼ばないと ReferenceError になります。' },
+      { q: 'isNaN() と Number.isNaN() の違いとして正しいものはどれですか？',
+        choices: [
+          '両方とも型変換を行ってからチェックする',
+          'isNaN() は型変換あり、Number.isNaN() は型変換なし',
+          'Number.isNaN() は型変換あり、isNaN() は型変換なし',
+          '両方とも全く同じ動作をする'
+        ],
+        ans: 1, exp: 'isNaN("abc") は true（型変換してNaNになる）ですが、Number.isNaN("abc") は false（型変換しない）です。' },
+      { q: 'ジェネレータ関数の next() の戻り値の形式はどれですか？',
+        choices: [
+          'yield した値そのもの',
+          '{ value: 値, done: boolean }',
+          '{ result: 値, finished: boolean }',
+          '配列 [値, boolean]'
+        ],
+        ans: 1, exp: 'next() は { value: yield した値, done: 完了フラグ } を返します。done が true になると関数が終了したことを示します。' },
+      { q: 'encodeURIComponent() と encodeURI() の違いはどれですか？',
+        choices: [
+          '両方とも全く同じ文字をエンコードする',
+          'encodeURIComponent() は : / ? # 等もエンコードし、encodeURI() はしない',
+          'encodeURI() は : / ? # 等もエンコードし、encodeURIComponent() はしない',
+          'encodeURIComponent() は日本語をエンコードしない'
+        ],
+        ans: 1, exp: 'encodeURIComponent() はクエリパラメータ等に使い : / ? # & = もエンコードします。encodeURI() はURI全体に使い、これらの文字は変換しません。' },
+      { q: 'var で宣言したグローバル変数の特徴として正しいものはどれですか？',
+        choices: [
+          'window オブジェクトのプロパティにはならない',
+          'window オブジェクトのプロパティになる',
+          'let と同様にブロックスコープを持つ',
+          '宣言前にアクセスすると ReferenceError になる'
+        ],
+        ans: 1, exp: 'var で宣言したグローバル変数は window（グローバルオブジェクト）のプロパティになります。let/const はなりません。' },
+    ];
+
+    let examIdx   = 0;
+    let examScore = 0;
+    let examAnswered = false;
+
+    function buildExam() {
+      examIdx   = 0;
+      examScore = 0;
+      renderExamQ();
+    }
+
+    function renderExamQ() {
+      const total = examQuestions.length;
+      document.getElementById('examProgressFill').style.width =
+        (examIdx / total * 100) + '%';
+
+      if (examIdx >= total) {
+        showExamResult();
+        return;
+      }
+
+      examAnswered = false;
+      const q = examQuestions[examIdx];
+      document.getElementById('examBody').innerHTML = `
+        <div class="exam-q-num">問 ${examIdx + 1} / ${total}</div>
+        <div class="exam-question">${q.q}</div>
+        <div class="exam-choices">
+          ${q.choices.map((c, i) =>
+            `<button class="exam-choice" onclick="answerExam(${i})">${String.fromCharCode(65+i)}. ${c}</button>`
+          ).join('')}
+        </div>
+        <div class="exam-feedback" id="examFb"></div>
+        <button class="exam-next-btn" id="examNextBtn" onclick="nextExamQ()">
+          ${examIdx < total - 1 ? '次の問題 →' : '結果を見る'}
+        </button>`;
+    }
+
+    function answerExam(idx) {
+      if (examAnswered) return;
+      examAnswered = true;
+      const q   = examQuestions[examIdx];
+      const btns = document.querySelectorAll('.exam-choice');
+      btns.forEach(b => b.disabled = true);
+      btns[idx].classList.add(idx === q.ans ? 'correct' : 'wrong');
+      if (idx === q.ans) {
+        btns[idx].classList.add('correct');
+        examScore++;
+      } else {
+        btns[idx].classList.add('wrong');
+        btns[q.ans].classList.add('correct');
+      }
+      const fb = document.getElementById('examFb');
+      fb.className = 'exam-feedback show ' + (idx === q.ans ? 'ok' : 'ng');
+      fb.innerHTML = (idx === q.ans ? '✅ 正解！ ' : '❌ 不正解。') + q.exp;
+      document.getElementById('examNextBtn').classList.add('show');
+    }
+
+    function nextExamQ() {
+      examIdx++;
+      renderExamQ();
+    }
+
+    function showExamResult() {
+      const total  = examQuestions.length;
+      const pct    = Math.round(examScore / total * 100);
+      const pass   = examScore >= 16;
+      document.getElementById('examProgressFill').style.width = '100%';
+      document.getElementById('examBody').innerHTML = `
+        <div class="exam-result show">
+          <div class="exam-score">${examScore} / ${total}</div>
+          <div class="exam-score-label">
+            正解率 ${pct}%　${pass ? '🎉 合格！（80%以上）' : '📚 もう一度挑戦しましょう（合格ライン: 16/20）'}
+          </div>
+          <button class="exam-restart-btn" onclick="buildExam()">🔄 もう一度挑戦する</button>
+        </div>`;
+    }
+
+    // ── チェックリスト ──
+    const checkItems = [
+      'ECMAScriptとJavaScriptの関係を説明できる',
+      'defer と async の違いを説明できる',
+      'var / let / const の違いを説明できる',
+      '7つのプリミティブ型を列挙できる',
+      'Falsy値を6つ列挙できる',
+      '暗黙の型変換のルールを説明できる',
+      '算術・ビット・論理演算子を使いこなせる',
+      'オプショナルチェーン(?.)とNullish合体(??)を使える',
+      'switch文のフォールスルーを説明できる',
+      'try/catch/finallyの実行順序を説明できる',
+      '配列の破壊的・非破壊的メソッドを区別できる',
+      'map/filter/reduceを使いこなせる',
+      'プロトタイプチェーンを説明できる',
+      'class構文（extends/super）を使いこなせる',
+      'アロー関数のthisの挙動を説明できる',
+      'call/apply/bindの違いを説明できる',
+      'クロージャの仕組みと用途を説明できる',
+      'スコープチェーンによる名前解決を説明できる',
+      'グローバル関数（parseInt/isNaN等）を使いこなせる',
+      'Mathオブジェクトのメソッドを使いこなせる',
+    ];
+
+    function buildChecklist() {
+      const grid = document.getElementById('checklistGrid');
+      grid.innerHTML = checkItems.map((item, i) => `
+        <label class="check-item" id="cl-${i}" onclick="toggleCheck(${i})">
+          <input type="checkbox" id="clcb-${i}" onchange="updateClProgress()">
+          <span>${item}</span>
+        </label>`
+      ).join('');
+      updateClProgress();
+    }
+
+    function toggleCheck(i) {
+      const cb = document.getElementById(`clcb-${i}`);
+      cb.checked = !cb.checked;
+      document.getElementById(`cl-${i}`).classList.toggle('checked', cb.checked);
+      updateClProgress();
+    }
+
+    function updateClProgress() {
+      const total  = checkItems.length;
+      const done   = document.querySelectorAll('.check-item.checked').length;
+      const pct    = Math.round(done / total * 100);
+      document.getElementById('clFill').style.width = pct + '%';
+      document.getElementById('clText').textContent = `${done} / ${total} 項目完了（${pct}%）`;
+    }
+
+    // ── Q1 穴埋め ──
+    function checkQ1() {
+      const ans = [
+        { id: 'q1a', correct: ['定義', '宣言'] },
+        { id: 'q1b', correct: ['参照'] },
+        { id: 'q1c', correct: ['プライベート', '非公開', 'private'] },
+        { id: 'q1d', correct: ['メモリリーク', 'メモリ'] },
+      ];
+      let allOk = true;
+      ans.forEach(a => {
+        const el  = document.getElementById(a.id);
+        const val = el.value.trim();
+        const ok  = a.correct.some(c => val.includes(c));
+        el.classList.toggle('correct', ok);
+        el.classList.toggle('wrong', !ok);
+        if (!ok) allOk = false;
+      });
+      const fb = document.getElementById('fb1');
+      fb.className = 'feedback show ' + (allOk ? 'ok' : 'ng');
+      fb.innerHTML = allOk
+        ? '✅ 正解！ 定義・参照・プライベート・メモリリークがキーワードです。'
+        : '❌ キーワード：①「定義」②「参照」③「プライベート」④「メモリリーク」';
+    }
+
+    // ── Q2 選択 ──
+    function checkQ2(btn, isCorrect) {
+      document.querySelectorAll('.choice-btn').forEach(b => b.disabled = true);
+      btn.classList.add(isCorrect ? 'correct' : 'wrong');
+      const fb = document.getElementById('fb2');
+      fb.className = 'feedback show ' + (isCorrect ? 'ok' : 'ng');
+      fb.innerHTML = isCorrect
+        ? '✅ 正解！ Math.floor(-4.1) = -5（より小さい整数）、Math.trunc(-4.1) = -4（ゼロ方向に切り捨て）です。'
+        : '❌ 不正解。floor は「より小さい整数」なので -4.1 → -5。trunc は「ゼロ方向に切り捨て」なので -4.1 → -4 です。';
+    }
+
+    // ── Q3 チェックボックス ──
+    function checkQ3() {
+      const correct = new Set(['a', 'c', 'd', 'e']);
+      const labels  = document.querySelectorAll('#q3-list .cb-label');
+      let ok = 0;
+      labels.forEach(label => {
+        const cb = label.querySelector('input');
+        cb.disabled = true;
+        const checked = cb.checked;
+        const should  = correct.has(cb.value);
+        if (checked && should)       { label.classList.add('correct'); ok++; }
+        else if (checked && !should)   label.classList.add('wrong');
+        else if (!checked && should)   label.classList.add('wrong');
+      });
+      const allOk = ok === correct.size &&
+        [...labels].filter(l => l.querySelector('input').checked).length === correct.size;
+      const fb = document.getElementById('fb3');
+      fb.className = 'feedback show ' + (allOk ? 'ok' : 'ng');
+      fb.innerHTML = allOk
+        ? '✅ 完璧！ 正解は a・c・d・e です。'
+        : '❌ 正解は a(random→0以上1未満)・c(max()引数なし→-Infinity)・d(floor(-4.1)→-5)・e(pow=**)。<br>b: Math.round(4.5) は <strong>5</strong> を返します（四捨五入）。';
+    }
+
+    // ── Q4 コード補完 ──
+    function checkQ4() {
+      const a  = document.getElementById('q4a').value.trim();
+      const b  = document.getElementById('q4b').value.trim();
+      const okA = a === 'let';
+      const okB = b === '++count' || b === 'count += 1' || b === 'count = count + 1';
+      document.getElementById('q4a').classList.toggle('correct', okA);
+      document.getElementById('q4a').classList.toggle('wrong', !okA);
+      document.getElementById('q4b').classList.toggle('correct', okB);
+      document.getElementById('q4b').classList.toggle('wrong', !okB);
+      const allOk = okA && okB;
+      const fb = document.getElementById('fb4');
+      fb.className = 'feedback show ' + (allOk ? 'ok' : 'ng');
+      fb.innerHTML = allOk
+        ? '✅ 正解！ <code>let</code> で宣言した count を <code>++count</code> でインクリメントして返すクロージャです。'
+        : '❌ 不正解。①<code>let</code>（再代入が必要なので const は不可）②<code>++count</code>（前置インクリメントで加算後の値を返す）';
+    }
+
+    // ── 完了ボタン ──
+    function markComplete() {
+      localStorage.setItem('html5lv2_ch2_08', 'done');
+      const btn = document.getElementById('completeBtn');
+      btn.textContent = '🎉 完了済み！';
+      btn.classList.add('done');
+      btn.disabled = true;
+      document.getElementById('completeMsg').textContent =
+        'Chapter 2 全セクション完了！お疲れ様でした 🎉';
+    }
+
+    // ── 初期化 ──
+    window.addEventListener('DOMContentLoaded', () => {
+      showScopeChain('basic', document.querySelector('.scope-tab.active'));
+      buildMathBtns();
+      runMath();
+      buildExam();
+      buildChecklist();
+      if (localStorage.getItem('html5lv2_ch2_08') === 'done') {
+        const btn = document.getElementById('completeBtn');
+        btn.textContent = '🎉 完了済み！';
+        btn.classList.add('done');
+        btn.disabled = true;
+        document.getElementById('completeMsg').textContent =
+          'Chapter 2 全セクション完了！お疲れ様でした 🎉';
+      }
+    });
+  </script>
+
+</body>
+</html>
