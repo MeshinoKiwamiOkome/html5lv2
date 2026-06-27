@@ -1,0 +1,1403 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>2-5 配置とポジショニング | HTML5プロフェッショナル Level 2</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; }
+    body {
+      font-family: 'Segoe UI', 'Helvetica Neue', sans-serif;
+      max-width: 960px; margin: 40px auto; padding: 0 24px;
+      background: #f0f4f8; color: #2d3748; line-height: 1.8;
+    }
+    .breadcrumb {
+      font-size: 0.82em; color: #a0aec0; margin-bottom: 20px;
+      font-family: 'Consolas','Monaco',monospace;
+    }
+    .breadcrumb a { color: #553c9a; text-decoration: none; }
+    .breadcrumb a:hover { text-decoration: underline; }
+
+    .chapter-header {
+      background: linear-gradient(135deg, #553c9a, #2c7a7b);
+      border-radius: 12px; padding: 32px 32px 24px;
+      margin-bottom: 32px; color: #fff;
+      box-shadow: 0 4px 18px rgba(85,60,154,0.35);
+    }
+    .chapter-header .ch-num {
+      font-size: 0.8em; font-family: 'Consolas','Monaco',monospace;
+      opacity: 0.85; letter-spacing: 0.08em; margin-bottom: 6px;
+    }
+    .chapter-header h1 {
+      margin: 0 0 10px; font-size: 1.6em; color: #fff; border: none; padding: 0;
+    }
+    .chapter-header p { margin: 0; font-size: 0.92em; opacity: 0.88; }
+    .badge-row { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 14px; }
+    .badge {
+      background: rgba(255,255,255,0.18);
+      border: 1px solid rgba(255,255,255,0.35);
+      border-radius: 20px; padding: 3px 12px;
+      font-size: 0.76em; font-weight: bold;
+    }
+
+    .section-nav {
+      background: #fff; border: 1px solid #e9d8fd;
+      border-radius: 10px; padding: 18px 22px;
+      margin-bottom: 32px; box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+    }
+    .section-nav h2 {
+      margin: 0 0 12px; font-size: 0.92em; color: #553c9a; border: none; padding: 0;
+    }
+    .section-nav ol { margin: 0; padding-left: 20px; font-size: 0.9em; }
+    .section-nav ol li { margin: 4px 0; }
+    .section-nav ol li a { color: #553c9a; text-decoration: none; }
+    .section-nav ol li a:hover { text-decoration: underline; }
+    .section-nav ol li.current a { color: #1a365d; font-weight: bold; }
+
+    h2 {
+      color: #1a365d; margin-top: 48px;
+      border-left: 5px solid #9f7aea; padding-left: 12px;
+    }
+    h3 { color: #553c9a; margin-top: 28px; }
+
+    code {
+      background: #faf5ff; padding: 2px 6px;
+      border-radius: 4px; font-size: 0.93em;
+      font-family: 'Consolas','Monaco',monospace;
+      color: #553c9a;
+    }
+    pre {
+      background: #1a202c; color: #e2e8f0;
+      padding: 18px 20px; border-radius: 8px;
+      overflow-x: auto; font-size: 0.88em;
+      line-height: 1.7; font-family: 'Consolas','Monaco',monospace;
+    }
+    pre .comment  { color: #68d391; }
+    pre .selector { color: #f6ad55; font-weight: bold; }
+    pre .prop     { color: #81e6d9; }
+    pre .val      { color: #fbd38d; }
+    pre .out      { color: #a0aec0; }
+
+    .pre-wrap { position: relative; margin: 14px 0; }
+    .copy-btn {
+      position: absolute; top: 8px; right: 8px;
+      background: #4a5568; color: #e2e8f0;
+      border: none; border-radius: 4px; padding: 4px 10px;
+      font-size: 0.75em; cursor: pointer;
+      font-family: 'Consolas','Monaco',monospace;
+      transition: background 0.2s; z-index: 1;
+    }
+    .copy-btn:hover { background: #9f7aea; }
+
+    .note {
+      background: #fff; border: 1px dashed #d6bcfa;
+      border-radius: 6px; padding: 14px 18px;
+      font-size: 0.93em; color: #4a5568; margin: 14px 0;
+    }
+    .note strong { color: #553c9a; }
+    .warn {
+      background: #fffaf0; border: 1px solid #f6ad55;
+      border-left: 5px solid #f6ad55; border-radius: 6px;
+      padding: 14px 18px; font-size: 0.93em; color: #744210; margin: 14px 0;
+    }
+    .good {
+      background: #f0fff4; border: 1px solid #68d391;
+      border-left: 5px solid #48bb78; border-radius: 6px;
+      padding: 14px 18px; font-size: 0.93em; color: #276749; margin: 14px 0;
+    }
+    .demo-box {
+      background: #fff; border: 1px solid #e9d8fd;
+      border-radius: 8px; padding: 20px 24px;
+      margin: 12px 0 28px; box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+    }
+
+    /* ===== position デモエリア共通 ===== */
+    .pos-stage {
+      background: #0d1117; border-radius: 10px;
+      padding: 16px; margin: 14px 0;
+      min-height: 200px; position: relative;
+      border: 2px dashed #2d3748; overflow: hidden;
+    }
+    .pos-box {
+      border-radius: 6px; padding: 10px 14px;
+      font-family: 'Consolas','Monaco',monospace;
+      font-size: 0.82em; font-weight: bold;
+      border: 2px solid; display: inline-block;
+      transition: all 0.3s ease;
+    }
+    .pos-normal {
+      background: #2d3748; border-color: #4a5568; color: #a0aec0;
+    }
+    .pos-target {
+      background: #553c9a; border-color: #9f7aea; color: #e9d8fd;
+    }
+    .pos-relative {
+      background: #2b4c7e; border-color: #4299e1; color: #bee3f8;
+    }
+    .pos-absolute {
+      background: #276749; border-color: #48bb78; color: #c6f6d5;
+    }
+    .pos-fixed-demo {
+      background: #744210; border-color: #f6ad55; color: #fbd38d;
+    }
+    .pos-sticky-demo {
+      background: #9b2335; border-color: #fc8181; color: #fed7d7;
+    }
+
+    /* ===== position プレイグラウンド ===== */
+    .pos-playground {
+      background: #1a202c; border-radius: 12px;
+      padding: 20px; margin: 14px 0;
+    }
+    .pos-controls {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+      gap: 10px; margin-bottom: 16px;
+    }
+    .pos-control {
+      display: flex; flex-direction: column; gap: 4px;
+    }
+    .pos-control label {
+      font-size: 0.78em; font-family: 'Consolas','Monaco',monospace;
+      font-weight: bold; color: #81e6d9;
+    }
+    .pos-control select,
+    .pos-control input[type="number"] {
+      background: #2d3748; border: 1px solid #4a5568;
+      border-radius: 6px; padding: 6px 10px;
+      color: #e2e8f0; font-family: 'Consolas','Monaco',monospace;
+      font-size: 0.85em; outline: none; width: 100%;
+    }
+    .pos-control select:focus,
+    .pos-control input:focus { border-color: #9f7aea; }
+
+    .pos-preview {
+      background: #0d1117; border-radius: 8px;
+      border: 2px dashed #2d3748;
+      height: 240px; position: relative; overflow: hidden;
+    }
+    .pos-preview-parent {
+      position: relative;
+      background: rgba(43,76,126,0.3);
+      border: 2px dashed #4299e1;
+      width: 80%; height: 160px;
+      margin: 20px auto; border-radius: 6px;
+      display: flex; align-items: center;
+      justify-content: center;
+      font-family: 'Consolas','Monaco',monospace;
+      font-size: 0.75em; color: #4299e1;
+    }
+    .pos-preview-child {
+      background: #553c9a; border: 2px solid #9f7aea;
+      color: #e9d8fd; border-radius: 6px;
+      padding: 8px 14px; font-family: 'Consolas','Monaco',monospace;
+      font-size: 0.82em; font-weight: bold;
+      transition: all 0.3s; white-space: nowrap;
+    }
+    .pos-code {
+      margin-top: 12px; padding: 10px 14px;
+      background: #0d1117; border-radius: 6px;
+      font-family: 'Consolas','Monaco',monospace;
+      font-size: 0.82em; color: #68d391; line-height: 1.8;
+      white-space: pre-wrap;
+    }
+
+    /* ===== z-index デモ ===== */
+    .zindex-stage {
+      background: #0d1117; border-radius: 10px;
+      padding: 20px; margin: 14px 0;
+      height: 200px; position: relative;
+    }
+    .zi-box {
+      position: absolute; border-radius: 8px;
+      padding: 12px 18px; font-family: 'Consolas','Monaco',monospace;
+      font-size: 0.85em; font-weight: bold; border: 2px solid;
+      cursor: pointer; transition: all 0.2s;
+      user-select: none;
+    }
+    .zi-box:hover { filter: brightness(1.2); }
+
+    /* ===== sticky デモ ===== */
+    .sticky-container {
+      height: 200px; overflow-y: auto;
+      background: #0d1117; border-radius: 10px;
+      border: 2px dashed #2d3748; margin: 14px 0;
+    }
+    .sticky-header {
+      position: sticky; top: 0;
+      background: #553c9a; color: #e9d8fd;
+      padding: 10px 16px; font-family: 'Consolas','Monaco',monospace;
+      font-size: 0.85em; font-weight: bold;
+      border-bottom: 2px solid #9f7aea; z-index: 10;
+    }
+    .sticky-item {
+      padding: 10px 16px; color: #a0aec0;
+      font-family: 'Consolas','Monaco',monospace;
+      font-size: 0.82em; border-bottom: 1px solid #2d3748;
+    }
+
+    /* ===== インタラクティブデモ ===== */
+    .interactive-demo {
+      background: #f5f0ff; border: 1px solid #e9d8fd;
+      border-radius: 8px; padding: 16px 20px; margin: 14px 0;
+    }
+    .demo-label {
+      font-size: 0.85em; font-weight: bold;
+      color: #553c9a; margin-bottom: 10px;
+    }
+    .demo-input-row {
+      display: flex; gap: 10px; align-items: center;
+      flex-wrap: wrap; margin-bottom: 10px;
+    }
+    .demo-input {
+      border: 2px solid #e9d8fd; border-radius: 6px;
+      padding: 7px 12px; font-size: 0.9em;
+      font-family: 'Consolas','Monaco',monospace;
+      color: #2d3748; background: #fff; flex: 1; min-width: 80px;
+    }
+    .demo-input:focus { border-color: #9f7aea; outline: none; }
+    .demo-btn {
+      background: #553c9a; color: #fff; border: none;
+      border-radius: 6px; padding: 8px 18px;
+      font-size: 0.88em; font-weight: bold; cursor: pointer;
+      transition: background 0.2s; white-space: nowrap;
+    }
+    .demo-btn:hover { background: #44337a; }
+    .demo-output {
+      background: #1a202c; color: #b794f4;
+      border-radius: 6px; padding: 10px 14px;
+      font-family: 'Consolas','Monaco',monospace;
+      font-size: 0.85em; min-height: 40px;
+      white-space: pre-wrap; line-height: 1.7;
+    }
+
+    /* ===== タブ ===== */
+    .tab-wrap { margin: 14px 0; }
+    .tab-btns { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: -1px; }
+    .tab-btn {
+      padding: 8px 18px; border: 1px solid #e9d8fd;
+      border-bottom: none; border-radius: 6px 6px 0 0;
+      background: #faf5ff; color: #553c9a;
+      font-size: 0.85em; font-weight: bold;
+      font-family: 'Consolas','Monaco',monospace;
+      cursor: pointer; transition: background 0.15s;
+    }
+    .tab-btn.active { background: #fff; border-bottom: 1px solid #fff; }
+    .tab-btn:hover:not(.active) { background: #f0e6ff; }
+    .tab-content {
+      display: none; background: #fff;
+      border: 1px solid #e9d8fd;
+      border-radius: 0 6px 6px 6px; padding: 18px 20px;
+    }
+    .tab-content.active { display: block; }
+
+    /* ===== テーブル ===== */
+    table.ref-table {
+      border-collapse: collapse; width: 100%;
+      background: #fff; border-radius: 8px;
+      overflow: hidden; box-shadow: 0 2px 6px rgba(0,0,0,0.07);
+      margin: 14px 0; font-size: 0.9em;
+    }
+    table.ref-table th, table.ref-table td {
+      border: 1px solid #e9d8fd; padding: 10px 14px; text-align: left;
+    }
+    table.ref-table thead tr { background: #553c9a; color: #fff; }
+    table.ref-table tbody tr:nth-child(even) { background: #faf5ff; }
+
+    /* ===== 演習問題 ===== */
+    .quiz-section {
+      background: #faf5ff; border-left: 6px solid #9f7aea;
+      border-radius: 0 8px 8px 0; padding: 24px 28px; margin: 48px 0 32px;
+    }
+    .quiz-section > h2 { margin-top: 0; color: #553c9a; border-left-color: #9f7aea; }
+    .quiz-block {
+      background: #fff; border: 1px solid #e9d8fd;
+      border-radius: 8px; padding: 18px 22px; margin-bottom: 22px;
+    }
+    .quiz-block h3 { margin-top: 0; color: #553c9a; }
+    .quiz-block input[type="text"],
+    .quiz-block select {
+      border: 2px solid #e9d8fd; border-radius: 6px;
+      padding: 8px 12px; font-size: 0.95em;
+      width: 100%; max-width: 440px; margin: 6px 0;
+      outline: none; font-family: 'Consolas','Monaco',monospace;
+      transition: border-color 0.2s;
+    }
+    .quiz-block input[type="text"]:focus,
+    .quiz-block select:focus { border-color: #9f7aea; }
+    .quiz-block label { display: block; margin: 8px 0 2px; font-weight: bold; color: #4a5568; }
+    .quiz-block label.checkbox-label {
+      display: flex; align-items: flex-start; gap: 8px;
+      font-weight: normal; cursor: pointer; margin: 6px 0;
+    }
+    .quiz-block label.checkbox-label input { margin-top: 3px; flex-shrink: 0; }
+    .btn {
+      display: inline-block; padding: 9px 20px;
+      border-radius: 6px; border: none; cursor: pointer;
+      font-size: 0.95em; font-weight: bold;
+      transition: opacity 0.2s; margin-top: 8px;
+    }
+    .btn:hover { opacity: 0.85; }
+    .btn-purple { background: #553c9a; color: #fff; }
+    .btn-done   { background: #48bb78; color: #fff; }
+    .result-msg {
+      margin-top: 10px; padding: 10px 14px;
+      border-radius: 6px; font-weight: bold; display: none;
+    }
+    .result-msg.correct { background: #c6f6d5; color: #276749; display: block; }
+    .result-msg.wrong   { background: #fed7d7; color: #9b2335; display: block; }
+    .result-msg.info    { background: #e9d8fd; color: #553c9a; display: block; }
+
+    .page-nav {
+      display: flex; justify-content: space-between;
+      align-items: center; margin-top: 48px;
+      padding-top: 20px; border-top: 2px solid #e9d8fd;
+      gap: 12px; flex-wrap: wrap;
+    }
+    .page-nav a {
+      display: inline-block; padding: 10px 20px;
+      border-radius: 8px; text-decoration: none;
+      font-weight: bold; font-size: 0.9em; transition: opacity 0.2s;
+    }
+    .page-nav a:hover { opacity: 0.8; }
+    .page-nav .prev { background: #edf2f7; color: #4a5568; }
+    .page-nav .next { background: #553c9a; color: #fff; }
+    .page-nav .home { background: #fff; color: #553c9a; border: 2px solid #553c9a; }
+
+    .complete-section {
+      background: #f0fff4; border: 2px solid #48bb78;
+      border-radius: 10px; padding: 20px 24px;
+      margin-top: 40px; text-align: center;
+    }
+    .complete-section p { margin: 0 0 12px; color: #276749; font-weight: bold; }
+
+    footer {
+      margin-top: 48px; padding-top: 16px;
+      border-top: 2px solid #e9d8fd;
+      font-size: 0.82em; color: #a0aec0; text-align: center;
+    }
+    footer a { color: #553c9a; text-decoration: none; }
+    footer a:hover { text-decoration: underline; }
+
+    @media (max-width: 600px) {
+      body { font-size: 0.84em; }
+      .chapter-header { padding: 20px 16px; }
+      .chapter-header h1 { font-size: 1.2em; }
+      .pos-controls { grid-template-columns: 1fr 1fr; }
+      .quiz-section { padding: 16px 12px; }
+      .quiz-block { padding: 14px 12px; }
+      .page-nav { flex-direction: column; align-items: stretch; }
+      .page-nav a { text-align: center; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- パンくず -->
+<div class="breadcrumb">
+  <a href="../index.html">🏠 HTML5 Level 2</a> ›
+  <a href="index.html">Chapter 2：CSSとスタイリング</a> ›
+  2-5 配置とポジショニング
+</div>
+
+<!-- ヘッダー -->
+<div class="chapter-header">
+  <div class="ch-num">CHAPTER 02 › SECTION 05</div>
+  <h1>📌 2-5 配置とポジショニング</h1>
+  <p>position の5つの値（static・relative・absolute・fixed・sticky）・
+  z-index・float・clear を
+  インタラクティブなプレイグラウンドで動作を確認しながら完全理解します。</p>
+  <div class="badge-row">
+    <span class="badge">position: static</span>
+    <span class="badge">position: relative</span>
+    <span class="badge">position: absolute</span>
+    <span class="badge">position: fixed</span>
+    <span class="badge">position: sticky</span>
+    <span class="badge">z-index</span>
+    <span class="badge">float / clear</span>
+  </div>
+</div>
+
+<!-- セクションナビ -->
+<div class="section-nav">
+  <h2>📋 Chapter 2 のセクション</h2>
+  <ol>
+    <li><a href="01_selectors.html">2-1 セレクタと詳細度</a></li>
+    <li><a href="02_boxmodel.html">2-2 ボックスモデル</a></li>
+    <li><a href="03_flexbox.html">2-3 Flexbox</a></li>
+    <li><a href="04_grid.html">2-4 CSS Grid</a></li>
+    <li class="current"><a href="05_positioning.html">2-5 配置とポジショニング</a></li>
+    <li><a href="06_responsive.html">2-6 レスポンシブデザイン</a></li>
+    <li><a href="07_typography.html">2-7 タイポグラフィと色</a></li>
+    <li><a href="08_animation.html">2-8 トランジションとアニメーション</a></li>
+    <li><a href="09_variables.html">2-9 CSS変数と関数</a></li>
+    <li><a href="10_advanced.html">2-10 CSS応用・試験対策</a></li>
+  </ol>
+</div>
+
+
+<!-- ============================================================ -->
+<!-- PART 1: position の5つの値 -->
+<!-- ============================================================ -->
+<h2 id="position">① position の5つの値</h2>
+
+<div class="note">
+  <strong>重要ポイント：<code>position</code> プロパティは要素の配置方法を決定します。
+  <code>top</code>・<code>right</code>・<code>bottom</code>・<code>left</code> で
+  位置を指定しますが、<code>static</code> ではこれらは無効です。</strong>
+</div>
+
+<div class="demo-box">
+  <h3>position の値と特徴</h3>
+  <table class="ref-table">
+    <thead>
+      <tr>
+        <th>値</th>
+        <th>基準点</th>
+        <th>通常フロー</th>
+        <th>top/left 等</th>
+        <th>主な用途</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><code>static</code></td>
+        <td>-</td>
+        <td>✅ 維持</td>
+        <td>❌ 無効</td>
+        <td>デフォルト（通常の配置）</td>
+      </tr>
+      <tr>
+        <td><code>relative</code></td>
+        <td>元の位置</td>
+        <td>✅ 維持（スペース残る）</td>
+        <td>✅ 有効</td>
+        <td>微調整・absolute の基準点</td>
+      </tr>
+      <tr>
+        <td><code>absolute</code></td>
+        <td>最近傍の positioned 祖先</td>
+        <td>❌ 外れる</td>
+        <td>✅ 有効</td>
+        <td>ツールチップ・バッジ・ドロップダウン</td>
+      </tr>
+      <tr>
+        <td><code>fixed</code></td>
+        <td>ビューポート</td>
+        <td>❌ 外れる</td>
+        <td>✅ 有効</td>
+        <td>固定ヘッダー・FABボタン・モーダル</td>
+      </tr>
+      <tr>
+        <td><code>sticky</code></td>
+        <td>スクロール親要素</td>
+        <td>✅ 維持（スクロール後固定）</td>
+        <td>✅ 有効（閾値）</td>
+        <td>スティッキーヘッダー・サイドバー</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3>🎮 position プレイグラウンド</h3>
+  <div class="pos-playground">
+    <div class="pos-controls">
+      <div class="pos-control">
+        <label>position</label>
+        <select id="pos-val" onchange="updatePosition()">
+          <option value="static">static</option>
+          <option value="relative" selected>relative</option>
+          <option value="absolute">absolute</option>
+        </select>
+      </div>
+      <div class="pos-control">
+        <label>top</label>
+        <input type="number" id="pos-top" value="0"
+               min="-100" max="200" oninput="updatePosition()">
+      </div>
+      <div class="pos-control">
+        <label>right</label>
+        <input type="number" id="pos-right" value=""
+               min="-100" max="200" placeholder="auto" oninput="updatePosition()">
+      </div>
+      <div class="pos-control">
+        <label>bottom</label>
+        <input type="number" id="pos-bottom" value=""
+               min="-100" max="200" placeholder="auto" oninput="updatePosition()">
+      </div>
+      <div class="pos-control">
+        <label>left</label>
+        <input type="number" id="pos-left" value="20"
+               min="-100" max="200" oninput="updatePosition()">
+      </div>
+      <div class="pos-control">
+        <label>z-index</label>
+        <input type="number" id="pos-zindex" value="1"
+               min="-5" max="10" oninput="updatePosition()">
+      </div>
+    </div>
+
+    <div class="pos-preview" id="pos-preview">
+      <div class="pos-preview-parent" id="pos-parent">
+        <span style="position:absolute; top:4px; left:8px;
+                     font-size:0.72em; color:#4299e1;">
+          親要素（position: relative）
+        </span>
+        <div class="pos-preview-child" id="pos-child">
+          対象要素
+        </div>
+      </div>
+    </div>
+    <div class="pos-code" id="pos-code">← コントロールを操作してコードを確認しましょう</div>
+  </div>
+</div>
+
+
+<!-- ============================================================ -->
+<!-- PART 2: 各 position の詳細 -->
+<!-- ============================================================ -->
+<h2 id="each-position">② 各 position の詳細</h2>
+
+<div class="demo-box">
+  <div class="tab-wrap">
+    <div class="tab-btns">
+      <button class="tab-btn active" onclick="switchTab(this,'tab-relative')">relative</button>
+      <button class="tab-btn"        onclick="switchTab(this,'tab-absolute')">absolute</button>
+      <button class="tab-btn"        onclick="switchTab(this,'tab-fixed')">fixed</button>
+      <button class="tab-btn"        onclick="switchTab(this,'tab-sticky')">sticky</button>
+    </div>
+
+    <!-- relative -->
+    <div class="tab-content active" id="tab-relative">
+      <h3 style="margin-top:0; color:#553c9a;">position: relative</h3>
+      <div class="note">
+        <strong>relative の特徴：</strong>元の位置を基準に移動します。
+        元のスペースは<strong>残ったまま</strong>です。
+        また、<code>absolute</code> の子要素の基準点になります。
+      </div>
+      <div class="pos-stage">
+        <div style="display:flex; gap:8px; align-items:flex-start; flex-wrap:wrap; padding:8px;">
+          <div class="pos-box pos-normal">通常要素 A</div>
+          <div class="pos-box pos-relative"
+               style="position:relative; top:20px; left:10px;">
+            relative<br>
+            <span style="font-size:0.75em; opacity:0.8;">top:20px left:10px</span>
+          </div>
+          <div class="pos-box pos-normal">通常要素 C</div>
+        </div>
+        <div style="margin-top:8px; padding:8px;
+                    font-family:'Consolas','Monaco',monospace;
+                    font-size:0.75em; color:#a0aec0;">
+          ↑ relative 要素は元のスペースを保持したまま移動（C は元の位置に配置）
+        </div>
+      </div>
+      <div class="pre-wrap">
+        <button class="copy-btn" onclick="copyPre(this)">copy</button>
+<pre>
+<span class="comment">/* relative：元の位置から相対的に移動 */</span>
+<span class="selector">.box</span> {
+  <span class="prop">position</span>: <span class="val">relative</span>;
+  <span class="prop">top</span>:  <span class="val">20px</span>;  <span class="comment">/* 元の位置から下に20px */</span>
+  <span class="prop">left</span>: <span class="val">10px</span>;  <span class="comment">/* 元の位置から右に10px */</span>
+}
+<span class="comment">/* 元のスペースは残る → 他の要素に影響しない */</span>
+
+<span class="comment">/* 主な用途：absolute の基準点を作る */</span>
+<span class="selector">.parent</span> {
+  <span class="prop">position</span>: <span class="val">relative</span>; <span class="comment">/* ← これが基準点 */</span>
+}
+<span class="selector">.child</span> {
+  <span class="prop">position</span>: <span class="val">absolute</span>;
+  <span class="prop">top</span>: <span class="val">0</span>; <span class="prop">right</span>: <span class="val">0</span>; <span class="comment">/* 親の右上に配置 */</span>
+}
+</pre>
+      </div>
+    </div>
+
+    <!-- absolute -->
+    <div class="tab-content" id="tab-absolute">
+      <h3 style="margin-top:0; color:#553c9a;">position: absolute</h3>
+      <div class="note">
+        <strong>absolute の特徴：</strong>通常フローから<strong>外れ</strong>、
+        最も近い <code>position: static</code> 以外の祖先要素を基準に配置されます。
+        基準となる祖先がない場合は <code>&lt;html&gt;</code> が基準になります。
+      </div>
+      <div class="pos-stage">
+        <div style="position:relative; background:rgba(43,76,126,0.2);
+                    border:2px dashed #4299e1; border-radius:6px;
+                    padding:16px; margin:8px; min-height:120px;">
+          <span style="font-family:'Consolas','Monaco',monospace;
+                       font-size:0.75em; color:#4299e1;">
+            親要素（position: relative）
+          </span>
+          <div class="pos-box pos-normal" style="margin-top:8px;">
+            通常要素（フロー内）
+          </div>
+          <div class="pos-box pos-absolute"
+               style="position:absolute; top:8px; right:8px;">
+            absolute<br>
+            <span style="font-size:0.75em; opacity:0.8;">top:8px right:8px</span>
+          </div>
+          <div class="pos-box pos-normal" style="margin-top:8px;">
+            次の通常要素（absolute の分スペースなし）
+          </div>
+        </div>
+      </div>
+      <div class="pre-wrap">
+        <button class="copy-btn" onclick="copyPre(this)">copy</button>
+<pre>
+<span class="comment">/* absolute：最近傍の positioned 祖先を基準に配置 */</span>
+<span class="selector">.parent</span> {
+  <span class="prop">position</span>: <span class="val">relative</span>; <span class="comment">/* 基準点を作る（重要！）*/</span>
+}
+<span class="selector">.badge</span> {
+  <span class="prop">position</span>: <span class="val">absolute</span>;
+  <span class="prop">top</span>:   <span class="val">-8px</span>;
+  <span class="prop">right</span>: <span class="val">-8px</span>;
+  <span class="comment">/* 親の右上角に配置 */</span>
+}
+
+<span class="comment">/* 上下左右中央揃え（古典的な方法）*/</span>
+<span class="selector">.centered</span> {
+  <span class="prop">position</span>:  <span class="val">absolute</span>;
+  <span class="prop">top</span>:        <span class="val">50%</span>;
+  <span class="prop">left</span>:       <span class="val">50%</span>;
+  <span class="prop">transform</span>: <span class="val">translate(-50%, -50%)</span>;
+}
+
+<span class="comment">/* 全面に広げる */</span>
+<span class="selector">.overlay</span> {
+  <span class="prop">position</span>: <span class="val">absolute</span>;
+  <span class="prop">inset</span>: <span class="val">0</span>; <span class="comment">/* top:0 right:0 bottom:0 left:0 */</span>
+}
+</pre>
+      </div>
+    </div>
+
+    <!-- fixed -->
+    <div class="tab-content" id="tab-fixed">
+      <h3 style="margin-top:0; color:#553c9a;">position: fixed</h3>
+      <div class="note">
+        <strong>fixed の特徴：</strong>ビューポート（画面）を基準に配置されます。
+        スクロールしても位置が変わりません。
+        通常フローから外れるため、他の要素に影響しません。
+      </div>
+      <div class="pre-wrap">
+        <button class="copy-btn" onclick="copyPre(this)">copy</button>
+<pre>
+<span class="comment">/* fixed：ビューポートを基準に固定 */</span>
+<span class="selector">.fixed-header</span> {
+  <span class="prop">position</span>: <span class="val">fixed</span>;
+  <span class="prop">top</span>:   <span class="val">0</span>;
+  <span class="prop">left</span>:  <span class="val">0</span>;
+  <span class="prop">right</span>: <span class="val">0</span>;
+  <span class="prop">z-index</span>: <span class="val">100</span>;
+  <span class="comment">/* スクロールしても常に画面上部に固定 */</span>
+}
+
+<span class="selector">.fab-button</span> {
+  <span class="prop">position</span>: <span class="val">fixed</span>;
+  <span class="prop">bottom</span>: <span class="val">24px</span>;
+  <span class="prop">right</span>:  <span class="val">24px</span>;
+  <span class="comment">/* 画面右下に固定されるボタン */</span>
+}
+
+<span class="comment">/* fixed 要素の下にコンテンツが隠れないよう padding を追加 */</span>
+<span class="selector">body</span> {
+  <span class="prop">padding-top</span>: <span class="val">60px</span>; <span class="comment">/* ヘッダーの高さ分 */</span>
+}
+</pre>
+      </div>
+      <div class="warn">
+        ⚠️ <strong>fixed の注意点：</strong>
+        <code>transform</code>・<code>filter</code>・<code>perspective</code> が設定された
+        祖先要素がある場合、ビューポートではなくその要素が基準になります。
+      </div>
+    </div>
+
+    <!-- sticky -->
+    <div class="tab-content" id="tab-sticky">
+      <h3 style="margin-top:0; color:#553c9a;">position: sticky</h3>
+      <div class="note">
+        <strong>sticky の特徴：</strong>通常は relative と同様に動作し、
+        スクロールで指定した閾値（<code>top</code> など）に達すると
+        fixed のように固定されます。
+        <strong>親要素の範囲内でのみ</strong>固定されます。
+      </div>
+      <div class="sticky-container" id="sticky-demo">
+        <div class="sticky-header">📌 sticky ヘッダー（top: 0）← スクロールしてみよう</div>
+        <div class="sticky-item">コンテンツ 1</div>
+        <div class="sticky-item">コンテンツ 2</div>
+        <div class="sticky-item">コンテンツ 3</div>
+        <div class="sticky-item">コンテンツ 4</div>
+        <div class="sticky-header" style="top:0; background:#2b4c7e; border-color:#4299e1; color:#bee3f8;">
+          📌 2つ目の sticky ヘッダー
+        </div>
+        <div class="sticky-item">コンテンツ 5</div>
+        <div class="sticky-item">コンテンツ 6</div>
+        <div class="sticky-item">コンテンツ 7</div>
+        <div class="sticky-item">コンテンツ 8</div>
+      </div>
+      <div class="pre-wrap">
+        <button class="copy-btn" onclick="copyPre(this)">copy</button>
+<pre>
+<span class="comment">/* sticky：スクロールで固定される */</span>
+<span class="selector">.sticky-header</span> {
+  <span class="prop">position</span>: <span class="val">sticky</span>;
+  <span class="prop">top</span>: <span class="val">0</span>; <span class="comment">/* 上端に達したら固定 */</span>
+  <span class="prop">z-index</span>: <span class="val">10</span>;
+}
+
+<span class="comment">/* テーブルヘッダーを固定 */</span>
+<span class="selector">th</span> {
+  <span class="prop">position</span>: <span class="val">sticky</span>;
+  <span class="prop">top</span>: <span class="val">0</span>;
+  <span class="prop">background</span>: <span class="val">white</span>;
+}
+
+<span class="comment">/* ⚠️ sticky が効かない場合のチェックリスト */</span>
+<span class="comment">/* 1. top/bottom/left/right の指定があるか */</span>
+<span class="comment">/* 2. 親要素に overflow: hidden/auto がないか */</span>
+<span class="comment">/* 3. 親要素に高さがあるか */</span>
+</pre>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ============================================================ -->
+<!-- PART 3: z-index と重なり順序 -->
+<!-- ============================================================ -->
+<h2 id="zindex">③ z-index と重なり順序</h2>
+
+<div class="note">
+  <strong>重要ポイント：<code>z-index</code> は <code>position: static</code> 以外の要素に
+  有効です。値が大きいほど前面に表示されます。
+  <code>z-index</code> は同じ<strong>スタッキングコンテキスト</strong>内でのみ比較されます。</strong>
+</div>
+
+<div class="demo-box">
+  <h3>🎮 z-index インタラクティブデモ</h3>
+
+  <div class="zindex-stage" id="zindex-stage">
+    <div class="zi-box" id="zi-1"
+         style="background:#553c9a; border-color:#9f7aea; color:#e9d8fd;
+                top:20px; left:20px; z-index:1;"
+         onclick="selectZiBox(0)">
+      Box A<br><span style="font-size:0.75em;">z-index: 1</span>
+    </div>
+    <div class="zi-box" id="zi-2"
+         style="background:#2b4c7e; border-color:#4299e1; color:#bee3f8;
+                top:50px; left:80px; z-index:2;"
+         onclick="selectZiBox(1)">
+      Box B<br><span style="font-size:0.75em;">z-index: 2</span>
+    </div>
+    <div class="zi-box" id="zi-3"
+         style="background:#276749; border-color:#48bb78; color:#c6f6d5;
+                top:30px; left:150px; z-index:3;"
+         onclick="selectZiBox(2)">
+      Box C<br><span style="font-size:0.75em;">z-index: 3</span>
+    </div>
+  </div>
+
+  <div class="interactive-demo" style="margin-top:12px;">
+    <div class="demo-label">ボックスをクリックして z-index を変更しよう</div>
+    <div class="demo-input-row">
+      <select class="demo-input" id="zi-select" style="flex:0 0 auto; width:120px;">
+        <option value="0">Box A</option>
+        <option value="1">Box B</option>
+        <option value="2">Box C</option>
+      </select>
+      <label style="font-size:0.85em; color:#553c9a; white-space:nowrap;">
+        z-index:
+      </label>
+      <input class="demo-input" id="zi-val" type="number"
+             value="1" min="-5" max="10" style="max-width:80px;">
+      <button class="demo-btn" onclick="applyZIndex()">▶ 適用</button>
+    </div>
+    <div class="demo-output" id="zi-output">← ボックスをクリックするか、値を入力して適用してみましょう</div>
+  </div>
+
+  <div class="pre-wrap">
+    <button class="copy-btn" onclick="copyPre(this)">copy</button>
+<pre>
+<span class="comment">/* z-index：重なり順序（大きいほど前面）*/</span>
+<span class="selector">.modal-overlay</span> { <span class="prop">z-index</span>: <span class="val">100</span>; }
+<span class="selector">.modal</span>         { <span class="prop">z-index</span>: <span class="val">101</span>; }
+<span class="selector">.tooltip</span>       { <span class="prop">z-index</span>: <span class="val">200</span>; }
+
+<span class="comment">/* z-index は position: static 以外で有効 */</span>
+<span class="selector">.no-effect</span> {
+  <span class="prop">position</span>: <span class="val">static</span>;
+  <span class="prop">z-index</span>:  <span class="val">999</span>; <span class="comment">/* ← 効かない！ */</span>
+}
+
+<span class="comment">/* スタッキングコンテキスト */</span>
+<span class="comment">/* 以下のプロパティが新しいスタッキングコンテキストを作る */</span>
+<span class="comment">/* position + z-index（auto 以外）*/</span>
+<span class="comment">/* opacity < 1 */</span>
+<span class="comment">/* transform, filter, perspective */</span>
+<span class="comment">/* isolation: isolate */</span>
+
+<span class="comment">/* z-index の管理（CSS 変数で一元管理）*/</span>
+<span class="selector">:root</span> {
+  <span class="prop">--z-dropdown</span>: <span class="val">100</span>;
+  <span class="prop">--z-modal</span>:    <span class="val">200</span>;
+  <span class="prop">--z-tooltip</span>:  <span class="val">300</span>;
+}
+</pre>
+  </div>
+</div>
+
+
+<!-- ============================================================ -->
+<!-- PART 4: float と clear -->
+<!-- ============================================================ -->
+<h2 id="float">④ float と clear</h2>
+
+<div class="note">
+  <strong>重要ポイント：<code>float</code> は要素を左右に浮かせてテキストを回り込ませます。
+  現代では Flexbox・Grid が推奨されますが、
+  試験では <code>clear</code> と <code>clearfix</code> の知識が問われます。</strong>
+</div>
+
+<div class="demo-box">
+  <div class="pre-wrap">
+    <button class="copy-btn" onclick="copyPre(this)">copy</button>
+<pre>
+<span class="comment">/* float：要素を左右に浮かせる */</span>
+<span class="selector">.image</span> {
+  <span class="prop">float</span>: <span class="val">left</span>;   <span class="comment">/* 左に浮かせる */</span>
+  <span class="prop">margin</span>: <span class="val">0 16px 16px 0</span>;
+}
+
+<span class="comment">/* clear：float の回り込みを解除 */</span>
+<span class="selector">.footer</span> {
+  <span class="prop">clear</span>: <span class="val">both</span>; <span class="comment">/* 左右両方の float を解除 */</span>
+}
+
+<span class="comment">/* clearfix：親要素の高さ崩れを防ぐ */</span>
+<span class="selector">.clearfix::after</span> {
+  <span class="prop">content</span>:  <span class="val">""</span>;
+  <span class="prop">display</span>:  <span class="val">block</span>;
+  <span class="prop">clear</span>:    <span class="val">both</span>;
+}
+
+<span class="comment">/* 現代的な代替手段 */</span>
+<span class="selector">.container</span> {
+  <span class="prop">display</span>: <span class="val">flow-root</span>; <span class="comment">/* BFC を作成して高さ崩れを防ぐ */</span>
+}
+</pre>
+  </div>
+
+  <h3>🎮 float デモ</h3>
+  <div class="interactive-demo">
+    <div class="demo-label">float と clear の動作を確認しよう</div>
+    <div class="demo-input-row">
+      <select class="demo-input" id="float-val" style="flex:0 0 auto; width:160px;">
+        <option value="none">float: none</option>
+        <option value="left" selected>float: left</option>
+        <option value="right">float: right</option>
+      </select>
+      <select class="demo-input" id="clear-val" style="flex:0 0 auto; width:200px;">
+        <option value="none">clear: none（回り込みあり）</option>
+        <option value="both">clear: both（回り込み解除）</option>
+      </select>
+      <button class="demo-btn" onclick="applyFloat()">▶ 適用</button>
+    </div>
+    <div style="background:#f7fafc; border:2px solid #e9d8fd;
+                border-radius:6px; padding:12px; overflow:hidden;"
+         id="float-demo-area">
+      <div id="float-img"
+           style="width:80px; height:80px; background:#553c9a;
+                  border-radius:6px; border:2px solid #9f7aea;
+                  display:flex; align-items:center; justify-content:center;
+                  color:#e9d8fd; font-family:'Consolas','Monaco',monospace;
+                  font-size:0.75em; font-weight:bold; float:left; margin:0 12px 8px 0;
+                  transition:all 0.3s;">
+        画像
+      </div>
+      <p id="float-text" style="margin:0; font-size:0.88em; color:#4a5568;">
+        テキストが画像の周りに回り込みます。float を使うと要素が通常フローから外れ、
+        テキストや他のインライン要素が回り込むようになります。
+        これは雑誌のレイアウトのような効果を作るときに使われます。
+      </p>
+      <div id="float-clear-el"
+           style="background:#edf2f7; padding:8px 12px; border-radius:4px;
+                  font-family:'Consolas','Monaco',monospace; font-size:0.82em;
+                  color:#4a5568; margin-top:8px;">
+        clear 要素（clear: none）
+      </div>
+    </div>
+    <div class="demo-output" id="float-output" style="margin-top:8px;">
+      ← float と clear の値を選んで適用してみましょう
+    </div>
+  </div>
+</div>
+
+
+<!-- ============================================================ -->
+<!-- PART 5: inset と論理プロパティ -->
+<!-- ============================================================ -->
+<h2 id="inset">⑤ inset と便利なショートハンド</h2>
+
+<div class="demo-box">
+  <div class="pre-wrap">
+    <button class="copy-btn" onclick="copyPre(this)">copy</button>
+<pre>
+<span class="comment">/* inset：top/right/bottom/left のショートハンド */</span>
+<span class="selector">.overlay</span> {
+  <span class="prop">position</span>: <span class="val">absolute</span>;
+  <span class="prop">inset</span>: <span class="val">0</span>;
+  <span class="comment">/* = top:0; right:0; bottom:0; left:0 */</span>
+}
+
+<span class="selector">.box</span> {
+  <span class="prop">inset</span>: <span class="val">10px 20px</span>;
+  <span class="comment">/* = top:10px; right:20px; bottom:10px; left:20px */</span>
+}
+
+<span class="comment">/* 中央揃えのモダンな書き方 */</span>
+<span class="selector">.modal</span> {
+  <span class="prop">position</span>: <span class="val">fixed</span>;
+  <span class="prop">inset</span>:    <span class="val">0</span>;             <span class="comment">/* 全面 */</span>
+  <span class="prop">display</span>:  <span class="val">flex</span>;
+  <span class="prop">align-items</span>:     <span class="val">center</span>;
+  <span class="prop">justify-content</span>: <span class="val">center</span>;
+}
+
+<span class="comment">/* positioned 要素の全面オーバーレイパターン */</span>
+<span class="selector">.card</span>         { <span class="prop">position</span>: <span class="val">relative</span>; }
+<span class="selector">.card-overlay</span> {
+  <span class="prop">position</span>: <span class="val">absolute</span>;
+  <span class="prop">inset</span>:    <span class="val">0</span>;
+  <span class="prop">background</span>: <span class="val">rgba(0,0,0,0.5)</span>;
+  <span class="prop">opacity</span>:    <span class="val">0</span>;
+  <span class="prop">transition</span>: <span class="val">opacity 0.3s</span>;
+}
+<span class="selector">.card:hover .card-overlay</span> { <span class="prop">opacity</span>: <span class="val">1</span>; }
+</pre>
+  </div>
+</div>
+
+
+<!-- ============================================================ -->
+<!-- まとめ -->
+<!-- ============================================================ -->
+<h2>📌 まとめ</h2>
+<div class="demo-box">
+  <table class="ref-table">
+    <thead>
+      <tr><th>プロパティ/値</th><th>説明</th><th>重要ポイント</th></tr>
+    </thead>
+    <tbody>
+      <tr><td><code>position: static</code></td>
+        <td>デフォルト</td>
+        <td>top/left 等は無効</td></tr>
+      <tr><td><code>position: relative</code></td>
+        <td>元の位置から相対移動</td>
+        <td>スペースは残る・absolute の基準点になる</td></tr>
+      <tr><td><code>position: absolute</code></td>
+        <td>最近傍 positioned 祖先を基準</td>
+        <td>フローから外れる・親に relative が必要</td></tr>
+      <tr><td><code>position: fixed</code></td>
+        <td>ビューポートを基準</td>
+        <td>スクロールしても固定・フローから外れる</td></tr>
+      <tr><td><code>position: sticky</code></td>
+        <td>スクロールで固定</td>
+        <td>top 等の閾値が必要・親要素の範囲内のみ</td></tr>
+      <tr><td><code>z-index</code></td>
+        <td>重なり順序</td>
+        <td>static 以外で有効・スタッキングコンテキストに注意</td></tr>
+      <tr><td><code>float</code></td>
+        <td>左右に浮かせる</td>
+        <td>テキスト回り込み・clearfix で高さ崩れ防止</td></tr>
+      <tr><td><code>clear</code></td>
+        <td>float の解除</td>
+        <td>both で左右両方解除</td></tr>
+      <tr><td><code>inset</code></td>
+        <td>top/right/bottom/left の一括指定</td>
+        <td>inset: 0 で全面に広げる</td></tr>
+    </tbody>
+  </table>
+</div>
+
+
+<!-- ============================================================ -->
+<!-- 演習問題 -->
+<!-- ============================================================ -->
+<div class="quiz-section">
+  <h2>🖊️ 演習問題</h2>
+
+  <!-- Q1 -->
+  <div class="quiz-block">
+    <h3>Q1. 穴埋め問題</h3>
+    <label>① スクロールしても画面上部に固定されるヘッダーに使う position の値：</label>
+    <input type="text" id="q1a" placeholder="position: ???">
+    <label>② absolute 要素の基準点にするために親要素に設定する position の値：</label>
+    <input type="text" id="q1b" placeholder="position: ???">
+    <label>③ float の回り込みを解除するプロパティ：</label>
+    <input type="text" id="q1c" placeholder="プロパティ名">
+    <label>④ top/right/bottom/left をまとめて指定するショートハンドプロパティ：</label>
+    <input type="text" id="q1d" placeholder="プロパティ名">
+    <br>
+    <button class="btn btn-purple" onclick="checkQ1()">答え合わせ</button>
+    <div class="result-msg" id="q1-result"></div>
+    <script>
+      function checkQ1() {
+        const a = document.getElementById('q1a').value.trim().toLowerCase()
+                    .replace(/position:|:|\s/g,'');
+        const b = document.getElementById('q1b').value.trim().toLowerCase()
+                    .replace(/position:|:|\s/g,'');
+        const c = document.getElementById('q1c').value.trim().toLowerCase()
+                    .replace(/\s/g,'');
+        const d = document.getElementById('q1d').value.trim().toLowerCase()
+                    .replace(/\s/g,'');
+        const r = document.getElementById('q1-result');
+        const ca = a === 'fixed';
+        const cb = b === 'relative';
+        const cc = c === 'clear';
+        const cd = d === 'inset';
+        const count = [ca,cb,cc,cd].filter(Boolean).length;
+        if (count === 4) {
+          r.className = 'result-msg correct';
+          r.textContent = '✅ 全問正解！完璧です！';
+        } else {
+          r.className = 'result-msg wrong';
+          r.innerHTML = `❌ ${count}/4 問正解。<br>` +
+            `① ${ca?'✅':'❌ fixed'}　` +
+            `② ${cb?'✅':'❌ relative'}　` +
+            `③ ${cc?'✅':'❌ clear'}　` +
+            `④ ${cd?'✅':'❌ inset'}`;
+        }
+      }
+    </script>
+  </div>
+
+  <!-- Q2 -->
+  <div class="quiz-block">
+    <h3>Q2. 選択問題</h3>
+    <p>以下のコードで <code>.child</code> はどこを基準に配置されますか？</p>
+    <div class="pre-wrap" style="margin-bottom:12px;">
+<pre style="margin:0;">
+<span class="selector">.grandparent</span> { <span class="prop">position</span>: <span class="val">static</span>; }
+<span class="selector">.parent</span>      { <span class="prop">position</span>: <span class="val">relative</span>; }
+<span class="selector">.child</span>       {
+  <span class="prop">position</span>: <span class="val">absolute</span>;
+  <span class="prop">top</span>: <span class="val">0</span>; <span class="prop">left</span>: <span class="val">0</span>;
+}
+</pre>
+    </div>
+    <select id="q2">
+      <option value="">-- 選択してください --</option>
+      <option value="a">grandparent 要素の左上</option>
+      <option value="b">parent 要素の左上</option>
+      <option value="c">ビューポートの左上</option>
+      <option value="d">html 要素の左上</option>
+    </select>
+    <br>
+    <button class="btn btn-purple" onclick="checkQ2()">答え合わせ</button>
+    <div class="result-msg" id="q2-result"></div>
+    <script>
+      function checkQ2() {
+        const v = document.getElementById('q2').value;
+        const r = document.getElementById('q2-result');
+        if (v === 'b') {
+          r.className = 'result-msg correct';
+          r.innerHTML = '✅ 正解！<br><br>' +
+            '<strong>absolute の基準点の探し方：</strong><br>' +
+            '自分の祖先要素を上に向かって探し、<code>position: static</code> <strong>以外</strong>の最初の要素が基準になります。<br><br>' +
+            '・grandparent → <code>position: static</code> → スキップ<br>' +
+            '・parent → <code>position: relative</code> → <strong>これが基準！</strong><br><br>' +
+            'よって <code>.child</code> は <code>.parent</code> の左上（top:0, left:0）に配置されます。';
+        } else if (v === '') {
+          r.className = 'result-msg info';
+          r.textContent = '⚠️ 選択肢を選んでください。';
+        } else {
+          r.className = 'result-msg wrong';
+          r.innerHTML = '❌ 不正解。<br>' +
+            'absolute は最も近い <code>position: static</code> <strong>以外</strong>の祖先を基準にします。<br>' +
+            '<code>.grandparent</code> は static なのでスキップされ、<code>.parent</code>（relative）が基準になります。';
+        }
+      }
+    </script>
+  </div>
+
+  <!-- Q3 -->
+  <div class="quiz-block">
+    <h3>Q3. 正誤チェックボックス問題</h3>
+    <p><strong>正しい記述</strong>をすべて選んでください。</p>
+    <label class="checkbox-label"><input type="checkbox" id="q3a">
+      ① <code>position: relative</code> は元のスペースを保持したまま移動する</label>
+    <label class="checkbox-label"><input type="checkbox" id="q3b">
+      ② <code>position: static</code> の要素に <code>z-index</code> を指定しても効果がある</label>
+    <label class="checkbox-label"><input type="checkbox" id="q3c">
+      ③ <code>position: sticky</code> は <code>top</code> などの閾値の指定が必要</label>
+    <label class="checkbox-label"><input type="checkbox" id="q3d">
+      ④ <code>position: fixed</code> は常にビューポートを基準に配置される</label>
+    <label class="checkbox-label"><input type="checkbox" id="q3e">
+      ⑤ <code>position: absolute</code> の要素は通常フローに影響を与えない</label>
+    <label class="checkbox-label"><input type="checkbox" id="q3f">
+      ⑥ <code>clearfix</code> は <code>::after</code> 疑似要素を使って float の高さ崩れを防ぐ</label>
+    <br>
+    <button class="btn btn-purple" onclick="checkQ3()">答え合わせ</button>
+    <div class="result-msg" id="q3-result"></div>
+    <script>
+      function checkQ3() {
+        const r = document.getElementById('q3-result');
+        const checks = {
+          a: document.getElementById('q3a').checked,
+          b: document.getElementById('q3b').checked,
+          c: document.getElementById('q3c').checked,
+          d: document.getElementById('q3d').checked,
+          e: document.getElementById('q3e').checked,
+          f: document.getElementById('q3f').checked,
+        };
+        // 正解：①③⑤⑥（a,c,e,f）
+        // ② static では z-index は効かない
+        // ④ transform 等がある祖先があるとビューポート基準にならない
+        const correct = { a:true, b:false, c:true, d:false, e:true, f:true };
+        const allOk = Object.keys(correct).every(k => checks[k] === correct[k]);
+        if (allOk) {
+          r.className = 'result-msg correct';
+          r.innerHTML = '✅ 全問正解！完璧です！';
+        } else {
+          r.className = 'result-msg wrong';
+          r.innerHTML =
+            '❌ 不正解の項目があります。<br><br>' +
+            '<strong>正しい記述：</strong>①③⑤⑥<br><br>' +
+            '<strong>誤った記述：</strong><br>' +
+            '・② <code>position: static</code> の要素に <code>z-index</code> を指定しても<strong>効果がありません</strong>。z-index は static 以外で有効です。<br>' +
+            '・④ <code>position: fixed</code> は通常ビューポート基準ですが、<strong><code>transform</code>・<code>filter</code>・<code>perspective</code> が設定された祖先要素がある場合</strong>はその要素が基準になります。';
+        }
+      }
+    </script>
+  </div>
+
+  <!-- Q4 -->
+  <div class="quiz-block">
+    <h3>Q4. コード補完問題</h3>
+    <p>以下の要件を満たす CSS を答えてください。</p>
+    <ul style="font-size:0.92em; color:#4a5568; line-height:2;">
+      <li>カード要素（<code>.card</code>）の右上に通知バッジ（<code>.badge</code>）を配置する</li>
+      <li>バッジはカードの右上角から外側に少し飛び出す（top: -8px, right: -8px）</li>
+    </ul>
+    <label><code>.card</code> に必要な position の値：</label>
+    <input type="text" id="q4a" placeholder="position: ???">
+    <label><code>.badge</code> に必要な position の値：</label>
+    <input type="text" id="q4b" placeholder="position: ???">
+    <br>
+    <button class="btn btn-purple" onclick="checkQ4()">答え合わせ</button>
+    <div class="result-msg" id="q4-result"></div>
+    <script>
+      function checkQ4() {
+        const a = document.getElementById('q4a').value.trim().toLowerCase()
+                    .replace(/position:|:|\s/g,'');
+        const b = document.getElementById('q4b').value.trim().toLowerCase()
+                    .replace(/position:|:|\s/g,'');
+        const r = document.getElementById('q4-result');
+        const ca = a === 'relative';
+        const cb = b === 'absolute';
+        const count = [ca,cb].filter(Boolean).length;
+        if (count === 2) {
+          r.className = 'result-msg correct';
+          r.innerHTML = '✅ 正解！<br><br>' +
+            '<code>.card  { position: relative; }</code><br>' +
+            '<code>.badge {</code><br>' +
+            '<code>  position: absolute;</code><br>' +
+            '<code>  top:   -8px;</code><br>' +
+            '<code>  right: -8px;</code><br>' +
+            '<code>}</code><br><br>' +
+            '<strong>ポイント：</strong><br>' +
+            '・<code>.card</code> に <code>relative</code> を設定して基準点を作る<br>' +
+            '・<code>.badge</code> に <code>absolute</code> を設定してカードを基準に配置<br>' +
+            '・負の値で要素の外側に飛び出させる';
+        } else {
+          r.className = 'result-msg wrong';
+          r.innerHTML = `❌ ${count}/2 問正解。<br>` +
+            `.card: ${ca?'✅':'❌ relative（基準点を作る）'}　` +
+            `.badge: ${cb?'✅':'❌ absolute（基準点を元に配置）'}`;
+        }
+      }
+    </script>
+  </div>
+
+</div><!-- /quiz-section -->
+
+
+<!-- 完了ボタン -->
+<div class="complete-section">
+  <p>🎉 「2-5 配置とポジショニング」の学習が完了したら記録しましょう！</p>
+  <button class="btn btn-done" onclick="markComplete()">✅ このセクションを完了にする</button>
+  <div id="complete-msg"
+       style="margin-top:10px; font-size:0.88em; color:#276749; display:none;">
+    進捗を保存しました！Chapter 2 の進捗バーに反映されます。
+  </div>
+</div>
+
+<!-- ページナビ -->
+<div class="page-nav">
+  <a class="prev" href="04_grid.html">← 2-4 CSS Grid</a>
+  <a class="home" href="../index.html">🏠 目次へ</a>
+  <a class="next" href="06_responsive.html">次へ：2-6 レスポンシブデザイン →</a>
+</div>
+
+<!-- フッター -->
+<footer>
+  <p>
+    HTML5プロフェッショナル Level 2 学習サイト ／
+    <a href="../index.html">🏠 目次</a> ／
+    <a href="../exam/index.html">📝 模擬試験</a>
+  </p>
+  <p style="margin-top:4px;">© MeshinoKiwamiOkome</p>
+</footer>
+
+
+<!-- ============================================================ -->
+<!-- JavaScript -->
+<!-- ============================================================ -->
+<script>
+  /* ===== コピーボタン ===== */
+  function copyPre(btn) {
+    const pre = btn.nextElementSibling;
+    navigator.clipboard.writeText(pre.innerText || pre.textContent).then(() => {
+      btn.textContent = 'copied!';
+      setTimeout(() => btn.textContent = 'copy', 1800);
+    });
+  }
+
+  /* ===== タブ ===== */
+  function switchTab(btn, id) {
+    btn.closest('.tab-wrap').querySelectorAll('.tab-btn')
+       .forEach(b => b.classList.remove('active'));
+    btn.closest('.tab-wrap').querySelectorAll('.tab-content')
+       .forEach(c => c.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById(id).classList.add('active');
+  }
+
+  /* ===== position プレイグラウンド ===== */
+  function updatePosition() {
+    const pos    = document.getElementById('pos-val').value;
+    const top    = document.getElementById('pos-top').value;
+    const right  = document.getElementById('pos-right').value;
+    const bottom = document.getElementById('pos-bottom').value;
+    const left   = document.getElementById('pos-left').value;
+    const zidx   = document.getElementById('pos-zindex').value;
+
+    const child  = document.getElementById('pos-child');
+    const parent = document.getElementById('pos-parent');
+
+    child.style.position = pos;
+    child.style.top      = top    !== '' ? top    + 'px' : '';
+    child.style.right    = right  !== '' ? right  + 'px' : '';
+    child.style.bottom   = bottom !== '' ? bottom + 'px' : '';
+    child.style.left     = left   !== '' ? left   + 'px' : '';
+    child.style.zIndex   = zidx;
+
+    // absolute の場合は親を relative に
+    if (pos === 'absolute') {
+      parent.style.position = 'relative';
+    } else {
+      parent.style.position = 'relative';
+      child.style.position  = pos;
+    }
+
+    // コード生成
+    const lines = [`.child {`, `  position: ${pos};`];
+    if (pos !== 'static') {
+      if (top    !== '') lines.push(`  top:    ${top}px;`);
+      if (right  !== '') lines.push(`  right:  ${right}px;`);
+      if (bottom !== '') lines.push(`  bottom: ${bottom}px;`);
+      if (left   !== '') lines.push(`  left:   ${left}px;`);
+      if (zidx   !== '0') lines.push(`  z-index: ${zidx};`);
+    }
+    lines.push(`}`);
+    if (pos === 'absolute') {
+      lines.push('', '.parent {', '  position: relative; /* 基準点 */', '}');
+    }
+
+    document.getElementById('pos-code').textContent = lines.join('\n');
+  }
+
+  updatePosition();
+
+  /* ===== z-index デモ ===== */
+  const ziBoxes = [
+    { el: null, z: 1, top: 20,  left: 20  },
+    { el: null, z: 2, top: 50,  left: 80  },
+    { el: null, z: 3, top: 30,  left: 150 },
+  ];
+
+  function selectZiBox(idx) {
+    document.getElementById('zi-select').value = idx;
+    document.getElementById('zi-val').value    = ziBoxes[idx].z;
+    updateZiOutput();
+  }
+
+  function applyZIndex() {
+    const idx = parseInt(document.getElementById('zi-select').value);
+    const val = parseInt(document.getElementById('zi-val').value);
+    ziBoxes[idx].z = val;
+
+    const ids = ['zi-1', 'zi-2', 'zi-3'];
+    document.getElementById(ids[idx]).style.zIndex = val;
+    const label = document.getElementById(ids[idx]).querySelector('span');
+    if (label) label.textContent = `z-index: ${val}`;
+
+    updateZiOutput();
+  }
+
+  function updateZiOutput() {
+    const out = document.getElementById('zi-output');
+    const sorted = [...ziBoxes]
+      .map((b, i) => ({ ...b, name: ['A','B','C'][i] }))
+      .sort((a, b) => b.z - a.z);
+
+    out.style.color = '#b794f4';
+    out.textContent =
+      `前面から背面の順：\n` +
+      sorted.map((b, i) => `  ${i + 1}位: Box ${b.name}（z-index: ${b.z}）`).join('\n') +
+      `\n\n// z-index は position: static 以外で有効`;
+  }
+
+  updateZiOutput();
+
+  /* ===== float デモ ===== */
+  function applyFloat() {
+    const floatVal = document.getElementById('float-val').value;
+    const clearVal = document.getElementById('clear-val').value;
+    const img      = document.getElementById('float-img');
+    const clearEl  = document.getElementById('float-clear-el');
+    const out      = document.getElementById('float-output');
+
+    img.style.float = floatVal;
+    if (floatVal === 'left') {
+      img.style.margin = '0 12px 8px 0';
+    } else if (floatVal === 'right') {
+      img.style.margin = '0 0 8px 12px';
+    } else {
+      img.style.margin = '0 0 8px 0';
+    }
+
+    clearEl.style.clear = clearVal;
+    clearEl.textContent = `clear 要素（clear: ${clearVal}）`;
+
+    out.style.color = '#b794f4';
+    out.textContent =
+      `.image {\n  float: ${floatVal};\n}\n` +
+      `.clear-element {\n  clear: ${clearVal};\n}`;
+  }
+
+  /* ===== 完了ボタン ===== */
+  function markComplete() {
+    localStorage.setItem('html5lv2_ch2_05', 'done');
+    document.getElementById('complete-msg').style.display = 'block';
+  }
+  if (localStorage.getItem('html5lv2_ch2_05') === 'done') {
+    document.getElementById('complete-msg').style.display = 'block';
+  }
+</script>
+
+</body>
+</html>

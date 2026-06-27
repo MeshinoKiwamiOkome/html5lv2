@@ -1,0 +1,1514 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>2-1 セレクタと詳細度 | HTML5プロフェッショナル Level 2</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; }
+    body {
+      font-family: 'Segoe UI', 'Helvetica Neue', sans-serif;
+      max-width: 960px; margin: 40px auto; padding: 0 24px;
+      background: #f0f4f8; color: #2d3748; line-height: 1.8;
+    }
+    .breadcrumb {
+      font-size: 0.82em; color: #a0aec0; margin-bottom: 20px;
+      font-family: 'Consolas','Monaco',monospace;
+    }
+    .breadcrumb a { color: #2c7a7b; text-decoration: none; }
+    .breadcrumb a:hover { text-decoration: underline; }
+
+    .chapter-header {
+      background: linear-gradient(135deg, #553c9a, #2c7a7b);
+      border-radius: 12px; padding: 32px 32px 24px;
+      margin-bottom: 32px; color: #fff;
+      box-shadow: 0 4px 18px rgba(85,60,154,0.35);
+    }
+    .chapter-header .ch-num {
+      font-size: 0.8em; font-family: 'Consolas','Monaco',monospace;
+      opacity: 0.85; letter-spacing: 0.08em; margin-bottom: 6px;
+    }
+    .chapter-header h1 {
+      margin: 0 0 10px; font-size: 1.6em; color: #fff; border: none; padding: 0;
+    }
+    .chapter-header p { margin: 0; font-size: 0.92em; opacity: 0.88; }
+    .badge-row { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 14px; }
+    .badge {
+      background: rgba(255,255,255,0.18);
+      border: 1px solid rgba(255,255,255,0.35);
+      border-radius: 20px; padding: 3px 12px;
+      font-size: 0.76em; font-weight: bold;
+    }
+
+    .section-nav {
+      background: #fff; border: 1px solid #e9d8fd;
+      border-radius: 10px; padding: 18px 22px;
+      margin-bottom: 32px; box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+    }
+    .section-nav h2 {
+      margin: 0 0 12px; font-size: 0.92em; color: #553c9a; border: none; padding: 0;
+    }
+    .section-nav ol { margin: 0; padding-left: 20px; font-size: 0.9em; }
+    .section-nav ol li { margin: 4px 0; }
+    .section-nav ol li a { color: #553c9a; text-decoration: none; }
+    .section-nav ol li a:hover { text-decoration: underline; }
+    .section-nav ol li.current a { color: #1a365d; font-weight: bold; }
+
+    h2 {
+      color: #1a365d; margin-top: 48px;
+      border-left: 5px solid #9f7aea; padding-left: 12px;
+    }
+    h3 { color: #553c9a; margin-top: 28px; }
+
+    code {
+      background: #faf5ff; padding: 2px 6px;
+      border-radius: 4px; font-size: 0.93em;
+      font-family: 'Consolas','Monaco',monospace;
+      color: #553c9a;
+    }
+    pre {
+      background: #1a202c; color: #e2e8f0;
+      padding: 18px 20px; border-radius: 8px;
+      overflow-x: auto; font-size: 0.88em;
+      line-height: 1.7; font-family: 'Consolas','Monaco',monospace;
+    }
+    pre .comment  { color: #68d391; }
+    pre .selector { color: #f6ad55; font-weight: bold; }
+    pre .prop     { color: #81e6d9; }
+    pre .val      { color: #fbd38d; }
+    pre .pseudo   { color: #b794f4; }
+    pre .out      { color: #a0aec0; }
+    pre .hl       { color: #68d391; font-weight: bold; }
+
+    .pre-wrap { position: relative; margin: 14px 0; }
+    .copy-btn {
+      position: absolute; top: 8px; right: 8px;
+      background: #4a5568; color: #e2e8f0;
+      border: none; border-radius: 4px; padding: 4px 10px;
+      font-size: 0.75em; cursor: pointer;
+      font-family: 'Consolas','Monaco',monospace;
+      transition: background 0.2s; z-index: 1;
+    }
+    .copy-btn:hover { background: #9f7aea; }
+
+    .note {
+      background: #fff; border: 1px dashed #d6bcfa;
+      border-radius: 6px; padding: 14px 18px;
+      font-size: 0.93em; color: #4a5568; margin: 14px 0;
+    }
+    .note strong { color: #553c9a; }
+    .warn {
+      background: #fffaf0; border: 1px solid #f6ad55;
+      border-left: 5px solid #f6ad55; border-radius: 6px;
+      padding: 14px 18px; font-size: 0.93em; color: #744210; margin: 14px 0;
+    }
+    .good {
+      background: #f0fff4; border: 1px solid #68d391;
+      border-left: 5px solid #48bb78; border-radius: 6px;
+      padding: 14px 18px; font-size: 0.93em; color: #276749; margin: 14px 0;
+    }
+    .demo-box {
+      background: #fff; border: 1px solid #e9d8fd;
+      border-radius: 8px; padding: 20px 24px;
+      margin: 12px 0 28px; box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+    }
+
+    /* ===== 詳細度カリキュレーター ===== */
+    .specificity-calc {
+      background: #1a202c; border-radius: 10px;
+      padding: 20px; margin: 14px 0;
+      font-family: 'Consolas','Monaco',monospace;
+    }
+    .spec-input-row {
+      display: flex; gap: 8px; align-items: center;
+      flex-wrap: wrap; margin-bottom: 14px;
+    }
+    .spec-input {
+      background: #2d3748; border: 1px solid #4a5568;
+      border-radius: 6px; padding: 8px 14px;
+      color: #e2e8f0; font-family: 'Consolas','Monaco',monospace;
+      font-size: 0.9em; flex: 1; min-width: 200px; outline: none;
+    }
+    .spec-input:focus { border-color: #9f7aea; }
+    .spec-btn {
+      background: #553c9a; color: #fff; border: none;
+      border-radius: 6px; padding: 8px 18px;
+      font-size: 0.88em; font-weight: bold; cursor: pointer;
+      transition: background 0.2s;
+    }
+    .spec-btn:hover { background: #44337a; }
+    .spec-result {
+      display: flex; gap: 12px; align-items: center;
+      flex-wrap: wrap; margin-top: 10px;
+    }
+    .spec-box {
+      border-radius: 8px; padding: 10px 16px;
+      text-align: center; min-width: 70px;
+    }
+    .spec-box .sb-label {
+      font-size: 0.7em; color: #a0aec0;
+      letter-spacing: 0.08em; margin-bottom: 4px;
+    }
+    .spec-box .sb-val {
+      font-size: 1.8em; font-weight: bold; line-height: 1;
+    }
+    .spec-score {
+      font-size: 0.85em; color: #e2e8f0; line-height: 1.8;
+    }
+
+    /* ===== セレクタライブデモ ===== */
+    .selector-live {
+      background: #f7fafc; border: 2px solid #e9d8fd;
+      border-radius: 8px; padding: 16px 20px; margin: 14px 0;
+    }
+    .selector-live h4 {
+      margin: 0 0 10px; font-size: 0.88em; color: #718096;
+    }
+    /* デモ用スタイル */
+    .demo-p   { color: #2d3748; transition: all 0.3s; padding: 4px 8px; border-radius: 4px; margin: 4px 0; }
+    .demo-p.highlight-sel { background: #faf5ff; outline: 2px solid #9f7aea; }
+    #demo-heading { color: #1a365d; }
+    .demo-link { color: #553c9a; }
+    .demo-list { padding-left: 20px; }
+    .demo-list li { margin: 2px 0; }
+    .demo-first { font-weight: bold; }
+
+    /* ===== 疑似クラス・疑似要素デモ ===== */
+    .pseudo-demo-area {
+      background: #f7fafc; border: 2px solid #e9d8fd;
+      border-radius: 8px; padding: 16px 20px; margin: 14px 0;
+    }
+    .pd-btn {
+      display: inline-block; padding: 8px 18px;
+      background: #553c9a; color: #fff; border: none;
+      border-radius: 6px; cursor: pointer; margin: 4px;
+      font-size: 0.88em; font-weight: bold;
+      transition: background 0.2s, transform 0.1s;
+    }
+    .pd-btn:hover { background: #44337a; transform: translateY(-1px); }
+    .pd-btn:active { transform: translateY(1px); }
+    .pd-input {
+      padding: 8px 12px; border: 2px solid #d6bcfa;
+      border-radius: 6px; outline: none; font-size: 0.9em;
+      transition: border-color 0.2s;
+    }
+    .pd-input:focus { border-color: #9f7aea; }
+    .pd-list { list-style: none; padding: 0; margin: 8px 0; }
+    .pd-list li {
+      padding: 6px 12px; border-radius: 4px;
+      transition: background 0.15s; cursor: default;
+    }
+    .pd-list li:nth-child(odd)  { background: #faf5ff; }
+    .pd-list li:nth-child(even) { background: #f7fafc; }
+    .pd-list li:first-child { font-weight: bold; color: #553c9a; }
+    .pd-list li:last-child  { font-style: italic; color: #718096; }
+    .pd-list li:hover { background: #e9d8fd; }
+
+    /* ===== 詳細度バトル ===== */
+    .battle-area {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 12px; margin: 14px 0;
+    }
+    .battle-card {
+      background: #1a202c; border-radius: 8px;
+      padding: 14px 16px; border: 2px solid #2d3748;
+      font-family: 'Consolas','Monaco',monospace; font-size: 0.85em;
+      transition: border-color 0.3s;
+    }
+    .battle-card.winner { border-color: #68d391; }
+    .battle-card.loser  { border-color: #fc8181; opacity: 0.6; }
+    .battle-card-title {
+      font-size: 0.75em; color: #a0aec0;
+      margin-bottom: 8px; letter-spacing: 0.06em;
+    }
+
+    /* ===== インタラクティブデモ ===== */
+    .interactive-demo {
+      background: #f5f0ff; border: 1px solid #e9d8fd;
+      border-radius: 8px; padding: 16px 20px; margin: 14px 0;
+    }
+    .demo-label {
+      font-size: 0.85em; font-weight: bold;
+      color: #553c9a; margin-bottom: 10px;
+    }
+    .demo-input-row {
+      display: flex; gap: 10px; align-items: center;
+      flex-wrap: wrap; margin-bottom: 10px;
+    }
+    .demo-input {
+      border: 2px solid #e9d8fd; border-radius: 6px;
+      padding: 7px 12px; font-size: 0.9em;
+      font-family: 'Consolas','Monaco',monospace;
+      color: #2d3748; background: #fff; flex: 1; min-width: 80px;
+    }
+    .demo-input:focus { border-color: #9f7aea; outline: none; }
+    .demo-btn {
+      background: #553c9a; color: #fff; border: none;
+      border-radius: 6px; padding: 8px 18px;
+      font-size: 0.88em; font-weight: bold; cursor: pointer;
+      transition: background 0.2s; white-space: nowrap;
+    }
+    .demo-btn:hover { background: #44337a; }
+    .demo-output {
+      background: #1a202c; color: #b794f4;
+      border-radius: 6px; padding: 10px 14px;
+      font-family: 'Consolas','Monaco',monospace;
+      font-size: 0.85em; min-height: 40px;
+      white-space: pre-wrap; line-height: 1.7;
+    }
+
+    /* ===== タブ ===== */
+    .tab-wrap { margin: 14px 0; }
+    .tab-btns { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: -1px; }
+    .tab-btn {
+      padding: 8px 18px; border: 1px solid #e9d8fd;
+      border-bottom: none; border-radius: 6px 6px 0 0;
+      background: #faf5ff; color: #553c9a;
+      font-size: 0.85em; font-weight: bold;
+      font-family: 'Consolas','Monaco',monospace;
+      cursor: pointer; transition: background 0.15s;
+    }
+    .tab-btn.active { background: #fff; border-bottom: 1px solid #fff; }
+    .tab-btn:hover:not(.active) { background: #f0e6ff; }
+    .tab-content {
+      display: none; background: #fff;
+      border: 1px solid #e9d8fd;
+      border-radius: 0 6px 6px 6px; padding: 18px 20px;
+    }
+    .tab-content.active { display: block; }
+
+    /* ===== テーブル ===== */
+    table.ref-table {
+      border-collapse: collapse; width: 100%;
+      background: #fff; border-radius: 8px;
+      overflow: hidden; box-shadow: 0 2px 6px rgba(0,0,0,0.07);
+      margin: 14px 0; font-size: 0.9em;
+    }
+    table.ref-table th, table.ref-table td {
+      border: 1px solid #e9d8fd; padding: 10px 14px; text-align: left;
+    }
+    table.ref-table thead tr { background: #553c9a; color: #fff; }
+    table.ref-table tbody tr:nth-child(even) { background: #faf5ff; }
+
+    /* ===== 演習問題 ===== */
+    .quiz-section {
+      background: #faf5ff; border-left: 6px solid #9f7aea;
+      border-radius: 0 8px 8px 0; padding: 24px 28px; margin: 48px 0 32px;
+    }
+    .quiz-section > h2 { margin-top: 0; color: #553c9a; border-left-color: #9f7aea; }
+    .quiz-block {
+      background: #fff; border: 1px solid #e9d8fd;
+      border-radius: 8px; padding: 18px 22px; margin-bottom: 22px;
+    }
+    .quiz-block h3 { margin-top: 0; color: #553c9a; }
+    .quiz-block input[type="text"],
+    .quiz-block select {
+      border: 2px solid #e9d8fd; border-radius: 6px;
+      padding: 8px 12px; font-size: 0.95em;
+      width: 100%; max-width: 440px; margin: 6px 0;
+      outline: none; font-family: 'Consolas','Monaco',monospace;
+      transition: border-color 0.2s;
+    }
+    .quiz-block input[type="text"]:focus,
+    .quiz-block select:focus { border-color: #9f7aea; }
+    .quiz-block label { display: block; margin: 8px 0 2px; font-weight: bold; color: #4a5568; }
+    .quiz-block label.checkbox-label {
+      display: flex; align-items: flex-start; gap: 8px;
+      font-weight: normal; cursor: pointer; margin: 6px 0;
+    }
+    .quiz-block label.checkbox-label input { margin-top: 3px; flex-shrink: 0; }
+    .btn {
+      display: inline-block; padding: 9px 20px;
+      border-radius: 6px; border: none; cursor: pointer;
+      font-size: 0.95em; font-weight: bold;
+      transition: opacity 0.2s; margin-top: 8px;
+    }
+    .btn:hover { opacity: 0.85; }
+    .btn-purple { background: #553c9a; color: #fff; }
+    .btn-done   { background: #48bb78; color: #fff; }
+    .result-msg {
+      margin-top: 10px; padding: 10px 14px;
+      border-radius: 6px; font-weight: bold; display: none;
+    }
+    .result-msg.correct { background: #c6f6d5; color: #276749; display: block; }
+    .result-msg.wrong   { background: #fed7d7; color: #9b2335; display: block; }
+    .result-msg.info    { background: #e9d8fd; color: #553c9a; display: block; }
+
+    .page-nav {
+      display: flex; justify-content: space-between;
+      align-items: center; margin-top: 48px;
+      padding-top: 20px; border-top: 2px solid #e9d8fd;
+      gap: 12px; flex-wrap: wrap;
+    }
+    .page-nav a {
+      display: inline-block; padding: 10px 20px;
+      border-radius: 8px; text-decoration: none;
+      font-weight: bold; font-size: 0.9em; transition: opacity 0.2s;
+    }
+    .page-nav a:hover { opacity: 0.8; }
+    .page-nav .prev { background: #edf2f7; color: #4a5568; }
+    .page-nav .next { background: #553c9a; color: #fff; }
+    .page-nav .home { background: #fff; color: #553c9a; border: 2px solid #553c9a; }
+
+    .complete-section {
+      background: #f0fff4; border: 2px solid #48bb78;
+      border-radius: 10px; padding: 20px 24px;
+      margin-top: 40px; text-align: center;
+    }
+    .complete-section p { margin: 0 0 12px; color: #276749; font-weight: bold; }
+
+    footer {
+      margin-top: 48px; padding-top: 16px;
+      border-top: 2px solid #e9d8fd;
+      font-size: 0.82em; color: #a0aec0; text-align: center;
+    }
+    footer a { color: #553c9a; text-decoration: none; }
+    footer a:hover { text-decoration: underline; }
+
+    @media (max-width: 600px) {
+      body { font-size: 0.84em; }
+      .chapter-header { padding: 20px 16px; }
+      .chapter-header h1 { font-size: 1.2em; }
+      .battle-area { grid-template-columns: 1fr; }
+      .quiz-section { padding: 16px 12px; }
+      .quiz-block { padding: 14px 12px; }
+      .page-nav { flex-direction: column; align-items: stretch; }
+      .page-nav a { text-align: center; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- パンくず -->
+<div class="breadcrumb">
+  <a href="../index.html">🏠 HTML5 Level 2</a> ›
+  <a href="index.html">Chapter 2：CSSとスタイリング</a> ›
+  2-1 セレクタと詳細度
+</div>
+
+<!-- ヘッダー -->
+<div class="chapter-header">
+  <div class="ch-num">CHAPTER 02 › SECTION 01</div>
+  <h1>🎯 2-1 セレクタと詳細度</h1>
+  <p>基本セレクタ・結合子・疑似クラス・疑似要素・詳細度の計算・
+  カスケードの仕組みを、インタラクティブな詳細度カリキュレーターで
+  体験しながら完全理解します。</p>
+  <div class="badge-row">
+    <span class="badge">基本セレクタ</span>
+    <span class="badge">結合子</span>
+    <span class="badge">疑似クラス</span>
+    <span class="badge">疑似要素</span>
+    <span class="badge">詳細度</span>
+    <span class="badge">カスケード</span>
+  </div>
+</div>
+
+<!-- セクションナビ -->
+<div class="section-nav">
+  <h2>📋 Chapter 2 のセクション</h2>
+  <ol>
+    <li class="current"><a href="01_selectors.html">2-1 セレクタと詳細度</a></li>
+    <li><a href="02_boxmodel.html">2-2 ボックスモデル</a></li>
+    <li><a href="03_flexbox.html">2-3 Flexbox</a></li>
+    <li><a href="04_grid.html">2-4 CSS Grid</a></li>
+    <li><a href="05_positioning.html">2-5 配置とポジショニング</a></li>
+    <li><a href="06_responsive.html">2-6 レスポンシブデザイン</a></li>
+    <li><a href="07_typography.html">2-7 タイポグラフィと色</a></li>
+    <li><a href="08_animation.html">2-8 トランジションとアニメーション</a></li>
+    <li><a href="09_variables.html">2-9 CSS変数と関数</a></li>
+    <li><a href="10_advanced.html">2-10 CSS応用・試験対策</a></li>
+  </ol>
+</div>
+
+
+<!-- ============================================================ -->
+<!-- PART 1: セレクタの種類 -->
+<!-- ============================================================ -->
+<h2 id="selectors">① セレクタの種類</h2>
+
+<div class="note">
+  <strong>重要ポイント：CSS セレクタはスタイルを適用する要素を指定する仕組みです。
+  セレクタの種類と詳細度（Specificity）を正確に理解することが試験の核心です。</strong>
+</div>
+
+<div class="demo-box">
+  <h3>セレクタ一覧</h3>
+  <table class="ref-table">
+    <thead>
+      <tr><th>種類</th><th>例</th><th>説明</th><th>詳細度</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>全称セレクタ</td>
+        <td><code>*</code></td>
+        <td>すべての要素</td>
+        <td>0,0,0</td></tr>
+      <tr><td>タイプセレクタ</td>
+        <td><code>p</code>, <code>div</code></td>
+        <td>タグ名で指定</td>
+        <td>0,0,1</td></tr>
+      <tr><td>クラスセレクタ</td>
+        <td><code>.btn</code></td>
+        <td>class 属性で指定</td>
+        <td>0,1,0</td></tr>
+      <tr><td>ID セレクタ</td>
+        <td><code>#header</code></td>
+        <td>id 属性で指定</td>
+        <td>1,0,0</td></tr>
+      <tr><td>属性セレクタ</td>
+        <td><code>[type="text"]</code></td>
+        <td>属性値で指定</td>
+        <td>0,1,0</td></tr>
+      <tr><td>疑似クラス</td>
+        <td><code>:hover</code>, <code>:nth-child()</code></td>
+        <td>状態・位置で指定</td>
+        <td>0,1,0</td></tr>
+      <tr><td>疑似要素</td>
+        <td><code>::before</code>, <code>::after</code></td>
+        <td>仮想要素を生成</td>
+        <td>0,0,1</td></tr>
+      <tr><td>インラインスタイル</td>
+        <td><code>style="..."</code></td>
+        <td>HTML 要素に直接記述</td>
+        <td>1,0,0,0</td></tr>
+      <tr><td><code>!important</code></td>
+        <td><code>color: red !important</code></td>
+        <td>詳細度を超えて優先</td>
+        <td>最優先</td></tr>
+    </tbody>
+  </table>
+
+  <h3>結合子（Combinator）</h3>
+  <table class="ref-table">
+    <thead>
+      <tr><th>結合子</th><th>例</th><th>説明</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>子孫結合子（スペース）</td>
+        <td><code>div p</code></td>
+        <td>div の子孫すべての p</td></tr>
+      <tr><td>子結合子（&gt;）</td>
+        <td><code>div &gt; p</code></td>
+        <td>div の直接の子の p のみ</td></tr>
+      <tr><td>隣接兄弟結合子（+）</td>
+        <td><code>h1 + p</code></td>
+        <td>h1 の直後の兄弟 p</td></tr>
+      <tr><td>一般兄弟結合子（~）</td>
+        <td><code>h1 ~ p</code></td>
+        <td>h1 以降のすべての兄弟 p</td></tr>
+    </tbody>
+  </table>
+
+  <h3>🎮 セレクタ練習デモ</h3>
+  <div class="selector-live">
+    <h4>↓ この HTML に対してセレクタを試してみよう</h4>
+    <div id="selector-demo-html">
+      <h2 id="demo-heading" style="font-size:1.1em; margin:4px 0;">見出し（#demo-heading）</h2>
+      <p class="demo-p" id="p1">段落1（.demo-p #p1）</p>
+      <p class="demo-p highlight" id="p2">段落2（.demo-p .highlight #p2）</p>
+      <p class="demo-p" id="p3">段落3（.demo-p #p3）</p>
+      <ul class="demo-list">
+        <li class="demo-first">リスト1（:first-child）</li>
+        <li>リスト2</li>
+        <li>リスト3（:last-child）</li>
+      </ul>
+      <a href="#" class="demo-link">リンク（.demo-link）</a>
+    </div>
+  </div>
+
+  <div class="interactive-demo">
+    <div class="demo-label">CSS セレクタを入力してマッチする要素を確認しよう</div>
+    <div class="demo-input-row">
+      <input class="demo-input" id="sel-input"
+             placeholder="セレクタ（例：.demo-p, #p1, li:first-child）"
+             type="text" value=".demo-p">
+      <button class="demo-btn" onclick="runSelectorTest()">▶ 適用</button>
+      <button class="demo-btn" style="background:#4a5568;"
+              onclick="clearSelectorTest()">↺ リセット</button>
+    </div>
+    <div class="demo-output" id="selector-test-output">← セレクタを入力してマッチする要素を確認しましょう</div>
+  </div>
+</div>
+
+
+<!-- ============================================================ -->
+<!-- PART 2: 詳細度（Specificity） -->
+<!-- ============================================================ -->
+<h2 id="specificity">② 詳細度（Specificity）</h2>
+
+<div class="note">
+  <strong>重要ポイント：詳細度は <code>(ID, クラス/属性/疑似クラス, タイプ/疑似要素)</code>
+  の3つの数値で表されます。数値が大きいほど優先されます。
+  同じ詳細度の場合は後から書いたスタイルが優先されます（カスケード）。</strong>
+</div>
+
+<div class="demo-box">
+  <h3>🧮 詳細度カリキュレーター</h3>
+  <div class="specificity-calc">
+    <div class="spec-input-row">
+      <input class="spec-input" id="spec-input"
+             placeholder="セレクタを入力（例：#nav .menu li:hover）"
+             type="text" value="#nav .menu li:hover">
+      <button class="spec-btn" onclick="calcSpecificity()">計算</button>
+    </div>
+    <div id="spec-result-area" style="display:none;">
+      <div class="spec-result" id="spec-result"></div>
+      <div class="spec-score" id="spec-score" style="margin-top:12px;"></div>
+    </div>
+  </div>
+
+  <h3>詳細度の計算ルール</h3>
+  <div class="pre-wrap">
+    <button class="copy-btn" onclick="copyPre(this)">copy</button>
+<pre>
+<span class="comment">/* 詳細度の計算例 */</span>
+<span class="comment">/* 形式：(ID, クラス/属性/疑似クラス, タイプ/疑似要素) */</span>
+
+<span class="selector">*</span>              { } <span class="out">/* (0, 0, 0) */</span>
+<span class="selector">p</span>              { } <span class="out">/* (0, 0, 1) */</span>
+<span class="selector">.class</span>         { } <span class="out">/* (0, 1, 0) */</span>
+<span class="selector">#id</span>            { } <span class="out">/* (1, 0, 0) */</span>
+<span class="selector">p.class</span>        { } <span class="out">/* (0, 1, 1) */</span>
+<span class="selector">#id .class p</span>   { } <span class="out">/* (1, 1, 1) */</span>
+<span class="selector">div p:hover</span>    { } <span class="out">/* (0, 1, 2) */</span>
+<span class="selector">ul li::before</span>  { } <span class="out">/* (0, 0, 3) */</span>
+
+<span class="comment">/* 詳細度の比較 */</span>
+<span class="selector">#id</span> { <span class="prop">color</span>: <span class="val">red</span>; }    <span class="out">/* (1,0,0) ← 勝ち */</span>
+<span class="selector">.a .b .c .d .e .f .g .h .i .j .k</span> { <span class="prop">color</span>: <span class="val">blue</span>; }
+<span class="out">/* (0,11,0) ← 負け（クラスがいくら多くても ID に勝てない）*/</span>
+</pre>
+  </div>
+
+  <h3>🥊 詳細度バトル（どちらが勝つ？）</h3>
+  <div id="battle-container">
+    <div class="battle-area">
+      <div class="battle-card" id="battle-a">
+        <div class="battle-card-title">SELECTOR A</div>
+        <div id="battle-a-sel" style="color:#f6ad55; font-size:1em;">#header .nav a</div>
+        <div id="battle-a-spec" style="color:#a0aec0; font-size:0.82em; margin-top:6px;"></div>
+      </div>
+      <div class="battle-card" id="battle-b">
+        <div class="battle-card-title">SELECTOR B</div>
+        <div id="battle-b-sel" style="color:#90cdf4; font-size:1em;">nav ul li a:hover</div>
+        <div id="battle-b-spec" style="color:#a0aec0; font-size:0.82em; margin-top:6px;"></div>
+      </div>
+    </div>
+    <div style="display:flex; gap:8px; flex-wrap:wrap; margin-top:8px;">
+      <button class="demo-btn" onclick="runBattle()">⚔️ 勝負！</button>
+      <button class="demo-btn" style="background:#4a5568;" onclick="nextBattle()">次の問題 →</button>
+    </div>
+    <div class="demo-output" id="battle-output" style="margin-top:10px;">← 「勝負！」ボタンを押して詳細度を比較しましょう</div>
+  </div>
+</div>
+
+
+<!-- ============================================================ -->
+<!-- PART 3: 疑似クラスと疑似要素 -->
+<!-- ============================================================ -->
+<h2 id="pseudo">③ 疑似クラスと疑似要素</h2>
+
+<div class="note">
+  <strong>重要ポイント：疑似クラス（<code>:</code>）は要素の状態や位置を指定し、
+  疑似要素（<code>::</code>）は仮想的な要素を生成します。
+  <code>::before</code> と <code>::after</code> は <code>content</code> プロパティが必須です。</strong>
+</div>
+
+<div class="demo-box">
+  <div class="tab-wrap">
+    <div class="tab-btns">
+      <button class="tab-btn active" onclick="switchTab(this,'tab-pseudo-class')">疑似クラス</button>
+      <button class="tab-btn"        onclick="switchTab(this,'tab-pseudo-elem')">疑似要素</button>
+      <button class="tab-btn"        onclick="switchTab(this,'tab-nth')">nth-child</button>
+      <button class="tab-btn"        onclick="switchTab(this,'tab-attr-sel')">属性セレクタ</button>
+    </div>
+
+    <!-- 疑似クラス -->
+    <div class="tab-content active" id="tab-pseudo-class">
+      <h3 style="margin-top:0; color:#553c9a;">主要な疑似クラス</h3>
+      <div class="pseudo-demo-area">
+        <div style="margin-bottom:12px;">
+          <button class="pd-btn">ホバーしてみて</button>
+          <button class="pd-btn">クリックしてみて</button>
+          <input class="pd-input" type="text" placeholder="フォーカスしてみて">
+        </div>
+        <ul class="pd-list">
+          <li>最初の項目（:first-child）</li>
+          <li>2番目の項目</li>
+          <li>3番目の項目（:nth-child(3)）</li>
+          <li>4番目の項目（:nth-child(even)）</li>
+          <li>最後の項目（:last-child）</li>
+        </ul>
+      </div>
+      <div class="pre-wrap">
+        <button class="copy-btn" onclick="copyPre(this)">copy</button>
+<pre>
+<span class="comment">/* 状態系 */</span>
+<span class="selector">a:hover</span>    { <span class="prop">color</span>: <span class="val">blue</span>; }    <span class="comment">/* マウスオーバー */</span>
+<span class="selector">a:visited</span>  { <span class="prop">color</span>: <span class="val">purple</span>; } <span class="comment">/* 訪問済み */</span>
+<span class="selector">a:active</span>   { <span class="prop">color</span>: <span class="val">red</span>; }     <span class="comment">/* クリック中 */</span>
+<span class="selector">input:focus</span>{ <span class="prop">outline</span>: <span class="val">2px solid blue</span>; } <span class="comment">/* フォーカス */</span>
+<span class="selector">input:disabled</span>{ <span class="prop">opacity</span>: <span class="val">0.5</span>; }  <span class="comment">/* 無効 */</span>
+<span class="selector">input:checked</span>{ <span class="prop">accent-color</span>: <span class="val">blue</span>; } <span class="comment">/* チェック済み */</span>
+
+<span class="comment">/* 構造系 */</span>
+<span class="selector">li:first-child</span>  { <span class="prop">font-weight</span>: <span class="val">bold</span>; }
+<span class="selector">li:last-child</span>   { <span class="prop">font-style</span>: <span class="val">italic</span>; }
+<span class="selector">li:nth-child(2)</span> { <span class="prop">color</span>: <span class="val">blue</span>; }    <span class="comment">/* 2番目 */</span>
+<span class="selector">li:nth-child(odd)</span>  { <span class="prop">background</span>: <span class="val">#f0f0f0</span>; } <span class="comment">/* 奇数 */</span>
+<span class="selector">li:nth-child(even)</span> { <span class="prop">background</span>: <span class="val">#fff</span>; }    <span class="comment">/* 偶数 */</span>
+<span class="selector">li:nth-child(3n+1)</span> { <span class="prop">color</span>: <span class="val">red</span>; }     <span class="comment">/* 1,4,7,10... */</span>
+
+<span class="comment">/* 否定 */</span>
+<span class="selector">p:not(.special)</span>{ <span class="prop">color</span>: <span class="val">gray</span>; }  <span class="comment">/* .special 以外の p */</span>
+</pre>
+      </div>
+    </div>
+
+    <!-- 疑似要素 -->
+    <div class="tab-content" id="tab-pseudo-elem">
+      <h3 style="margin-top:0; color:#553c9a;">疑似要素（::）</h3>
+      <div class="pre-wrap">
+        <button class="copy-btn" onclick="copyPre(this)">copy</button>
+<pre>
+<span class="comment">/* ::before / ::after：仮想要素を生成 */</span>
+<span class="comment">/* content プロパティが必須！ */</span>
+<span class="selector">.badge::before</span> {
+  <span class="prop">content</span>: <span class="val">"NEW "</span>;  <span class="comment">/* テキストを前に挿入 */</span>
+  <span class="prop">color</span>: <span class="val">red</span>;
+  <span class="prop">font-weight</span>: <span class="val">bold</span>;
+}
+
+<span class="selector">.price::after</span> {
+  <span class="prop">content</span>: <span class="val">" 円"</span>;  <span class="comment">/* テキストを後に挿入 */</span>
+}
+
+<span class="comment">/* content に attr() で属性値を使う */</span>
+<span class="selector">a::after</span> {
+  <span class="prop">content</span>: <span class="val">" ("</span> <span class="pseudo">attr(href)</span> <span class="val">")"</span>;
+}
+
+<span class="comment">/* ::first-line / ::first-letter */</span>
+<span class="selector">p::first-line</span>   { <span class="prop">font-weight</span>: <span class="val">bold</span>; }
+<span class="selector">p::first-letter</span> { <span class="prop">font-size</span>: <span class="val">2em</span>; <span class="prop">float</span>: <span class="val">left</span>; }
+
+<span class="comment">/* ::selection：テキスト選択時 */</span>
+<span class="selector">::selection</span> {
+  <span class="prop">background</span>: <span class="val">#553c9a</span>;
+  <span class="prop">color</span>: <span class="val">#fff</span>;
+}
+
+<span class="comment">/* ::placeholder：input のプレースホルダー */</span>
+<span class="selector">input::placeholder</span> { <span class="prop">color</span>: <span class="val">#a0aec0</span>; }
+</pre>
+      </div>
+
+      <!-- ::before / ::after ライブデモ -->
+      <div class="interactive-demo" style="margin-top:14px;">
+        <div class="demo-label">::before / ::after の動作を確認しよう</div>
+        <div class="demo-input-row">
+          <input class="demo-input" id="before-content"
+                 placeholder="::before の content" type="text" value="★ ">
+          <input class="demo-input" id="after-content"
+                 placeholder="::after の content" type="text" value=" →">
+          <button class="demo-btn" onclick="applyPseudo()">▶ 適用</button>
+        </div>
+        <div id="pseudo-demo-target"
+             style="padding:12px 16px; background:#faf5ff; border-radius:6px;
+                    border:2px solid #e9d8fd; font-size:1.1em; color:#553c9a;
+                    text-align:center; margin-bottom:8px; position:relative;">
+          疑似要素のデモ
+        </div>
+        <style id="pseudo-demo-style"></style>
+        <div class="demo-output" id="pseudo-output">← content を入力して適用してみましょう</div>
+      </div>
+    </div>
+
+    <!-- nth-child -->
+    <div class="tab-content" id="tab-nth">
+      <h3 style="margin-top:0; color:#553c9a;">:nth-child() の式</h3>
+      <div class="interactive-demo">
+        <div class="demo-label">:nth-child() の式を入力してハイライトされる要素を確認しよう</div>
+        <div class="demo-input-row">
+          <input class="demo-input" id="nth-formula"
+                 placeholder="式（例：odd, even, 3n, 3n+1, 2）"
+                 type="text" value="odd">
+          <button class="demo-btn" onclick="applyNth()">▶ 適用</button>
+        </div>
+        <div id="nth-demo-list"
+             style="display:flex; flex-wrap:wrap; gap:6px; margin:10px 0;">
+        </div>
+        <div class="demo-output" id="nth-output">← 式を入力して適用してみましょう</div>
+      </div>
+      <div class="pre-wrap">
+        <button class="copy-btn" onclick="copyPre(this)">copy</button>
+<pre>
+<span class="comment">/* :nth-child() の式パターン */</span>
+<span class="selector">:nth-child(1)</span>    <span class="out">/* 1番目のみ */</span>
+<span class="selector">:nth-child(odd)</span>  <span class="out">/* 奇数（1,3,5,...）= :nth-child(2n+1) */</span>
+<span class="selector">:nth-child(even)</span> <span class="out">/* 偶数（2,4,6,...）= :nth-child(2n) */</span>
+<span class="selector">:nth-child(3n)</span>   <span class="out">/* 3の倍数（3,6,9,...）*/</span>
+<span class="selector">:nth-child(3n+1)</span> <span class="out">/* 1,4,7,10,...（3n+1）*/</span>
+<span class="selector">:nth-child(-n+3)</span> <span class="out">/* 最初の3つ（1,2,3）*/</span>
+
+<span class="comment">/* :nth-of-type()：同じタグ型の中での順番 */</span>
+<span class="selector">p:nth-of-type(2)</span> <span class="out">/* 2番目の p 要素 */</span>
+
+<span class="comment">/* :nth-child vs :nth-of-type の違い */</span>
+<span class="comment">/* HTML: &lt;div&gt;&lt;h2&gt;...&lt;/h2&gt;&lt;p&gt;1&lt;/p&gt;&lt;p&gt;2&lt;/p&gt;&lt;/div&gt; */</span>
+<span class="selector">p:nth-child(2)</span>      <span class="out">/* → p の中で2番目の子 = "1" */</span>
+<span class="selector">p:nth-of-type(2)</span>    <span class="out">/* → p 要素の中で2番目 = "2" */</span>
+</pre>
+      </div>
+    </div>
+
+    <!-- 属性セレクタ -->
+    <div class="tab-content" id="tab-attr-sel">
+      <h3 style="margin-top:0; color:#553c9a;">属性セレクタ</h3>
+      <div class="pre-wrap">
+        <button class="copy-btn" onclick="copyPre(this)">copy</button>
+<pre>
+<span class="comment">/* 属性セレクタのパターン */</span>
+<span class="selector">[href]</span>           <span class="out">/* href 属性を持つ要素 */</span>
+<span class="selector">[type="text"]</span>    <span class="out">/* type が "text" に完全一致 */</span>
+<span class="selector">[class~="btn"]</span>   <span class="out">/* class に "btn" を含む（スペース区切り）*/</span>
+<span class="selector">[lang|="en"]</span>     <span class="out">/* lang が "en" または "en-" で始まる */</span>
+<span class="selector">[href^="https"]</span>  <span class="out">/* href が "https" で始まる */</span>
+<span class="selector">[href$=".pdf"]</span>   <span class="out">/* href が ".pdf" で終わる */</span>
+<span class="selector">[href*="google"]</span> <span class="out">/* href に "google" を含む */</span>
+
+<span class="comment">/* 実用例 */</span>
+<span class="selector">input[type="submit"]</span> { <span class="prop">background</span>: <span class="val">#553c9a</span>; }
+<span class="selector">a[href^="https"]::after</span> {
+  <span class="prop">content</span>: <span class="val">" 🔒"</span>; <span class="comment">/* HTTPS リンクにアイコン */</span>
+}
+<span class="selector">a[href$=".pdf"]::after</span> {
+  <span class="prop">content</span>: <span class="val">" 📄"</span>; <span class="comment">/* PDF リンクにアイコン */</span>
+}
+</pre>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ============================================================ -->
+<!-- PART 4: カスケードと継承 -->
+<!-- ============================================================ -->
+<h2 id="cascade">④ カスケードと継承</h2>
+
+<div class="note">
+  <strong>重要ポイント：同じ要素に複数のスタイルが適用される場合、
+  ① !important → ② インラインスタイル → ③ 詳細度 → ④ 記述順序
+  の優先順位で決まります（カスケード）。</strong>
+</div>
+
+<div class="demo-box">
+  <div class="pre-wrap">
+    <button class="copy-btn" onclick="copyPre(this)">copy</button>
+<pre>
+<span class="comment">/* カスケードの優先順位（高い順）*/</span>
+<span class="comment">/* 1. !important（最優先）*/</span>
+<span class="selector">p</span> { <span class="prop">color</span>: <span class="val">red !important</span>; }   <span class="out">/* 最優先 */</span>
+
+<span class="comment">/* 2. インラインスタイル */</span>
+<span class="comment">/* &lt;p style="color: blue"&gt; ← 詳細度 (1,0,0,0) */</span>
+
+<span class="comment">/* 3. 詳細度が高いセレクタ */</span>
+<span class="selector">#id .class p</span> { <span class="prop">color</span>: <span class="val">green</span>; }  <span class="out">/* (1,1,1) */</span>
+<span class="selector">.class p</span>     { <span class="prop">color</span>: <span class="val">yellow</span>; } <span class="out">/* (0,1,1) */</span>
+
+<span class="comment">/* 4. 同じ詳細度なら後から書いたほうが優先 */</span>
+<span class="selector">p</span> { <span class="prop">color</span>: <span class="val">orange</span>; }  <span class="out">/* ← こちらが適用される */</span>
+<span class="selector">p</span> { <span class="prop">color</span>: <span class="val">purple</span>; }  <span class="out">/* ← 後から書いたので優先 */</span>
+
+<span class="comment">/* 継承されるプロパティ（一部）*/</span>
+<span class="comment">/* color, font-*, line-height, text-align など */</span>
+<span class="selector">body</span> { <span class="prop">font-family</span>: <span class="val">sans-serif</span>; } <span class="comment">/* 子要素に継承される */</span>
+
+<span class="comment">/* 継承されないプロパティ */</span>
+<span class="comment">/* margin, padding, border, background など */</span>
+
+<span class="comment">/* inherit / initial / unset */</span>
+<span class="selector">p</span> { <span class="prop">color</span>: <span class="val">inherit</span>; }  <span class="comment">/* 親から継承を強制 */</span>
+<span class="selector">p</span> { <span class="prop">color</span>: <span class="val">initial</span>; } <span class="comment">/* ブラウザのデフォルト値に戻す */</span>
+<span class="selector">p</span> { <span class="prop">color</span>: <span class="val">unset</span>; }   <span class="comment">/* 継承可能なら inherit、そうでなければ initial */</span>
+</pre>
+  </div>
+
+  <h3>🎮 カスケードシミュレーター</h3>
+  <div class="interactive-demo">
+    <div class="demo-label">複数のセレクタが競合するとき、どのスタイルが適用されるか確認しよう</div>
+    <div id="cascade-rules" style="margin-bottom:10px;">
+      <div style="display:flex; gap:8px; margin-bottom:6px; flex-wrap:wrap; align-items:center;">
+        <input class="demo-input" placeholder="セレクタ（例：p）" type="text"
+               value="p" id="cr-sel-1" style="max-width:160px;">
+        <input class="demo-input" placeholder="color の値" type="text"
+               value="red" id="cr-val-1" style="max-width:120px;">
+        <label style="font-size:0.82em; display:flex; align-items:center; gap:4px;">
+          <input type="checkbox" id="cr-imp-1"> !important
+        </label>
+      </div>
+      <div style="display:flex; gap:8px; margin-bottom:6px; flex-wrap:wrap; align-items:center;">
+        <input class="demo-input" placeholder="セレクタ（例：.text）" type="text"
+               value=".text" id="cr-sel-2" style="max-width:160px;">
+        <input class="demo-input" placeholder="color の値" type="text"
+               value="blue" id="cr-val-2" style="max-width:120px;">
+        <label style="font-size:0.82em; display:flex; align-items:center; gap:4px;">
+          <input type="checkbox" id="cr-imp-2"> !important
+        </label>
+      </div>
+      <div style="display:flex; gap:8px; margin-bottom:6px; flex-wrap:wrap; align-items:center;">
+        <input class="demo-input" placeholder="セレクタ（例：#main p）" type="text"
+               value="#main p" id="cr-sel-3" style="max-width:160px;">
+        <input class="demo-input" placeholder="color の値" type="text"
+               value="green" id="cr-val-3" style="max-width:120px;">
+        <label style="font-size:0.82em; display:flex; align-items:center; gap:4px;">
+          <input type="checkbox" id="cr-imp-3"> !important
+        </label>
+      </div>
+    </div>
+    <div style="font-size:0.82em; color:#718096; margin-bottom:6px;">
+      対象要素：<code>&lt;p class="text" id="main"&gt;</code>（#main 内の .text の p）
+    </div>
+    <button class="demo-btn" onclick="runCascadeDemo()">▶ カスケードを計算</button>
+    <div class="demo-output" id="cascade-output" style="margin-top:10px;">
+      ← セレクタと値を設定してカスケードを計算してみましょう
+    </div>
+  </div>
+</div>
+
+
+<!-- ============================================================ -->
+<!-- まとめ -->
+<!-- ============================================================ -->
+<h2>📌 まとめ</h2>
+<div class="demo-box">
+  <table class="ref-table">
+    <thead><tr><th>セレクタ</th><th>詳細度</th><th>例</th></tr></thead>
+    <tbody>
+      <tr><td>全称（*）</td><td>(0,0,0)</td><td><code>*</code></td></tr>
+      <tr><td>タイプ</td><td>(0,0,1)</td><td><code>p</code>, <code>div</code></td></tr>
+      <tr><td>疑似要素（::）</td><td>(0,0,1)</td><td><code>::before</code></td></tr>
+      <tr><td>クラス（.）</td><td>(0,1,0)</td><td><code>.btn</code></td></tr>
+      <tr><td>属性（[]）</td><td>(0,1,0)</td><td><code>[type="text"]</code></td></tr>
+      <tr><td>疑似クラス（:）</td><td>(0,1,0)</td><td><code>:hover</code></td></tr>
+      <tr><td>ID（#）</td><td>(1,0,0)</td><td><code>#header</code></td></tr>
+      <tr><td>インラインスタイル</td><td>(1,0,0,0)</td><td><code>style="..."</code></td></tr>
+      <tr><td>!important</td><td>最優先</td><td><code>color: red !important</code></td></tr>
+    </tbody>
+  </table>
+</div>
+
+
+<!-- ============================================================ -->
+<!-- 演習問題 -->
+<!-- ============================================================ -->
+<div class="quiz-section">
+  <h2>🖊️ 演習問題</h2>
+
+  <!-- Q1 -->
+  <div class="quiz-block">
+    <h3>Q1. 詳細度の計算</h3>
+    <p>以下のセレクタの詳細度を <code>(ID, クラス, タイプ)</code> の形式で答えてください。</p>
+    <label>① <code>#nav ul li a</code> の詳細度：</label>
+    <input type="text" id="q1a" placeholder="例：(1,0,3)">
+    <label>② <code>.menu:hover::before</code> の詳細度：</label>
+    <input type="text" id="q1b" placeholder="例：(0,2,1)">
+    <label>③ <code>div.container > p:first-child</code> の詳細度：</label>
+    <input type="text" id="q1c" placeholder="例：(0,2,2)">
+    <br>
+    <button class="btn btn-purple" onclick="checkQ1()">答え合わせ</button>
+    <div class="result-msg" id="q1-result"></div>
+    <script>
+      function checkQ1() {
+        const normalize = s => s.replace(/\s/g,'').replace(/[()]/g,'');
+        const a = normalize(document.getElementById('q1a').value);
+        const b = normalize(document.getElementById('q1b').value);
+        const c = normalize(document.getElementById('q1c').value);
+        const r = document.getElementById('q1-result');
+        // ① #nav ul li a → ID:1, class:0, type:3 → (1,0,3)
+        const ca = a === '1,0,3';
+        // ② .menu:hover::before → class:1+1=2, type:1 → (0,2,1)
+        const cb = b === '0,2,1';
+        // ③ div.container > p:first-child → class:1+1=2, type:2 → (0,2,2)
+        const cc = c === '0,2,2';
+        const count = [ca,cb,cc].filter(Boolean).length;
+        if (count === 3) {
+          r.className = 'result-msg correct';
+          r.textContent = '✅ 全問正解！完璧です！';
+        } else {
+          r.className = 'result-msg wrong';
+          r.innerHTML = `❌ ${count}/3 問正解。<br>` +
+            `① ${ca?'✅':'❌ (1,0,3)：#nav=ID×1, ul+li+a=タイプ×3'}　` +
+            `② ${cb?'✅':'❌ (0,2,1)：.menu+:hover=クラス×2, ::before=タイプ×1'}　` +
+            `③ ${cc?'✅':'❌ (0,2,2)：.container+:first-child=クラス×2, div+p=タイプ×2'}`;
+        }
+      }
+    </script>
+  </div>
+
+  <!-- Q2 -->
+  <div class="quiz-block">
+    <h3>Q2. 選択問題</h3>
+    <p>以下の CSS で <code>&lt;p id="main" class="text"&gt;</code> に適用される color は？</p>
+    <div class="pre-wrap" style="margin-bottom:12px;">
+<pre style="margin:0;">
+<span class="selector">p</span>         { <span class="prop">color</span>: <span class="val">red</span>; }
+<span class="selector">.text</span>     { <span class="prop">color</span>: <span class="val">blue</span>; }
+<span class="selector">#main</span>     { <span class="prop">color</span>: <span class="val">green</span>; }
+<span class="selector">p.text</span>    { <span class="prop">color</span>: <span class="val">yellow</span>; }
+</pre>
+    </div>
+    <select id="q2">
+      <option value="">-- 選択してください --</option>
+      <option value="red">red（p タグ）</option>
+      <option value="blue">blue（.text）</option>
+      <option value="green">green（#main）</option>
+      <option value="yellow">yellow（p.text）</option>
+    </select>
+    <br>
+    <button class="btn btn-purple" onclick="checkQ2()">答え合わせ</button>
+    <div class="result-msg" id="q2-result"></div>
+    <script>
+      function checkQ2() {
+        const v = document.getElementById('q2').value;
+        const r = document.getElementById('q2-result');
+        if (v === 'green') {
+          r.className = 'result-msg correct';
+          r.innerHTML = '✅ 正解！<br><br>' +
+            '<strong>詳細度の比較：</strong><br>' +
+            '<code>p</code>      → (0,0,1)<br>' +
+            '<code>.text</code>  → (0,1,0)<br>' +
+            '<code>#main</code>  → (1,0,0) ← 最高！<br>' +
+            '<code>p.text</code> → (0,1,1)<br><br>' +
+            '<code>#main</code> の詳細度 (1,0,0) が最も高いため <strong>green</strong> が適用されます。';
+        } else if (v === '') {
+          r.className = 'result-msg info';
+          r.textContent = '⚠️ 選択肢を選んでください。';
+        } else {
+          r.className = 'result-msg wrong';
+          r.innerHTML = '❌ 不正解。<br>' +
+            '<code>#main</code> は ID セレクタで詳細度 (1,0,0) が最も高いため <strong>green</strong> です。';
+        }
+      }
+    </script>
+  </div>
+
+  <!-- Q3 -->
+  <div class="quiz-block">
+    <h3>Q3. 正誤チェックボックス問題</h3>
+    <p><strong>正しい記述</strong>をすべて選んでください。</p>
+    <label class="checkbox-label"><input type="checkbox" id="q3a">
+      ① <code>::before</code> と <code>::after</code> は <code>content</code> プロパティが必須</label>
+    <label class="checkbox-label"><input type="checkbox" id="q3b">
+      ② クラスセレクタを11個重ねると ID セレクタより詳細度が高くなる</label>
+    <label class="checkbox-label"><input type="checkbox" id="q3c">
+      ③ <code>:nth-child(odd)</code> は <code>:nth-child(2n+1)</code> と同じ</label>
+    <label class="checkbox-label"><input type="checkbox" id="q3d">
+      ④ <code>div &gt; p</code> は div の子孫すべての p に適用される</label>
+    <label class="checkbox-label"><input type="checkbox" id="q3e">
+      ⑤ <code>!important</code> は詳細度の計算を超えて最優先される</label>
+    <label class="checkbox-label"><input type="checkbox" id="q3f">
+      ⑥ 属性セレクタ <code>[href^="https"]</code> は href が "https" で始まる要素を選択する</label>
+    <br>
+    <button class="btn btn-purple" onclick="checkQ3()">答え合わせ</button>
+    <div class="result-msg" id="q3-result"></div>
+    <script>
+      function checkQ3() {
+        const r = document.getElementById('q3-result');
+        const checks = {
+          a: document.getElementById('q3a').checked,
+          b: document.getElementById('q3b').checked,
+          c: document.getElementById('q3c').checked,
+          d: document.getElementById('q3d').checked,
+          e: document.getElementById('q3e').checked,
+          f: document.getElementById('q3f').checked,
+        };
+        // 正解：①③⑤⑥（a,c,e,f）
+        // ② クラスを何個重ねても ID には勝てない（詳細度は繰り上がらない）
+        // ④ div > p は直接の子のみ（子孫すべてなら div p）
+        const correct = { a:true, b:false, c:true, d:false, e:true, f:true };
+        const allOk = Object.keys(correct).every(k => checks[k] === correct[k]);
+        if (allOk) {
+          r.className = 'result-msg correct';
+          r.innerHTML = '✅ 全問正解！完璧です！';
+        } else {
+          r.className = 'result-msg wrong';
+          r.innerHTML =
+            '❌ 不正解の項目があります。<br><br>' +
+            '<strong>正しい記述：</strong>①③⑤⑥<br><br>' +
+            '<strong>誤った記述：</strong><br>' +
+            '・② クラスセレクタをいくら重ねても<strong>ID セレクタには勝てません</strong>（詳細度は繰り上がらない）。<br>' +
+            '・④ <code>div &gt; p</code> は div の<strong>直接の子の p のみ</strong>です。子孫すべてには <code>div p</code>（スペース）を使います。';
+        }
+      }
+    </script>
+  </div>
+
+  <!-- Q4 -->
+  <div class="quiz-block">
+    <h3>Q4. 詳細度カリキュレーター実践</h3>
+    <p>詳細度カリキュレーターを使って以下のセレクタの詳細度スコアを確認してください。</p>
+    <p><code>body #app .container nav ul li a:hover</code></p>
+    <label>このセレクタの詳細度（ID, クラス, タイプ）：</label>
+    <input type="text" id="q4-ans" placeholder="例：(1,2,4)">
+    <br>
+    <button class="btn btn-purple" onclick="checkQ4()">答え合わせ</button>
+    <div class="result-msg" id="q4-result"></div>
+    <script>
+      function checkQ4() {
+        const v = document.getElementById('q4-ans').value.trim()
+                    .replace(/\s/g,'').replace(/[()]/g,'');
+        const r = document.getElementById('q4-result');
+        // body #app .container nav ul li a:hover
+        // ID: #app = 1
+        // クラス: .container + :hover = 2
+        // タイプ: body + nav + ul + li + a = 5
+        // → (1, 2, 5)
+        if (v === '1,2,5') {
+          r.className = 'result-msg correct';
+          r.innerHTML = '✅ 正解！<br><br>' +
+            '<strong>内訳：</strong><br>' +
+            'ID：<code>#app</code> = 1<br>' +
+            'クラス：<code>.container</code> + <code>:hover</code> = 2<br>' +
+            'タイプ：<code>body</code> + <code>nav</code> + <code>ul</code> + <code>li</code> + <code>a</code> = 5<br><br>' +
+            '詳細度：<strong>(1, 2, 5)</strong>';
+        } else if (v === '') {
+          r.className = 'result-msg info';
+          r.textContent = '⚠️ 上の詳細度カリキュレーターでセレクタを計算してから入力してください。';
+        } else {
+          r.className = 'result-msg wrong';
+          r.innerHTML = '❌ 不正解。<br>' +
+            'ID：#app=1, クラス：.container+:hover=2, タイプ：body+nav+ul+li+a=5<br>' +
+            '答え：<strong>(1,2,5)</strong>';
+        }
+      }
+    </script>
+  </div>
+
+</div><!-- /quiz-section -->
+
+
+<!-- 完了ボタン -->
+<div class="complete-section">
+  <p>🎉 「2-1 セレクタと詳細度」の学習が完了したら記録しましょう！</p>
+  <button class="btn btn-done" onclick="markComplete()">✅ このセクションを完了にする</button>
+  <div id="complete-msg" style="margin-top:10px; font-size:0.88em; color:#276749; display:none;">
+    進捗を保存しました！Chapter 2 の進捗バーに反映されます。
+  </div>
+</div>
+
+<!-- ページナビ -->
+<div class="page-nav">
+  <a class="prev" href="index.html">← Chapter 2 目次</a>
+  <a class="home" href="../index.html">🏠 目次へ</a>
+  <a class="next" href="02_boxmodel.html">次へ：2-2 ボックスモデル →</a>
+</div>
+
+<!-- フッター -->
+<footer>
+  <p>
+    HTML5プロフェッショナル Level 2 学習サイト ／
+    <a href="../index.html">🏠 目次</a> ／
+    <a href="../exam/index.html">📝 模擬試験</a>
+  </p>
+  <p style="margin-top:4px;">© MeshinoKiwamiOkome</p>
+</footer>
+
+
+<!-- ============================================================ -->
+<!-- JavaScript -->
+<!-- ============================================================ -->
+<script>
+  /* ===== コピーボタン ===== */
+  function copyPre(btn) {
+    const pre = btn.nextElementSibling;
+    navigator.clipboard.writeText(pre.innerText || pre.textContent).then(() => {
+      btn.textContent = 'copied!';
+      setTimeout(() => btn.textContent = 'copy', 1800);
+    });
+  }
+
+  /* ===== タブ ===== */
+  function switchTab(btn, id) {
+    btn.closest('.tab-wrap').querySelectorAll('.tab-btn')
+       .forEach(b => b.classList.remove('active'));
+    btn.closest('.tab-wrap').querySelectorAll('.tab-content')
+       .forEach(c => c.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById(id).classList.add('active');
+  }
+
+  /* ===== 詳細度計算エンジン ===== */
+  function parseSpecificity(selector) {
+    // !important を除去
+    let s = selector.replace(/!important/gi, '').trim();
+    let ids = 0, classes = 0, types = 0;
+
+    // インラインスタイルは別扱い
+    if (s === 'inline') return { ids: 1, classes: 0, types: 0, inline: true };
+
+    // 疑似要素（::）→ タイプ +1（先に処理）
+    const pseudoElemMatches = s.match(/::[a-zA-Z-]+/g) || [];
+    types += pseudoElemMatches.length;
+    s = s.replace(/::[a-zA-Z-]+/g, '');
+
+    // :not() の中身を取り出して処理
+    const notMatches = s.match(/:not\(([^)]+)\)/g) || [];
+    notMatches.forEach(m => {
+      const inner = m.replace(/:not\(/, '').replace(/\)$/, '');
+      const innerSpec = parseSpecificity(inner);
+      ids     += innerSpec.ids;
+      classes += innerSpec.classes;
+      types   += innerSpec.types;
+    });
+    s = s.replace(/:not\([^)]+\)/g, '');
+
+    // ID セレクタ
+    const idMatches = s.match(/#[a-zA-Z_-][a-zA-Z0-9_-]*/g) || [];
+    ids += idMatches.length;
+    s = s.replace(/#[a-zA-Z_-][a-zA-Z0-9_-]*/g, '');
+
+    // 属性セレクタ → クラス +1
+    const attrMatches = s.match(/\[[^\]]+\]/g) || [];
+    classes += attrMatches.length;
+    s = s.replace(/\[[^\]]+\]/g, '');
+
+    // 疑似クラス（: 1つ）→ クラス +1
+    const pseudoClassMatches = s.match(/:[a-zA-Z-]+(\([^)]*\))?/g) || [];
+    classes += pseudoClassMatches.length;
+    s = s.replace(/:[a-zA-Z-]+(\([^)]*\))?/g, '');
+
+    // クラスセレクタ
+    const classMatches = s.match(/\.[a-zA-Z_-][a-zA-Z0-9_-]*/g) || [];
+    classes += classMatches.length;
+    s = s.replace(/\.[a-zA-Z_-][a-zA-Z0-9_-]*/g, '');
+
+    // タイプセレクタ（残った英字）
+    const typeMatches = s.match(/[a-zA-Z][a-zA-Z0-9-]*/g) || [];
+    // * は 0
+    typeMatches.forEach(t => { if (t !== '*') types++; });
+
+    return { ids, classes, types };
+  }
+
+  function specToString(spec) {
+    return `(${spec.ids},${spec.classes},${spec.types})`;
+  }
+
+  function compareSpec(a, b) {
+    if (a.ids     !== b.ids)     return a.ids     > b.ids     ? 1 : -1;
+    if (a.classes !== b.classes) return a.classes > b.classes ? 1 : -1;
+    if (a.types   !== b.types)   return a.types   > b.types   ? 1 : -1;
+    return 0;
+  }
+
+  /* ===== 詳細度カリキュレーター ===== */
+  function calcSpecificity() {
+    const input = document.getElementById('spec-input').value.trim();
+    if (!input) return;
+
+    const spec = parseSpecificity(input);
+    const area = document.getElementById('spec-result-area');
+    const res  = document.getElementById('spec-result');
+    const score = document.getElementById('spec-score');
+
+    area.style.display = 'block';
+    res.innerHTML = `
+      <div class="spec-box" style="background:#2b4c7e;">
+        <div class="sb-label" style="color:#90cdf4;">ID</div>
+        <div class="sb-val" style="color:#90cdf4;">${spec.ids}</div>
+      </div>
+      <div class="spec-box" style="background:#553c9a;">
+        <div class="sb-label" style="color:#d6bcfa;">CLASS</div>
+        <div class="sb-val" style="color:#d6bcfa;">${spec.classes}</div>
+      </div>
+      <div class="spec-box" style="background:#276749;">
+        <div class="sb-label" style="color:#9ae6b4;">TYPE</div>
+        <div class="sb-val" style="color:#9ae6b4;">${spec.types}</div>
+      </div>
+      <div style="color:#e2e8f0; font-size:1.4em; font-weight:bold; padding:10px 16px;
+           background:#2d3748; border-radius:8px;">
+        ${specToString(spec)}
+      </div>
+    `;
+
+    const parts = [];
+    if (input.includes('#')) {
+      const ids = input.match(/#[a-zA-Z_-][a-zA-Z0-9_-]*/g) || [];
+      parts.push(`ID セレクタ（${ids.join(', ')}）× ${spec.ids} = ${spec.ids},0,0`);
+    }
+    if (spec.classes > 0) {
+      parts.push(`クラス/属性/疑似クラス × ${spec.classes} = 0,${spec.classes},0`);
+    }
+    if (spec.types > 0) {
+      parts.push(`タイプ/疑似要素 × ${spec.types} = 0,0,${spec.types}`);
+    }
+    score.textContent = parts.length
+      ? `内訳：\n${parts.map(p => '  ' + p).join('\n')}`
+      : '詳細度：(0,0,0)（全称セレクタ * など）';
+  }
+
+  document.getElementById('spec-input').addEventListener('keydown', e => {
+    if (e.key === 'Enter') calcSpecificity();
+  });
+
+  /* ===== 詳細度バトル ===== */
+  const battleProblems = [
+    { a: '#header .nav a',         b: 'nav ul li a:hover' },
+    { a: '.btn.primary',           b: 'button[type="submit"]' },
+    { a: '#main > .content p',     b: '.wrapper .inner .text' },
+    { a: 'div div div div div p',  b: '.class' },
+    { a: 'a:hover::before',        b: '.link:focus' },
+    { a: '#app .list li:nth-child(2)', b: '#app .list li.active' },
+  ];
+  let battleIdx = 0;
+
+  function loadBattle() {
+    const p = battleProblems[battleIdx % battleProblems.length];
+    document.getElementById('battle-a-sel').textContent = p.a;
+    document.getElementById('battle-b-sel').textContent = p.b;
+    document.getElementById('battle-a-spec').textContent = '';
+    document.getElementById('battle-b-spec').textContent = '';
+    document.getElementById('battle-a').className = 'battle-card';
+    document.getElementById('battle-b').className = 'battle-card';
+    document.getElementById('battle-output').textContent = '← 「勝負！」ボタンを押して詳細度を比較しましょう';
+    document.getElementById('battle-output').style.color = '#b794f4';
+  }
+
+  function runBattle() {
+    const p    = battleProblems[battleIdx % battleProblems.length];
+    const specA = parseSpecificity(p.a);
+    const specB = parseSpecificity(p.b);
+    const cmp   = compareSpec(specA, specB);
+    const out   = document.getElementById('battle-output');
+
+    document.getElementById('battle-a-spec').textContent = specToString(specA);
+    document.getElementById('battle-b-spec').textContent = specToString(specB);
+
+    if (cmp > 0) {
+      document.getElementById('battle-a').className = 'battle-card winner';
+      document.getElementById('battle-b').className = 'battle-card loser';
+      out.style.color = '#68d391';
+      out.textContent = `✅ A が勝ち！\n${p.a} → ${specToString(specA)}\n${p.b} → ${specToString(specB)}`;
+    } else if (cmp < 0) {
+      document.getElementById('battle-a').className = 'battle-card loser';
+      document.getElementById('battle-b').className = 'battle-card winner';
+      out.style.color = '#90cdf4';
+      out.textContent = `✅ B が勝ち！\n${p.a} → ${specToString(specA)}\n${p.b} → ${specToString(specB)}`;
+    } else {
+      document.getElementById('battle-a').className = 'battle-card';
+      document.getElementById('battle-b').className = 'battle-card';
+      out.style.color = '#f6ad55';
+      out.textContent = `⚖️ 引き分け！詳細度が同じ → 後から書いたほうが優先\n両方 ${specToString(specA)}`;
+    }
+  }
+
+  function nextBattle() {
+    battleIdx++;
+    loadBattle();
+  }
+
+  loadBattle();
+
+  /* ===== セレクタテスト ===== */
+  function runSelectorTest() {
+    const sel = document.getElementById('sel-input').value.trim();
+    const out = document.getElementById('selector-test-output');
+    if (!sel) return;
+
+    // 前回のハイライトをリセット
+    clearSelectorTest();
+
+    try {
+      const area = document.getElementById('selector-demo-html');
+      const matched = area.querySelectorAll(sel);
+      matched.forEach(el => el.classList.add('highlight-sel'));
+
+      const spec = parseSpecificity(sel);
+      out.style.color = matched.length > 0 ? '#68d391' : '#f6ad55';
+      out.textContent =
+        `セレクタ: "${sel}"\n` +
+        `詳細度: ${specToString(spec)}\n` +
+        `マッチした要素: ${matched.length} 件\n` +
+        (matched.length > 0
+          ? [...matched].map(el =>
+              `  <${el.tagName.toLowerCase()}${el.id ? ' id="'+el.id+'"' : ''}${el.className ? ' class="'+el.className.replace('highlight-sel','').trim()+'"' : ''}>`
+            ).join('\n')
+          : '  （マッチする要素がありません）');
+    } catch(e) {
+      out.style.color = '#fc8181';
+      out.textContent = `エラー: ${e.message}`;
+    }
+  }
+
+  function clearSelectorTest() {
+    document.querySelectorAll('.highlight-sel').forEach(el => el.classList.remove('highlight-sel'));
+    document.getElementById('selector-test-output').textContent = '← セレクタを入力してマッチする要素を確認しましょう';
+    document.getElementById('selector-test-output').style.color = '#b794f4';
+  }
+
+  document.getElementById('sel-input').addEventListener('keydown', e => {
+    if (e.key === 'Enter') runSelectorTest();
+  });
+
+  /* ===== 疑似要素デモ ===== */
+  function applyPseudo() {
+    const before  = document.getElementById('before-content').value;
+    const after   = document.getElementById('after-content').value;
+    const styleEl = document.getElementById('pseudo-demo-style');
+    const out     = document.getElementById('pseudo-output');
+
+    styleEl.textContent = `
+      #pseudo-demo-target::before {
+        content: "${before.replace(/"/g,'\\"')}";
+        color: #9f7aea; font-weight: bold;
+      }
+      #pseudo-demo-target::after {
+        content: "${after.replace(/"/g,'\\"')}";
+        color: #68d391; font-weight: bold;
+      }
+    `;
+    out.style.color = '#b794f4';
+    out.textContent =
+      `#pseudo-demo-target::before { content: "${before}"; }\n` +
+      `#pseudo-demo-target::after  { content: "${after}"; }`;
+  }
+
+  /* ===== nth-child デモ ===== */
+  function buildNthList() {
+    const container = document.getElementById('nth-demo-list');
+    container.innerHTML = '';
+    for (let i = 1; i <= 12; i++) {
+      const li = document.createElement('div');
+      li.id = `nth-item-${i}`;
+      li.textContent = i;
+      li.style.cssText = `
+        width:40px; height:40px; border-radius:6px;
+        background:#2d3748; color:#e2e8f0;
+        display:flex; align-items:center; justify-content:center;
+        font-family:'Consolas','Monaco',monospace; font-weight:bold;
+        font-size:0.9em; transition:all 0.3s; border:2px solid #4a5568;
+      `;
+      container.appendChild(li);
+    }
+  }
+
+  function applyNth() {
+    const formula = document.getElementById('nth-formula').value.trim() || 'odd';
+    const out     = document.getElementById('nth-output');
+    buildNthList();
+
+    const matched = [];
+    for (let i = 1; i <= 12; i++) {
+      if (matchesNth(i, formula)) {
+        const el = document.getElementById(`nth-item-${i}`);
+        if (el) {
+          el.style.background = '#553c9a';
+          el.style.color = '#e9d8fd';
+          el.style.borderColor = '#9f7aea';
+          matched.push(i);
+        }
+      }
+    }
+
+    out.style.color = '#b794f4';
+    out.textContent =
+      `:nth-child(${formula})\nマッチした番号: ${matched.join(', ') || 'なし'}`;
+  }
+
+  function matchesNth(n, formula) {
+    const f = formula.trim().toLowerCase();
+    if (f === 'odd')  return n % 2 === 1;
+    if (f === 'even') return n % 2 === 0;
+    if (/^\d+$/.test(f)) return n === parseInt(f);
+
+    // An+B 形式
+    const match = f.match(/^(-?\d*)n([+-]\d+)?$/);
+    if (match) {
+      const a = match[1] === '' ? 1 : match[1] === '-' ? -1 : parseInt(match[1]);
+      const b = match[2] ? parseInt(match[2]) : 0;
+      if (a === 0) return n === b;
+      for (let k = 0; ; k++) {
+        const val = a * k + b;
+        if (val === n) return true;
+        if (a > 0 && val > 12) break;
+        if (a < 0 && val < 1) break;
+        if (k > 20) break;
+      }
+      return false;
+    }
+    return false;
+  }
+
+  buildNthList();
+
+  /* ===== カスケードシミュレーター ===== */
+  function runCascadeDemo() {
+    const rules = [];
+    for (let i = 1; i <= 3; i++) {
+      const sel = document.getElementById(`cr-sel-${i}`).value.trim();
+      const val = document.getElementById(`cr-val-${i}`).value.trim();
+      const imp = document.getElementById(`cr-imp-${i}`).checked;
+      if (sel && val) rules.push({ sel, val, imp, order: i });
+    }
+
+    const out = document.getElementById('cascade-output');
+    if (rules.length === 0) {
+      out.textContent = 'ルールを入力してください';
+      return;
+    }
+
+    // 対象要素は <p class="text" id="main"> で #main 内の .text の p に一致
+    const targetMatchers = {
+      'p': true, '.text': true, '#main': true,
+      'p.text': true, '#main p': true, '.text p': false,
+      '#main .text': false, // #main が id なので .text は子ではない（同一要素）
+    };
+
+    const applicable = rules.filter(r => {
+      // 簡易マッチング（デモ用）
+      const sel = r.sel.trim();
+      if (sel === 'p' || sel === '.text' || sel === '#main' || sel === 'p.text') return true;
+      if (sel === '#main p' || sel === '#main .text p') return true;
+      if (sel === '.text' || sel === 'p.text') return true;
+      return true; // デモなので全ルールを適用対象とする
+    });
+
+    // 詳細度でソート
+    const sorted = [...applicable].sort((a, b) => {
+      if (a.imp !== b.imp) return a.imp ? 1 : -1;
+      const specA = parseSpecificity(a.sel);
+      const specB = parseSpecificity(b.sel);
+      const cmp = compareSpec(specA, specB);
+      if (cmp !== 0) return cmp;
+      return a.order - b.order;
+    });
+
+    const winner = sorted[sorted.length - 1];
+    let text = `// 対象要素: <p class="text" id="main">\n\n`;
+    text += `// 各ルールの詳細度:\n`;
+    applicable.forEach(r => {
+      const spec = parseSpecificity(r.sel);
+      text += `  ${r.sel} { color: ${r.val}${r.imp ? ' !important' : ''}; }  → ${specToString(spec)}${r.imp ? ' + !important' : ''}\n`;
+    });
+    text += `\n// 適用されるスタイル:\n`;
+    text += `  color: ${winner.val}${winner.imp ? ' !important' : ''};\n`;
+    text += `  （${winner.sel} が勝ち）`;
+
+    out.style.color = '#68d391';
+    out.textContent = text;
+  }
+
+  /* ===== 完了ボタン ===== */
+  function markComplete() {
+    localStorage.setItem('html5lv2_ch2_01', 'done');
+    document.getElementById('complete-msg').style.display = 'block';
+  }
+  if (localStorage.getItem('html5lv2_ch2_01') === 'done') {
+    document.getElementById('complete-msg').style.display = 'block';
+  }
+</script>
+
+</body>
+</html>

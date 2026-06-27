@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Chapter 2：CSSとスタイリング | HTML5プロフェッショナル Level 2</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; }
+    body {
+      font-family: 'Segoe UI', 'Helvetica Neue', sans-serif;
+      max-width: 960px; margin: 40px auto; padding: 0 24px;
+      background: #f0f4f8; color: #2d3748; line-height: 1.8;
+    }
+    .breadcrumb {
+      font-size: 0.82em; color: #a0aec0; margin-bottom: 20px;
+      font-family: 'Consolas','Monaco',monospace;
+    }
+    .breadcrumb a { color: #2c7a7b; text-decoration: none; }
+    .breadcrumb a:hover { text-decoration: underline; }
+
+    /* ===== Chapter ヘッダー ===== */
+    .chapter-header {
+      background: linear-gradient(135deg, #553c9a, #2c7a7b);
+      border-radius: 14px; padding: 36px 36px 28px;
+      margin-bottom: 36px; color: #fff;
+      box-shadow: 0 6px 24px rgba(85,60,154,0.35);
+    }
+    .chapter-header .ch-label {
+      font-size: 0.78em; font-family: 'Consolas','Monaco',monospace;
+      opacity: 0.8; letter-spacing: 0.1em; margin-bottom: 8px;
+    }
+    .chapter-header h1 {
+      margin: 0 0 12px; font-size: 2em; color: #fff; border: none; padding: 0;
+    }
+    .chapter-header p { margin: 0; font-size: 0.95em; opacity: 0.9; line-height: 1.7; }
+    .badge-row { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 16px; }
+    .badge {
+      background: rgba(255,255,255,0.18);
+      border: 1px solid rgba(255,255,255,0.35);
+      border-radius: 20px; padding: 4px 14px;
+      font-size: 0.78em; font-weight: bold;
+    }
+
+    /* ===== 進捗バー ===== */
+    .progress-card {
+      background: #fff; border-radius: 10px;
+      padding: 18px 24px; margin-bottom: 28px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+      border: 1px solid #e2e8f0;
+    }
+    .progress-card h3 {
+      margin: 0 0 10px; font-size: 0.92em; color: #4a5568;
+    }
+    .progress-bar-wrap {
+      background: #edf2f7; border-radius: 20px;
+      height: 12px; overflow: hidden; margin-bottom: 6px;
+    }
+    .progress-bar-fill {
+      height: 100%; border-radius: 20px;
+      background: linear-gradient(90deg, #553c9a, #2c7a7b);
+      transition: width 0.6s ease;
+    }
+    .progress-text {
+      font-size: 0.82em; color: #718096; text-align: right;
+    }
+
+    /* ===== セクションカード ===== */
+    .section-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 16px; margin-bottom: 40px;
+    }
+    .section-card {
+      background: #fff; border-radius: 12px;
+      padding: 22px 24px; text-decoration: none;
+      color: #2d3748; border: 2px solid #e2e8f0;
+      transition: transform 0.18s, box-shadow 0.18s, border-color 0.18s;
+      display: flex; flex-direction: column; gap: 8px;
+      position: relative; overflow: hidden;
+    }
+    .section-card::before {
+      content: ''; position: absolute;
+      top: 0; left: 0; right: 0; height: 4px;
+      background: linear-gradient(90deg, #553c9a, #2c7a7b);
+      opacity: 0; transition: opacity 0.18s;
+    }
+    .section-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 8px 24px rgba(85,60,154,0.15);
+      border-color: #9f7aea;
+    }
+    .section-card:hover::before { opacity: 1; }
+    .section-card.done {
+      border-color: #68d391;
+      background: linear-gradient(135deg, #f0fff4, #fff);
+    }
+    .section-card.done::before { opacity: 1; background: #48bb78; }
+    .sc-num {
+      font-size: 0.75em; font-family: 'Consolas','Monaco',monospace;
+      color: #a0aec0; font-weight: bold; letter-spacing: 0.06em;
+    }
+    .sc-title {
+      font-size: 1.05em; font-weight: bold; color: #1a365d;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .sc-desc {
+      font-size: 0.82em; color: #718096; line-height: 1.5;
+    }
+    .sc-tags {
+      display: flex; flex-wrap: wrap; gap: 5px; margin-top: 4px;
+    }
+    .sc-tag {
+      background: #edf2f7; color: #553c9a;
+      border-radius: 10px; padding: 2px 10px;
+      font-size: 0.72em; font-weight: bold;
+    }
+    .sc-status {
+      position: absolute; top: 14px; right: 14px;
+      font-size: 1.1em;
+    }
+
+    /* ===== Chapter ナビ ===== */
+    .chapter-nav {
+      display: flex; gap: 12px; flex-wrap: wrap;
+      margin-bottom: 32px;
+    }
+    .chapter-nav-card {
+      flex: 1; min-width: 200px;
+      background: #fff; border-radius: 10px;
+      padding: 16px 20px; text-decoration: none;
+      color: #2d3748; border: 2px solid #e2e8f0;
+      transition: all 0.18s; display: flex;
+      align-items: center; gap: 12px;
+    }
+    .chapter-nav-card:hover {
+      border-color: #9f7aea;
+      box-shadow: 0 4px 12px rgba(85,60,154,0.12);
+    }
+    .chapter-nav-card.current {
+      border-color: #9f7aea; background: #faf5ff;
+    }
+    .cnc-icon { font-size: 1.6em; flex-shrink: 0; }
+    .cnc-label { font-size: 0.72em; color: #a0aec0; font-weight: bold; }
+    .cnc-name  { font-size: 0.92em; font-weight: bold; color: #1a365d; }
+
+    /* ===== 学習のポイント ===== */
+    .tips-box {
+      background: #faf5ff; border: 2px solid #d6bcfa;
+      border-radius: 10px; padding: 20px 24px; margin-bottom: 32px;
+    }
+    .tips-box h3 {
+      margin: 0 0 12px; color: #553c9a; font-size: 0.95em;
+    }
+    .tips-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 10px;
+    }
+    .tip-item {
+      display: flex; align-items: flex-start; gap: 8px;
+      font-size: 0.85em; color: #4a5568;
+    }
+    .tip-icon { flex-shrink: 0; font-size: 1em; }
+
+    footer {
+      margin-top: 48px; padding-top: 16px;
+      border-top: 2px solid #e2e8f0;
+      font-size: 0.82em; color: #a0aec0; text-align: center;
+    }
+    footer a { color: #2c7a7b; text-decoration: none; }
+    footer a:hover { text-decoration: underline; }
+
+    @media (max-width: 600px) {
+      body { font-size: 0.84em; }
+      .chapter-header { padding: 22px 18px; }
+      .chapter-header h1 { font-size: 1.4em; }
+      .section-grid { grid-template-columns: 1fr; }
+      .chapter-nav { flex-direction: column; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- パンくず -->
+<div class="breadcrumb">
+  <a href="../index.html">🏠 HTML5 Level 2</a> › Chapter 2：CSSとスタイリング
+</div>
+
+<!-- Chapter ヘッダー -->
+<div class="chapter-header">
+  <div class="ch-label">CHAPTER 02</div>
+  <h1>🎨 CSSとスタイリング</h1>
+  <p>
+    セレクタの詳細度・ボックスモデル・Flexbox・Grid・
+    アニメーション・レスポンシブデザインまで、
+    HTML5 Level 2 試験に必要な CSS の知識を体系的に学びます。
+  </p>
+  <div class="badge-row">
+    <span class="badge">セレクタ・詳細度</span>
+    <span class="badge">ボックスモデル</span>
+    <span class="badge">Flexbox</span>
+    <span class="badge">Grid</span>
+    <span class="badge">アニメーション</span>
+    <span class="badge">レスポンシブ</span>
+    <span class="badge">CSS変数</span>
+    <span class="badge">メディアクエリ</span>
+  </div>
+</div>
+
+<!-- 進捗バー -->
+<div class="progress-card">
+  <h3>📊 Chapter 2 の進捗</h3>
+  <div class="progress-bar-wrap">
+    <div class="progress-bar-fill" id="ch2-progress-bar" style="width:0%"></div>
+  </div>
+  <div class="progress-text" id="ch2-progress-text">0 / 10 セクション完了</div>
+</div>
+
+<!-- Chapter ナビ -->
+<div class="chapter-nav">
+  <a class="chapter-nav-card" href="../ch01/index.html">
+    <span class="cnc-icon">📖</span>
+    <div>
+      <div class="cnc-label">PREV</div>
+      <div class="cnc-name">Chapter 1：速習JavaScript入門</div>
+    </div>
+  </a>
+  <a class="chapter-nav-card current" href="#">
+    <span class="cnc-icon">🎨</span>
+    <div>
+      <div class="cnc-label">CURRENT</div>
+      <div class="cnc-name">Chapter 2：CSSとスタイリング</div>
+    </div>
+  </a>
+  <a class="chapter-nav-card" href="../ch03/index.html">
+    <span class="cnc-icon">📐</span>
+    <div>
+      <div class="cnc-label">NEXT</div>
+      <div class="cnc-name">Chapter 3：HTML要素と構造</div>
+    </div>
+  </a>
+</div>
+
+<!-- 学習のポイント -->
+<div class="tips-box">
+  <h3>💡 Chapter 2 の学習ポイント</h3>
+  <div class="tips-grid">
+    <div class="tip-item">
+      <span class="tip-icon">🎯</span>
+      <span>詳細度（Specificity）の計算方法を完全理解</span>
+    </div>
+    <div class="tip-item">
+      <span class="tip-icon">📦</span>
+      <span>ボックスモデルと box-sizing の違いを把握</span>
+    </div>
+    <div class="tip-item">
+      <span class="tip-icon">↔️</span>
+      <span>Flexbox の主軸・交差軸を図で理解</span>
+    </div>
+    <div class="tip-item">
+      <span class="tip-icon">⊞</span>
+      <span>Grid の行・列・エリア配置をマスター</span>
+    </div>
+    <div class="tip-item">
+      <span class="tip-icon">📱</span>
+      <span>メディアクエリとブレークポイントの設計</span>
+    </div>
+    <div class="tip-item">
+      <span class="tip-icon">✨</span>
+      <span>transition と animation の使い分け</span>
+    </div>
+    <div class="tip-item">
+      <span class="tip-icon">🔧</span>
+      <span>CSS 変数（カスタムプロパティ）の活用</span>
+    </div>
+    <div class="tip-item">
+      <span class="tip-icon">🏎️</span>
+      <span>パフォーマンスを意識したスタイリング</span>
+    </div>
+  </div>
+</div>
+
+<!-- セクション一覧 -->
+<div class="section-grid" id="section-grid">
+
+  <a class="section-card" href="01_selectors.html" id="card-01">
+    <span class="sc-status" id="status-01">📖</span>
+    <div class="sc-num">2-1</div>
+    <div class="sc-title">🎯 セレクタと詳細度</div>
+    <div class="sc-desc">
+      基本セレクタ・疑似クラス・疑似要素・詳細度の計算・
+      カスケードの仕組みを完全解説
+    </div>
+    <div class="sc-tags">
+      <span class="sc-tag">セレクタ</span>
+      <span class="sc-tag">詳細度</span>
+      <span class="sc-tag">:hover</span>
+      <span class="sc-tag">::before</span>
+    </div>
+  </a>
+
+  <a class="section-card" href="02_boxmodel.html" id="card-02">
+    <span class="sc-status" id="status-02">📖</span>
+    <div class="sc-num">2-2</div>
+    <div class="sc-title">📦 ボックスモデル</div>
+    <div class="sc-desc">
+      margin・padding・border・box-sizing・
+      display プロパティとブロック/インラインの違い
+    </div>
+    <div class="sc-tags">
+      <span class="sc-tag">margin</span>
+      <span class="sc-tag">padding</span>
+      <span class="sc-tag">box-sizing</span>
+      <span class="sc-tag">display</span>
+    </div>
+  </a>
+
+  <a class="section-card" href="03_flexbox.html" id="card-03">
+    <span class="sc-status" id="status-03">📖</span>
+    <div class="sc-num">2-3</div>
+    <div class="sc-title">↔️ Flexbox</div>
+    <div class="sc-desc">
+      flex-direction・justify-content・align-items・
+      flex-wrap・order・flex-grow/shrink/basis
+    </div>
+    <div class="sc-tags">
+      <span class="sc-tag">flex</span>
+      <span class="sc-tag">justify-content</span>
+      <span class="sc-tag">align-items</span>
+      <span class="sc-tag">flex-wrap</span>
+    </div>
+  </a>
+
+  <a class="section-card" href="04_grid.html" id="card-04">
+    <span class="sc-status" id="status-04">📖</span>
+    <div class="sc-num">2-4</div>
+    <div class="sc-title">⊞ CSS Grid</div>
+    <div class="sc-desc">
+      grid-template・grid-area・fr 単位・
+      auto-fill/auto-fit・gap・名前付きエリア
+    </div>
+    <div class="sc-tags">
+      <span class="sc-tag">grid</span>
+      <span class="sc-tag">fr</span>
+      <span class="sc-tag">grid-area</span>
+      <span class="sc-tag">auto-fill</span>
+    </div>
+  </a>
+
+  <a class="section-card" href="05_positioning.html" id="card-05">
+    <span class="sc-status" id="status-05">📖</span>
+    <div class="sc-num">2-5</div>
+    <div class="sc-title">📌 配置とポジショニング</div>
+    <div class="sc-desc">
+      position（static/relative/absolute/fixed/sticky）・
+      z-index・float・clear
+    </div>
+    <div class="sc-tags">
+      <span class="sc-tag">position</span>
+      <span class="sc-tag">z-index</span>
+      <span class="sc-tag">float</span>
+      <span class="sc-tag">sticky</span>
+    </div>
+  </a>
+
+  <a class="section-card" href="06_responsive.html" id="card-06">
+    <span class="sc-status" id="status-06">📖</span>
+    <div class="sc-num">2-6</div>
+    <div class="sc-title">📱 レスポンシブデザイン</div>
+    <div class="sc-desc">
+      メディアクエリ・ブレークポイント・
+      viewport・相対単位（rem/em/vw/vh）・
+      モバイルファースト
+    </div>
+    <div class="sc-tags">
+      <span class="sc-tag">@media</span>
+      <span class="sc-tag">viewport</span>
+      <span class="sc-tag">rem</span>
+      <span class="sc-tag">vw/vh</span>
+    </div>
+  </a>
+
+  <a class="section-card" href="07_typography.html" id="card-07">
+    <span class="sc-status" id="status-07">📖</span>
+    <div class="sc-num">2-7</div>
+    <div class="sc-title">🔤 タイポグラフィと色</div>
+    <div class="sc-desc">
+      font-family・font-weight・line-height・
+      color・background・opacity・
+      Web フォント（@font-face）
+    </div>
+    <div class="sc-tags">
+      <span class="sc-tag">font</span>
+      <span class="sc-tag">color</span>
+      <span class="sc-tag">@font-face</span>
+      <span class="sc-tag">opacity</span>
+    </div>
+  </a>
+
+  <a class="section-card" href="08_animation.html" id="card-08">
+    <span class="sc-status" id="status-08">📖</span>
+    <div class="sc-num">2-8</div>
+    <div class="sc-title">✨ トランジションとアニメーション</div>
+    <div class="sc-desc">
+      transition・@keyframes・animation・
+      transform（translate/scale/rotate）・
+      will-change
+    </div>
+    <div class="sc-tags">
+      <span class="sc-tag">transition</span>
+      <span class="sc-tag">@keyframes</span>
+      <span class="sc-tag">transform</span>
+      <span class="sc-tag">animation</span>
+    </div>
+  </a>
+
+  <a class="section-card" href="09_variables.html" id="card-09">
+    <span class="sc-status" id="status-09">📖</span>
+    <div class="sc-num">2-9</div>
+    <div class="sc-title">🔧 CSS 変数と関数</div>
+    <div class="sc-desc">
+      カスタムプロパティ（--変数名）・var()・
+      calc()・clamp()・min()/max()・
+      CSS の継承とスコープ
+    </div>
+    <div class="sc-tags">
+      <span class="sc-tag">--var</span>
+      <span class="sc-tag">calc()</span>
+      <span class="sc-tag">clamp()</span>
+      <span class="sc-tag">var()</span>
+    </div>
+  </a>
+
+  <a class="section-card" href="10_advanced.html" id="card-10">
+    <span class="sc-status" id="status-10">📖</span>
+    <div class="sc-num">2-10</div>
+    <div class="sc-title">🚀 CSS 応用・試験対策</div>
+    <div class="sc-desc">
+      BEM 命名規則・CSS アーキテクチャ・
+      パフォーマンス最適化・
+      よく出る試験問題パターン総まとめ
+    </div>
+    <div class="sc-tags">
+      <span class="sc-tag">BEM</span>
+      <span class="sc-tag">パフォーマンス</span>
+      <span class="sc-tag">試験対策</span>
+      <span class="sc-tag">総まとめ</span>
+    </div>
+  </a>
+
+</div><!-- /section-grid -->
+
+<!-- フッター -->
+<footer>
+  <p>
+    HTML5プロフェッショナル Level 2 学習サイト ／
+    <a href="../index.html">🏠 目次</a> ／
+    <a href="../exam/index.html">📝 模擬試験</a> ／
+    <a href="https://github.com/MeshinoKiwamiOkome/html5lv2" target="_blank">GitHub</a>
+  </p>
+  <p style="margin-top:4px;">© MeshinoKiwamiOkome</p>
+</footer>
+
+<script>
+  /* ===== 進捗の読み込みと表示 ===== */
+  const TOTAL = 10;
+
+  function loadProgress() {
+    let done = 0;
+    for (let i = 1; i <= TOTAL; i++) {
+      const key = `html5lv2_ch2_${String(i).padStart(2,'0')}`;
+      if (localStorage.getItem(key) === 'done') {
+        done++;
+        const card   = document.getElementById(`card-${String(i).padStart(2,'0')}`);
+        const status = document.getElementById(`status-${String(i).padStart(2,'0')}`);
+        if (card)   card.classList.add('done');
+        if (status) status.textContent = '✅';
+      }
+    }
+    const pct = Math.round(done / TOTAL * 100);
+    document.getElementById('ch2-progress-bar').style.width  = pct + '%';
+    document.getElementById('ch2-progress-text').textContent =
+      `${done} / ${TOTAL} セクション完了（${pct}%）`;
+  }
+
+  loadProgress();
+</script>
+</body>
+</html>

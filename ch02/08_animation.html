@@ -1,0 +1,1669 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>2-8 トランジションとアニメーション | HTML5プロフェッショナル Level 2</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; }
+    body {
+      font-family: 'Segoe UI', 'Helvetica Neue', sans-serif;
+      max-width: 960px; margin: 40px auto; padding: 0 24px;
+      background: #f0f4f8; color: #2d3748; line-height: 1.8;
+    }
+    .breadcrumb {
+      font-size: 0.82em; color: #a0aec0; margin-bottom: 20px;
+      font-family: 'Consolas','Monaco',monospace;
+    }
+    .breadcrumb a { color: #553c9a; text-decoration: none; }
+    .breadcrumb a:hover { text-decoration: underline; }
+
+    .chapter-header {
+      background: linear-gradient(135deg, #553c9a, #2c7a7b);
+      border-radius: 12px; padding: 32px 32px 24px;
+      margin-bottom: 32px; color: #fff;
+      box-shadow: 0 4px 18px rgba(85,60,154,0.35);
+    }
+    .chapter-header .ch-num {
+      font-size: 0.8em; font-family: 'Consolas','Monaco',monospace;
+      opacity: 0.85; letter-spacing: 0.08em; margin-bottom: 6px;
+    }
+    .chapter-header h1 {
+      margin: 0 0 10px; font-size: 1.6em; color: #fff; border: none; padding: 0;
+    }
+    .chapter-header p { margin: 0; font-size: 0.92em; opacity: 0.88; }
+    .badge-row { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 14px; }
+    .badge {
+      background: rgba(255,255,255,0.18);
+      border: 1px solid rgba(255,255,255,0.35);
+      border-radius: 20px; padding: 3px 12px;
+      font-size: 0.76em; font-weight: bold;
+    }
+
+    .section-nav {
+      background: #fff; border: 1px solid #e9d8fd;
+      border-radius: 10px; padding: 18px 22px;
+      margin-bottom: 32px; box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+    }
+    .section-nav h2 {
+      margin: 0 0 12px; font-size: 0.92em; color: #553c9a; border: none; padding: 0;
+    }
+    .section-nav ol { margin: 0; padding-left: 20px; font-size: 0.9em; }
+    .section-nav ol li { margin: 4px 0; }
+    .section-nav ol li a { color: #553c9a; text-decoration: none; }
+    .section-nav ol li a:hover { text-decoration: underline; }
+    .section-nav ol li.current a { color: #1a365d; font-weight: bold; }
+
+    h2 {
+      color: #1a365d; margin-top: 48px;
+      border-left: 5px solid #9f7aea; padding-left: 12px;
+    }
+    h3 { color: #553c9a; margin-top: 28px; }
+
+    code {
+      background: #faf5ff; padding: 2px 6px;
+      border-radius: 4px; font-size: 0.93em;
+      font-family: 'Consolas','Monaco',monospace;
+      color: #553c9a;
+    }
+    pre {
+      background: #1a202c; color: #e2e8f0;
+      padding: 18px 20px; border-radius: 8px;
+      overflow-x: auto; font-size: 0.88em;
+      line-height: 1.7; font-family: 'Consolas','Monaco',monospace;
+    }
+    pre .comment  { color: #68d391; }
+    pre .selector { color: #f6ad55; font-weight: bold; }
+    pre .prop     { color: #81e6d9; }
+    pre .val      { color: #fbd38d; }
+    pre .out      { color: #a0aec0; }
+    pre .at       { color: #b794f4; font-weight: bold; }
+
+    .pre-wrap { position: relative; margin: 14px 0; }
+    .copy-btn {
+      position: absolute; top: 8px; right: 8px;
+      background: #4a5568; color: #e2e8f0;
+      border: none; border-radius: 4px; padding: 4px 10px;
+      font-size: 0.75em; cursor: pointer;
+      font-family: 'Consolas','Monaco',monospace;
+      transition: background 0.2s; z-index: 1;
+    }
+    .copy-btn:hover { background: #9f7aea; }
+
+    .note {
+      background: #fff; border: 1px dashed #d6bcfa;
+      border-radius: 6px; padding: 14px 18px;
+      font-size: 0.93em; color: #4a5568; margin: 14px 0;
+    }
+    .note strong { color: #553c9a; }
+    .warn {
+      background: #fffaf0; border: 1px solid #f6ad55;
+      border-left: 5px solid #f6ad55; border-radius: 6px;
+      padding: 14px 18px; font-size: 0.93em; color: #744210; margin: 14px 0;
+    }
+    .good {
+      background: #f0fff4; border: 1px solid #68d391;
+      border-left: 5px solid #48bb78; border-radius: 6px;
+      padding: 14px 18px; font-size: 0.93em; color: #276749; margin: 14px 0;
+    }
+    .demo-box {
+      background: #fff; border: 1px solid #e9d8fd;
+      border-radius: 8px; padding: 20px 24px;
+      margin: 12px 0 28px; box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+    }
+
+    /* ===== transition プレイグラウンド ===== */
+    .trans-playground {
+      background: #1a202c; border-radius: 12px;
+      padding: 20px; margin: 14px 0;
+    }
+    .trans-controls {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+      gap: 10px; margin-bottom: 16px;
+    }
+    .trans-control {
+      display: flex; flex-direction: column; gap: 4px;
+    }
+    .trans-control label {
+      font-size: 0.78em; font-family: 'Consolas','Monaco',monospace;
+      font-weight: bold; color: #81e6d9;
+    }
+    .trans-control select,
+    .trans-control input[type="number"],
+    .trans-control input[type="color"] {
+      background: #2d3748; border: 1px solid #4a5568;
+      border-radius: 6px; padding: 6px 10px;
+      color: #e2e8f0; font-family: 'Consolas','Monaco',monospace;
+      font-size: 0.85em; outline: none; width: 100%;
+    }
+    .trans-control select:focus,
+    .trans-control input:focus { border-color: #9f7aea; }
+    .trans-control input[type="range"] {
+      width: 100%; accent-color: #9f7aea;
+    }
+    .trans-control input[type="color"] {
+      height: 36px; padding: 2px 4px; cursor: pointer;
+    }
+    .trans-val {
+      font-size: 0.75em; color: #a0aec0;
+      font-family: 'Consolas','Monaco',monospace;
+    }
+    .trans-stage {
+      background: #0d1117; border-radius: 8px;
+      padding: 20px; display: flex;
+      align-items: center; justify-content: center;
+      min-height: 140px; border: 2px dashed #2d3748;
+    }
+    .trans-box {
+      width: 80px; height: 80px; border-radius: 8px;
+      background: #553c9a; border: 2px solid #9f7aea;
+      display: flex; align-items: center; justify-content: center;
+      color: #e9d8fd; font-family: 'Consolas','Monaco',monospace;
+      font-size: 0.75em; font-weight: bold; cursor: pointer;
+      user-select: none;
+    }
+    .trans-code {
+      margin-top: 12px; padding: 10px 14px;
+      background: #0d1117; border-radius: 6px;
+      font-family: 'Consolas','Monaco',monospace;
+      font-size: 0.82em; color: #68d391; line-height: 1.8;
+      white-space: pre-wrap;
+    }
+
+    /* ===== イージング ビジュアライザ ===== */
+    .easing-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+      gap: 10px; margin: 14px 0;
+    }
+    .easing-card {
+      background: #1a202c; border-radius: 8px;
+      padding: 12px; border: 2px solid #2d3748;
+      cursor: pointer; transition: border-color 0.2s;
+      text-align: center;
+    }
+    .easing-card:hover { border-color: #9f7aea; }
+    .easing-card.active { border-color: #68d391; }
+    .easing-track {
+      background: #0d1117; border-radius: 4px;
+      height: 8px; margin: 8px 0; position: relative;
+      overflow: hidden;
+    }
+    .easing-ball {
+      width: 16px; height: 16px; border-radius: 50%;
+      background: #9f7aea; position: absolute;
+      top: -4px; left: -8px;
+    }
+    .easing-name {
+      font-family: 'Consolas','Monaco',monospace;
+      font-size: 0.72em; color: #a0aec0; font-weight: bold;
+    }
+
+    /* ===== @keyframes プレイグラウンド ===== */
+    .kf-playground {
+      background: #1a202c; border-radius: 12px;
+      padding: 20px; margin: 14px 0;
+    }
+    .kf-controls {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+      gap: 10px; margin-bottom: 16px;
+    }
+    .kf-control {
+      display: flex; flex-direction: column; gap: 4px;
+    }
+    .kf-control label {
+      font-size: 0.78em; font-family: 'Consolas','Monaco',monospace;
+      font-weight: bold; color: #f6ad55;
+    }
+    .kf-control select,
+    .kf-control input {
+      background: #2d3748; border: 1px solid #4a5568;
+      border-radius: 6px; padding: 6px 10px;
+      color: #e2e8f0; font-family: 'Consolas','Monaco',monospace;
+      font-size: 0.85em; outline: none; width: 100%;
+    }
+    .kf-control select:focus,
+    .kf-control input:focus { border-color: #f6ad55; }
+    .kf-control input[type="range"] { accent-color: #f6ad55; }
+    .kf-stage {
+      background: #0d1117; border-radius: 8px;
+      padding: 20px; display: flex;
+      align-items: center; justify-content: center;
+      min-height: 140px; border: 2px dashed #2d3748;
+    }
+    .kf-target {
+      width: 70px; height: 70px; border-radius: 8px;
+      background: #553c9a; border: 2px solid #9f7aea;
+      display: flex; align-items: center; justify-content: center;
+      color: #e9d8fd; font-family: 'Consolas','Monaco',monospace;
+      font-size: 0.72em; font-weight: bold;
+    }
+    .kf-code {
+      margin-top: 12px; padding: 10px 14px;
+      background: #0d1117; border-radius: 6px;
+      font-family: 'Consolas','Monaco',monospace;
+      font-size: 0.82em; color: #f6ad55; line-height: 1.8;
+      white-space: pre-wrap;
+    }
+
+    /* ===== transform デモ ===== */
+    .transform-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+      gap: 12px; margin: 14px 0;
+    }
+    .transform-card {
+      background: #1a202c; border-radius: 8px;
+      padding: 16px; text-align: center;
+      border: 2px solid #2d3748; cursor: pointer;
+      transition: border-color 0.2s;
+    }
+    .transform-card:hover { border-color: #9f7aea; }
+    .transform-demo-box {
+      width: 50px; height: 50px; border-radius: 6px;
+      background: #553c9a; border: 2px solid #9f7aea;
+      margin: 0 auto 10px; display: flex;
+      align-items: center; justify-content: center;
+      color: #e9d8fd; font-size: 0.7em; font-weight: bold;
+      font-family: 'Consolas','Monaco',monospace;
+      transition: transform 0.4s ease;
+    }
+    .transform-card:hover .transform-demo-box {
+      /* JS で設定 */
+    }
+    .transform-label {
+      font-family: 'Consolas','Monaco',monospace;
+      font-size: 0.75em; color: #a0aec0; font-weight: bold;
+    }
+    .transform-value {
+      font-family: 'Consolas','Monaco',monospace;
+      font-size: 0.7em; color: #68d391; margin-top: 4px;
+    }
+
+    /* ===== インタラクティブデモ ===== */
+    .interactive-demo {
+      background: #f5f0ff; border: 1px solid #e9d8fd;
+      border-radius: 8px; padding: 16px 20px; margin: 14px 0;
+    }
+    .demo-label {
+      font-size: 0.85em; font-weight: bold;
+      color: #553c9a; margin-bottom: 10px;
+    }
+    .demo-input-row {
+      display: flex; gap: 10px; align-items: center;
+      flex-wrap: wrap; margin-bottom: 10px;
+    }
+    .demo-input {
+      border: 2px solid #e9d8fd; border-radius: 6px;
+      padding: 7px 12px; font-size: 0.9em;
+      font-family: 'Consolas','Monaco',monospace;
+      color: #2d3748; background: #fff; flex: 1; min-width: 80px;
+    }
+    .demo-input:focus { border-color: #9f7aea; outline: none; }
+    .demo-btn {
+      background: #553c9a; color: #fff; border: none;
+      border-radius: 6px; padding: 8px 18px;
+      font-size: 0.88em; font-weight: bold; cursor: pointer;
+      transition: background 0.2s; white-space: nowrap;
+    }
+    .demo-btn:hover { background: #44337a; }
+    .demo-output {
+      background: #1a202c; color: #b794f4;
+      border-radius: 6px; padding: 10px 14px;
+      font-family: 'Consolas','Monaco',monospace;
+      font-size: 0.85em; min-height: 40px;
+      white-space: pre-wrap; line-height: 1.7;
+    }
+
+    /* ===== タブ ===== */
+    .tab-wrap { margin: 14px 0; }
+    .tab-btns { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: -1px; }
+    .tab-btn {
+      padding: 8px 18px; border: 1px solid #e9d8fd;
+      border-bottom: none; border-radius: 6px 6px 0 0;
+      background: #faf5ff; color: #553c9a;
+      font-size: 0.85em; font-weight: bold;
+      font-family: 'Consolas','Monaco',monospace;
+      cursor: pointer; transition: background 0.15s;
+    }
+    .tab-btn.active { background: #fff; border-bottom: 1px solid #fff; }
+    .tab-btn:hover:not(.active) { background: #f0e6ff; }
+    .tab-content {
+      display: none; background: #fff;
+      border: 1px solid #e9d8fd;
+      border-radius: 0 6px 6px 6px; padding: 18px 20px;
+    }
+    .tab-content.active { display: block; }
+
+    /* ===== テーブル ===== */
+    table.ref-table {
+      border-collapse: collapse; width: 100%;
+      background: #fff; border-radius: 8px;
+      overflow: hidden; box-shadow: 0 2px 6px rgba(0,0,0,0.07);
+      margin: 14px 0; font-size: 0.9em;
+    }
+    table.ref-table th, table.ref-table td {
+      border: 1px solid #e9d8fd; padding: 10px 14px; text-align: left;
+    }
+    table.ref-table thead tr { background: #553c9a; color: #fff; }
+    table.ref-table tbody tr:nth-child(even) { background: #faf5ff; }
+
+    /* ===== 演習問題 ===== */
+    .quiz-section {
+      background: #faf5ff; border-left: 6px solid #9f7aea;
+      border-radius: 0 8px 8px 0; padding: 24px 28px; margin: 48px 0 32px;
+    }
+    .quiz-section > h2 { margin-top: 0; color: #553c9a; border-left-color: #9f7aea; }
+    .quiz-block {
+      background: #fff; border: 1px solid #e9d8fd;
+      border-radius: 8px; padding: 18px 22px; margin-bottom: 22px;
+    }
+    .quiz-block h3 { margin-top: 0; color: #553c9a; }
+    .quiz-block input[type="text"],
+    .quiz-block select {
+      border: 2px solid #e9d8fd; border-radius: 6px;
+      padding: 8px 12px; font-size: 0.95em;
+      width: 100%; max-width: 440px; margin: 6px 0;
+      outline: none; font-family: 'Consolas','Monaco',monospace;
+      transition: border-color 0.2s;
+    }
+    .quiz-block input[type="text"]:focus,
+    .quiz-block select:focus { border-color: #9f7aea; }
+    .quiz-block label { display: block; margin: 8px 0 2px; font-weight: bold; color: #4a5568; }
+    .quiz-block label.checkbox-label {
+      display: flex; align-items: flex-start; gap: 8px;
+      font-weight: normal; cursor: pointer; margin: 6px 0;
+    }
+    .quiz-block label.checkbox-label input { margin-top: 3px; flex-shrink: 0; }
+    .btn {
+      display: inline-block; padding: 9px 20px;
+      border-radius: 6px; border: none; cursor: pointer;
+      font-size: 0.95em; font-weight: bold;
+      transition: opacity 0.2s; margin-top: 8px;
+    }
+    .btn:hover { opacity: 0.85; }
+    .btn-purple { background: #553c9a; color: #fff; }
+    .btn-done   { background: #48bb78; color: #fff; }
+    .result-msg {
+      margin-top: 10px; padding: 10px 14px;
+      border-radius: 6px; font-weight: bold; display: none;
+    }
+    .result-msg.correct { background: #c6f6d5; color: #276749; display: block; }
+    .result-msg.wrong   { background: #fed7d7; color: #9b2335; display: block; }
+    .result-msg.info    { background: #e9d8fd; color: #553c9a; display: block; }
+
+    .page-nav {
+      display: flex; justify-content: space-between;
+      align-items: center; margin-top: 48px;
+      padding-top: 20px; border-top: 2px solid #e9d8fd;
+      gap: 12px; flex-wrap: wrap;
+    }
+    .page-nav a {
+      display: inline-block; padding: 10px 20px;
+      border-radius: 8px; text-decoration: none;
+      font-weight: bold; font-size: 0.9em; transition: opacity 0.2s;
+    }
+    .page-nav a:hover { opacity: 0.8; }
+    .page-nav .prev { background: #edf2f7; color: #4a5568; }
+    .page-nav .next { background: #553c9a; color: #fff; }
+    .page-nav .home { background: #fff; color: #553c9a; border: 2px solid #553c9a; }
+
+    .complete-section {
+      background: #f0fff4; border: 2px solid #48bb78;
+      border-radius: 10px; padding: 20px 24px;
+      margin-top: 40px; text-align: center;
+    }
+    .complete-section p { margin: 0 0 12px; color: #276749; font-weight: bold; }
+
+    footer {
+      margin-top: 48px; padding-top: 16px;
+      border-top: 2px solid #e9d8fd;
+      font-size: 0.82em; color: #a0aec0; text-align: center;
+    }
+    footer a { color: #553c9a; text-decoration: none; }
+    footer a:hover { text-decoration: underline; }
+
+    /* ===== @keyframes 定義（デモ用）===== */
+    @keyframes demo-fade    { from { opacity:0; } to { opacity:1; } }
+    @keyframes demo-slide   { from { transform:translateX(-60px); opacity:0; }
+                               to   { transform:translateX(0);     opacity:1; } }
+    @keyframes demo-bounce  {
+      0%,100% { transform:translateY(0); }
+      50%      { transform:translateY(-30px); }
+    }
+    @keyframes demo-spin    { from { transform:rotate(0deg); }
+                               to   { transform:rotate(360deg); } }
+    @keyframes demo-pulse   {
+      0%,100% { transform:scale(1);    opacity:1; }
+      50%      { transform:scale(1.3); opacity:0.7; }
+    }
+    @keyframes demo-shake   {
+      0%,100% { transform:translateX(0); }
+      20%      { transform:translateX(-8px); }
+      40%      { transform:translateX(8px); }
+      60%      { transform:translateX(-6px); }
+      80%      { transform:translateX(6px); }
+    }
+    @keyframes demo-flip    {
+      0%   { transform:perspective(400px) rotateY(0); }
+      100% { transform:perspective(400px) rotateY(360deg); }
+    }
+    @keyframes demo-swing   {
+      0%,100% { transform:rotate(0deg); }
+      25%      { transform:rotate(15deg); }
+      75%      { transform:rotate(-15deg); }
+    }
+    @keyframes demo-heartbeat {
+      0%,100% { transform:scale(1); }
+      14%      { transform:scale(1.3); }
+      28%      { transform:scale(1); }
+      42%      { transform:scale(1.3); }
+      70%      { transform:scale(1); }
+    }
+    @keyframes demo-gradient-bg {
+      0%   { background-position:0% 50%; }
+      50%  { background-position:100% 50%; }
+      100% { background-position:0% 50%; }
+    }
+
+    @media (max-width: 600px) {
+      body { font-size: 0.84em; }
+      .chapter-header { padding: 20px 16px; }
+      .chapter-header h1 { font-size: 1.2em; }
+      .trans-controls { grid-template-columns: 1fr 1fr; }
+      .kf-controls { grid-template-columns: 1fr 1fr; }
+      .easing-grid { grid-template-columns: repeat(3, 1fr); }
+      .transform-grid { grid-template-columns: repeat(3, 1fr); }
+      .quiz-section { padding: 16px 12px; }
+      .quiz-block { padding: 14px 12px; }
+      .page-nav { flex-direction: column; align-items: stretch; }
+      .page-nav a { text-align: center; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- パンくず -->
+<div class="breadcrumb">
+  <a href="../index.html">🏠 HTML5 Level 2</a> ›
+  <a href="index.html">Chapter 2：CSSとスタイリング</a> ›
+  2-8 トランジションとアニメーション
+</div>
+
+<!-- ヘッダー -->
+<div class="chapter-header">
+  <div class="ch-num">CHAPTER 02 › SECTION 08</div>
+  <h1>✨ 2-8 トランジションとアニメーション</h1>
+  <p>transition・@keyframes・animation・transform（translate/scale/rotate/skew）・
+  イージング関数・will-change・prefers-reduced-motion を
+  インタラクティブなプレイグラウンドで完全マスターします。</p>
+  <div class="badge-row">
+    <span class="badge">transition</span>
+    <span class="badge">@keyframes</span>
+    <span class="badge">animation</span>
+    <span class="badge">transform</span>
+    <span class="badge">easing</span>
+    <span class="badge">will-change</span>
+    <span class="badge">prefers-reduced-motion</span>
+  </div>
+</div>
+
+<!-- セクションナビ -->
+<div class="section-nav">
+  <h2>📋 Chapter 2 のセクション</h2>
+  <ol>
+    <li><a href="01_selectors.html">2-1 セレクタと詳細度</a></li>
+    <li><a href="02_boxmodel.html">2-2 ボックスモデル</a></li>
+    <li><a href="03_flexbox.html">2-3 Flexbox</a></li>
+    <li><a href="04_grid.html">2-4 CSS Grid</a></li>
+    <li><a href="05_positioning.html">2-5 配置とポジショニング</a></li>
+    <li><a href="06_responsive.html">2-6 レスポンシブデザイン</a></li>
+    <li><a href="07_typography.html">2-7 タイポグラフィと色</a></li>
+    <li class="current"><a href="08_animation.html">2-8 トランジションとアニメーション</a></li>
+    <li><a href="09_variables.html">2-9 CSS変数と関数</a></li>
+    <li><a href="10_advanced.html">2-10 CSS応用・試験対策</a></li>
+  </ol>
+</div>
+
+
+<!-- ============================================================ -->
+<!-- PART 1: transition -->
+<!-- ============================================================ -->
+<h2 id="transition">① transition（トランジション）</h2>
+
+<div class="note">
+  <strong>重要ポイント：<code>transition</code> はプロパティの値が変化するときに
+  アニメーションを付けます。
+  <code>property duration timing-function delay</code> の4値で指定します。
+  状態変化（:hover など）のトリガーが必要です。</strong>
+</div>
+
+<div class="demo-box">
+  <h3>🎮 transition プレイグラウンド</h3>
+  <div class="trans-playground">
+    <div class="trans-controls">
+
+      <div class="trans-control">
+        <label>transition-property</label>
+        <select id="tr-prop" onchange="updateTransition()">
+          <option value="all">all</option>
+          <option value="background-color">background-color</option>
+          <option value="transform">transform</option>
+          <option value="opacity">opacity</option>
+          <option value="border-radius">border-radius</option>
+          <option value="box-shadow">box-shadow</option>
+        </select>
+      </div>
+
+      <div class="trans-control">
+        <label>transition-duration</label>
+        <input type="range" id="tr-dur" min="0.1" max="3" step="0.1" value="0.4"
+               oninput="updateTransition()">
+        <span class="trans-val" id="tr-dur-val">0.4s</span>
+      </div>
+
+      <div class="trans-control">
+        <label>transition-timing-function</label>
+        <select id="tr-ease" onchange="updateTransition()">
+          <option value="ease">ease</option>
+          <option value="linear">linear</option>
+          <option value="ease-in">ease-in</option>
+          <option value="ease-out">ease-out</option>
+          <option value="ease-in-out">ease-in-out</option>
+          <option value="cubic-bezier(0.68,-0.55,0.27,1.55)">bounce（cubic-bezier）</option>
+          <option value="steps(5, end)">steps(5, end)</option>
+        </select>
+      </div>
+
+      <div class="trans-control">
+        <label>transition-delay</label>
+        <input type="range" id="tr-delay" min="0" max="2" step="0.1" value="0"
+               oninput="updateTransition()">
+        <span class="trans-val" id="tr-delay-val">0s</span>
+      </div>
+
+      <div class="trans-control">
+        <label>ホバー時 background</label>
+        <input type="color" id="tr-hover-bg" value="#2c7a7b"
+               oninput="updateTransition()">
+      </div>
+
+      <div class="trans-control">
+        <label>ホバー時 transform</label>
+        <select id="tr-hover-transform" onchange="updateTransition()">
+          <option value="none">none</option>
+          <option value="scale(1.2)">scale(1.2)</option>
+          <option value="translateY(-8px)">translateY(-8px)</option>
+          <option value="rotate(15deg)">rotate(15deg)</option>
+          <option value="scale(1.1) rotate(5deg)">scale + rotate</option>
+        </select>
+      </div>
+
+    </div>
+
+    <div class="trans-stage">
+      <div class="trans-box" id="trans-box">
+        Hover!
+      </div>
+    </div>
+    <div class="trans-code" id="trans-code">← コントロールを操作してコードを確認しましょう</div>
+  </div>
+
+  <div class="pre-wrap">
+    <button class="copy-btn" onclick="copyPre(this)">copy</button>
+<pre>
+<span class="comment">/* transition の基本 */</span>
+<span class="selector">.btn</span> {
+  <span class="prop">background</span>: <span class="val">#553c9a</span>;
+  <span class="prop">transition</span>: <span class="val">background 0.3s ease</span>;
+  <span class="comment">/* property duration timing-function */</span>
+}
+<span class="selector">.btn:hover</span> { <span class="prop">background</span>: <span class="val">#2c7a7b</span>; }
+
+<span class="comment">/* 複数プロパティ */</span>
+<span class="selector">.card</span> {
+  <span class="prop">transition</span>:
+    <span class="val">transform  0.3s ease</span>,
+    <span class="val">box-shadow 0.3s ease</span>,
+    <span class="val">opacity    0.2s ease</span>;
+}
+
+<span class="comment">/* all で全プロパティ（パフォーマンスに注意）*/</span>
+<span class="selector">.box</span> { <span class="prop">transition</span>: <span class="val">all 0.3s ease</span>; }
+
+<span class="comment">/* delay：遅延してから開始 */</span>
+<span class="selector">.delayed</span> {
+  <span class="prop">transition</span>: <span class="val">opacity 0.5s ease 0.2s</span>;
+  <span class="comment">/* property duration timing delay */</span>
+}
+
+<span class="comment">/* transition できないプロパティ */</span>
+<span class="comment">/* display, visibility（none→block は不可）*/</span>
+<span class="comment">/* → opacity + pointer-events で代替 */</span>
+<span class="selector">.fade-out</span> {
+  <span class="prop">opacity</span>:         <span class="val">0</span>;
+  <span class="prop">pointer-events</span>: <span class="val">none</span>;
+  <span class="prop">transition</span>:      <span class="val">opacity 0.3s</span>;
+}
+</pre>
+  </div>
+</div>
+
+
+<!-- ============================================================ -->
+<!-- PART 2: イージング関数 -->
+<!-- ============================================================ -->
+<h2 id="easing">② イージング関数（timing-function）</h2>
+
+<div class="note">
+  <strong>重要ポイント：イージング関数はアニメーションの速度変化を制御します。
+  <code>ease</code>・<code>linear</code>・<code>ease-in</code>・<code>ease-out</code>・
+  <code>ease-in-out</code> の5つのキーワードと
+  <code>cubic-bezier()</code>・<code>steps()</code> を理解しましょう。</strong>
+</div>
+
+<div class="demo-box">
+  <h3>🎮 イージング ビジュアライザ</h3>
+  <div class="easing-grid" id="easing-grid">
+    <!-- JS で生成 -->
+  </div>
+
+  <div class="interactive-demo" style="margin-top:12px;">
+    <div class="demo-label">「再生」ボタンで全イージングを同時に比較しよう</div>
+    <div class="demo-input-row">
+      <button class="demo-btn" onclick="playAllEasings()">▶ 全て再生</button>
+      <button class="demo-btn" style="background:#4a5568;" onclick="resetAllEasings()">↺ リセット</button>
+    </div>
+    <div style="background:#0d1117; border-radius:8px; padding:16px;" id="easing-race">
+      <!-- JS で生成 -->
+    </div>
+  </div>
+
+  <div class="pre-wrap">
+    <button class="copy-btn" onclick="copyPre(this)">copy</button>
+<pre>
+<span class="comment">/* イージング関数の種類 */</span>
+<span class="selector">.ease</span>        { <span class="prop">transition-timing-function</span>: <span class="val">ease</span>; }
+<span class="comment">/* 最初ゆっくり → 加速 → 最後ゆっくり（デフォルト）*/</span>
+
+<span class="selector">.linear</span>      { <span class="prop">transition-timing-function</span>: <span class="val">linear</span>; }
+<span class="comment">/* 一定速度 */</span>
+
+<span class="selector">.ease-in</span>     { <span class="prop">transition-timing-function</span>: <span class="val">ease-in</span>; }
+<span class="comment">/* ゆっくり始まり → 加速（入場に不向き）*/</span>
+
+<span class="selector">.ease-out</span>    { <span class="prop">transition-timing-function</span>: <span class="val">ease-out</span>; }
+<span class="comment">/* 速く始まり → 減速（入場に最適）*/</span>
+
+<span class="selector">.ease-in-out</span> { <span class="prop">transition-timing-function</span>: <span class="val">ease-in-out</span>; }
+<span class="comment">/* ゆっくり始まり → 加速 → ゆっくり終わる */</span>
+
+<span class="comment">/* cubic-bezier：カスタムイージング */</span>
+<span class="selector">.bounce</span> {
+  <span class="prop">transition-timing-function</span>: <span class="val">cubic-bezier(0.68, -0.55, 0.27, 1.55)</span>;
+  <span class="comment">/* バウンス効果 */</span>
+}
+<span class="selector">.spring</span> {
+  <span class="prop">transition-timing-function</span>: <span class="val">cubic-bezier(0.34, 1.56, 0.64, 1)</span>;
+}
+
+<span class="comment">/* steps：ステップアニメーション */</span>
+<span class="selector">.steps</span> {
+  <span class="prop">transition-timing-function</span>: <span class="val">steps(5, end)</span>;
+  <span class="comment">/* 5段階でジャンプ */</span>
+}
+</pre>
+  </div>
+</div>
+
+
+<!-- ============================================================ -->
+<!-- PART 3: transform -->
+<!-- ============================================================ -->
+<h2 id="transform">③ transform（変形）</h2>
+
+<div class="note">
+  <strong>重要ポイント：<code>transform</code> は要素を移動・拡大縮小・回転・傾斜させます。
+  <strong>GPU アクセラレーション</strong>が効くため、
+  <code>top/left</code> より <code>transform: translate()</code> の方が
+  パフォーマンスが良いです。</strong>
+</div>
+
+<div class="demo-box">
+  <h3>transform 関数一覧（ホバーで確認）</h3>
+  <div class="transform-grid" id="transform-grid">
+    <!-- JS で生成 -->
+  </div>
+
+  <h3>🎮 transform プレイグラウンド</h3>
+  <div class="trans-playground">
+    <div class="trans-controls">
+      <div class="trans-control" style="--label-color:#81e6d9;">
+        <label style="color:#81e6d9;">translateX</label>
+        <input type="range" id="tf-tx" min="-100" max="100" value="0"
+               oninput="updateTransform()">
+        <span class="trans-val" id="tf-tx-val">0px</span>
+      </div>
+      <div class="trans-control">
+        <label style="color:#81e6d9;">translateY</label>
+        <input type="range" id="tf-ty" min="-60" max="60" value="0"
+               oninput="updateTransform()">
+        <span class="trans-val" id="tf-ty-val">0px</span>
+      </div>
+      <div class="trans-control">
+        <label style="color:#f6ad55;">scaleX</label>
+        <input type="range" id="tf-sx" min="0.1" max="3" step="0.1" value="1"
+               oninput="updateTransform()">
+        <span class="trans-val" id="tf-sx-val">1</span>
+      </div>
+      <div class="trans-control">
+        <label style="color:#f6ad55;">scaleY</label>
+        <input type="range" id="tf-sy" min="0.1" max="3" step="0.1" value="1"
+               oninput="updateTransform()">
+        <span class="trans-val" id="tf-sy-val">1</span>
+      </div>
+      <div class="trans-control">
+        <label style="color:#b794f4;">rotate</label>
+        <input type="range" id="tf-rot" min="-180" max="180" value="0"
+               oninput="updateTransform()">
+        <span class="trans-val" id="tf-rot-val">0deg</span>
+      </div>
+      <div class="trans-control">
+        <label style="color:#fc8181;">skewX</label>
+        <input type="range" id="tf-skx" min="-45" max="45" value="0"
+               oninput="updateTransform()">
+        <span class="trans-val" id="tf-skx-val">0deg</span>
+      </div>
+    </div>
+    <div class="trans-stage">
+      <div class="trans-box" id="transform-box"
+           style="transition:transform 0.2s ease;">
+        ✦
+      </div>
+    </div>
+    <div class="trans-code" id="transform-code">← スライダーを動かして transform を確認しましょう</div>
+  </div>
+
+  <div class="pre-wrap">
+    <button class="copy-btn" onclick="copyPre(this)">copy</button>
+<pre>
+<span class="comment">/* translate：移動 */</span>
+<span class="selector">.box</span> { <span class="prop">transform</span>: <span class="val">translateX(50px)</span>; }
+<span class="selector">.box</span> { <span class="prop">transform</span>: <span class="val">translateY(-20px)</span>; }
+<span class="selector">.box</span> { <span class="prop">transform</span>: <span class="val">translate(50px, -20px)</span>; }
+
+<span class="comment">/* scale：拡大縮小 */</span>
+<span class="selector">.box</span> { <span class="prop">transform</span>: <span class="val">scale(1.5)</span>; }     <span class="comment">/* 1.5倍 */</span>
+<span class="selector">.box</span> { <span class="prop">transform</span>: <span class="val">scaleX(2)</span>; }     <span class="comment">/* 横方向2倍 */</span>
+<span class="selector">.box</span> { <span class="prop">transform</span>: <span class="val">scale(0.5, 2)</span>; } <span class="comment">/* 横0.5倍・縦2倍 */</span>
+
+<span class="comment">/* rotate：回転 */</span>
+<span class="selector">.box</span> { <span class="prop">transform</span>: <span class="val">rotate(45deg)</span>; }
+<span class="selector">.box</span> { <span class="prop">transform</span>: <span class="val">rotate(-90deg)</span>; }
+
+<span class="comment">/* skew：傾斜 */</span>
+<span class="selector">.box</span> { <span class="prop">transform</span>: <span class="val">skewX(20deg)</span>; }
+<span class="selector">.box</span> { <span class="prop">transform</span>: <span class="val">skew(20deg, 10deg)</span>; }
+
+<span class="comment">/* 複数の transform を組み合わせる */</span>
+<span class="selector">.box</span> {
+  <span class="prop">transform</span>: <span class="val">translate(50px, -20px) scale(1.2) rotate(15deg)</span>;
+  <span class="comment">/* 左から順に適用される点に注意 */</span>
+}
+
+<span class="comment">/* transform-origin：変形の基準点 */</span>
+<span class="selector">.box</span> { <span class="prop">transform-origin</span>: <span class="val">top left</span>; }   <span class="comment">/* 左上を基準 */</span>
+<span class="selector">.box</span> { <span class="prop">transform-origin</span>: <span class="val">50% 50%</span>; }    <span class="comment">/* 中心（デフォルト）*/</span>
+<span class="selector">.box</span> { <span class="prop">transform-origin</span>: <span class="val">0 100%</span>; }     <span class="comment">/* 左下を基準 */</span>
+</pre>
+  </div>
+</div>
+
+
+<!-- ============================================================ -->
+<!-- PART 4: @keyframes と animation -->
+<!-- ============================================================ -->
+<h2 id="keyframes">④ @keyframes と animation</h2>
+
+<div class="note">
+  <strong>重要ポイント：<code>@keyframes</code> でアニメーションの各フレームを定義し、
+  <code>animation</code> プロパティで要素に適用します。
+  <code>transition</code> と違い、トリガーなしで自動再生できます。</strong>
+</div>
+
+<div class="demo-box">
+  <h3>🎮 @keyframes アニメーション プレイグラウンド</h3>
+  <div class="kf-playground">
+    <div class="kf-controls">
+
+      <div class="kf-control">
+        <label>アニメーション種類</label>
+        <select id="kf-type" onchange="updateKeyframes()">
+          <option value="demo-fade">fade（フェード）</option>
+          <option value="demo-slide">slide（スライド）</option>
+          <option value="demo-bounce">bounce（バウンス）</option>
+          <option value="demo-spin">spin（回転）</option>
+          <option value="demo-pulse">pulse（パルス）</option>
+          <option value="demo-shake">shake（シェイク）</option>
+          <option value="demo-flip">flip（フリップ）</option>
+          <option value="demo-swing">swing（スイング）</option>
+          <option value="demo-heartbeat">heartbeat（鼓動）</option>
+        </select>
+      </div>
+
+      <div class="kf-control">
+        <label>animation-duration</label>
+        <input type="range" id="kf-dur" min="0.3" max="4" step="0.1" value="1"
+               oninput="updateKeyframes()">
+        <span class="trans-val" id="kf-dur-val">1s</span>
+      </div>
+
+      <div class="kf-control">
+        <label>animation-timing-function</label>
+        <select id="kf-ease" onchange="updateKeyframes()">
+          <option value="ease">ease</option>
+          <option value="linear">linear</option>
+          <option value="ease-in">ease-in</option>
+          <option value="ease-out">ease-out</option>
+          <option value="ease-in-out">ease-in-out</option>
+        </select>
+      </div>
+
+      <div class="kf-control">
+        <label>animation-iteration-count</label>
+        <select id="kf-iter" onchange="updateKeyframes()">
+          <option value="infinite">infinite</option>
+          <option value="1">1</option>
+          <option value="2">2</option>
+          <option value="3">3</option>
+        </select>
+      </div>
+
+      <div class="kf-control">
+        <label>animation-direction</label>
+        <select id="kf-dir" onchange="updateKeyframes()">
+          <option value="normal">normal</option>
+          <option value="reverse">reverse</option>
+          <option value="alternate">alternate</option>
+          <option value="alternate-reverse">alternate-reverse</option>
+        </select>
+      </div>
+
+      <div class="kf-control">
+        <label>animation-fill-mode</label>
+        <select id="kf-fill" onchange="updateKeyframes()">
+          <option value="none">none</option>
+          <option value="forwards">forwards</option>
+          <option value="backwards">backwards</option>
+          <option value="both">both</option>
+        </select>
+      </div>
+
+    </div>
+
+    <div class="kf-stage">
+      <div class="kf-target" id="kf-target">✦</div>
+    </div>
+    <div style="display:flex; gap:8px; margin-top:10px;">
+      <button onclick="restartAnimation()"
+              style="background:#553c9a; color:#fff; border:none;
+                     border-radius:6px; padding:7px 16px; font-size:0.85em;
+                     font-weight:bold; cursor:pointer; transition:background 0.2s;">
+        ▶ 再生
+      </button>
+      <button onclick="pauseAnimation()"
+              style="background:#4a5568; color:#e2e8f0; border:none;
+                     border-radius:6px; padding:7px 16px; font-size:0.85em;
+                     font-weight:bold; cursor:pointer; transition:background 0.2s;">
+        ⏸ 一時停止
+      </button>
+    </div>
+    <div class="kf-code" id="kf-code">← コントロールを操作してコードを確認しましょう</div>
+  </div>
+
+  <div class="pre-wrap">
+    <button class="copy-btn" onclick="copyPre(this)">copy</button>
+<pre>
+<span class="comment">/* @keyframes の定義 */</span>
+<span class="at">@keyframes</span> <span class="val">slide-in</span> {
+  <span class="val">from</span> {
+    <span class="prop">transform</span>: <span class="val">translateX(-100%)</span>;
+    <span class="prop">opacity</span>:   <span class="val">0</span>;
+  }
+  <span class="val">to</span> {
+    <span class="prop">transform</span>: <span class="val">translateX(0)</span>;
+    <span class="prop">opacity</span>:   <span class="val">1</span>;
+  }
+}
+
+<span class="comment">/* パーセントで細かく制御 */</span>
+<span class="at">@keyframes</span> <span class="val">bounce</span> {
+  <span class="val">0%, 100%</span> { <span class="prop">transform</span>: <span class="val">translateY(0)</span>; }
+  <span class="val">50%</span>      { <span class="prop">transform</span>: <span class="val">translateY(-30px)</span>; }
+}
+
+<span class="comment">/* animation プロパティで適用 */</span>
+<span class="selector">.element</span> {
+  <span class="prop">animation</span>: <span class="val">slide-in 0.5s ease-out forwards</span>;
+  <span class="comment">/* name duration timing fill-mode */</span>
+}
+
+<span class="comment">/* animation の各プロパティ */</span>
+<span class="selector">.element</span> {
+  <span class="prop">animation-name</span>:            <span class="val">bounce</span>;
+  <span class="prop">animation-duration</span>:        <span class="val">1s</span>;
+  <span class="prop">animation-timing-function</span>: <span class="val">ease-in-out</span>;
+  <span class="prop">animation-delay</span>:           <span class="val">0.2s</span>;
+  <span class="prop">animation-iteration-count</span>: <span class="val">infinite</span>;
+  <span class="prop">animation-direction</span>:       <span class="val">alternate</span>;
+  <span class="prop">animation-fill-mode</span>:       <span class="val">both</span>;
+  <span class="prop">animation-play-state</span>:      <span class="val">running</span>;
+}
+
+<span class="comment">/* animation-fill-mode の値 */</span>
+<span class="comment">/* none      → デフォルト */</span>
+<span class="comment">/* forwards  → 終了後に最終フレームを維持 */</span>
+<span class="comment">/* backwards → 開始前に最初のフレームを適用 */</span>
+<span class="comment">/* both      → forwards + backwards */</span>
+</pre>
+  </div>
+</div>
+
+
+<!-- ============================================================ -->
+<!-- PART 5: パフォーマンスと will-change -->
+<!-- ============================================================ -->
+<h2 id="performance">⑤ パフォーマンスと will-change</h2>
+
+<div class="demo-box">
+  <div class="tab-wrap">
+    <div class="tab-btns">
+      <button class="tab-btn active" onclick="switchTab(this,'tab-will-change')">will-change</button>
+      <button class="tab-btn"        onclick="switchTab(this,'tab-reduced-motion')">prefers-reduced-motion</button>
+      <button class="tab-btn"        onclick="switchTab(this,'tab-perf-tips')">パフォーマンス Tips</button>
+    </div>
+
+    <!-- will-change -->
+    <div class="tab-content active" id="tab-will-change">
+      <h3 style="margin-top:0; color:#553c9a;">will-change</h3>
+      <div class="pre-wrap">
+        <button class="copy-btn" onclick="copyPre(this)">copy</button>
+<pre>
+<span class="comment">/* will-change：ブラウザにアニメーションを事前通知 */</span>
+<span class="selector">.animated</span> {
+  <span class="prop">will-change</span>: <span class="val">transform</span>;
+  <span class="comment">/* GPU レイヤーを事前に作成 → スムーズなアニメーション */</span>
+}
+
+<span class="comment">/* 複数プロパティ */</span>
+<span class="selector">.animated</span> {
+  <span class="prop">will-change</span>: <span class="val">transform, opacity</span>;
+}
+
+<span class="comment">/* ⚠️ 注意点 */</span>
+<span class="comment">/* 常に設定するのは NG（メモリを消費）*/</span>
+<span class="comment">/* アニメーション直前に JS で追加するのが理想 */</span>
+<span class="comment">/* アニメーション終了後は auto に戻す */</span>
+
+<span class="comment">/* JavaScript での制御 */</span>
+el.<span class="prop">addEventListener</span>(<span class="val">'mouseenter'</span>, () => {
+  el.<span class="prop">style</span>.<span class="prop">willChange</span> = <span class="val">'transform'</span>;
+});
+el.<span class="prop">addEventListener</span>(<span class="val">'animationend'</span>, () => {
+  el.<span class="prop">style</span>.<span class="prop">willChange</span> = <span class="val">'auto'</span>;
+});
+</pre>
+      </div>
+    </div>
+
+    <!-- prefers-reduced-motion -->
+    <div class="tab-content" id="tab-reduced-motion">
+      <h3 style="margin-top:0; color:#553c9a;">prefers-reduced-motion</h3>
+      <div class="note">
+        <strong>prefers-reduced-motion とは：</strong>
+        ユーザーが OS でアニメーション削減を設定している場合に
+        アニメーションを無効化するメディアクエリです。
+        アクセシビリティの観点から<strong>必須</strong>の対応です。
+      </div>
+      <div class="pre-wrap">
+        <button class="copy-btn" onclick="copyPre(this)">copy</button>
+<pre>
+<span class="comment">/* prefers-reduced-motion：アニメーション削減設定への対応 */</span>
+<span class="at">@media</span> (<span class="prop">prefers-reduced-motion</span>: <span class="val">reduce</span>) {
+  <span class="comment">/* アニメーションを無効化 */</span>
+  <span class="selector">*</span> {
+    <span class="prop">animation-duration</span>:        <span class="val">0.01ms !important</span>;
+    <span class="prop">animation-iteration-count</span>: <span class="val">1 !important</span>;
+    <span class="prop">transition-duration</span>:       <span class="val">0.01ms !important</span>;
+  }
+}
+
+<span class="comment">/* 個別に対応する方法 */</span>
+<span class="selector">.spinner</span> {
+  <span class="prop">animation</span>: <span class="val">spin 1s linear infinite</span>;
+}
+<span class="at">@media</span> (<span class="prop">prefers-reduced-motion</span>: <span class="val">reduce</span>) {
+  <span class="selector">.spinner</span> { <span class="prop">animation</span>: <span class="val">none</span>; }
+}
+
+<span class="comment">/* no-preference：アニメーションを許可している場合のみ適用 */</span>
+<span class="at">@media</span> (<span class="prop">prefers-reduced-motion</span>: <span class="val">no-preference</span>) {
+  <span class="selector">.hero</span> {
+    <span class="prop">animation</span>: <span class="val">fade-in 0.8s ease-out</span>;
+  }
+}
+
+<span class="comment">/* JavaScript での確認 */</span>
+<span class="prop">const</span> prefersReduced =
+  window.<span class="prop">matchMedia</span>(<span class="val">'(prefers-reduced-motion: reduce)'</span>).<span class="prop">matches</span>;
+</pre>
+      </div>
+    </div>
+
+    <!-- パフォーマンス Tips -->
+    <div class="tab-content" id="tab-perf-tips">
+      <h3 style="margin-top:0; color:#553c9a;">アニメーション パフォーマンス Tips</h3>
+      <table class="ref-table">
+        <thead>
+          <tr><th>推奨</th><th>非推奨</th><th>理由</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>transform: translateX()</code></td>
+            <td><code>left / margin-left</code></td>
+            <td>transform は GPU で処理されレイアウトを再計算しない</td>
+          </tr>
+          <tr>
+            <td><code>opacity</code></td>
+            <td><code>visibility / display</code></td>
+            <td>opacity は GPU 合成のみで高速</td>
+          </tr>
+          <tr>
+            <td><code>transform: scale()</code></td>
+            <td><code>width / height</code></td>
+            <td>width/height 変更はリフロー（再レイアウト）を引き起こす</td>
+          </tr>
+          <tr>
+            <td>特定プロパティを指定</td>
+            <td><code>transition: all</code></td>
+            <td>all は不要なプロパティも監視してパフォーマンス低下</td>
+          </tr>
+          <tr>
+            <td><code>will-change: transform</code>（適切に）</td>
+            <td>全要素に will-change</td>
+            <td>過剰な will-change はメモリを圧迫</td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="good">
+        <strong>💡 GPU アクセラレーションが効くプロパティ：</strong><br>
+        <code>transform</code>・<code>opacity</code>・<code>filter</code>・<code>will-change</code><br><br>
+        これらは<strong>コンポジット層</strong>で処理されるため、
+        レイアウト（リフロー）や描画（リペイント）を引き起こさず高速です。
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ============================================================ -->
+<!-- まとめ -->
+<!-- ============================================================ -->
+<h2>📌 まとめ</h2>
+<div class="demo-box">
+  <table class="ref-table">
+    <thead>
+      <tr><th>機能</th><th>プロパティ</th><th>重要ポイント</th></tr>
+    </thead>
+    <tbody>
+      <tr><td rowspan="2">transition</td>
+        <td><code>transition</code></td>
+        <td>property duration timing delay の4値</td></tr>
+      <tr><td>トリガー</td>
+        <td>:hover など状態変化が必要</td></tr>
+      <tr><td rowspan="2">animation</td>
+        <td><code>@keyframes</code></td>
+        <td>from/to または % でフレームを定義</td></tr>
+      <tr><td><code>animation</code></td>
+        <td>name duration timing delay iteration direction fill-mode</td></tr>
+      <tr><td rowspan="4">transform</td>
+        <td><code>translate()</code></td>
+        <td>移動・GPU 処理で高速</td></tr>
+      <tr><td><code>scale()</code></td>
+        <td>拡大縮小</td></tr>
+      <tr><td><code>rotate()</code></td>
+        <td>回転（deg / turn / rad）</td></tr>
+      <tr><td><code>skew()</code></td>
+        <td>傾斜</td></tr>
+      <tr><td>パフォーマンス</td>
+        <td><code>will-change</code></td>
+        <td>適切に使用・アニメーション後は auto に戻す</td></tr>
+      <tr><td>アクセシビリティ</td>
+        <td><code>prefers-reduced-motion</code></td>
+        <td>アニメーション削減設定への対応は必須</td></tr>
+    </tbody>
+  </table>
+</div>
+
+
+<!-- ============================================================ -->
+<!-- 演習問題 -->
+<!-- ============================================================ -->
+<div class="quiz-section">
+  <h2>🖊️ 演習問題</h2>
+
+  <!-- Q1 -->
+  <div class="quiz-block">
+    <h3>Q1. 穴埋め問題</h3>
+    <label>① transition の4つの値（順番通りに）：</label>
+    <input type="text" id="q1a" placeholder="property ??? ??? ???">
+    <label>② アニメーションを無限ループさせる <code>animation-iteration-count</code> の値：</label>
+    <input type="text" id="q1b" placeholder="値">
+    <label>③ 要素を右に50px移動させる transform 関数：</label>
+    <input type="text" id="q1c" placeholder="transform: ???(50px)">
+    <label>④ アニメーション終了後に最終フレームを維持する <code>animation-fill-mode</code> の値：</label>
+    <input type="text" id="q1d" placeholder="値">
+    <br>
+    <button class="btn btn-purple" onclick="checkQ1()">答え合わせ</button>
+    <div class="result-msg" id="q1-result"></div>
+    <script>
+      function checkQ1() {
+        const a = document.getElementById('q1a').value.trim().toLowerCase().replace(/\s/g,'');
+        const b = document.getElementById('q1b').value.trim().toLowerCase().replace(/\s/g,'');
+        const c = document.getElementById('q1c').value.trim().toLowerCase()
+                    .replace(/transform:|:|\s/g,'').replace('translatex(50px)','translatex');
+        const d = document.getElementById('q1d').value.trim().toLowerCase().replace(/\s/g,'');
+        const r = document.getElementById('q1-result');
+        const ca = a.includes('duration') && a.includes('timing') && a.includes('delay');
+        const cb = b === 'infinite';
+        const cc = c === 'translatex' || c === 'translatex(50px)' ||
+                   document.getElementById('q1c').value.trim().toLowerCase()
+                     .replace(/\s/g,'').includes('translatex');
+        const cd = d === 'forwards';
+        const count = [ca,cb,cc,cd].filter(Boolean).length;
+        if (count === 4) {
+          r.className = 'result-msg correct';
+          r.textContent = '✅ 全問正解！完璧です！';
+        } else {
+          r.className = 'result-msg wrong';
+          r.innerHTML = `❌ ${count}/4 問正解。<br>` +
+            `① ${ca?'✅':'❌ property duration timing-function delay'}　` +
+            `② ${cb?'✅':'❌ infinite'}　` +
+            `③ ${cc?'✅':'❌ translateX（transform: translateX(50px)）'}　` +
+            `④ ${cd?'✅':'❌ forwards'}`;
+        }
+      }
+    </script>
+  </div>
+
+  <!-- Q2 -->
+  <div class="quiz-block">
+    <h3>Q2. 選択問題</h3>
+    <p>アニメーションのパフォーマンスが最も良い実装はどれですか？</p>
+    <select id="q2">
+      <option value="">-- 選択してください --</option>
+      <option value="a">left プロパティを変化させてスライドアニメーション</option>
+      <option value="b">width プロパティを変化させて拡大アニメーション</option>
+      <option value="c">transform: translateX() を使ってスライドアニメーション</option>
+      <option value="d">margin-left プロパティを変化させてスライドアニメーション</option>
+    </select>
+    <br>
+    <button class="btn btn-purple" onclick="checkQ2()">答え合わせ</button>
+    <div class="result-msg" id="q2-result"></div>
+    <script>
+      function checkQ2() {
+        const v = document.getElementById('q2').value;
+        const r = document.getElementById('q2-result');
+        if (v === 'c') {
+          r.className = 'result-msg correct';
+          r.innerHTML = '✅ 正解！<br><br>' +
+            '<strong>理由：</strong><br>' +
+            '<code>transform</code> と <code>opacity</code> は<strong>コンポジット層</strong>で GPU 処理されるため、<br>' +
+            'レイアウト（リフロー）や描画（リペイント）を引き起こしません。<br><br>' +
+            '<strong>レンダリングパイプライン：</strong><br>' +
+            'JavaScript → Style → Layout（リフロー）→ Paint（リペイント）→ Composite<br><br>' +
+            '・<code>left/margin-left/width</code> → Layout から再実行（重い）<br>' +
+            '・<code>transform/opacity</code> → Composite のみ（軽い）';
+        } else if (v === '') {
+          r.className = 'result-msg info';
+          r.textContent = '⚠️ 選択肢を選んでください。';
+        } else {
+          r.className = 'result-msg wrong';
+          r.innerHTML = '❌ 不正解。<br>' +
+            '<code>transform: translateX()</code> は GPU で処理されリフローを引き起こさないため最も高速です。<br>' +
+            '<code>left/margin/width</code> はレイアウトの再計算が発生します。';
+        }
+      }
+    </script>
+  </div>
+
+  <!-- Q3 -->
+  <div class="quiz-block">
+    <h3>Q3. 正誤チェックボックス問題</h3>
+    <p><strong>正しい記述</strong>をすべて選んでください。</p>
+    <label class="checkbox-label"><input type="checkbox" id="q3a">
+      ① <code>transition</code> はトリガー（:hover など）なしでは動作しない</label>
+    <label class="checkbox-label"><input type="checkbox" id="q3b">
+      ② <code>animation-fill-mode: forwards</code> はアニメーション終了後に最初のフレームを維持する</label>
+    <label class="checkbox-label"><input type="checkbox" id="q3c">
+      ③ <code>transform</code> の複数関数は左から順に適用される</label>
+    <label class="checkbox-label"><input type="checkbox" id="q3d">
+      ④ <code>will-change</code> はすべての要素に設定するとパフォーマンスが向上する</label>
+    <label class="checkbox-label"><input type="checkbox" id="q3e">
+      ⑤ <code>prefers-reduced-motion: reduce</code> はアクセシビリティのためにアニメーションを削減する</label>
+    <label class="checkbox-label"><input type="checkbox" id="q3f">
+      ⑥ <code>animation-direction: alternate</code> は偶数回目のループで逆再生される</label>
+    <br>
+    <button class="btn btn-purple" onclick="checkQ3()">答え合わせ</button>
+    <div class="result-msg" id="q3-result"></div>
+    <script>
+      function checkQ3() {
+        const r = document.getElementById('q3-result');
+        const checks = {
+          a: document.getElementById('q3a').checked,
+          b: document.getElementById('q3b').checked,
+          c: document.getElementById('q3c').checked,
+          d: document.getElementById('q3d').checked,
+          e: document.getElementById('q3e').checked,
+          f: document.getElementById('q3f').checked,
+        };
+        // 正解：①③⑤⑥（a,c,e,f）
+        // ② forwards は最終フレームを維持（最初ではない）
+        // ④ 全要素への will-change はメモリを圧迫してパフォーマンス低下
+        const correct = { a:true, b:false, c:true, d:false, e:true, f:true };
+        const allOk = Object.keys(correct).every(k => checks[k] === correct[k]);
+        if (allOk) {
+          r.className = 'result-msg correct';
+          r.innerHTML = '✅ 全問正解！完璧です！';
+        } else {
+          r.className = 'result-msg wrong';
+          r.innerHTML =
+            '❌ 不正解の項目があります。<br><br>' +
+            '<strong>正しい記述：</strong>①③⑤⑥<br><br>' +
+            '<strong>誤った記述：</strong><br>' +
+            '・② <code>animation-fill-mode: forwards</code> は<strong>最終フレーム</strong>を維持します（最初のフレームではありません）。最初のフレームを適用するのは <code>backwards</code> です。<br>' +
+            '・④ <code>will-change</code> を全要素に設定すると<strong>メモリを圧迫</strong>してパフォーマンスが低下します。アニメーションが必要な要素にのみ、適切なタイミングで設定します。';
+        }
+      }
+    </script>
+  </div>
+
+  <!-- Q4 -->
+  <div class="quiz-block">
+    <h3>Q4. コード補完問題</h3>
+    <p>以下の要件を満たす CSS を完成させてください。</p>
+    <ul style="font-size:0.92em; color:#4a5568; line-height:2;">
+      <li>要素が上から下にフェードインするアニメーション</li>
+      <li>開始：<code>opacity: 0, translateY(-20px)</code></li>
+      <li>終了：<code>opacity: 1, translateY(0)</code></li>
+      <li>時間：0.5s・ease-out・1回のみ・終了後に最終状態を維持</li>
+    </ul>
+    <label>@keyframes 名（任意）：</label>
+    <input type="text" id="q4a" placeholder="例：fade-in-down">
+    <label>animation プロパティの値：</label>
+    <input type="text" id="q4b" placeholder="例：fade-in-down 0.5s ease-out 1 forwards">
+    <br>
+    <button class="btn btn-purple" onclick="checkQ4()">答え合わせ</button>
+    <div class="result-msg" id="q4-result"></div>
+    <script>
+      function checkQ4() {
+        const a = document.getElementById('q4a').value.trim();
+        const b = document.getElementById('q4b').value.trim().toLowerCase().replace(/\s+/g,' ');
+        const r = document.getElementById('q4-result');
+        const name = a.trim();
+        const hasName     = b.includes(name.toLowerCase()) && name.length > 0;
+        const hasDur      = b.includes('0.5s');
+        const hasEase     = b.includes('ease-out');
+        const hasForwards = b.includes('forwards');
+        const count = [hasName, hasDur, hasEase, hasForwards].filter(Boolean).length;
+        if (count === 4) {
+          r.className = 'result-msg correct';
+          r.innerHTML = `✅ 正解！<br><br>` +
+            `<code>@keyframes ${name} {</code><br>` +
+            `<code>  from { opacity: 0; transform: translateY(-20px); }</code><br>` +
+            `<code>  to   { opacity: 1; transform: translateY(0); }</code><br>` +
+            `<code>}</code><br>` +
+            `<code>.element {</code><br>` +
+            `<code>  animation: ${name} 0.5s ease-out 1 forwards;</code><br>` +
+            `<code>}</code>`;
+        } else if (!name) {
+          r.className = 'result-msg info';
+          r.textContent = '⚠️ @keyframes 名を入力してください。';
+        } else {
+          r.className = 'result-msg wrong';
+          r.innerHTML = `❌ ${count}/4 要素が正しい。<br>` +
+            `名前: ${hasName?'✅':'❌ animation の値に @keyframes 名を含める'}　` +
+            `0.5s: ${hasDur?'✅':'❌ 0.5s が必要'}　` +
+            `ease-out: ${hasEase?'✅':'❌ ease-out が必要'}　` +
+            `forwards: ${hasForwards?'✅':'❌ forwards（終了後に最終状態を維持）が必要'}`;
+        }
+      }
+    </script>
+  </div>
+
+</div><!-- /quiz-section -->
+
+
+<!-- 完了ボタン -->
+<div class="complete-section">
+  <p>🎉 「2-8 トランジションとアニメーション」の学習が完了したら記録しましょう！</p>
+  <button class="btn btn-done" onclick="markComplete()">✅ このセクションを完了にする</button>
+  <div id="complete-msg"
+       style="margin-top:10px; font-size:0.88em; color:#276749; display:none;">
+    進捗を保存しました！Chapter 2 の進捗バーに反映されます。
+  </div>
+</div>
+
+<!-- ページナビ -->
+<div class="page-nav">
+  <a class="prev" href="07_typography.html">← 2-7 タイポグラフィと色</a>
+  <a class="home" href="../index.html">🏠 目次へ</a>
+  <a class="next" href="09_variables.html">次へ：2-9 CSS変数と関数 →</a>
+</div>
+
+<!-- フッター -->
+<footer>
+  <p>
+    HTML5プロフェッショナル Level 2 学習サイト ／
+    <a href="../index.html">🏠 目次</a> ／
+    <a href="../exam/index.html">📝 模擬試験</a>
+  </p>
+  <p style="margin-top:4px;">© MeshinoKiwamiOkome</p>
+</footer>
+
+
+<!-- ============================================================ -->
+<!-- JavaScript -->
+<!-- ============================================================ -->
+<script>
+  /* ===== コピーボタン ===== */
+  function copyPre(btn) {
+    const pre = btn.nextElementSibling;
+    navigator.clipboard.writeText(pre.innerText || pre.textContent).then(() => {
+      btn.textContent = 'copied!';
+      setTimeout(() => btn.textContent = 'copy', 1800);
+    });
+  }
+
+  /* ===== タブ ===== */
+  function switchTab(btn, id) {
+    btn.closest('.tab-wrap').querySelectorAll('.tab-btn')
+       .forEach(b => b.classList.remove('active'));
+    btn.closest('.tab-wrap').querySelectorAll('.tab-content')
+       .forEach(c => c.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById(id).classList.add('active');
+  }
+
+  /* ===== transition プレイグラウンド ===== */
+  let transitionStyle = null;
+
+  function updateTransition() {
+    const prop      = document.getElementById('tr-prop').value;
+    const dur       = document.getElementById('tr-dur').value;
+    const ease      = document.getElementById('tr-ease').value;
+    const delay     = document.getElementById('tr-delay').value;
+    const hoverBg   = document.getElementById('tr-hover-bg').value;
+    const hoverTf   = document.getElementById('tr-hover-transform').value;
+
+    document.getElementById('tr-dur-val').textContent   = dur + 's';
+    document.getElementById('tr-delay-val').textContent = delay + 's';
+
+    const box = document.getElementById('trans-box');
+    box.style.transition = `${prop} ${dur}s ${ease} ${delay}s`;
+
+    // 既存のスタイルを削除
+    if (transitionStyle) transitionStyle.remove();
+    transitionStyle = document.createElement('style');
+    transitionStyle.textContent = `
+      #trans-box:hover {
+        background: ${hoverBg};
+        transform: ${hoverTf};
+        opacity: ${prop === 'opacity' ? '0.3' : '1'};
+        border-radius: ${prop === 'border-radius' ? '50%' : '8px'};
+        box-shadow: ${prop === 'box-shadow' ? '0 8px 24px rgba(85,60,154,0.5)' : 'none'};
+      }
+    `;
+    document.head.appendChild(transitionStyle);
+
+    const lines = [
+      `.element {`,
+      `  transition: ${prop} ${dur}s ${ease}${parseFloat(delay) > 0 ? ' ' + delay + 's' : ''};`,
+      `}`,
+      `.element:hover {`,
+      hoverBg !== '#553c9a' ? `  background: ${hoverBg};` : null,
+      hoverTf !== 'none'    ? `  transform: ${hoverTf};`  : null,
+      `}`,
+    ].filter(Boolean);
+
+    document.getElementById('trans-code').textContent = lines.join('\n');
+  }
+
+  updateTransition();
+
+  /* ===== イージング ビジュアライザ ===== */
+  const easings = [
+    { name: 'ease',        css: 'ease' },
+    { name: 'linear',      css: 'linear' },
+    { name: 'ease-in',     css: 'ease-in' },
+    { name: 'ease-out',    css: 'ease-out' },
+    { name: 'ease-in-out', css: 'ease-in-out' },
+    { name: 'bounce',      css: 'cubic-bezier(0.68,-0.55,0.27,1.55)' },
+    { name: 'spring',      css: 'cubic-bezier(0.34,1.56,0.64,1)' },
+    { name: 'steps(5)',    css: 'steps(5, end)' },
+  ];
+
+  function buildEasingGrid() {
+    const grid = document.getElementById('easing-grid');
+    grid.innerHTML = '';
+    easings.forEach((e, i) => {
+      const card = document.createElement('div');
+      card.className = 'easing-card';
+      card.id = `easing-card-${i}`;
+      card.innerHTML = `
+        <div class="easing-name">${e.name}</div>
+        <div class="easing-track">
+          <div class="easing-ball" id="easing-ball-${i}"></div>
+        </div>
+      `;
+      card.addEventListener('click', () => playEasing(i));
+      grid.appendChild(card);
+    });
+  }
+
+  function playEasing(idx) {
+    const ball = document.getElementById(`easing-ball-${idx}`);
+    const card = document.getElementById(`easing-card-${idx}`);
+    if (!ball) return;
+    document.querySelectorAll('.easing-card').forEach(c => c.classList.remove('active'));
+    card.classList.add('active');
+    ball.style.transition = 'none';
+    ball.style.left = '-8px';
+    setTimeout(() => {
+      ball.style.transition = `left 1s ${easings[idx].css}`;
+      ball.style.left = 'calc(100% - 8px)';
+    }, 50);
+  }
+
+  function buildEasingRace() {
+    const race = document.getElementById('easing-race');
+    race.innerHTML = '';
+    easings.forEach((e, i) => {
+      const row = document.createElement('div');
+      row.style.cssText = 'display:flex; align-items:center; gap:8px; margin-bottom:6px;';
+      row.innerHTML = `
+        <span style="font-family:'Consolas','Monaco',monospace; font-size:0.72em;
+                     color:#a0aec0; width:100px; flex-shrink:0;">${e.name}</span>
+        <div style="flex:1; background:#2d3748; border-radius:4px;
+                    height:8px; position:relative; overflow:visible;">
+          <div id="race-ball-${i}"
+               style="width:14px; height:14px; border-radius:50%;
+                      background:#9f7aea; position:absolute;
+                      top:-3px; left:-7px;"></div>
+        </div>
+      `;
+      race.appendChild(row);
+    });
+  }
+
+  function playAllEasings() {
+    easings.forEach((e, i) => {
+      const ball = document.getElementById(`race-ball-${i}`);
+      if (!ball) return;
+      ball.style.transition = 'none';
+      ball.style.left = '-7px';
+      setTimeout(() => {
+        ball.style.transition = `left 1.5s ${e.css}`;
+        ball.style.left = 'calc(100% - 7px)';
+      }, 50);
+    });
+  }
+
+  function resetAllEasings() {
+    easings.forEach((_, i) => {
+      const ball = document.getElementById(`race-ball-${i}`);
+      if (!ball) return;
+      ball.style.transition = 'none';
+      ball.style.left = '-7px';
+    });
+  }
+
+  buildEasingGrid();
+  buildEasingRace();
+
+  /* ===== transform グリッド ===== */
+  const transforms = [
+    { label: 'translate',  value: 'translate(20px, -10px)', hover: 'translate(20px,-10px)' },
+    { label: 'translateX', value: 'translateX(30px)',        hover: 'translateX(30px)' },
+    { label: 'translateY', value: 'translateY(-20px)',       hover: 'translateY(-20px)' },
+    { label: 'scale',      value: 'scale(1.4)',              hover: 'scale(1.4)' },
+    { label: 'scaleX',     value: 'scaleX(1.6)',             hover: 'scaleX(1.6)' },
+    { label: 'scaleY',     value: 'scaleY(1.6)',             hover: 'scaleY(1.6)' },
+    { label: 'rotate',     value: 'rotate(45deg)',           hover: 'rotate(45deg)' },
+    { label: 'skewX',      value: 'skewX(20deg)',            hover: 'skewX(20deg)' },
+    { label: 'skewY',      value: 'skewY(15deg)',            hover: 'skewY(15deg)' },
+    { label: 'scale+rotate', value: 'scale(1.2) rotate(30deg)', hover: 'scale(1.2) rotate(30deg)' },
+    { label: 'scaleX(-1)', value: 'scaleX(-1)',              hover: 'scaleX(-1)' },
+    { label: 'rotate(180)', value: 'rotate(180deg)',         hover: 'rotate(180deg)' },
+  ];
+
+  function buildTransformGrid() {
+    const grid = document.getElementById('transform-grid');
+    grid.innerHTML = '';
+    transforms.forEach((t, i) => {
+      const card = document.createElement('div');
+      card.className = 'transform-card';
+      card.innerHTML = `
+        <div class="transform-demo-box" id="tf-box-${i}">✦</div>
+        <div class="transform-label">${t.label}</div>
+        <div class="transform-value">${t.value}</div>
+      `;
+      card.addEventListener('mouseenter', () => {
+        document.getElementById(`tf-box-${i}`).style.transform = t.hover;
+      });
+      card.addEventListener('mouseleave', () => {
+        document.getElementById(`tf-box-${i}`).style.transform = 'none';
+      });
+      grid.appendChild(card);
+    });
+  }
+
+  buildTransformGrid();
+
+  /* ===== transform プレイグラウンド ===== */
+  function updateTransform() {
+    const tx  = document.getElementById('tf-tx').value;
+    const ty  = document.getElementById('tf-ty').value;
+    const sx  = document.getElementById('tf-sx').value;
+    const sy  = document.getElementById('tf-sy').value;
+    const rot = document.getElementById('tf-rot').value;
+    const skx = document.getElementById('tf-skx').value;
+
+    document.getElementById('tf-tx-val').textContent  = tx  + 'px';
+    document.getElementById('tf-ty-val').textContent  = ty  + 'px';
+    document.getElementById('tf-sx-val').textContent  = sx;
+    document.getElementById('tf-sy-val').textContent  = sy;
+    document.getElementById('tf-rot-val').textContent = rot + 'deg';
+    document.getElementById('tf-skx-val').textContent = skx + 'deg';
+
+    const parts = [];
+    if (parseFloat(tx) !== 0 || parseFloat(ty) !== 0)
+      parts.push(`translate(${tx}px, ${ty}px)`);
+    if (parseFloat(sx) !== 1 || parseFloat(sy) !== 1)
+      parts.push(`scale(${sx}, ${sy})`);
+    if (parseFloat(rot) !== 0)
+      parts.push(`rotate(${rot}deg)`);
+    if (parseFloat(skx) !== 0)
+      parts.push(`skewX(${skx}deg)`);
+
+    const tfVal = parts.length > 0 ? parts.join(' ') : 'none';
+    document.getElementById('transform-box').style.transform = tfVal;
+
+    const lines = [`.element {`];
+    if (tfVal !== 'none') lines.push(`  transform: ${tfVal};`);
+    else lines.push(`  /* transform: none（デフォルト）*/`);
+    lines.push(`}`);
+
+    document.getElementById('transform-code').textContent = lines.join('\n');
+  }
+
+  /* ===== @keyframes プレイグラウンド ===== */
+  const kfDescriptions = {
+    'demo-fade':      `@keyframes demo-fade {\n  from { opacity: 0; }\n  to   { opacity: 1; }\n}`,
+    'demo-slide':     `@keyframes demo-slide {\n  from { transform: translateX(-60px); opacity: 0; }\n  to   { transform: translateX(0);     opacity: 1; }\n}`,
+    'demo-bounce':    `@keyframes demo-bounce {\n  0%,100% { transform: translateY(0); }\n  50%     { transform: translateY(-30px); }\n}`,
+    'demo-spin':      `@keyframes demo-spin {\n  from { transform: rotate(0deg); }\n  to   { transform: rotate(360deg); }\n}`,
+    'demo-pulse':     `@keyframes demo-pulse {\n  0%,100% { transform: scale(1);    opacity: 1; }\n  50%     { transform: scale(1.3); opacity: 0.7; }\n}`,
+    'demo-shake':     `@keyframes demo-shake {\n  0%,100% { transform: translateX(0); }\n  20%     { transform: translateX(-8px); }\n  40%     { transform: translateX(8px); }\n}`,
+    'demo-flip':      `@keyframes demo-flip {\n  0%   { transform: perspective(400px) rotateY(0); }\n  100% { transform: perspective(400px) rotateY(360deg); }\n}`,
+    'demo-swing':     `@keyframes demo-swing {\n  0%,100% { transform: rotate(0deg); }\n  25%     { transform: rotate(15deg); }\n  75%     { transform: rotate(-15deg); }\n}`,
+    'demo-heartbeat': `@keyframes demo-heartbeat {\n  0%,100% { transform: scale(1); }\n  14%     { transform: scale(1.3); }\n  28%     { transform: scale(1); }\n  42%     { transform: scale(1.3); }\n}`,
+  };
+
+  function updateKeyframes() {
+    const type = document.getElementById('kf-type').value;
+    const dur  = document.getElementById('kf-dur').value;
+    const ease = document.getElementById('kf-ease').value;
+    const iter = document.getElementById('kf-iter').value;
+    const dir  = document.getElementById('kf-dir').value;
+    const fill = document.getElementById('kf-fill').value;
+
+    document.getElementById('kf-dur-val').textContent = dur + 's';
+
+    const target = document.getElementById('kf-target');
+    target.style.animation = `${type} ${dur}s ${ease} ${iter} ${dir} ${fill}`;
+
+    const desc = kfDescriptions[type] || '';
+    document.getElementById('kf-code').textContent =
+      `${desc}\n\n.element {\n  animation: ${type} ${dur}s ${ease} ${iter} ${dir} ${fill};\n}`;
+  }
+
+  function restartAnimation() {
+    const target = document.getElementById('kf-target');
+    target.style.animation = 'none';
+    void target.offsetWidth; // reflow
+    updateKeyframes();
+  }
+
+  function pauseAnimation() {
+    const target = document.getElementById('kf-target');
+    const state  = target.style.animationPlayState;
+    target.style.animationPlayState = state === 'paused' ? 'running' : 'paused';
+  }
+
+  updateKeyframes();
+
+  /* ===== 完了ボタン ===== */
+  function markComplete() {
+    localStorage.setItem('html5lv2_ch2_08', 'done');
+    document.getElementById('complete-msg').style.display = 'block';
+  }
+  if (localStorage.getItem('html5lv2_ch2_08') === 'done') {
+    document.getElementById('complete-msg').style.display = 'block';
+  }
+</script>
+
+</body>
+</html>

@@ -1,0 +1,1468 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>2-6 レスポンシブデザイン | HTML5プロフェッショナル Level 2</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; }
+    body {
+      font-family: 'Segoe UI', 'Helvetica Neue', sans-serif;
+      max-width: 960px; margin: 40px auto; padding: 0 24px;
+      background: #f0f4f8; color: #2d3748; line-height: 1.8;
+    }
+    .breadcrumb {
+      font-size: 0.82em; color: #a0aec0; margin-bottom: 20px;
+      font-family: 'Consolas','Monaco',monospace;
+    }
+    .breadcrumb a { color: #553c9a; text-decoration: none; }
+    .breadcrumb a:hover { text-decoration: underline; }
+
+    .chapter-header {
+      background: linear-gradient(135deg, #553c9a, #2c7a7b);
+      border-radius: 12px; padding: 32px 32px 24px;
+      margin-bottom: 32px; color: #fff;
+      box-shadow: 0 4px 18px rgba(85,60,154,0.35);
+    }
+    .chapter-header .ch-num {
+      font-size: 0.8em; font-family: 'Consolas','Monaco',monospace;
+      opacity: 0.85; letter-spacing: 0.08em; margin-bottom: 6px;
+    }
+    .chapter-header h1 {
+      margin: 0 0 10px; font-size: 1.6em; color: #fff; border: none; padding: 0;
+    }
+    .chapter-header p { margin: 0; font-size: 0.92em; opacity: 0.88; }
+    .badge-row { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 14px; }
+    .badge {
+      background: rgba(255,255,255,0.18);
+      border: 1px solid rgba(255,255,255,0.35);
+      border-radius: 20px; padding: 3px 12px;
+      font-size: 0.76em; font-weight: bold;
+    }
+
+    .section-nav {
+      background: #fff; border: 1px solid #e9d8fd;
+      border-radius: 10px; padding: 18px 22px;
+      margin-bottom: 32px; box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+    }
+    .section-nav h2 {
+      margin: 0 0 12px; font-size: 0.92em; color: #553c9a; border: none; padding: 0;
+    }
+    .section-nav ol { margin: 0; padding-left: 20px; font-size: 0.9em; }
+    .section-nav ol li { margin: 4px 0; }
+    .section-nav ol li a { color: #553c9a; text-decoration: none; }
+    .section-nav ol li a:hover { text-decoration: underline; }
+    .section-nav ol li.current a { color: #1a365d; font-weight: bold; }
+
+    h2 {
+      color: #1a365d; margin-top: 48px;
+      border-left: 5px solid #9f7aea; padding-left: 12px;
+    }
+    h3 { color: #553c9a; margin-top: 28px; }
+
+    code {
+      background: #faf5ff; padding: 2px 6px;
+      border-radius: 4px; font-size: 0.93em;
+      font-family: 'Consolas','Monaco',monospace;
+      color: #553c9a;
+    }
+    pre {
+      background: #1a202c; color: #e2e8f0;
+      padding: 18px 20px; border-radius: 8px;
+      overflow-x: auto; font-size: 0.88em;
+      line-height: 1.7; font-family: 'Consolas','Monaco',monospace;
+    }
+    pre .comment  { color: #68d391; }
+    pre .selector { color: #f6ad55; font-weight: bold; }
+    pre .prop     { color: #81e6d9; }
+    pre .val      { color: #fbd38d; }
+    pre .out      { color: #a0aec0; }
+    pre .at       { color: #b794f4; font-weight: bold; }
+
+    .pre-wrap { position: relative; margin: 14px 0; }
+    .copy-btn {
+      position: absolute; top: 8px; right: 8px;
+      background: #4a5568; color: #e2e8f0;
+      border: none; border-radius: 4px; padding: 4px 10px;
+      font-size: 0.75em; cursor: pointer;
+      font-family: 'Consolas','Monaco',monospace;
+      transition: background 0.2s; z-index: 1;
+    }
+    .copy-btn:hover { background: #9f7aea; }
+
+    .note {
+      background: #fff; border: 1px dashed #d6bcfa;
+      border-radius: 6px; padding: 14px 18px;
+      font-size: 0.93em; color: #4a5568; margin: 14px 0;
+    }
+    .note strong { color: #553c9a; }
+    .warn {
+      background: #fffaf0; border: 1px solid #f6ad55;
+      border-left: 5px solid #f6ad55; border-radius: 6px;
+      padding: 14px 18px; font-size: 0.93em; color: #744210; margin: 14px 0;
+    }
+    .good {
+      background: #f0fff4; border: 1px solid #68d391;
+      border-left: 5px solid #48bb78; border-radius: 6px;
+      padding: 14px 18px; font-size: 0.93em; color: #276749; margin: 14px 0;
+    }
+    .demo-box {
+      background: #fff; border: 1px solid #e9d8fd;
+      border-radius: 8px; padding: 20px 24px;
+      margin: 12px 0 28px; box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+    }
+
+    /* ===== デバイスシミュレーター ===== */
+    .device-simulator {
+      background: #1a202c; border-radius: 12px;
+      padding: 20px; margin: 14px 0;
+    }
+    .device-btns {
+      display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 16px;
+    }
+    .device-btn {
+      padding: 8px 16px; border-radius: 8px;
+      border: 2px solid #4a5568; background: #2d3748;
+      color: #a0aec0; font-family: 'Consolas','Monaco',monospace;
+      font-size: 0.82em; font-weight: bold; cursor: pointer;
+      transition: all 0.2s; display: flex; align-items: center; gap: 6px;
+    }
+    .device-btn:hover { border-color: #9f7aea; color: #e9d8fd; }
+    .device-btn.active {
+      background: #553c9a; border-color: #9f7aea; color: #e9d8fd;
+    }
+    .device-frame-wrap {
+      display: flex; justify-content: center;
+      background: #0d1117; border-radius: 8px;
+      padding: 16px; min-height: 300px; overflow: auto;
+    }
+    .device-frame {
+      background: #fff; border-radius: 8px;
+      overflow: hidden; transition: width 0.4s ease;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+      min-height: 260px; position: relative;
+    }
+    .device-content {
+      padding: 12px; height: 100%;
+    }
+    /* レスポンシブコンテンツ */
+    .resp-nav {
+      display: flex; gap: 8px; padding: 8px 12px;
+      background: #553c9a; border-radius: 6px;
+      align-items: center; margin-bottom: 8px;
+    }
+    .resp-nav-logo {
+      font-weight: bold; color: #fff;
+      font-family: 'Consolas','Monaco',monospace; font-size: 0.88em;
+    }
+    .resp-nav-links {
+      display: flex; gap: 12px; margin-left: auto;
+    }
+    .resp-nav-link {
+      color: #e9d8fd; font-size: 0.78em;
+      font-family: 'Consolas','Monaco',monospace;
+    }
+    .resp-nav-hamburger {
+      display: none; margin-left: auto;
+      color: #fff; font-size: 1.2em; cursor: pointer;
+    }
+    .resp-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 6px; margin-bottom: 8px;
+      transition: grid-template-columns 0.3s;
+    }
+    .resp-card {
+      background: #f0f4f8; border-radius: 6px;
+      padding: 10px 8px; font-size: 0.72em;
+      font-family: 'Consolas','Monaco',monospace;
+      color: #4a5568; text-align: center;
+      border: 1px solid #e2e8f0;
+    }
+    .resp-hero {
+      background: linear-gradient(135deg, #553c9a, #2c7a7b);
+      border-radius: 6px; padding: 16px 12px;
+      color: #fff; text-align: center; margin-bottom: 8px;
+    }
+    .resp-hero-title {
+      font-size: 0.9em; font-weight: bold; margin-bottom: 4px;
+    }
+    .resp-hero-sub {
+      font-size: 0.72em; opacity: 0.85;
+    }
+    .device-info {
+      margin-top: 10px; padding: 8px 12px;
+      background: #0d1117; border-radius: 6px;
+      font-family: 'Consolas','Monaco',monospace;
+      font-size: 0.82em; color: #68d391; line-height: 1.8;
+    }
+
+    /* ===== メディアクエリ ビジュアライザ ===== */
+    .mq-visualizer {
+      background: #1a202c; border-radius: 10px;
+      padding: 16px 20px; margin: 14px 0;
+    }
+    .mq-bar-wrap {
+      position: relative; height: 40px; margin: 8px 0 20px;
+    }
+    .mq-bar {
+      position: absolute; top: 0; bottom: 0;
+      border-radius: 4px; display: flex;
+      align-items: center; padding: 0 8px;
+      font-family: 'Consolas','Monaco',monospace;
+      font-size: 0.72em; font-weight: bold;
+      white-space: nowrap; overflow: hidden;
+    }
+    .mq-labels {
+      display: flex; justify-content: space-between;
+      font-family: 'Consolas','Monaco',monospace;
+      font-size: 0.72em; color: #a0aec0; margin-top: 4px;
+    }
+    .mq-current-line {
+      position: absolute; top: -4px; bottom: -4px;
+      width: 2px; background: #f6ad55;
+      transition: left 0.3s;
+    }
+    .mq-current-label {
+      position: absolute; top: -22px;
+      background: #f6ad55; color: #1a202c;
+      font-family: 'Consolas','Monaco',monospace;
+      font-size: 0.7em; font-weight: bold;
+      padding: 2px 6px; border-radius: 4px;
+      transform: translateX(-50%); white-space: nowrap;
+    }
+
+    /* ===== 単位デモ ===== */
+    .unit-demo {
+      background: #0d1117; border-radius: 10px;
+      padding: 16px; margin: 14px 0;
+    }
+    .unit-bar {
+      height: 32px; border-radius: 4px;
+      display: flex; align-items: center;
+      padding: 0 10px; margin-bottom: 8px;
+      font-family: 'Consolas','Monaco',monospace;
+      font-size: 0.78em; font-weight: bold;
+      transition: width 0.3s; position: relative;
+      overflow: hidden; white-space: nowrap;
+    }
+
+    /* ===== インタラクティブデモ ===== */
+    .interactive-demo {
+      background: #f5f0ff; border: 1px solid #e9d8fd;
+      border-radius: 8px; padding: 16px 20px; margin: 14px 0;
+    }
+    .demo-label {
+      font-size: 0.85em; font-weight: bold;
+      color: #553c9a; margin-bottom: 10px;
+    }
+    .demo-input-row {
+      display: flex; gap: 10px; align-items: center;
+      flex-wrap: wrap; margin-bottom: 10px;
+    }
+    .demo-input {
+      border: 2px solid #e9d8fd; border-radius: 6px;
+      padding: 7px 12px; font-size: 0.9em;
+      font-family: 'Consolas','Monaco',monospace;
+      color: #2d3748; background: #fff; flex: 1; min-width: 80px;
+    }
+    .demo-input:focus { border-color: #9f7aea; outline: none; }
+    .demo-btn {
+      background: #553c9a; color: #fff; border: none;
+      border-radius: 6px; padding: 8px 18px;
+      font-size: 0.88em; font-weight: bold; cursor: pointer;
+      transition: background 0.2s; white-space: nowrap;
+    }
+    .demo-btn:hover { background: #44337a; }
+    .demo-output {
+      background: #1a202c; color: #b794f4;
+      border-radius: 6px; padding: 10px 14px;
+      font-family: 'Consolas','Monaco',monospace;
+      font-size: 0.85em; min-height: 40px;
+      white-space: pre-wrap; line-height: 1.7;
+    }
+
+    /* ===== タブ ===== */
+    .tab-wrap { margin: 14px 0; }
+    .tab-btns { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: -1px; }
+    .tab-btn {
+      padding: 8px 18px; border: 1px solid #e9d8fd;
+      border-bottom: none; border-radius: 6px 6px 0 0;
+      background: #faf5ff; color: #553c9a;
+      font-size: 0.85em; font-weight: bold;
+      font-family: 'Consolas','Monaco',monospace;
+      cursor: pointer; transition: background 0.15s;
+    }
+    .tab-btn.active { background: #fff; border-bottom: 1px solid #fff; }
+    .tab-btn:hover:not(.active) { background: #f0e6ff; }
+    .tab-content {
+      display: none; background: #fff;
+      border: 1px solid #e9d8fd;
+      border-radius: 0 6px 6px 6px; padding: 18px 20px;
+    }
+    .tab-content.active { display: block; }
+
+    /* ===== テーブル ===== */
+    table.ref-table {
+      border-collapse: collapse; width: 100%;
+      background: #fff; border-radius: 8px;
+      overflow: hidden; box-shadow: 0 2px 6px rgba(0,0,0,0.07);
+      margin: 14px 0; font-size: 0.9em;
+    }
+    table.ref-table th, table.ref-table td {
+      border: 1px solid #e9d8fd; padding: 10px 14px; text-align: left;
+    }
+    table.ref-table thead tr { background: #553c9a; color: #fff; }
+    table.ref-table tbody tr:nth-child(even) { background: #faf5ff; }
+
+    /* ===== 演習問題 ===== */
+    .quiz-section {
+      background: #faf5ff; border-left: 6px solid #9f7aea;
+      border-radius: 0 8px 8px 0; padding: 24px 28px; margin: 48px 0 32px;
+    }
+    .quiz-section > h2 { margin-top: 0; color: #553c9a; border-left-color: #9f7aea; }
+    .quiz-block {
+      background: #fff; border: 1px solid #e9d8fd;
+      border-radius: 8px; padding: 18px 22px; margin-bottom: 22px;
+    }
+    .quiz-block h3 { margin-top: 0; color: #553c9a; }
+    .quiz-block input[type="text"],
+    .quiz-block select {
+      border: 2px solid #e9d8fd; border-radius: 6px;
+      padding: 8px 12px; font-size: 0.95em;
+      width: 100%; max-width: 440px; margin: 6px 0;
+      outline: none; font-family: 'Consolas','Monaco',monospace;
+      transition: border-color 0.2s;
+    }
+    .quiz-block input[type="text"]:focus,
+    .quiz-block select:focus { border-color: #9f7aea; }
+    .quiz-block label { display: block; margin: 8px 0 2px; font-weight: bold; color: #4a5568; }
+    .quiz-block label.checkbox-label {
+      display: flex; align-items: flex-start; gap: 8px;
+      font-weight: normal; cursor: pointer; margin: 6px 0;
+    }
+    .quiz-block label.checkbox-label input { margin-top: 3px; flex-shrink: 0; }
+    .btn {
+      display: inline-block; padding: 9px 20px;
+      border-radius: 6px; border: none; cursor: pointer;
+      font-size: 0.95em; font-weight: bold;
+      transition: opacity 0.2s; margin-top: 8px;
+    }
+    .btn:hover { opacity: 0.85; }
+    .btn-purple { background: #553c9a; color: #fff; }
+    .btn-done   { background: #48bb78; color: #fff; }
+    .result-msg {
+      margin-top: 10px; padding: 10px 14px;
+      border-radius: 6px; font-weight: bold; display: none;
+    }
+    .result-msg.correct { background: #c6f6d5; color: #276749; display: block; }
+    .result-msg.wrong   { background: #fed7d7; color: #9b2335; display: block; }
+    .result-msg.info    { background: #e9d8fd; color: #553c9a; display: block; }
+
+    .page-nav {
+      display: flex; justify-content: space-between;
+      align-items: center; margin-top: 48px;
+      padding-top: 20px; border-top: 2px solid #e9d8fd;
+      gap: 12px; flex-wrap: wrap;
+    }
+    .page-nav a {
+      display: inline-block; padding: 10px 20px;
+      border-radius: 8px; text-decoration: none;
+      font-weight: bold; font-size: 0.9em; transition: opacity 0.2s;
+    }
+    .page-nav a:hover { opacity: 0.8; }
+    .page-nav .prev { background: #edf2f7; color: #4a5568; }
+    .page-nav .next { background: #553c9a; color: #fff; }
+    .page-nav .home { background: #fff; color: #553c9a; border: 2px solid #553c9a; }
+
+    .complete-section {
+      background: #f0fff4; border: 2px solid #48bb78;
+      border-radius: 10px; padding: 20px 24px;
+      margin-top: 40px; text-align: center;
+    }
+    .complete-section p { margin: 0 0 12px; color: #276749; font-weight: bold; }
+
+    footer {
+      margin-top: 48px; padding-top: 16px;
+      border-top: 2px solid #e9d8fd;
+      font-size: 0.82em; color: #a0aec0; text-align: center;
+    }
+    footer a { color: #553c9a; text-decoration: none; }
+    footer a:hover { text-decoration: underline; }
+
+    @media (max-width: 600px) {
+      body { font-size: 0.84em; }
+      .chapter-header { padding: 20px 16px; }
+      .chapter-header h1 { font-size: 1.2em; }
+      .quiz-section { padding: 16px 12px; }
+      .quiz-block { padding: 14px 12px; }
+      .page-nav { flex-direction: column; align-items: stretch; }
+      .page-nav a { text-align: center; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- パンくず -->
+<div class="breadcrumb">
+  <a href="../index.html">🏠 HTML5 Level 2</a> ›
+  <a href="index.html">Chapter 2：CSSとスタイリング</a> ›
+  2-6 レスポンシブデザイン
+</div>
+
+<!-- ヘッダー -->
+<div class="chapter-header">
+  <div class="ch-num">CHAPTER 02 › SECTION 06</div>
+  <h1>📱 2-6 レスポンシブデザイン</h1>
+  <p>メディアクエリ・ブレークポイント・viewport メタタグ・
+  相対単位（rem/em/vw/vh/clamp）・モバイルファーストを
+  デバイスシミュレーターと単位ビジュアライザで完全理解します。</p>
+  <div class="badge-row">
+    <span class="badge">@media</span>
+    <span class="badge">viewport</span>
+    <span class="badge">rem / em</span>
+    <span class="badge">vw / vh</span>
+    <span class="badge">clamp()</span>
+    <span class="badge">モバイルファースト</span>
+    <span class="badge">ブレークポイント</span>
+    <span class="badge">container queries</span>
+  </div>
+</div>
+
+<!-- セクションナビ -->
+<div class="section-nav">
+  <h2>📋 Chapter 2 のセクション</h2>
+  <ol>
+    <li><a href="01_selectors.html">2-1 セレクタと詳細度</a></li>
+    <li><a href="02_boxmodel.html">2-2 ボックスモデル</a></li>
+    <li><a href="03_flexbox.html">2-3 Flexbox</a></li>
+    <li><a href="04_grid.html">2-4 CSS Grid</a></li>
+    <li><a href="05_positioning.html">2-5 配置とポジショニング</a></li>
+    <li class="current"><a href="06_responsive.html">2-6 レスポンシブデザイン</a></li>
+    <li><a href="07_typography.html">2-7 タイポグラフィと色</a></li>
+    <li><a href="08_animation.html">2-8 トランジションとアニメーション</a></li>
+    <li><a href="09_variables.html">2-9 CSS変数と関数</a></li>
+    <li><a href="10_advanced.html">2-10 CSS応用・試験対策</a></li>
+  </ol>
+</div>
+
+
+<!-- ============================================================ -->
+<!-- PART 1: viewport メタタグ -->
+<!-- ============================================================ -->
+<h2 id="viewport">① viewport メタタグ</h2>
+
+<div class="note">
+  <strong>重要ポイント：レスポンシブデザインの第一歩は
+  <code>&lt;meta name="viewport"&gt;</code> タグの設定です。
+  これがないとモバイルブラウザがページをデスクトップ幅で表示してしまいます。</strong>
+</div>
+
+<div class="demo-box">
+  <div class="pre-wrap">
+    <button class="copy-btn" onclick="copyPre(this)">copy</button>
+<pre>
+<span class="comment">&lt;!-- viewport メタタグ（必須）--&gt;</span>
+&lt;<span class="prop">meta</span> <span class="val">name</span>=<span class="out">"viewport"</span>
+      <span class="val">content</span>=<span class="out">"width=device-width, initial-scale=1.0"</span>&gt;
+
+<span class="comment">&lt;!-- 各パラメータの意味 --&gt;</span>
+<span class="comment">&lt;!-- width=device-width：デバイスの実際の幅に合わせる --&gt;</span>
+<span class="comment">&lt;!-- initial-scale=1.0：初期ズーム倍率 1.0（等倍）--&gt;</span>
+<span class="comment">&lt;!-- user-scalable=no：ユーザーのズームを禁止（非推奨）--&gt;</span>
+<span class="comment">&lt;!-- maximum-scale=1.0：最大ズーム倍率（アクセシビリティ上非推奨）--&gt;</span>
+
+<span class="comment">&lt;!-- viewport-fit=cover：ノッチ対応 --&gt;</span>
+&lt;<span class="prop">meta</span> <span class="val">name</span>=<span class="out">"viewport"</span>
+      <span class="val">content</span>=<span class="out">"width=device-width, initial-scale=1.0, viewport-fit=cover"</span>&gt;
+</pre>
+  </div>
+
+  <div class="warn">
+    ⚠️ <strong>viewport タグなしの問題：</strong>
+    モバイルブラウザはデフォルトで 980px 幅でページを表示し、
+    それを縮小して表示します。
+    <code>width=device-width</code> を指定することで
+    デバイスの実際の幅でレンダリングされます。
+  </div>
+</div>
+
+
+<!-- ============================================================ -->
+<!-- PART 2: メディアクエリ -->
+<!-- ============================================================ -->
+<h2 id="media-query">② メディアクエリ</h2>
+
+<div class="note">
+  <strong>重要ポイント：<code>@media</code> ルールで画面幅などの条件に応じて
+  スタイルを切り替えます。
+  <code>min-width</code>（モバイルファースト）と
+  <code>max-width</code>（デスクトップファースト）の
+  使い分けが重要です。</strong>
+</div>
+
+<div class="demo-box">
+  <h3>メディアクエリの構文</h3>
+  <div class="pre-wrap">
+    <button class="copy-btn" onclick="copyPre(this)">copy</button>
+<pre>
+<span class="comment">/* 基本構文 */</span>
+<span class="at">@media</span> <span class="val">メディアタイプ</span> <span class="prop">and</span> (<span class="val">条件</span>) {
+  <span class="comment">/* 条件に合致したときのスタイル */</span>
+}
+
+<span class="comment">/* モバイルファースト（min-width）← 推奨 */</span>
+<span class="comment">/* デフォルト：モバイル向けスタイル */</span>
+<span class="selector">.container</span> { <span class="prop">padding</span>: <span class="val">16px</span>; }
+
+<span class="at">@media</span> (<span class="prop">min-width</span>: <span class="val">768px</span>) {
+  <span class="selector">.container</span> { <span class="prop">padding</span>: <span class="val">24px</span>; } <span class="comment">/* タブレット以上 */</span>
+}
+<span class="at">@media</span> (<span class="prop">min-width</span>: <span class="val">1024px</span>) {
+  <span class="selector">.container</span> { <span class="prop">padding</span>: <span class="val">32px</span>; } <span class="comment">/* PC以上 */</span>
+}
+
+<span class="comment">/* デスクトップファースト（max-width）*/</span>
+<span class="selector">.container</span> { <span class="prop">padding</span>: <span class="val">32px</span>; }
+
+<span class="at">@media</span> (<span class="prop">max-width</span>: <span class="val">1023px</span>) {
+  <span class="selector">.container</span> { <span class="prop">padding</span>: <span class="val">24px</span>; }
+}
+<span class="at">@media</span> (<span class="prop">max-width</span>: <span class="val">767px</span>) {
+  <span class="selector">.container</span> { <span class="prop">padding</span>: <span class="val">16px</span>; }
+}
+
+<span class="comment">/* 範囲指定（CSS Media Queries Level 4）*/</span>
+<span class="at">@media</span> (<span class="prop">768px</span> &lt;= <span class="prop">width</span> &lt; <span class="val">1024px</span>) {
+  <span class="comment">/* タブレットのみ */</span>
+}
+
+<span class="comment">/* 複数条件の組み合わせ */</span>
+<span class="at">@media</span> (<span class="prop">min-width</span>: <span class="val">768px</span>) <span class="prop">and</span> (<span class="prop">max-width</span>: <span class="val">1023px</span>) {
+  <span class="comment">/* タブレットのみ */</span>
+}
+<span class="at">@media</span> (<span class="prop">min-width</span>: <span class="val">768px</span>), (<span class="prop">orientation</span>: <span class="val">landscape</span>) {
+  <span class="comment">/* タブレット以上 OR 横向き */</span>
+}
+</pre>
+  </div>
+
+  <h3>主要なメディア特性</h3>
+  <table class="ref-table">
+    <thead>
+      <tr><th>特性</th><th>例</th><th>説明</th></tr>
+    </thead>
+    <tbody>
+      <tr><td><code>width</code></td>
+        <td><code>min-width: 768px</code></td>
+        <td>ビューポートの幅</td></tr>
+      <tr><td><code>height</code></td>
+        <td><code>min-height: 600px</code></td>
+        <td>ビューポートの高さ</td></tr>
+      <tr><td><code>orientation</code></td>
+        <td><code>orientation: landscape</code></td>
+        <td>横向き / 縦向き</td></tr>
+      <tr><td><code>prefers-color-scheme</code></td>
+        <td><code>prefers-color-scheme: dark</code></td>
+        <td>ダークモード設定</td></tr>
+      <tr><td><code>prefers-reduced-motion</code></td>
+        <td><code>prefers-reduced-motion: reduce</code></td>
+        <td>アニメーション削減設定</td></tr>
+      <tr><td><code>hover</code></td>
+        <td><code>hover: hover</code></td>
+        <td>ホバー操作が可能か</td></tr>
+      <tr><td><code>resolution</code></td>
+        <td><code>min-resolution: 2dppx</code></td>
+        <td>画面解像度（Retina 判定）</td></tr>
+    </tbody>
+  </table>
+
+  <h3>🎮 メディアクエリ ブレークポイント ビジュアライザ</h3>
+  <div class="mq-visualizer">
+    <div style="color:#a0aec0; font-size:0.78em;
+                font-family:'Consolas','Monaco',monospace; margin-bottom:10px;">
+      // よく使われるブレークポイント（モバイルファースト）
+    </div>
+    <div class="mq-bar-wrap" id="mq-bar-wrap">
+      <!-- JS で生成 -->
+    </div>
+    <div class="mq-labels" id="mq-labels">
+      <!-- JS で生成 -->
+    </div>
+    <div class="interactive-demo" style="margin-top:12px;">
+      <div class="demo-label">画面幅を入力して該当するブレークポイントを確認しよう</div>
+      <div class="demo-input-row">
+        <input class="demo-input" id="mq-width-input"
+               type="range" min="320" max="1440" value="768"
+               style="flex:1;" oninput="updateMqVisualizer()">
+        <span id="mq-width-display"
+              style="font-family:'Consolas','Monaco',monospace;
+                     font-weight:bold; color:#553c9a; min-width:60px;">768px</span>
+      </div>
+      <div class="demo-output" id="mq-output">← スライダーを動かしてブレークポイントを確認しましょう</div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ============================================================ -->
+<!-- PART 3: デバイスシミュレーター -->
+<!-- ============================================================ -->
+<h2 id="simulator">③ デバイスシミュレーター</h2>
+
+<div class="demo-box">
+  <h3>🎮 レスポンシブデザイン デバイスシミュレーター</h3>
+  <div class="device-simulator">
+    <div class="device-btns">
+      <button class="device-btn active" onclick="setDevice('mobile', this)">
+        📱 Mobile<span style="font-size:0.85em; opacity:0.7;">375px</span>
+      </button>
+      <button class="device-btn" onclick="setDevice('tablet', this)">
+        📟 Tablet<span style="font-size:0.85em; opacity:0.7;">768px</span>
+      </button>
+      <button class="device-btn" onclick="setDevice('laptop', this)">
+        💻 Laptop<span style="font-size:0.85em; opacity:0.7;">1024px</span>
+      </button>
+      <button class="device-btn" onclick="setDevice('desktop', this)">
+        🖥️ Desktop<span style="font-size:0.85em; opacity:0.7;">1280px</span>
+      </button>
+    </div>
+    <div class="device-frame-wrap">
+      <div class="device-frame" id="device-frame" style="width:375px;">
+        <div class="device-content" id="device-content">
+          <!-- JS で生成 -->
+        </div>
+      </div>
+    </div>
+    <div class="device-info" id="device-info">
+      ← デバイスを選んでレスポンシブレイアウトの変化を確認しましょう
+    </div>
+  </div>
+</div>
+
+
+<!-- ============================================================ -->
+<!-- PART 4: 相対単位 -->
+<!-- ============================================================ -->
+<h2 id="units">④ 相対単位</h2>
+
+<div class="note">
+  <strong>重要ポイント：レスポンシブデザインでは絶対単位（px）より
+  相対単位を活用します。
+  <code>rem</code> はルート要素基準、<code>em</code> は親要素基準、
+  <code>vw/vh</code> はビューポート基準です。</strong>
+</div>
+
+<div class="demo-box">
+  <div class="tab-wrap">
+    <div class="tab-btns">
+      <button class="tab-btn active" onclick="switchTab(this,'tab-rem-em')">rem / em</button>
+      <button class="tab-btn"        onclick="switchTab(this,'tab-vw-vh')">vw / vh</button>
+      <button class="tab-btn"        onclick="switchTab(this,'tab-clamp')">clamp()</button>
+      <button class="tab-btn"        onclick="switchTab(this,'tab-units-table')">単位一覧</button>
+    </div>
+
+    <!-- rem / em -->
+    <div class="tab-content active" id="tab-rem-em">
+      <h3 style="margin-top:0; color:#553c9a;">rem と em の違い</h3>
+      <div class="pre-wrap">
+        <button class="copy-btn" onclick="copyPre(this)">copy</button>
+<pre>
+<span class="comment">/* rem：ルート要素（html）の font-size を基準 */</span>
+<span class="selector">html</span> { <span class="prop">font-size</span>: <span class="val">16px</span>; } <span class="comment">/* ← 基準 */</span>
+<span class="selector">.box</span> { <span class="prop">padding</span>: <span class="val">1rem</span>; }  <span class="comment">/* = 16px（常に html 基準）*/</span>
+<span class="selector">.box</span> { <span class="prop">font-size</span>: <span class="val">1.5rem</span>; } <span class="comment">/* = 24px */</span>
+
+<span class="comment">/* em：親要素の font-size を基準 */</span>
+<span class="selector">.parent</span> { <span class="prop">font-size</span>: <span class="val">20px</span>; }
+<span class="selector">.child</span>  { <span class="prop">font-size</span>: <span class="val">1.5em</span>; } <span class="comment">/* = 30px（20px × 1.5）*/</span>
+<span class="selector">.grandchild</span> { <span class="prop">font-size</span>: <span class="val">1.5em</span>; } <span class="comment">/* = 45px（30px × 1.5）*/</span>
+<span class="comment">/* em は入れ子で複利的に大きくなる点に注意！ */</span>
+
+<span class="comment">/* 実践的な使い方 */</span>
+<span class="selector">html</span> { <span class="prop">font-size</span>: <span class="val">62.5%</span>; } <span class="comment">/* 16px × 62.5% = 10px */</span>
+<span class="comment">/* → 1rem = 10px になり計算しやすい */</span>
+<span class="selector">body</span> { <span class="prop">font-size</span>: <span class="val">1.6rem</span>; } <span class="comment">/* = 16px */</span>
+<span class="selector">h1</span>   { <span class="prop">font-size</span>: <span class="val">3.2rem</span>; } <span class="comment">/* = 32px */</span>
+</pre>
+      </div>
+      <div class="interactive-demo">
+        <div class="demo-label">html の font-size を変えて rem の計算を確認しよう</div>
+        <div class="demo-input-row">
+          <label style="font-size:0.85em; color:#553c9a; white-space:nowrap;">
+            html font-size:
+          </label>
+          <input class="demo-input" id="rem-base" type="range"
+                 min="10" max="24" value="16" oninput="updateRemDemo()">
+          <span id="rem-base-val"
+                style="font-family:'Consolas','Monaco',monospace;
+                       font-weight:bold; color:#553c9a; min-width:40px;">16px</span>
+        </div>
+        <div class="unit-demo" id="rem-demo">
+          <!-- JS で生成 -->
+        </div>
+        <div class="demo-output" id="rem-output">← スライダーを動かして rem の変化を確認しましょう</div>
+      </div>
+    </div>
+
+    <!-- vw / vh -->
+    <div class="tab-content" id="tab-vw-vh">
+      <h3 style="margin-top:0; color:#553c9a;">vw / vh / vmin / vmax</h3>
+      <div class="pre-wrap">
+        <button class="copy-btn" onclick="copyPre(this)">copy</button>
+<pre>
+<span class="comment">/* vw：ビューポート幅の 1% */</span>
+<span class="selector">.hero</span> { <span class="prop">width</span>: <span class="val">100vw</span>; } <span class="comment">/* 画面幅いっぱい */</span>
+<span class="selector">.title</span>{ <span class="prop">font-size</span>: <span class="val">5vw</span>; }  <span class="comment">/* 画面幅の5%のフォントサイズ */</span>
+
+<span class="comment">/* vh：ビューポート高さの 1% */</span>
+<span class="selector">.full-screen</span> { <span class="prop">height</span>: <span class="val">100vh</span>; } <span class="comment">/* 画面高さいっぱい */</span>
+<span class="selector">.half-screen</span> { <span class="prop">height</span>: <span class="val">50vh</span>; }
+
+<span class="comment">/* vmin：vw と vh の小さいほう */</span>
+<span class="comment">/* vmax：vw と vh の大きいほう */</span>
+<span class="selector">.square</span> { <span class="prop">width</span>: <span class="val">50vmin</span>; <span class="prop">height</span>: <span class="val">50vmin</span>; }
+<span class="comment">/* 縦横どちらにも収まる正方形 */</span>
+
+<span class="comment">/* dvh（Dynamic Viewport Height）*/</span>
+<span class="comment">/* モバイルのアドレスバー表示/非表示を考慮 */</span>
+<span class="selector">.mobile-full</span> { <span class="prop">height</span>: <span class="val">100dvh</span>; }
+
+<span class="comment">/* vw + rem の組み合わせ（fluid typography）*/</span>
+<span class="selector">h1</span> { <span class="prop">font-size</span>: <span class="val">calc(1.5rem + 2vw)</span>; }
+<span class="comment">/* 最小1.5rem、画面が広がるにつれて大きくなる */</span>
+</pre>
+      </div>
+    </div>
+
+    <!-- clamp() -->
+    <div class="tab-content" id="tab-clamp">
+      <h3 style="margin-top:0; color:#553c9a;">clamp() - 流体タイポグラフィ</h3>
+      <div class="note">
+        <strong>clamp(最小値, 推奨値, 最大値)：</strong>
+        値を最小値と最大値の間に収めます。
+        メディアクエリなしでレスポンシブなサイズを実現できます。
+      </div>
+      <div class="pre-wrap">
+        <button class="copy-btn" onclick="copyPre(this)">copy</button>
+<pre>
+<span class="comment">/* clamp(最小値, 推奨値, 最大値) */</span>
+<span class="selector">h1</span> {
+  <span class="prop">font-size</span>: <span class="val">clamp(1.5rem, 4vw, 3rem)</span>;
+  <span class="comment">/* 最小1.5rem、推奨4vw、最大3rem */</span>
+  <span class="comment">/* 画面幅に応じて自動的にスケール */</span>
+}
+
+<span class="selector">.container</span> {
+  <span class="prop">width</span>: <span class="val">clamp(320px, 90%, 1200px)</span>;
+  <span class="comment">/* 最小320px、推奨90%、最大1200px */</span>
+}
+
+<span class="selector">.card</span> {
+  <span class="prop">padding</span>: <span class="val">clamp(12px, 3vw, 32px)</span>;
+}
+
+<span class="comment">/* min() / max() */</span>
+<span class="selector">.box</span> { <span class="prop">width</span>: <span class="val">min(100%, 600px)</span>; }
+<span class="comment">/* 100% と 600px の小さいほう */</span>
+
+<span class="selector">.box</span> { <span class="prop">font-size</span>: <span class="val">max(1rem, 2vw)</span>; }
+<span class="comment">/* 1rem と 2vw の大きいほう */</span>
+</pre>
+      </div>
+      <div class="interactive-demo">
+        <div class="demo-label">clamp() の動作をシミュレートしよう</div>
+        <div class="demo-input-row">
+          <input class="demo-input" id="clamp-min" type="number"
+                 value="16" min="8" max="32" style="max-width:80px;"
+                 oninput="updateClampDemo()">
+          <span style="font-size:0.85em; color:#718096;">px 最小</span>
+          <input class="demo-input" id="clamp-pref" type="number"
+                 value="4" min="1" max="10" style="max-width:70px;"
+                 oninput="updateClampDemo()">
+          <span style="font-size:0.85em; color:#718096;">vw 推奨</span>
+          <input class="demo-input" id="clamp-max" type="number"
+                 value="48" min="16" max="80" style="max-width:80px;"
+                 oninput="updateClampDemo()">
+          <span style="font-size:0.85em; color:#718096;">px 最大</span>
+        </div>
+        <div class="demo-input-row">
+          <label style="font-size:0.85em; color:#553c9a; white-space:nowrap;">
+            画面幅シミュレーション：
+          </label>
+          <input class="demo-input" id="clamp-width" type="range"
+                 min="320" max="1440" value="768" oninput="updateClampDemo()">
+          <span id="clamp-width-val"
+                style="font-family:'Consolas','Monaco',monospace;
+                       font-weight:bold; color:#553c9a; min-width:60px;">768px</span>
+        </div>
+        <div id="clamp-preview"
+             style="background:#faf5ff; border-radius:6px; padding:16px;
+                    text-align:center; margin-bottom:8px; transition:font-size 0.3s;">
+          <span id="clamp-text" style="font-weight:bold; color:#553c9a;">
+            clamp() テキスト
+          </span>
+        </div>
+        <div class="demo-output" id="clamp-output">← 値を設定して動作を確認しましょう</div>
+      </div>
+    </div>
+
+    <!-- 単位一覧 -->
+    <div class="tab-content" id="tab-units-table">
+      <h3 style="margin-top:0; color:#553c9a;">CSS 単位一覧</h3>
+      <table class="ref-table">
+        <thead>
+          <tr><th>単位</th><th>種類</th><th>基準</th><th>用途</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><code>px</code></td><td>絶対</td><td>1ピクセル</td>
+            <td>border・shadow など精密な指定</td></tr>
+          <tr><td><code>rem</code></td><td>相対</td><td>html の font-size</td>
+            <td>フォントサイズ・余白（推奨）</td></tr>
+          <tr><td><code>em</code></td><td>相対</td><td>親要素の font-size</td>
+            <td>コンポーネント内の相対サイズ</td></tr>
+          <tr><td><code>%</code></td><td>相対</td><td>親要素のサイズ</td>
+            <td>幅・高さの割合指定</td></tr>
+          <tr><td><code>vw</code></td><td>相対</td><td>ビューポート幅の1%</td>
+            <td>全幅レイアウト・流体タイポグラフィ</td></tr>
+          <tr><td><code>vh</code></td><td>相対</td><td>ビューポート高さの1%</td>
+            <td>全画面セクション</td></tr>
+          <tr><td><code>dvh</code></td><td>相対</td><td>動的ビューポート高さ</td>
+            <td>モバイルのアドレスバー対応</td></tr>
+          <tr><td><code>vmin</code></td><td>相対</td><td>vw/vh の小さいほう</td>
+            <td>正方形・アイコン</td></tr>
+          <tr><td><code>vmax</code></td><td>相対</td><td>vw/vh の大きいほう</td>
+            <td>背景要素</td></tr>
+          <tr><td><code>ch</code></td><td>相対</td><td>"0" 文字の幅</td>
+            <td>テキスト幅の制御</td></tr>
+          <tr><td><code>lh</code></td><td>相対</td><td>line-height</td>
+            <td>行高さ基準の余白</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+
+<!-- ============================================================ -->
+<!-- PART 5: モバイルファーストとブレークポイント -->
+<!-- ============================================================ -->
+<h2 id="mobile-first">⑤ モバイルファーストとブレークポイント</h2>
+
+<div class="demo-box">
+  <div class="pre-wrap">
+    <button class="copy-btn" onclick="copyPre(this)">copy</button>
+<pre>
+<span class="comment">/* モバイルファースト：小さい画面から書き始める */</span>
+
+<span class="comment">/* ① ベーススタイル（モバイル）*/</span>
+<span class="selector">.grid</span> {
+  <span class="prop">display</span>: <span class="val">grid</span>;
+  <span class="prop">grid-template-columns</span>: <span class="val">1fr</span>;       <span class="comment">/* 1列 */</span>
+  <span class="prop">gap</span>: <span class="val">16px</span>;
+}
+<span class="selector">.nav-links</span> { <span class="prop">display</span>: <span class="val">none</span>; }     <span class="comment">/* ナビ非表示 */</span>
+<span class="selector">.hamburger</span> { <span class="prop">display</span>: <span class="val">block</span>; }   <span class="comment">/* ハンバーガー表示 */</span>
+
+<span class="comment">/* ② タブレット（768px〜）*/</span>
+<span class="at">@media</span> (<span class="prop">min-width</span>: <span class="val">768px</span>) {
+  <span class="selector">.grid</span> {
+    <span class="prop">grid-template-columns</span>: <span class="val">repeat(2, 1fr)</span>; <span class="comment">/* 2列 */</span>
+  }
+}
+
+<span class="comment">/* ③ デスクトップ（1024px〜）*/</span>
+<span class="at">@media</span> (<span class="prop">min-width</span>: <span class="val">1024px</span>) {
+  <span class="selector">.grid</span> {
+    <span class="prop">grid-template-columns</span>: <span class="val">repeat(3, 1fr)</span>; <span class="comment">/* 3列 */</span>
+  }
+  <span class="selector">.nav-links</span> { <span class="prop">display</span>: <span class="val">flex</span>; }   <span class="comment">/* ナビ表示 */</span>
+  <span class="selector">.hamburger</span> { <span class="prop">display</span>: <span class="val">none</span>; }   <span class="comment">/* ハンバーガー非表示 */</span>
+}
+
+<span class="comment">/* ④ 大画面（1280px〜）*/</span>
+<span class="at">@media</span> (<span class="prop">min-width</span>: <span class="val">1280px</span>) {
+  <span class="selector">.grid</span> {
+    <span class="prop">grid-template-columns</span>: <span class="val">repeat(4, 1fr)</span>; <span class="comment">/* 4列 */</span>
+  }
+}
+</pre>
+  </div>
+
+  <h3>よく使われるブレークポイント</h3>
+  <table class="ref-table">
+    <thead>
+      <tr><th>名称</th><th>幅</th><th>代表デバイス</th><th>Tailwind CSS</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>xs（Extra Small）</td>
+        <td>〜 479px</td><td>小型スマートフォン</td><td>-</td></tr>
+      <tr><td>sm（Small）</td>
+        <td>480px〜 / 640px〜</td><td>スマートフォン</td><td>sm: 640px</td></tr>
+      <tr><td>md（Medium）</td>
+        <td>768px〜</td><td>タブレット</td><td>md: 768px</td></tr>
+      <tr><td>lg（Large）</td>
+        <td>1024px〜</td><td>ラップトップ</td><td>lg: 1024px</td></tr>
+      <tr><td>xl（Extra Large）</td>
+        <td>1280px〜</td><td>デスクトップ</td><td>xl: 1280px</td></tr>
+      <tr><td>2xl</td>
+        <td>1536px〜</td><td>大型ディスプレイ</td><td>2xl: 1536px</td></tr>
+    </tbody>
+  </table>
+
+  <h3>Container Queries（コンテナクエリ）</h3>
+  <div class="pre-wrap">
+    <button class="copy-btn" onclick="copyPre(this)">copy</button>
+<pre>
+<span class="comment">/* Container Queries：コンテナのサイズに応じてスタイルを変える */</span>
+<span class="comment">/* ビューポートではなく親要素のサイズを基準にできる */</span>
+
+<span class="selector">.card-container</span> {
+  <span class="prop">container-type</span>: <span class="val">inline-size</span>; <span class="comment">/* コンテナとして登録 */</span>
+  <span class="prop">container-name</span>: <span class="val">card</span>;
+}
+
+<span class="at">@container</span> <span class="val">card</span> (<span class="prop">min-width</span>: <span class="val">400px</span>) {
+  <span class="selector">.card</span> {
+    <span class="prop">display</span>: <span class="val">flex</span>;
+    <span class="prop">flex-direction</span>: <span class="val">row</span>;
+  }
+}
+
+<span class="comment">/* メディアクエリとの違い */</span>
+<span class="comment">/* @media → ビューポート幅が基準 */</span>
+<span class="comment">/* @container → 親要素の幅が基準（サイドバーの有無に対応できる）*/</span>
+</pre>
+  </div>
+</div>
+
+
+<!-- ============================================================ -->
+<!-- まとめ -->
+<!-- ============================================================ -->
+<h2>📌 まとめ</h2>
+<div class="demo-box">
+  <table class="ref-table">
+    <thead>
+      <tr><th>技術</th><th>説明</th><th>重要ポイント</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>viewport メタタグ</td>
+        <td>デバイス幅に合わせる</td>
+        <td><code>width=device-width, initial-scale=1.0</code> が必須</td></tr>
+      <tr><td><code>@media (min-width)</code></td>
+        <td>モバイルファースト</td>
+        <td>小さい画面から書き始める（推奨）</td></tr>
+      <tr><td><code>@media (max-width)</code></td>
+        <td>デスクトップファースト</td>
+        <td>大きい画面から書き始める</td></tr>
+      <tr><td><code>rem</code></td>
+        <td>html 基準の相対単位</td>
+        <td>フォント・余白に推奨</td></tr>
+      <tr><td><code>em</code></td>
+        <td>親要素基準の相対単位</td>
+        <td>入れ子で複利的に変化する点に注意</td></tr>
+      <tr><td><code>vw / vh</code></td>
+        <td>ビューポート基準</td>
+        <td>全画面レイアウト・流体タイポグラフィ</td></tr>
+      <tr><td><code>clamp(min, pref, max)</code></td>
+        <td>範囲付き流体サイズ</td>
+        <td>メディアクエリなしでレスポンシブ</td></tr>
+      <tr><td><code>@container</code></td>
+        <td>コンテナクエリ</td>
+        <td>親要素サイズ基準（ビューポートではない）</td></tr>
+    </tbody>
+  </table>
+</div>
+
+
+<!-- ============================================================ -->
+<!-- 演習問題 -->
+<!-- ============================================================ -->
+<div class="quiz-section">
+  <h2>🖊️ 演習問題</h2>
+
+  <!-- Q1 -->
+  <div class="quiz-block">
+    <h3>Q1. 穴埋め問題</h3>
+    <label>① モバイルファーストでタブレット以上（768px〜）に適用するメディアクエリ：</label>
+    <input type="text" id="q1a" placeholder="@media (??? : 768px) { }">
+    <label>② html の font-size が 16px のとき、<code>2.5rem</code> は何 px か：</label>
+    <input type="text" id="q1b" placeholder="例：40px">
+    <label>③ 値を最小16px・最大48px・推奨4vwに収める CSS 関数：</label>
+    <input type="text" id="q1c" placeholder="???(16px, 4vw, 48px)">
+    <label>④ ビューポート幅の50%を表す単位：</label>
+    <input type="text" id="q1d" placeholder="50???">
+    <br>
+    <button class="btn btn-purple" onclick="checkQ1()">答え合わせ</button>
+    <div class="result-msg" id="q1-result"></div>
+    <script>
+      function checkQ1() {
+        const a = document.getElementById('q1a').value.trim().toLowerCase()
+                    .replace(/\s/g,'').replace(/@media|[(){}]/g,'');
+        const b = document.getElementById('q1b').value.trim().toLowerCase()
+                    .replace('px','').replace(/\s/g,'');
+        const c = document.getElementById('q1c').value.trim().toLowerCase()
+                    .replace(/\s/g,'').replace(/\(.*\)/,'');
+        const d = document.getElementById('q1d').value.trim().toLowerCase()
+                    .replace(/\s/g,'').replace('50','');
+        const r = document.getElementById('q1-result');
+        const ca = a === 'min-width:768px' || a === 'min-width768px';
+        const cb = b === '40';
+        const cc = c === 'clamp';
+        const cd = d === 'vw';
+        const count = [ca,cb,cc,cd].filter(Boolean).length;
+        if (count === 4) {
+          r.className = 'result-msg correct';
+          r.textContent = '✅ 全問正解！完璧です！';
+        } else {
+          r.className = 'result-msg wrong';
+          r.innerHTML = `❌ ${count}/4 問正解。<br>` +
+            `① ${ca?'✅':'❌ min-width: 768px'}　` +
+            `② ${cb?'✅':'❌ 40px（16px × 2.5）'}　` +
+            `③ ${cc?'✅':'❌ clamp'}　` +
+            `④ ${cd?'✅':'❌ vw（50vw）'}`;
+        }
+      }
+    </script>
+  </div>
+
+  <!-- Q2 -->
+  <div class="quiz-block">
+    <h3>Q2. 選択問題</h3>
+    <p>モバイルファーストアプローチの説明として<strong>正しい</strong>ものはどれですか？</p>
+    <select id="q2">
+      <option value="">-- 選択してください --</option>
+      <option value="a">デスクトップ向けのスタイルをベースに書き、<code>max-width</code> で上書きする</option>
+      <option value="b">モバイル向けのスタイルをベースに書き、<code>min-width</code> で上書きする</option>
+      <option value="c">モバイルとデスクトップで別々の HTML ファイルを用意する</option>
+      <option value="d">JavaScript でデバイスを判定してスタイルを切り替える</option>
+    </select>
+    <br>
+    <button class="btn btn-purple" onclick="checkQ2()">答え合わせ</button>
+    <div class="result-msg" id="q2-result"></div>
+    <script>
+      function checkQ2() {
+        const v = document.getElementById('q2').value;
+        const r = document.getElementById('q2-result');
+        if (v === 'b') {
+          r.className = 'result-msg correct';
+          r.innerHTML = '✅ 正解！<br><br>' +
+            '<strong>モバイルファーストの利点：</strong><br>' +
+            '・モバイルのスタイルがベースなので CSS が軽量<br>' +
+            '・<code>min-width</code> で段階的に機能を追加する設計<br>' +
+            '・パフォーマンスが良い（モバイルは余分なスタイルを読まない）<br><br>' +
+            '<strong>デスクトップファーストとの比較：</strong><br>' +
+            'デスクトップファースト → <code>max-width</code> でモバイル向けに上書き<br>' +
+            'モバイルファースト → <code>min-width</code> でデスクトップ向けに拡張';
+        } else if (v === '') {
+          r.className = 'result-msg info';
+          r.textContent = '⚠️ 選択肢を選んでください。';
+        } else {
+          r.className = 'result-msg wrong';
+          r.innerHTML = '❌ 不正解。<br>' +
+            'モバイルファーストは<strong>モバイル向けスタイルをベース</strong>に書き、' +
+            '<code>min-width</code> メディアクエリで大きい画面向けに上書きします。';
+        }
+      }
+    </script>
+  </div>
+
+  <!-- Q3 -->
+  <div class="quiz-block">
+    <h3>Q3. 正誤チェックボックス問題</h3>
+    <p><strong>正しい記述</strong>をすべて選んでください。</p>
+    <label class="checkbox-label"><input type="checkbox" id="q3a">
+      ① <code>rem</code> は html 要素の font-size を基準とする相対単位</label>
+    <label class="checkbox-label"><input type="checkbox" id="q3b">
+      ② <code>em</code> は常に html 要素の font-size を基準とする</label>
+    <label class="checkbox-label"><input type="checkbox" id="q3c">
+      ③ <code>viewport</code> メタタグがないとモバイルでレスポンシブが機能しない</label>
+    <label class="checkbox-label"><input type="checkbox" id="q3d">
+      ④ <code>clamp()</code> はメディアクエリなしで流体サイズを実現できる</label>
+    <label class="checkbox-label"><input type="checkbox" id="q3e">
+      ⑤ <code>@container</code> はビューポートのサイズを基準にスタイルを切り替える</label>
+    <label class="checkbox-label"><input type="checkbox" id="q3f">
+      ⑥ <code>100vw</code> はビューポートの幅いっぱいを表す</label>
+    <br>
+    <button class="btn btn-purple" onclick="checkQ3()">答え合わせ</button>
+    <div class="result-msg" id="q3-result"></div>
+    <script>
+      function checkQ3() {
+        const r = document.getElementById('q3-result');
+        const checks = {
+          a: document.getElementById('q3a').checked,
+          b: document.getElementById('q3b').checked,
+          c: document.getElementById('q3c').checked,
+          d: document.getElementById('q3d').checked,
+          e: document.getElementById('q3e').checked,
+          f: document.getElementById('q3f').checked,
+        };
+        // 正解：①③④⑥（a,c,d,f）
+        // ② em は親要素の font-size が基準（html ではない）
+        // ⑤ @container はコンテナ（親要素）のサイズが基準
+        const correct = { a:true, b:false, c:true, d:true, e:false, f:true };
+        const allOk = Object.keys(correct).every(k => checks[k] === correct[k]);
+        if (allOk) {
+          r.className = 'result-msg correct';
+          r.innerHTML = '✅ 全問正解！完璧です！';
+        } else {
+          r.className = 'result-msg wrong';
+          r.innerHTML =
+            '❌ 不正解の項目があります。<br><br>' +
+            '<strong>正しい記述：</strong>①③④⑥<br><br>' +
+            '<strong>誤った記述：</strong><br>' +
+            '・② <code>em</code> は<strong>親要素の font-size</strong> を基準とします（html ではない）。html 基準なのは <code>rem</code> です。<br>' +
+            '・⑤ <code>@container</code> は<strong>コンテナ（親要素）のサイズ</strong>を基準にします。ビューポート基準は <code>@media</code> です。';
+        }
+      }
+    </script>
+  </div>
+
+  <!-- Q4 -->
+  <div class="quiz-block">
+    <h3>Q4. コード補完問題</h3>
+    <p>以下の要件を満たすレスポンシブグリッドの CSS を完成させてください。</p>
+    <ul style="font-size:0.92em; color:#4a5568; line-height:2;">
+      <li>デフォルト（モバイル）：<strong>1列</strong></li>
+      <li>768px 以上：<strong>2列</strong></li>
+      <li>1024px 以上：<strong>3列</strong></li>
+    </ul>
+    <label>768px 以上の @media 条件：</label>
+    <input type="text" id="q4a" placeholder="@media (???)">
+    <label>768px 以上のときの grid-template-columns：</label>
+    <input type="text" id="q4b" placeholder="grid-template-columns: ???">
+    <br>
+    <button class="btn btn-purple" onclick="checkQ4()">答え合わせ</button>
+    <div class="result-msg" id="q4-result"></div>
+    <script>
+      function checkQ4() {
+        const a = document.getElementById('q4a').value.trim().toLowerCase()
+                    .replace(/\s/g,'').replace(/@media|[()]/g,'');
+        const b = document.getElementById('q4b').value.trim().toLowerCase()
+                    .replace(/grid-template-columns:|:|\s/g,'');
+        const r = document.getElementById('q4-result');
+        const ca = a === 'min-width:768px';
+        const cb = b === 'repeat(2,1fr)' || b === '1fr1fr';
+        const count = [ca,cb].filter(Boolean).length;
+        if (count === 2) {
+          r.className = 'result-msg correct';
+          r.innerHTML = '✅ 正解！<br><br>' +
+            '<code>.grid { grid-template-columns: 1fr; }          /* モバイル */</code><br>' +
+            '<code>@media (min-width: 768px) {</code><br>' +
+            '<code>  .grid { grid-template-columns: repeat(2, 1fr); }</code><br>' +
+            '<code>}</code><br>' +
+            '<code>@media (min-width: 1024px) {</code><br>' +
+            '<code>  .grid { grid-template-columns: repeat(3, 1fr); }</code><br>' +
+            '<code>}</code>';
+        } else {
+          r.className = 'result-msg wrong';
+          r.innerHTML = `❌ ${count}/2 問正解。<br>` +
+            `@media 条件: ${ca?'✅':'❌ min-width: 768px'}　` +
+            `columns: ${cb?'✅':'❌ repeat(2, 1fr) または 1fr 1fr'}`;
+        }
+      }
+    </script>
+  </div>
+
+</div><!-- /quiz-section -->
+
+
+<!-- 完了ボタン -->
+<div class="complete-section">
+  <p>🎉 「2-6 レスポンシブデザイン」の学習が完了したら記録しましょう！</p>
+  <button class="btn btn-done" onclick="markComplete()">✅ このセクションを完了にする</button>
+  <div id="complete-msg"
+       style="margin-top:10px; font-size:0.88em; color:#276749; display:none;">
+    進捗を保存しました！Chapter 2 の進捗バーに反映されます。
+  </div>
+</div>
+
+<!-- ページナビ -->
+<div class="page-nav">
+  <a class="prev" href="05_positioning.html">← 2-5 配置とポジショニング</a>
+  <a class="home" href="../index.html">🏠 目次へ</a>
+  <a class="next" href="07_typography.html">次へ：2-7 タイポグラフィと色 →</a>
+</div>
+
+<!-- フッター -->
+<footer>
+  <p>
+    HTML5プロフェッショナル Level 2 学習サイト ／
+    <a href="../index.html">🏠 目次</a> ／
+    <a href="../exam/index.html">📝 模擬試験</a>
+  </p>
+  <p style="margin-top:4px;">© MeshinoKiwamiOkome</p>
+</footer>
+
+
+<!-- ============================================================ -->
+<!-- JavaScript -->
+<!-- ============================================================ -->
+<script>
+  /* ===== コピーボタン ===== */
+  function copyPre(btn) {
+    const pre = btn.nextElementSibling;
+    navigator.clipboard.writeText(pre.innerText || pre.textContent).then(() => {
+      btn.textContent = 'copied!';
+      setTimeout(() => btn.textContent = 'copy', 1800);
+    });
+  }
+
+  /* ===== タブ ===== */
+  function switchTab(btn, id) {
+    btn.closest('.tab-wrap').querySelectorAll('.tab-btn')
+       .forEach(b => b.classList.remove('active'));
+    btn.closest('.tab-wrap').querySelectorAll('.tab-content')
+       .forEach(c => c.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById(id).classList.add('active');
+  }
+
+  /* ===== デバイスシミュレーター ===== */
+  const devices = {
+    mobile:  { width: 375,  label: 'Mobile (375px)',  bp: 'xs/sm' },
+    tablet:  { width: 768,  label: 'Tablet (768px)',  bp: 'md' },
+    laptop:  { width: 1024, label: 'Laptop (1024px)', bp: 'lg' },
+    desktop: { width: 1280, label: 'Desktop (1280px)', bp: 'xl' },
+  };
+
+  function buildDeviceContent(width) {
+    const isMobile  = width < 768;
+    const isTablet  = width >= 768 && width < 1024;
+    const isDesktop = width >= 1024;
+
+    const cols = isMobile ? '1fr' : isTablet ? '1fr 1fr' : '1fr 1fr 1fr';
+    const cardCount = isMobile ? 2 : isTablet ? 4 : 6;
+
+    const cards = Array.from({ length: cardCount }, (_, i) => {
+      const colors = [
+        ['#553c9a','#9f7aea'],['#2b4c7e','#4299e1'],
+        ['#276749','#48bb78'],['#744210','#f6ad55'],
+        ['#9b2335','#fc8181'],['#2c7a7b','#81e6d9'],
+      ];
+      const [bg, border] = colors[i % colors.length];
+      return `<div class="resp-card" style="background:${bg}; border-color:${border};
+              color:#fff; border:2px solid ${border};">Card ${i + 1}</div>`;
+    }).join('');
+
+    return `
+      <div class="resp-nav" style="${isMobile ? 'padding:6px 10px;' : ''}">
+        <div class="resp-nav-logo">🏠 Logo</div>
+        ${isDesktop
+          ? `<div class="resp-nav-links">
+               <span class="resp-nav-link">Home</span>
+               <span class="resp-nav-link">About</span>
+               <span class="resp-nav-link">Contact</span>
+             </div>`
+          : `<div class="resp-nav-hamburger">☰</div>`}
+      </div>
+      <div class="resp-hero" style="${isMobile ? 'padding:10px 8px;' : ''}">
+        <div class="resp-hero-title" style="font-size:${isMobile?'0.82em':'0.95em'};">
+          Hero Section
+        </div>
+        <div class="resp-hero-sub">
+          ${isMobile ? 'モバイルレイアウト' : isTablet ? 'タブレットレイアウト' : 'デスクトップレイアウト'}
+        </div>
+      </div>
+      <div class="resp-grid" style="grid-template-columns:${cols}; gap:${isMobile?'4px':'6px'};">
+        ${cards}
+      </div>
+    `;
+  }
+
+  function setDevice(type, btn) {
+    document.querySelectorAll('.device-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+
+    const d     = devices[type];
+    const frame = document.getElementById('device-frame');
+    const content = document.getElementById('device-content');
+    const info  = document.getElementById('device-info');
+
+    // フレームの最大幅を制限
+    const maxW = Math.min(d.width, 600);
+    frame.style.width = maxW + 'px';
+    content.innerHTML = buildDeviceContent(d.width);
+
+    const bp = d.bp;
+    const mq = d.width < 768
+      ? 'デフォルト（メディアクエリなし）'
+      : `@media (min-width: ${d.width}px)`;
+
+    info.textContent =
+      `デバイス: ${d.label}\n` +
+      `ブレークポイント: ${bp}\n` +
+      `適用メディアクエリ: ${mq}\n` +
+      `レイアウト: ${d.width < 768 ? '1列' : d.width < 1024 ? '2列' : '3列'}`;
+  }
+
+  // 初期表示
+  setDevice('mobile', document.querySelector('.device-btn'));
+
+  /* ===== メディアクエリ ビジュアライザ ===== */
+  const breakpoints = [
+    { name: 'xs',  min: 0,    max: 479,  color: '#553c9a', label: '〜479px' },
+    { name: 'sm',  min: 480,  max: 767,  color: '#2b4c7e', label: '480〜767px' },
+    { name: 'md',  min: 768,  max: 1023, color: '#276749', label: '768〜1023px' },
+    { name: 'lg',  min: 1024, max: 1279, color: '#744210', label: '1024〜1279px' },
+    { name: 'xl',  min: 1280, max: 1440, color: '#9b2335', label: '1280px〜' },
+  ];
+  const MQ_TOTAL = 1440;
+
+  function buildMqBar() {
+    const wrap   = document.getElementById('mq-bar-wrap');
+    const labels = document.getElementById('mq-labels');
+    wrap.innerHTML = '';
+    labels.innerHTML = '';
+
+    breakpoints.forEach(bp => {
+      const leftPct  = (bp.min / MQ_TOTAL * 100).toFixed(2);
+      const widthPct = ((Math.min(bp.max, MQ_TOTAL) - bp.min) / MQ_TOTAL * 100).toFixed(2);
+      const bar = document.createElement('div');
+      bar.className = 'mq-bar';
+      bar.style.cssText = `
+        left:${leftPct}%; width:${widthPct}%;
+        background:${bp.color}; color:#fff; opacity:0.85;
+      `;
+      bar.textContent = bp.name;
+      wrap.appendChild(bar);
+    });
+
+    // 現在位置ライン
+    const line = document.createElement('div');
+    line.className = 'mq-current-line';
+    line.id = 'mq-line';
+    const lbl = document.createElement('div');
+    lbl.className = 'mq-current-label';
+    lbl.id = 'mq-line-label';
+    lbl.textContent = '768px';
+    line.appendChild(lbl);
+    wrap.appendChild(line);
+
+    // ラベル
+    ['0', '480', '768', '1024', '1280', '1440'].forEach(v => {
+      const span = document.createElement('span');
+      span.textContent = v;
+      labels.appendChild(span);
+    });
+  }
+
+  function updateMqVisualizer() {
+    const w    = parseInt(document.getElementById('mq-width-input').value);
+    const disp = document.getElementById('mq-width-display');
+    const out  = document.getElementById('mq-output');
+    const line = document.getElementById('mq-line');
+    const lbl  = document.getElementById('mq-line-label');
+
+    disp.textContent = w + 'px';
+    const pct = (w / MQ_TOTAL * 100).toFixed(2);
+    if (line) {
+      line.style.left = pct + '%';
+      lbl.textContent = w + 'px';
+    }
+
+    const active = breakpoints.filter(bp => w >= bp.min && w <= bp.max);
+    const bp     = active[0] || breakpoints[breakpoints.length - 1];
+
+    const mqList = breakpoints
+      .filter(b => b.min <= w)
+      .map(b => `  @media (min-width: ${b.min || 0}px) → ✅ 適用中（${b.name}）`)
+      .join('\n');
+
+    out.style.color = '#b794f4';
+    out.textContent =
+      `現在の幅: ${w}px\n` +
+      `ブレークポイント: ${bp.name}（${bp.label}）\n\n` +
+      `適用中のメディアクエリ:\n${mqList}`;
+  }
+
+  buildMqBar();
+  updateMqVisualizer();
+
+  /* ===== rem デモ ===== */
+  function updateRemDemo() {
+    const base = parseInt(document.getElementById('rem-base').value);
+    document.getElementById('rem-base-val').textContent = base + 'px';
+
+    const items = [
+      { rem: 1,   label: '1rem',   color: '#553c9a' },
+      { rem: 1.5, label: '1.5rem', color: '#2b4c7e' },
+      { rem: 2,   label: '2rem',   color: '#276749' },
+      { rem: 2.5, label: '2.5rem', color: '#744210' },
+      { rem: 3,   label: '3rem',   color: '#9b2335' },
+    ];
+
+    const container = document.getElementById('rem-demo');
+    container.innerHTML = '';
+
+    items.forEach(item => {
+      const px    = Math.round(base * item.rem);
+      const maxPx = base * 3;
+      const pct   = Math.min((px / maxPx) * 100, 100);
+
+      const bar = document.createElement('div');
+      bar.className = 'unit-bar';
+      bar.style.cssText = `
+        width: ${pct}%; background: ${item.color};
+        color: #fff; min-width: 80px;
+      `;
+      bar.textContent = `${item.label} = ${px}px`;
+      container.appendChild(bar);
+    });
+
+    const out = document.getElementById('rem-output');
+    out.style.color = '#b794f4';
+    out.textContent =
+      `html { font-size: ${base}px; }\n\n` +
+      items.map(i => `1rem × ${i.rem} = ${Math.round(base * i.rem)}px`).join('\n');
+  }
+
+  updateRemDemo();
+
+  /* ===== clamp デモ ===== */
+  function updateClampDemo() {
+    const minPx  = parseInt(document.getElementById('clamp-min').value)  || 16;
+    const prefVw = parseInt(document.getElementById('clamp-pref').value) || 4;
+    const maxPx  = parseInt(document.getElementById('clamp-max').value)  || 48;
+    const width  = parseInt(document.getElementById('clamp-width').value) || 768;
+
+    document.getElementById('clamp-width-val').textContent = width + 'px';
+
+    const prefPx  = width * prefVw / 100;
+    const actual  = Math.min(Math.max(prefPx, minPx), maxPx);
+    const rounded = Math.round(actual);
+
+    const text = document.getElementById('clamp-text');
+    text.style.fontSize = rounded + 'px';
+
+    const state = actual <= minPx
+      ? `最小値（${minPx}px）が適用`
+      : actual >= maxPx
+        ? `最大値（${maxPx}px）が適用`
+        : `推奨値（${prefVw}vw = ${Math.round(prefPx)}px）が適用`;
+
+    const out = document.getElementById('clamp-output');
+    out.style.color = '#b794f4';
+    out.textContent =
+      `font-size: clamp(${minPx}px, ${prefVw}vw, ${maxPx}px);\n\n` +
+      `画面幅: ${width}px\n` +
+      `推奨値: ${prefVw}vw = ${Math.round(prefPx)}px\n` +
+      `実際の値: ${rounded}px\n` +
+      `状態: ${state}`;
+  }
+
+  updateClampDemo();
+
+  /* ===== 完了ボタン ===== */
+  function markComplete() {
+    localStorage.setItem('html5lv2_ch2_06', 'done');
+    document.getElementById('complete-msg').style.display = 'block';
+  }
+  if (localStorage.getItem('html5lv2_ch2_06') === 'done') {
+    document.getElementById('complete-msg').style.display = 'block';
+  }
+</script>
+
+</body>
+</html>

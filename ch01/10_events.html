@@ -1,0 +1,1614 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>1-10 イベントと非同期処理 | HTML5プロフェッショナル Level 2</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; }
+    body {
+      font-family: 'Segoe UI', 'Helvetica Neue', sans-serif;
+      max-width: 960px; margin: 40px auto; padding: 0 24px;
+      background: #f0f4f8; color: #2d3748; line-height: 1.8;
+    }
+    .breadcrumb {
+      font-size: 0.82em; color: #a0aec0; margin-bottom: 20px;
+      font-family: 'Consolas','Monaco',monospace;
+    }
+    .breadcrumb a { color: #2c7a7b; text-decoration: none; }
+    .breadcrumb a:hover { text-decoration: underline; }
+
+    .chapter-header {
+      background: linear-gradient(135deg, #1a365d, #2c7a7b);
+      border-radius: 12px; padding: 32px 32px 24px;
+      margin-bottom: 32px; color: #fff;
+      box-shadow: 0 4px 18px rgba(44,122,123,0.35);
+    }
+    .chapter-header .ch-num {
+      font-size: 0.8em; font-family: 'Consolas','Monaco',monospace;
+      opacity: 0.85; letter-spacing: 0.08em; margin-bottom: 6px;
+    }
+    .chapter-header h1 {
+      margin: 0 0 10px; font-size: 1.6em; color: #fff; border: none; padding: 0;
+    }
+    .chapter-header p { margin: 0; font-size: 0.92em; opacity: 0.88; }
+    .badge-row { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 14px; }
+    .badge {
+      background: rgba(255,255,255,0.18);
+      border: 1px solid rgba(255,255,255,0.35);
+      border-radius: 20px; padding: 3px 12px;
+      font-size: 0.76em; font-weight: bold;
+    }
+
+    .section-nav {
+      background: #fff; border: 1px solid #bee3f8;
+      border-radius: 10px; padding: 18px 22px;
+      margin-bottom: 32px; box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+    }
+    .section-nav h2 {
+      margin: 0 0 12px; font-size: 0.92em; color: #1a365d; border: none; padding: 0;
+    }
+    .section-nav ol { margin: 0; padding-left: 20px; font-size: 0.9em; }
+    .section-nav ol li { margin: 4px 0; }
+    .section-nav ol li a { color: #2c7a7b; text-decoration: none; }
+    .section-nav ol li a:hover { text-decoration: underline; }
+    .section-nav ol li.current a { color: #1a365d; font-weight: bold; }
+
+    h2 {
+      color: #1a365d; margin-top: 48px;
+      border-left: 5px solid #2c7a7b; padding-left: 12px;
+    }
+    h3 { color: #2c7a7b; margin-top: 28px; }
+
+    code {
+      background: #edf2f7; padding: 2px 6px;
+      border-radius: 4px; font-size: 0.93em;
+      font-family: 'Consolas','Monaco',monospace;
+    }
+    pre {
+      background: #1a202c; color: #e2e8f0;
+      padding: 18px 20px; border-radius: 8px;
+      overflow-x: auto; font-size: 0.88em;
+      line-height: 1.7; font-family: 'Consolas','Monaco',monospace;
+    }
+    pre .comment { color: #68d391; }
+    pre .kw      { color: #90cdf4; }
+    pre .str     { color: #fbd38d; }
+    pre .num     { color: #fc8181; }
+    pre .fn      { color: #b794f4; }
+    pre .op      { color: #f6ad55; }
+    pre .out     { color: #a0aec0; }
+    pre .prop    { color: #81e6d9; }
+
+    .pre-wrap { position: relative; margin: 14px 0; }
+    .copy-btn {
+      position: absolute; top: 8px; right: 8px;
+      background: #4a5568; color: #e2e8f0;
+      border: none; border-radius: 4px; padding: 4px 10px;
+      font-size: 0.75em; cursor: pointer;
+      font-family: 'Consolas','Monaco',monospace;
+      transition: background 0.2s; z-index: 1;
+    }
+    .copy-btn:hover { background: #2c7a7b; }
+
+    .note {
+      background: #fff; border: 1px dashed #81e6d9;
+      border-radius: 6px; padding: 14px 18px;
+      font-size: 0.93em; color: #4a5568; margin: 14px 0;
+    }
+    .note strong { color: #1a365d; }
+    .warn {
+      background: #fffaf0; border: 1px solid #f6ad55;
+      border-left: 5px solid #f6ad55; border-radius: 6px;
+      padding: 14px 18px; font-size: 0.93em; color: #744210; margin: 14px 0;
+    }
+    .good {
+      background: #f0fff4; border: 1px solid #68d391;
+      border-left: 5px solid #48bb78; border-radius: 6px;
+      padding: 14px 18px; font-size: 0.93em; color: #276749; margin: 14px 0;
+    }
+    .demo-box {
+      background: #fff; border: 1px solid #bee3f8;
+      border-radius: 8px; padding: 20px 24px;
+      margin: 12px 0 28px; box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+    }
+
+    /* ===== イベントログ ===== */
+    .event-log {
+      background: #1a202c; border-radius: 8px;
+      padding: 12px 16px; min-height: 80px; max-height: 200px;
+      overflow-y: auto; font-family: 'Consolas','Monaco',monospace;
+      font-size: 0.82em; line-height: 1.8;
+    }
+    .event-log-item {
+      display: flex; align-items: baseline; gap: 8px;
+      border-bottom: 1px solid rgba(255,255,255,0.05); padding: 2px 0;
+      animation: fadeIn 0.3s ease;
+    }
+    @keyframes fadeIn { from { opacity:0; transform:translateX(-6px); } to { opacity:1; } }
+    .ev-time  { color: #a0aec0; font-size: 0.78em; min-width: 56px; }
+    .ev-type  { font-weight: bold; min-width: 90px; }
+    .ev-info  { color: #e2e8f0; font-size: 0.88em; }
+
+    /* ===== イベントデモ ボタン ===== */
+    .event-demo-area {
+      background: #f7fafc; border: 2px solid #bee3f8;
+      border-radius: 8px; padding: 16px 20px; margin: 14px 0;
+    }
+    .ev-btn {
+      display: inline-block; padding: 10px 20px;
+      border-radius: 8px; border: 2px solid;
+      font-size: 0.9em; font-weight: bold; cursor: pointer;
+      transition: all 0.15s; margin: 4px; user-select: none;
+    }
+
+    /* ===== 伝播ビジュアル ===== */
+    .propagation-demo {
+      background: #1a202c; border-radius: 10px;
+      padding: 20px; margin: 14px 0; position: relative;
+    }
+    .prop-outer {
+      border: 2px solid #4299e1; border-radius: 8px;
+      padding: 20px; background: rgba(66,153,225,0.08);
+      text-align: center; cursor: pointer; transition: background 0.2s;
+    }
+    .prop-outer:hover { background: rgba(66,153,225,0.18); }
+    .prop-middle {
+      border: 2px solid #9f7aea; border-radius: 8px;
+      padding: 16px; background: rgba(159,122,234,0.08);
+      cursor: pointer; transition: background 0.2s; margin: 10px auto;
+      max-width: 320px;
+    }
+    .prop-middle:hover { background: rgba(159,122,234,0.18); }
+    .prop-inner {
+      border: 2px solid #68d391; border-radius: 8px;
+      padding: 12px; background: rgba(104,211,145,0.08);
+      cursor: pointer; transition: background 0.2s; margin: 8px auto;
+      max-width: 200px;
+    }
+    .prop-inner:hover { background: rgba(104,211,145,0.18); }
+    .prop-label {
+      font-family: 'Consolas','Monaco',monospace;
+      font-size: 0.82em; font-weight: bold; margin-bottom: 4px;
+    }
+    .prop-flash {
+      animation: propFlash 0.5s ease;
+    }
+    @keyframes propFlash {
+      0%   { transform: scale(1.03); }
+      100% { transform: scale(1); }
+    }
+
+    /* ===== 非同期タイムライン ===== */
+    .async-timeline {
+      background: #1a202c; border-radius: 10px;
+      padding: 18px 20px; margin: 14px 0;
+      font-family: 'Consolas','Monaco',monospace; font-size: 0.82em;
+    }
+    .tl-row {
+      display: flex; align-items: center; gap: 10px;
+      margin-bottom: 8px; flex-wrap: wrap;
+    }
+    .tl-label {
+      min-width: 110px; color: #a0aec0; font-size: 0.82em;
+    }
+    .tl-bar {
+      height: 24px; border-radius: 4px;
+      display: flex; align-items: center; padding: 0 10px;
+      font-size: 0.78em; font-weight: bold; white-space: nowrap;
+      transition: width 0.5s ease;
+    }
+    .tl-note {
+      font-size: 0.78em; color: #a0aec0;
+    }
+
+    /* ===== Promise ビジュアル ===== */
+    .promise-visual {
+      display: flex; align-items: center; gap: 8px;
+      flex-wrap: wrap; margin: 14px 0; justify-content: center;
+    }
+    .pv-box {
+      border-radius: 8px; padding: 10px 16px;
+      text-align: center; font-family: 'Consolas','Monaco',monospace;
+      font-size: 0.82em; font-weight: bold; min-width: 100px;
+      transition: all 0.3s;
+    }
+    .pv-arrow { font-size: 1.4em; color: #718096; }
+
+    /* ===== インタラクティブデモ ===== */
+    .interactive-demo {
+      background: #ebf8ff; border: 1px solid #bee3f8;
+      border-radius: 8px; padding: 16px 20px; margin: 14px 0;
+    }
+    .demo-label {
+      font-size: 0.85em; font-weight: bold;
+      color: #1a365d; margin-bottom: 10px;
+    }
+    .demo-input-row {
+      display: flex; gap: 10px; align-items: center;
+      flex-wrap: wrap; margin-bottom: 10px;
+    }
+    .demo-input {
+      border: 2px solid #bee3f8; border-radius: 6px;
+      padding: 7px 12px; font-size: 0.9em;
+      font-family: 'Consolas','Monaco',monospace;
+      color: #2d3748; background: #fff; flex: 1; min-width: 80px;
+    }
+    .demo-input:focus { border-color: #2c7a7b; outline: none; }
+    .demo-btn {
+      background: #2c7a7b; color: #fff; border: none;
+      border-radius: 6px; padding: 8px 18px;
+      font-size: 0.88em; font-weight: bold; cursor: pointer;
+      transition: background 0.2s; white-space: nowrap;
+    }
+    .demo-btn:hover { background: #1a365d; }
+    .demo-output {
+      background: #1a202c; color: #68d391;
+      border-radius: 6px; padding: 10px 14px;
+      font-family: 'Consolas','Monaco',monospace;
+      font-size: 0.85em; min-height: 40px;
+      white-space: pre-wrap; line-height: 1.7;
+    }
+
+    /* ===== タブ ===== */
+    .tab-wrap { margin: 14px 0; }
+    .tab-btns { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: -1px; }
+    .tab-btn {
+      padding: 8px 18px; border: 1px solid #bee3f8;
+      border-bottom: none; border-radius: 6px 6px 0 0;
+      background: #edf2f7; color: #2c7a7b;
+      font-size: 0.85em; font-weight: bold;
+      font-family: 'Consolas','Monaco',monospace;
+      cursor: pointer; transition: background 0.15s;
+    }
+    .tab-btn.active { background: #fff; border-bottom: 1px solid #fff; }
+    .tab-btn:hover:not(.active) { background: #e6fffa; }
+    .tab-content {
+      display: none; background: #fff;
+      border: 1px solid #bee3f8;
+      border-radius: 0 6px 6px 6px; padding: 18px 20px;
+    }
+    .tab-content.active { display: block; }
+
+    /* ===== テーブル ===== */
+    table.ref-table {
+      border-collapse: collapse; width: 100%;
+      background: #fff; border-radius: 8px;
+      overflow: hidden; box-shadow: 0 2px 6px rgba(0,0,0,0.07);
+      margin: 14px 0; font-size: 0.9em;
+    }
+    table.ref-table th, table.ref-table td {
+      border: 1px solid #bee3f8; padding: 10px 14px; text-align: left;
+    }
+    table.ref-table thead tr { background: #1a365d; color: #fff; }
+    table.ref-table tbody tr:nth-child(even) { background: #ebf8ff; }
+
+    /* ===== JSコンソール ===== */
+    .js-console {
+      background: #1a202c; border-radius: 10px;
+      overflow: hidden; margin: 16px 0;
+      box-shadow: 0 4px 14px rgba(0,0,0,0.25);
+    }
+    .js-console-bar {
+      background: #2d3748; padding: 8px 16px;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .js-console-bar .dot { width: 12px; height: 12px; border-radius: 50%; }
+    .dot-red    { background: #fc8181; }
+    .dot-yellow { background: #f6ad55; }
+    .dot-green  { background: #68d391; }
+    .js-console-bar span {
+      font-size: 0.78em; color: #a0aec0;
+      font-family: 'Consolas','Monaco',monospace; margin-left: 6px;
+    }
+    .js-console-output {
+      padding: 14px 16px; min-height: 80px;
+      font-family: 'Consolas','Monaco',monospace;
+      font-size: 0.85em; line-height: 1.8;
+      max-height: 280px; overflow-y: auto;
+    }
+    .log-line   { color: #e2e8f0; }
+    .log-info   { color: #90cdf4; }
+    .log-warn   { color: #f6ad55; }
+    .log-error  { color: #fc8181; }
+    .log-result { color: #68d391; }
+    .log-prompt { color: #a0aec0; }
+    .js-console-input-row {
+      display: flex; align-items: center;
+      border-top: 1px solid #2d3748; padding: 8px 12px; gap: 8px;
+    }
+    .js-console-input-row span {
+      color: #68d391; font-family: 'Consolas','Monaco',monospace;
+      font-size: 0.9em; flex-shrink: 0;
+    }
+    .js-console-input {
+      flex: 1; background: transparent; border: none; outline: none;
+      color: #e2e8f0; font-family: 'Consolas','Monaco',monospace;
+      font-size: 0.88em; caret-color: #68d391;
+    }
+    .js-console-run {
+      background: #2c7a7b; color: #fff; border: none;
+      border-radius: 4px; padding: 4px 12px;
+      font-size: 0.78em; font-weight: bold; cursor: pointer;
+      transition: background 0.2s;
+    }
+    .js-console-run:hover { background: #1a365d; }
+    .js-console-clear {
+      background: #4a5568; color: #e2e8f0; border: none;
+      border-radius: 4px; padding: 4px 10px;
+      font-size: 0.78em; cursor: pointer; transition: background 0.2s;
+    }
+    .js-console-clear:hover { background: #718096; }
+
+    /* ===== 演習問題 ===== */
+    .quiz-section {
+      background: #ebf8ff; border-left: 6px solid #4299e1;
+      border-radius: 0 8px 8px 0; padding: 24px 28px; margin: 48px 0 32px;
+    }
+    .quiz-section > h2 { margin-top: 0; color: #1a365d; border-left-color: #4299e1; }
+    .quiz-block {
+      background: #fff; border: 1px solid #bee3f8;
+      border-radius: 8px; padding: 18px 22px; margin-bottom: 22px;
+    }
+    .quiz-block h3 { margin-top: 0; color: #1a365d; }
+    .quiz-block input[type="text"],
+    .quiz-block select {
+      border: 2px solid #bee3f8; border-radius: 6px;
+      padding: 8px 12px; font-size: 0.95em;
+      width: 100%; max-width: 440px; margin: 6px 0;
+      outline: none; font-family: 'Consolas','Monaco',monospace;
+      transition: border-color 0.2s;
+    }
+    .quiz-block input[type="text"]:focus,
+    .quiz-block select:focus { border-color: #2c7a7b; }
+    .quiz-block label { display: block; margin: 8px 0 2px; font-weight: bold; color: #4a5568; }
+    .quiz-block label.checkbox-label {
+      display: flex; align-items: flex-start; gap: 8px;
+      font-weight: normal; cursor: pointer; margin: 6px 0;
+    }
+    .quiz-block label.checkbox-label input { margin-top: 3px; flex-shrink: 0; }
+    .btn {
+      display: inline-block; padding: 9px 20px;
+      border-radius: 6px; border: none; cursor: pointer;
+      font-size: 0.95em; font-weight: bold;
+      transition: opacity 0.2s; margin-top: 8px;
+    }
+    .btn:hover { opacity: 0.85; }
+    .btn-teal { background: #2c7a7b; color: #fff; }
+    .btn-done { background: #48bb78; color: #fff; }
+    .result-msg {
+      margin-top: 10px; padding: 10px 14px;
+      border-radius: 6px; font-weight: bold; display: none;
+    }
+    .result-msg.correct { background: #c6f6d5; color: #276749; display: block; }
+    .result-msg.wrong   { background: #fed7d7; color: #9b2335; display: block; }
+    .result-msg.info    { background: #bee3f8; color: #1a365d; display: block; }
+
+    .page-nav {
+      display: flex; justify-content: space-between;
+      align-items: center; margin-top: 48px;
+      padding-top: 20px; border-top: 2px solid #bee3f8;
+      gap: 12px; flex-wrap: wrap;
+    }
+    .page-nav a {
+      display: inline-block; padding: 10px 20px;
+      border-radius: 8px; text-decoration: none;
+      font-weight: bold; font-size: 0.9em; transition: opacity 0.2s;
+    }
+    .page-nav a:hover { opacity: 0.8; }
+    .page-nav .prev { background: #edf2f7; color: #4a5568; }
+    .page-nav .next { background: #2c7a7b; color: #fff; }
+    .page-nav .home { background: #fff; color: #2c7a7b; border: 2px solid #2c7a7b; }
+
+    .complete-section {
+      background: #f0fff4; border: 2px solid #48bb78;
+      border-radius: 10px; padding: 20px 24px;
+      margin-top: 40px; text-align: center;
+    }
+    .complete-section p { margin: 0 0 12px; color: #276749; font-weight: bold; }
+
+    footer {
+      margin-top: 48px; padding-top: 16px;
+      border-top: 2px solid #bee3f8;
+      font-size: 0.82em; color: #a0aec0; text-align: center;
+    }
+    footer a { color: #2c7a7b; text-decoration: none; }
+    footer a:hover { text-decoration: underline; }
+
+    @media (max-width: 600px) {
+      body { font-size: 0.84em; }
+      .chapter-header { padding: 20px 16px; }
+      .chapter-header h1 { font-size: 1.2em; }
+      .quiz-section { padding: 16px 12px; }
+      .quiz-block { padding: 14px 12px; }
+      .page-nav { flex-direction: column; align-items: stretch; }
+      .page-nav a { text-align: center; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- パンくず -->
+<div class="breadcrumb">
+  <a href="../index.html">🏠 HTML5 Level 2</a> ›
+  Chapter 1：速習JavaScript入門 › 1-10 イベントと非同期処理
+</div>
+
+<!-- ヘッダー -->
+<div class="chapter-header">
+  <div class="ch-num">CHAPTER 01 › SECTION 10</div>
+  <h1>⚡ 1-10 イベントと非同期処理</h1>
+  <p>addEventListener・イベントオブジェクト・イベント伝播・
+  setTimeout/setInterval・Promise・async/await を
+  ライブデモとタイムラインビジュアルで体験しながら学びます。</p>
+  <div class="badge-row">
+    <span class="badge">addEventListener</span>
+    <span class="badge">イベントオブジェクト</span>
+    <span class="badge">バブリング / キャプチャ</span>
+    <span class="badge">setTimeout</span>
+    <span class="badge">Promise</span>
+    <span class="badge">async / await</span>
+    <span class="badge">fetch API</span>
+  </div>
+</div>
+
+<!-- セクションナビ -->
+<div class="section-nav">
+  <h2>📋 Chapter 1 のセクション</h2>
+  <ol>
+    <li><a href="01_variables.html">1-1 変数の宣言と値の代入</a></li>
+    <li><a href="02_operators.html">1-2 さまざまな演算</a></li>
+    <li><a href="03_types.html">1-3 型とオブジェクト</a></li>
+    <li><a href="04_functions.html">1-4 関数</a></li>
+    <li><a href="05_scope.html">1-5 スコープ</a></li>
+    <li><a href="06_conditions.html">1-6 条件分岐</a></li>
+    <li><a href="07_loops.html">1-7 繰り返しの処理</a></li>
+    <li><a href="08_classes.html">1-8 オブジェクトとクラス</a></li>
+    <li><a href="09_dom.html">1-9 HTMLの操作</a></li>
+    <li class="current"><a href="10_events.html">1-10 イベントと非同期処理</a></li>
+    <li><a href="11_html5.html">1-11 HTML5とJavaScript</a></li>
+  </ol>
+</div>
+
+
+<!-- ============================================================ -->
+<!-- PART 1: addEventListener -->
+<!-- ============================================================ -->
+<h2 id="event-listener">① addEventListener</h2>
+
+<div class="note">
+  <strong>重要ポイント：<code>addEventListener(イベント名, コールバック)</code> で
+  要素にイベントリスナーを登録します。
+  同じ要素に複数のリスナーを登録でき、<code>removeEventListener</code> で解除できます。</strong>
+</div>
+
+<div class="demo-box">
+  <h3>🎮 イベントリスナー ライブデモ</h3>
+
+  <div class="event-demo-area">
+    <h4 style="margin:0 0 12px; font-size:0.88em; color:#718096;">
+      ↓ 各ボタンを操作してイベントを発火させよう
+    </h4>
+    <div style="display:flex; flex-wrap:wrap; gap:8px; margin-bottom:12px;">
+      <button class="ev-btn" id="ev-click-btn"
+              style="background:#ebf8ff; color:#2b4c7e; border-color:#4299e1;">
+        🖱️ クリック
+      </button>
+      <button class="ev-btn" id="ev-dbl-btn"
+              style="background:#f0fff4; color:#276749; border-color:#48bb78;">
+        👆 ダブルクリック
+      </button>
+      <button class="ev-btn" id="ev-hover-btn"
+              style="background:#faf5ff; color:#553c9a; border-color:#9f7aea;">
+        🖱️ ホバー
+      </button>
+      <input id="ev-key-input" type="text"
+             placeholder="⌨️ キーを押してみよう"
+             style="padding:8px 14px; border:2px solid #f6ad55; border-radius:8px;
+                    font-size:0.9em; background:#fffaf0; color:#744210; outline:none;">
+    </div>
+    <div style="font-size:0.82em; color:#718096; margin-bottom:8px;">
+      📋 イベントログ（最新10件）
+    </div>
+    <div class="event-log" id="event-log">
+      <div style="color:#4a5568; font-size:0.85em;">← ボタンを操作するとここにイベントが表示されます</div>
+    </div>
+  </div>
+
+  <div class="pre-wrap">
+    <button class="copy-btn" onclick="copyPre(this)">copy</button>
+<pre>
+<span class="comment">// addEventListener の基本</span>
+<span class="kw">const</span> btn = document.<span class="fn">getElementById</span>(<span class="str">"myBtn"</span>);
+
+<span class="comment">// クリックイベント</span>
+btn.<span class="fn">addEventListener</span>(<span class="str">"click"</span>, (<span class="prop">event</span>) <span class="op">=></span> {
+  console.<span class="fn">log</span>(<span class="str">"クリックされました！"</span>);
+  console.<span class="fn">log</span>(<span class="prop">event</span>.<span class="prop">type</span>);    <span class="out">// → "click"</span>
+  console.<span class="fn">log</span>(<span class="prop">event</span>.<span class="prop">target</span>);  <span class="out">// → クリックされた要素</span>
+  console.<span class="fn">log</span>(<span class="prop">event</span>.<span class="prop">clientX</span>, <span class="prop">event</span>.<span class="prop">clientY</span>); <span class="out">// → マウス座標</span>
+});
+
+<span class="comment">// 複数のイベントを登録できる</span>
+btn.<span class="fn">addEventListener</span>(<span class="str">"mouseenter"</span>, () <span class="op">=></span> console.<span class="fn">log</span>(<span class="str">"ホバー開始"</span>));
+btn.<span class="fn">addEventListener</span>(<span class="str">"mouseleave"</span>, () <span class="op">=></span> console.<span class="fn">log</span>(<span class="str">"ホバー終了"</span>));
+
+<span class="comment">// イベントリスナーの解除</span>
+<span class="kw">const</span> <span class="fn">handler</span> = () <span class="op">=></span> console.<span class="fn">log</span>(<span class="str">"1回だけ"</span>);
+btn.<span class="fn">addEventListener</span>(<span class="str">"click"</span>, <span class="fn">handler</span>);
+btn.<span class="fn">removeEventListener</span>(<span class="str">"click"</span>, <span class="fn">handler</span>); <span class="comment">// 解除</span>
+
+<span class="comment">// once オプション：1回だけ実行</span>
+btn.<span class="fn">addEventListener</span>(<span class="str">"click"</span>, () <span class="op">=></span> console.<span class="fn">log</span>(<span class="str">"1回だけ"</span>), { once: <span class="kw">true</span> });
+</pre>
+  </div>
+
+  <h3>主要なイベント一覧</h3>
+  <table class="ref-table">
+    <thead>
+      <tr><th>カテゴリ</th><th>イベント名</th><th>発火タイミング</th></tr>
+    </thead>
+    <tbody>
+      <tr><td rowspan="4">マウス</td>
+        <td><code>click</code></td><td>クリック時</td></tr>
+      <tr><td><code>dblclick</code></td><td>ダブルクリック時</td></tr>
+      <tr><td><code>mouseenter / mouseleave</code></td><td>要素に入った / 出た時</td></tr>
+      <tr><td><code>mousemove</code></td><td>マウス移動時</td></tr>
+      <tr><td rowspan="3">キーボード</td>
+        <td><code>keydown</code></td><td>キーを押した時</td></tr>
+      <tr><td><code>keyup</code></td><td>キーを離した時</td></tr>
+      <tr><td><code>keypress</code></td><td>文字キーを押した時（非推奨）</td></tr>
+      <tr><td rowspan="3">フォーム</td>
+        <td><code>input</code></td><td>入力値が変わった時</td></tr>
+      <tr><td><code>change</code></td><td>値が確定した時</td></tr>
+      <tr><td><code>submit</code></td><td>フォーム送信時</td></tr>
+      <tr><td rowspan="2">ドキュメント</td>
+        <td><code>DOMContentLoaded</code></td><td>DOM 構築完了時</td></tr>
+      <tr><td><code>load</code></td><td>全リソース読み込み完了時</td></tr>
+    </tbody>
+  </table>
+</div>
+
+
+<!-- ============================================================ -->
+<!-- PART 2: イベントオブジェクトと伝播 -->
+<!-- ============================================================ -->
+<h2 id="event-object">② イベントオブジェクトとイベント伝播</h2>
+
+<div class="note">
+  <strong>重要ポイント：イベントハンドラの引数として渡される <code>event</code> オブジェクトには
+  イベントの詳細情報が含まれます。
+  イベントはデフォルトで内側から外側へ「バブリング」します。</strong>
+</div>
+
+<div class="demo-box">
+  <h3>🎮 イベント伝播（バブリング）デモ</h3>
+  <div class="propagation-demo">
+    <div class="prop-outer" id="prop-outer"
+         onclick="propClick('outer', event)">
+      <div class="prop-label" style="color:#90cdf4;">🔵 outer（外側）</div>
+      <div class="prop-middle" id="prop-middle"
+           onclick="propClick('middle', event)">
+        <div class="prop-label" style="color:#b794f4;">🟣 middle（中間）</div>
+        <div class="prop-inner" id="prop-inner"
+             onclick="propClick('inner', event)">
+          <div class="prop-label" style="color:#68d391;">🟢 inner（内側）</div>
+          <div style="font-size:0.78em; color:#a0aec0; margin-top:4px;">
+            ← ここをクリック
+          </div>
+        </div>
+      </div>
+    </div>
+    <div style="margin-top:12px; display:flex; gap:8px; flex-wrap:wrap;">
+      <label style="display:flex; align-items:center; gap:6px;
+             font-family:'Consolas','Monaco',monospace; font-size:0.82em; color:#e2e8f0; cursor:pointer;">
+        <input type="checkbox" id="stop-propagation"> stopPropagation() を有効にする
+      </label>
+      <label style="display:flex; align-items:center; gap:6px;
+             font-family:'Consolas','Monaco',monospace; font-size:0.82em; color:#e2e8f0; cursor:pointer;">
+        <input type="checkbox" id="prevent-default"> preventDefault() を有効にする
+      </label>
+    </div>
+    <div class="event-log" id="prop-log" style="margin-top:10px; max-height:120px;">
+      <div style="color:#4a5568; font-size:0.85em;">← 要素をクリックして伝播を確認しましょう</div>
+    </div>
+  </div>
+
+  <div class="pre-wrap">
+    <button class="copy-btn" onclick="copyPre(this)">copy</button>
+<pre>
+<span class="comment">// イベントオブジェクトの主要プロパティ</span>
+document.<span class="fn">addEventListener</span>(<span class="str">"click"</span>, (<span class="prop">e</span>) <span class="op">=></span> {
+  console.<span class="fn">log</span>(<span class="prop">e</span>.<span class="prop">type</span>);          <span class="out">// → "click"（イベント種類）</span>
+  console.<span class="fn">log</span>(<span class="prop">e</span>.<span class="prop">target</span>);        <span class="out">// → クリックされた要素</span>
+  console.<span class="fn">log</span>(<span class="prop">e</span>.<span class="prop">currentTarget</span>); <span class="out">// → リスナーが登録された要素</span>
+  console.<span class="fn">log</span>(<span class="prop">e</span>.<span class="prop">clientX</span>, <span class="prop">e</span>.<span class="prop">clientY</span>); <span class="out">// → マウス座標</span>
+  console.<span class="fn">log</span>(<span class="prop">e</span>.<span class="prop">key</span>);           <span class="out">// → キーボードのキー名</span>
+});
+
+<span class="comment">// バブリング：内側 → 外側へイベントが伝播</span>
+<span class="comment">// inner クリック → inner → middle → outer → document の順に発火</span>
+
+<span class="comment">// stopPropagation：伝播を止める</span>
+inner.<span class="fn">addEventListener</span>(<span class="str">"click"</span>, (<span class="prop">e</span>) <span class="op">=></span> {
+  <span class="prop">e</span>.<span class="fn">stopPropagation</span>(); <span class="comment">// 外側への伝播をここで止める</span>
+  console.<span class="fn">log</span>(<span class="str">"inner のみ"</span>);
+});
+
+<span class="comment">// preventDefault：デフォルト動作をキャンセル</span>
+link.<span class="fn">addEventListener</span>(<span class="str">"click"</span>, (<span class="prop">e</span>) <span class="op">=></span> {
+  <span class="prop">e</span>.<span class="fn">preventDefault</span>(); <span class="comment">// リンクのページ遷移をキャンセル</span>
+  console.<span class="fn">log</span>(<span class="str">"遷移しない"</span>);
+});
+
+<span class="comment">// イベントデリゲーション（親要素でまとめて処理）</span>
+ul.<span class="fn">addEventListener</span>(<span class="str">"click"</span>, (<span class="prop">e</span>) <span class="op">=></span> {
+  <span class="kw">if</span> (<span class="prop">e</span>.<span class="prop">target</span>.<span class="prop">tagName</span> <span class="op">===</span> <span class="str">"LI"</span>) {
+    console.<span class="fn">log</span>(<span class="prop">e</span>.<span class="prop">target</span>.<span class="prop">textContent</span>);
+  }
+});
+</pre>
+  </div>
+</div>
+
+
+<!-- ============================================================ -->
+<!-- PART 3: setTimeout / setInterval -->
+<!-- ============================================================ -->
+<h2 id="timer">③ setTimeout / setInterval</h2>
+
+<div class="note">
+  <strong>重要ポイント：<code>setTimeout</code> は指定時間後に1回だけ実行し、
+  <code>setInterval</code> は指定間隔で繰り返し実行します。
+  どちらも非同期で実行されます。</strong>
+</div>
+
+<div class="demo-box">
+  <h3>🎮 タイマーデモ</h3>
+
+  <!-- setTimeout デモ -->
+  <div class="interactive-demo">
+    <div class="demo-label">setTimeout：指定時間後に1回だけ実行</div>
+    <div class="demo-input-row">
+      <input class="demo-input" id="timeout-ms" type="number"
+             value="2000" min="100" max="10000" style="max-width:100px;">
+      <span style="color:#718096; font-size:0.9em;">ms 後に実行</span>
+      <input class="demo-input" id="timeout-msg" type="text"
+             value="タイムアウト！" placeholder="メッセージ">
+      <button class="demo-btn" onclick="runSetTimeout()">▶ 開始</button>
+      <button class="demo-btn" style="background:#4a5568;" onclick="cancelTimeout()">✕ キャンセル</button>
+    </div>
+    <div class="demo-output" id="timeout-output">← 時間とメッセージを設定して実行してみましょう</div>
+  </div>
+
+  <!-- setInterval デモ -->
+  <div class="interactive-demo">
+    <div class="demo-label">setInterval：指定間隔で繰り返し実行</div>
+    <div class="demo-input-row">
+      <input class="demo-input" id="interval-ms" type="number"
+             value="1000" min="100" max="5000" style="max-width:100px;">
+      <span style="color:#718096; font-size:0.9em;">ms 間隔</span>
+      <button class="demo-btn" onclick="runSetInterval()">▶ 開始</button>
+      <button class="demo-btn" style="background:#e53e3e;" onclick="stopInterval()">⏹ 停止</button>
+    </div>
+    <div class="demo-output" id="interval-output">← 間隔を設定してカウンターを開始してみましょう</div>
+  </div>
+
+  <div class="pre-wrap">
+    <button class="copy-btn" onclick="copyPre(this)">copy</button>
+<pre>
+<span class="comment">// setTimeout：指定時間後に1回だけ実行</span>
+<span class="kw">const</span> timerId = setTimeout(() <span class="op">=></span> {
+  console.<span class="fn">log</span>(<span class="str">"2秒後に実行！"</span>);
+}, <span class="num">2000</span>); <span class="comment">// ミリ秒で指定</span>
+
+<span class="comment">// キャンセル</span>
+clearTimeout(timerId);
+
+<span class="comment">// setInterval：指定間隔で繰り返し実行</span>
+<span class="kw">let</span> count = <span class="num">0</span>;
+<span class="kw">const</span> intervalId = setInterval(() <span class="op">=></span> {
+  count++;
+  console.<span class="fn">log</span>(<span class="str">`カウント: <span class="op">${</span>count<span class="op">}</span>`</span>);
+  <span class="kw">if</span> (count <span class="op">&gt;=</span> <span class="num">5</span>) clearInterval(intervalId); <span class="comment">// 5回で停止</span>
+}, <span class="num">1000</span>);
+
+<span class="comment">// 停止</span>
+clearInterval(intervalId);
+
+<span class="comment">// setTimeout(fn, 0) は「現在の処理が終わってから実行」</span>
+console.<span class="fn">log</span>(<span class="str">"1番目"</span>);
+setTimeout(() <span class="op">=></span> console.<span class="fn">log</span>(<span class="str">"3番目（非同期）"</span>), <span class="num">0</span>);
+console.<span class="fn">log</span>(<span class="str">"2番目"</span>);
+<span class="out">// → "1番目", "2番目", "3番目（非同期）"</span>
+</pre>
+  </div>
+</div>
+
+
+<!-- ============================================================ -->
+<!-- PART 4: Promise と async/await -->
+<!-- ============================================================ -->
+<h2 id="async">④ Promise と async/await</h2>
+
+<div class="note">
+  <strong>重要ポイント：非同期処理の結果を扱うために <code>Promise</code> を使います。
+  <code>async/await</code> を使うと Promise を同期的なコードのように書けます。</strong>
+</div>
+
+<div class="demo-box">
+  <h3>Promise の状態遷移</h3>
+  <div class="promise-visual" id="promise-visual">
+    <div class="pv-box" style="background:#2d3748; color:#a0aec0; border:2px solid #4a5568;"
+         id="pv-pending">
+      ⏳ pending<br><span style="font-size:0.75em;">（待機中）</span>
+    </div>
+    <div class="pv-arrow">→</div>
+    <div style="display:flex; flex-direction:column; gap:8px;">
+      <div class="pv-box" style="background:#276749; color:#9ae6b4; border:2px solid #48bb78;"
+           id="pv-fulfilled">
+        ✅ fulfilled<br><span style="font-size:0.75em;">（成功）</span>
+      </div>
+      <div class="pv-box" style="background:#9b2335; color:#fed7d7; border:2px solid #fc8181;"
+           id="pv-rejected">
+        ❌ rejected<br><span style="font-size:0.75em;">（失敗）</span>
+      </div>
+    </div>
+    <div class="pv-arrow">→</div>
+    <div style="display:flex; flex-direction:column; gap:8px;">
+      <div class="pv-box" style="background:#2b4c7e; color:#90cdf4; border:2px solid #4299e1;">
+        .then(fn)<br><span style="font-size:0.75em;">成功時の処理</span>
+      </div>
+      <div class="pv-box" style="background:#744210; color:#fbd38d; border:2px solid #f6ad55;">
+        .catch(fn)<br><span style="font-size:0.75em;">失敗時の処理</span>
+      </div>
+    </div>
+    <div class="pv-arrow">→</div>
+    <div class="pv-box" style="background:#553c9a; color:#d6bcfa; border:2px solid #9f7aea;">
+      .finally(fn)<br><span style="font-size:0.75em;">常に実行</span>
+    </div>
+  </div>
+
+  <div class="tab-wrap">
+    <div class="tab-btns">
+      <button class="tab-btn active" onclick="switchTab(this,'tab-promise')">Promise</button>
+      <button class="tab-btn"        onclick="switchTab(this,'tab-async')">async/await</button>
+      <button class="tab-btn"        onclick="switchTab(this,'tab-fetch')">fetch API</button>
+      <button class="tab-btn"        onclick="switchTab(this,'tab-promise-all')">Promise.all</button>
+    </div>
+
+    <!-- Promise -->
+    <div class="tab-content active" id="tab-promise">
+      <h3 style="margin-top:0; color:#1a365d;">Promise の基本</h3>
+      <div class="pre-wrap">
+        <button class="copy-btn" onclick="copyPre(this)">copy</button>
+<pre>
+<span class="comment">// Promise の作成</span>
+<span class="kw">const</span> promise = <span class="kw">new</span> Promise((<span class="prop">resolve</span>, <span class="prop">reject</span>) <span class="op">=></span> {
+  <span class="comment">// 非同期処理</span>
+  setTimeout(() <span class="op">=></span> {
+    <span class="kw">const</span> success = Math.<span class="fn">random</span>() <span class="op">&gt;</span> <span class="num">0.5</span>;
+    <span class="kw">if</span> (success) {
+      <span class="fn">resolve</span>(<span class="str">"成功！"</span>);   <span class="comment">// fulfilled に遷移</span>
+    } <span class="kw">else</span> {
+      <span class="fn">reject</span>(<span class="str">"失敗..."</span>);  <span class="comment">// rejected に遷移</span>
+    }
+  }, <span class="num">1000</span>);
+});
+
+<span class="comment">// Promise の消費</span>
+promise
+  .<span class="fn">then</span>((<span class="prop">result</span>) <span class="op">=></span> {
+    console.<span class="fn">log</span>(<span class="str">"成功："</span>, <span class="prop">result</span>); <span class="out">// → "成功！"</span>
+    <span class="kw">return</span> <span class="prop">result</span> <span class="op">+</span> <span class="str">" 次の処理"</span>; <span class="comment">// 次の then に渡せる</span>
+  })
+  .<span class="fn">then</span>((<span class="prop">result</span>) <span class="op">=></span> console.<span class="fn">log</span>(<span class="prop">result</span>)) <span class="out">// → "成功！ 次の処理"</span>
+  .<span class="fn">catch</span>((<span class="prop">error</span>) <span class="op">=></span> {
+    console.<span class="fn">log</span>(<span class="str">"エラー："</span>, <span class="prop">error</span>); <span class="out">// → "失敗..."</span>
+  })
+  .<span class="fn">finally</span>(() <span class="op">=></span> {
+    console.<span class="fn">log</span>(<span class="str">"成功・失敗に関わらず実行"</span>);
+  });
+</pre>
+      </div>
+    </div>
+
+    <!-- async/await -->
+    <div class="tab-content" id="tab-async">
+      <h3 style="margin-top:0; color:#1a365d;">async/await（ES2017〜）</h3>
+      <div class="pre-wrap">
+        <button class="copy-btn" onclick="copyPre(this)">copy</button>
+<pre>
+<span class="comment">// async 関数：常に Promise を返す</span>
+<span class="kw">async function</span> <span class="fn">fetchData</span>() {
+  <span class="comment">// await：Promise の解決を待つ（同期的に書ける）</span>
+  <span class="kw">const</span> result = <span class="kw">await</span> someAsyncOperation();
+  console.<span class="fn">log</span>(result);
+  <span class="kw">return</span> result;
+}
+
+<span class="comment">// try/catch でエラーハンドリング</span>
+<span class="kw">async function</span> <span class="fn">loadUser</span>(<span class="prop">id</span>) {
+  <span class="kw">try</span> {
+    <span class="kw">const</span> user = <span class="kw">await</span> <span class="fn">getUser</span>(<span class="prop">id</span>);
+    <span class="kw">const</span> posts = <span class="kw">await</span> <span class="fn">getPosts</span>(user.<span class="prop">id</span>);
+    <span class="kw">return</span> { user, posts };
+  } <span class="kw">catch</span> (<span class="prop">error</span>) {
+    console.<span class="fn">log</span>(<span class="str">"エラー："</span>, <span class="prop">error</span>);
+  } <span class="kw">finally</span> {
+    console.<span class="fn">log</span>(<span class="str">"処理完了"</span>);
+  }
+}
+
+<span class="comment">// Promise チェーンとの比較</span>
+<span class="comment">// Promise チェーン</span>
+<span class="fn">getUser</span>(<span class="num">1</span>)
+  .<span class="fn">then</span>(user <span class="op">=></span> <span class="fn">getPosts</span>(user.<span class="prop">id</span>))
+  .<span class="fn">then</span>(posts <span class="op">=></span> console.<span class="fn">log</span>(posts))
+  .<span class="fn">catch</span>(err <span class="op">=></span> console.<span class="fn">log</span>(err));
+
+<span class="comment">// async/await（同じ処理）</span>
+<span class="kw">async function</span> <span class="fn">main</span>() {
+  <span class="kw">const</span> user  = <span class="kw">await</span> <span class="fn">getUser</span>(<span class="num">1</span>);
+  <span class="kw">const</span> posts = <span class="kw">await</span> <span class="fn">getPosts</span>(user.<span class="prop">id</span>);
+  console.<span class="fn">log</span>(posts);
+}
+</pre>
+      </div>
+    </div>
+
+    <!-- fetch API -->
+    <div class="tab-content" id="tab-fetch">
+      <h3 style="margin-top:0; color:#1a365d;">fetch API</h3>
+      <div class="pre-wrap">
+        <button class="copy-btn" onclick="copyPre(this)">copy</button>
+<pre>
+<span class="comment">// fetch：HTTP リクエストを送る</span>
+<span class="kw">async function</span> <span class="fn">fetchUser</span>(<span class="prop">id</span>) {
+  <span class="kw">try</span> {
+    <span class="comment">// GET リクエスト</span>
+    <span class="kw">const</span> response = <span class="kw">await</span> <span class="fn">fetch</span>(<span class="str">`https://api.example.com/users/<span class="op">${</span><span class="prop">id</span><span class="op">}</span>`</span>);
+
+    <span class="comment">// HTTP ステータスの確認</span>
+    <span class="kw">if</span> (<span class="op">!</span>response.<span class="prop">ok</span>) {
+      <span class="kw">throw</span> <span class="kw">new</span> Error(<span class="str">`HTTP error: <span class="op">${</span>response.<span class="prop">status</span><span class="op">}</span>`</span>);
+    }
+
+    <span class="comment">// JSON として解析</span>
+    <span class="kw">const</span> data = <span class="kw">await</span> response.<span class="fn">json</span>();
+    console.<span class="fn">log</span>(data);
+    <span class="kw">return</span> data;
+  } <span class="kw">catch</span> (<span class="prop">error</span>) {
+    console.<span class="fn">log</span>(<span class="str">"エラー："</span>, <span class="prop">error</span>);
+  }
+}
+
+<span class="comment">// POST リクエスト</span>
+<span class="kw">async function</span> <span class="fn">createUser</span>(<span class="prop">userData</span>) {
+  <span class="kw">const</span> response = <span class="kw">await</span> <span class="fn">fetch</span>(<span class="str">"https://api.example.com/users"</span>, {
+    <span class="prop">method</span>:  <span class="str">"POST"</span>,
+    <span class="prop">headers</span>: { <span class="str">"Content-Type"</span>: <span class="str">"application/json"</span> },
+    <span class="prop">body</span>:    JSON.<span class="fn">stringify</span>(<span class="prop">userData</span>)
+  });
+  <span class="kw">return</span> response.<span class="fn">json</span>();
+}
+</pre>
+      </div>
+    </div>
+
+    <!-- Promise.all -->
+    <div class="tab-content" id="tab-promise-all">
+      <h3 style="margin-top:0; color:#1a365d;">Promise.all / Promise.race</h3>
+      <div class="pre-wrap">
+        <button class="copy-btn" onclick="copyPre(this)">copy</button>
+<pre>
+<span class="comment">// Promise.all：すべての Promise が解決するまで待つ</span>
+<span class="kw">async function</span> <span class="fn">loadAll</span>() {
+  <span class="kw">const</span> [users, posts, comments] = <span class="kw">await</span> Promise.<span class="fn">all</span>([
+    <span class="fn">fetch</span>(<span class="str">"/api/users"</span>).<span class="fn">then</span>(r <span class="op">=></span> r.<span class="fn">json</span>()),
+    <span class="fn">fetch</span>(<span class="str">"/api/posts"</span>).<span class="fn">then</span>(r <span class="op">=></span> r.<span class="fn">json</span>()),
+    <span class="fn">fetch</span>(<span class="str">"/api/comments"</span>).<span class="fn">then</span>(r <span class="op">=></span> r.<span class="fn">json</span>()),
+  ]);
+  <span class="comment">// 3つのリクエストを並行実行（直列より速い）</span>
+  console.<span class="fn">log</span>(users, posts, comments);
+}
+
+<span class="comment">// Promise.allSettled：失敗しても全結果を取得</span>
+<span class="kw">const</span> results = <span class="kw">await</span> Promise.<span class="fn">allSettled</span>([p1, p2, p3]);
+results.<span class="fn">forEach</span>(r <span class="op">=></span> {
+  <span class="kw">if</span> (r.<span class="prop">status</span> <span class="op">===</span> <span class="str">"fulfilled"</span>) console.<span class="fn">log</span>(r.<span class="prop">value</span>);
+  <span class="kw">if</span> (r.<span class="prop">status</span> <span class="op">===</span> <span class="str">"rejected"</span>)  console.<span class="fn">log</span>(r.<span class="prop">reason</span>);
+});
+
+<span class="comment">// Promise.race：最初に解決した Promise の結果を使う</span>
+<span class="kw">const</span> fastest = <span class="kw">await</span> Promise.<span class="fn">race</span>([
+  <span class="fn">fetch</span>(<span class="str">"/api/server1"</span>),
+  <span class="fn">fetch</span>(<span class="str">"/api/server2"</span>),
+]);
+<span class="comment">// 最初に応答したサーバーの結果を使う</span>
+</pre>
+      </div>
+    </div>
+  </div>
+
+  <h3>🎮 非同期処理デモ</h3>
+  <div class="interactive-demo">
+    <div class="demo-label">模擬 API リクエストで Promise / async-await の動作を確認しよう</div>
+    <div class="demo-input-row">
+      <select class="demo-input" id="async-type" style="flex:0 0 auto; width:200px;">
+        <option value="promise">Promise チェーン</option>
+        <option value="async">async/await</option>
+        <option value="parallel">Promise.all（並行）</option>
+        <option value="race">Promise.race</option>
+        <option value="error">エラーハンドリング</option>
+      </select>
+      <input class="demo-input" id="async-delay" type="number"
+             value="1000" min="200" max="3000" style="max-width:90px;">
+      <span style="color:#718096; font-size:0.9em;">ms</span>
+      <button class="demo-btn" onclick="runAsyncDemo()">▶ 実行</button>
+    </div>
+    <div class="demo-output" id="async-output">← 非同期処理の種類を選んで実行してみましょう</div>
+  </div>
+</div>
+
+
+<!-- ============================================================ -->
+<!-- まとめ -->
+<!-- ============================================================ -->
+<h2>📌 まとめ</h2>
+<div class="demo-box">
+  <table class="ref-table">
+    <thead><tr><th>機能</th><th>構文</th><th>ポイント</th></tr></thead>
+    <tbody>
+      <tr><td>イベント登録</td>
+        <td><code>el.addEventListener("click", fn)</code></td>
+        <td>複数登録可・removeEventListener で解除</td></tr>
+      <tr><td>イベントオブジェクト</td>
+        <td><code>e.target / e.type / e.key</code></td>
+        <td>イベントの詳細情報を持つ</td></tr>
+      <tr><td>伝播停止</td>
+        <td><code>e.stopPropagation()</code></td>
+        <td>バブリングを止める</td></tr>
+      <tr><td>デフォルト動作キャンセル</td>
+        <td><code>e.preventDefault()</code></td>
+        <td>リンク遷移・フォーム送信などをキャンセル</td></tr>
+      <tr><td>遅延実行</td>
+        <td><code>setTimeout(fn, ms)</code></td>
+        <td>指定時間後に1回実行</td></tr>
+      <tr><td>繰り返し実行</td>
+        <td><code>setInterval(fn, ms)</code></td>
+        <td>指定間隔で繰り返し実行</td></tr>
+      <tr><td>Promise</td>
+        <td><code>new Promise((resolve, reject) => {})</code></td>
+        <td>非同期処理の結果を表すオブジェクト</td></tr>
+      <tr><td>async/await</td>
+        <td><code>async function / await promise</code></td>
+        <td>Promise を同期的に書ける</td></tr>
+      <tr><td>fetch API</td>
+        <td><code>await fetch(url)</code></td>
+        <td>HTTP リクエストを送る</td></tr>
+      <tr><td>並行処理</td>
+        <td><code>Promise.all([p1, p2, ...])</code></td>
+        <td>複数の Promise を並行実行</td></tr>
+    </tbody>
+  </table>
+</div>
+
+
+<!-- ============================================================ -->
+<!-- 演習問題 -->
+<!-- ============================================================ -->
+<div class="quiz-section">
+  <h2>🖊️ 演習問題</h2>
+
+  <!-- Q1 -->
+  <div class="quiz-block">
+    <h3>Q1. 穴埋め問題</h3>
+    <p>以下の説明に合う答えを入力してください。</p>
+    <label>① イベントが内側から外側へ伝播する仕組みの名称：</label>
+    <input type="text" id="q1a" placeholder="〇〇リング">
+    <label>② イベントの外側への伝播を止めるメソッド：</label>
+    <input type="text" id="q1b" placeholder="e.???()">
+    <label>③ async 関数内で Promise の解決を待つキーワード：</label>
+    <input type="text" id="q1c" placeholder="キーワード">
+    <label>④ 複数の Promise をすべて並行実行して全結果を待つメソッド：</label>
+    <input type="text" id="q1d" placeholder="Promise.???">
+    <br>
+    <button class="btn btn-teal" onclick="checkQ1()">答え合わせ</button>
+    <div class="result-msg" id="q1-result"></div>
+    <script>
+      function checkQ1() {
+        const a = document.getElementById('q1a').value.trim().toLowerCase().replace(/\s/g,'');
+        const b = document.getElementById('q1b').value.trim().toLowerCase()
+                    .replace(/e\.|event\.|[()]/g,'');
+        const c = document.getElementById('q1c').value.trim().toLowerCase();
+        const d = document.getElementById('q1d').value.trim().toLowerCase()
+                    .replace(/promise\.|[()]/g,'');
+        const r = document.getElementById('q1-result');
+        const ca = a === 'バブリング' || a === 'bubbling' || a === 'ばぶりんぐ';
+        const cb = b === 'stoppropagation';
+        const cc = c === 'await';
+        const cd = d === 'all' || d === 'promise.all';
+        const count = [ca,cb,cc,cd].filter(Boolean).length;
+        if (count === 4) {
+          r.className = 'result-msg correct';
+          r.textContent = '✅ 全問正解！完璧です！';
+        } else {
+          r.className = 'result-msg wrong';
+          r.innerHTML = `❌ ${count}/4 問正解。<br>` +
+            `① ${ca?'✅':'❌ バブリング（Bubbling）'}　` +
+            `② ${cb?'✅':'❌ stopPropagation()'}　` +
+            `③ ${cc?'✅':'❌ await'}　` +
+            `④ ${cd?'✅':'❌ Promise.all'}`;
+        }
+      }
+    </script>
+  </div>
+
+  <!-- Q2 -->
+  <div class="quiz-block">
+    <h3>Q2. 選択問題</h3>
+    <p>以下のコードを実行したとき、コンソールへの出力順序として正しいものはどれですか？</p>
+    <div class="pre-wrap" style="margin-bottom:12px;">
+<pre style="margin:0;">
+console.<span class="fn">log</span>(<span class="str">"A"</span>);
+setTimeout(() <span class="op">=></span> console.<span class="fn">log</span>(<span class="str">"B"</span>), <span class="num">0</span>);
+Promise.<span class="fn">resolve</span>().<span class="fn">then</span>(() <span class="op">=></span> console.<span class="fn">log</span>(<span class="str">"C"</span>));
+console.<span class="fn">log</span>(<span class="str">"D"</span>);
+</pre>
+    </div>
+    <select id="q2">
+      <option value="">-- 選択してください --</option>
+      <option value="a">A → B → C → D</option>
+      <option value="b">A → D → B → C</option>
+      <option value="c">A → D → C → B</option>
+      <option value="d">A → C → D → B</option>
+    </select>
+    <br>
+    <button class="btn btn-teal" onclick="checkQ2()">答え合わせ</button>
+    <div class="result-msg" id="q2-result"></div>
+    <script>
+      function checkQ2() {
+        const v = document.getElementById('q2').value;
+        const r = document.getElementById('q2-result');
+        if (v === 'c') {
+          r.className = 'result-msg correct';
+          r.innerHTML = '✅ 正解！<br><br>' +
+            '<strong>実行順序の理由：</strong><br>' +
+            '① <code>console.log("A")</code> → 同期処理なので即実行<br>' +
+            '② <code>setTimeout(..., 0)</code> → マクロタスクキューに追加<br>' +
+            '③ <code>Promise.resolve().then(...)</code> → マイクロタスクキューに追加<br>' +
+            '④ <code>console.log("D")</code> → 同期処理なので即実行<br>' +
+            '⑤ 同期処理完了後、<strong>マイクロタスク</strong>（Promise）が先に実行 → C<br>' +
+            '⑥ 最後に<strong>マクロタスク</strong>（setTimeout）が実行 → B<br><br>' +
+            '優先順位：同期処理 > マイクロタスク（Promise）> マクロタスク（setTimeout）';
+        } else if (v === '') {
+          r.className = 'result-msg info';
+          r.textContent = '⚠️ 選択肢を選んでください。';
+        } else {
+          r.className = 'result-msg wrong';
+          r.innerHTML = '❌ 不正解。<br>' +
+            '同期処理（A, D）が先に実行され、その後マイクロタスク（Promise → C）、' +
+            '最後にマクロタスク（setTimeout → B）の順になります。';
+        }
+      }
+    </script>
+  </div>
+
+  <!-- Q3 -->
+  <div class="quiz-block">
+    <h3>Q3. 正誤チェックボックス問題</h3>
+    <p><strong>正しい記述</strong>をすべて選んでください。</p>
+    <label class="checkbox-label"><input type="checkbox" id="q3a">
+      ① <code>addEventListener</code> は同じ要素に複数のリスナーを登録できる</label>
+    <label class="checkbox-label"><input type="checkbox" id="q3b">
+      ② <code>async</code> 関数は常に Promise を返す</label>
+    <label class="checkbox-label"><input type="checkbox" id="q3c">
+      ③ <code>setInterval</code> は指定時間後に1回だけ実行される</label>
+    <label class="checkbox-label"><input type="checkbox" id="q3d">
+      ④ <code>e.preventDefault()</code> はイベントのバブリングを止める</label>
+    <label class="checkbox-label"><input type="checkbox" id="q3e">
+      ⑤ <code>Promise.all</code> は1つでも reject されると全体が reject になる</label>
+    <label class="checkbox-label"><input type="checkbox" id="q3f">
+      ⑥ <code>await</code> は <code>async</code> 関数の中でのみ使える</label>
+    <br>
+    <button class="btn btn-teal" onclick="checkQ3()">答え合わせ</button>
+    <div class="result-msg" id="q3-result"></div>
+    <script>
+      function checkQ3() {
+        const r = document.getElementById('q3-result');
+        const checks = {
+          a: document.getElementById('q3a').checked,
+          b: document.getElementById('q3b').checked,
+          c: document.getElementById('q3c').checked,
+          d: document.getElementById('q3d').checked,
+          e: document.getElementById('q3e').checked,
+          f: document.getElementById('q3f').checked,
+        };
+        // 正解：①②⑤⑥（a,b,e,f）
+        // ③ setInterval は繰り返し実行（setTimeout が1回）
+        // ④ preventDefault はデフォルト動作のキャンセル（バブリングを止めるのは stopPropagation）
+        const correct = { a:true, b:true, c:false, d:false, e:true, f:true };
+        const allOk = Object.keys(correct).every(k => checks[k] === correct[k]);
+        if (allOk) {
+          r.className = 'result-msg correct';
+          r.innerHTML = '✅ 全問正解！完璧です！';
+        } else {
+          r.className = 'result-msg wrong';
+          r.innerHTML =
+            '❌ 不正解の項目があります。<br><br>' +
+            '<strong>正しい記述：</strong>①②⑤⑥<br><br>' +
+            '<strong>誤った記述：</strong><br>' +
+            '・③ <code>setInterval</code> は<strong>繰り返し実行</strong>されます。1回だけ実行するのは <code>setTimeout</code> です。<br>' +
+            '・④ <code>preventDefault()</code> は<strong>デフォルト動作をキャンセル</strong>します。バブリングを止めるのは <code>stopPropagation()</code> です。';
+        }
+      }
+    </script>
+  </div>
+
+  <!-- Q4 コンソール実践 -->
+  <div class="quiz-block">
+    <h3>Q4. コンソール実践問題</h3>
+    <p>以下の非同期処理をコンソールで実装してください。</p>
+    <ul style="font-size:0.92em; color:#4a5568; line-height:2;">
+      <li><code>delay(ms)</code> 関数を作る（指定ミリ秒後に resolve する Promise を返す）</li>
+      <li><code>async function run()</code> の中で <code>await delay(500)</code> を使う</li>
+      <li>"開始" → 500ms 待機 → "500ms 経過" → 500ms 待機 → "完了" の順に出力する</li>
+    </ul>
+    <div class="js-console" id="console-q4">
+      <div class="js-console-bar">
+        <div class="dot dot-red"></div>
+        <div class="dot dot-yellow"></div>
+        <div class="dot dot-green"></div>
+        <span>Async Practice Console</span>
+      </div>
+      <div class="js-console-output" id="console-q4-output">
+        <div class="log-info">// ヒント: const delay = ms => new Promise(resolve => setTimeout(resolve, ms));</div>
+        <div class="log-info">// async function run() { console.log("開始"); await delay(500); ... }</div>
+      </div>
+      <div class="js-console-input-row">
+        <span>&gt;</span>
+        <input class="js-console-input" id="console-q4-input"
+               placeholder="const delay = ms => new Promise(r => setTimeout(r, ms));"
+               type="text">
+        <button class="js-console-clear" onclick="clearConsole('q4')">クリア</button>
+        <button class="js-console-run"   onclick="runConsole('q4')">▶ 実行</button>
+      </div>
+    </div>
+    <label style="margin-top:12px; display:block;">
+      <code>delay</code> 関数が返すものは何ですか？
+    </label>
+    <select id="q4-sel">
+      <option value="">-- 選択してください --</option>
+      <option value="a">undefined</option>
+      <option value="b">Promise オブジェクト</option>
+      <option value="c">setTimeout の ID</option>
+      <option value="d">boolean</option>
+    </select>
+    <br>
+    <button class="btn btn-teal" onclick="checkQ4()">答え合わせ</button>
+    <div class="result-msg" id="q4-result"></div>
+    <script>
+      function checkQ4() {
+        const v = document.getElementById('q4-sel').value;
+        const r = document.getElementById('q4-result');
+        if (v === 'b') {
+          r.className = 'result-msg correct';
+          r.innerHTML = '✅ 正解！<br><br>' +
+            '模範解答：<br>' +
+            '<code>const delay = ms => new Promise(resolve => setTimeout(resolve, ms));</code><br><br>' +
+            '<code>async function run() {</code><br>' +
+            '<code>  console.log("開始");</code><br>' +
+            '<code>  await delay(500);</code><br>' +
+            '<code>  console.log("500ms 経過");</code><br>' +
+            '<code>  await delay(500);</code><br>' +
+            '<code>  console.log("完了");</code><br>' +
+            '<code>}</code><br>' +
+            '<code>run();</code><br><br>' +
+            '<code>delay(ms)</code> は <strong>Promise オブジェクト</strong>を返します。<br>' +
+            '<code>await</code> はその Promise が resolve されるまで処理を一時停止します。';
+        } else if (v === '') {
+          r.className = 'result-msg info';
+          r.textContent = '⚠️ コンソールでコードを実行してから選択してください。';
+        } else {
+          r.className = 'result-msg wrong';
+          r.innerHTML = '❌ 不正解。<br>' +
+            '<code>new Promise(...)</code> は <strong>Promise オブジェクト</strong>を返します。<br>' +
+            '<code>await</code> はこの Promise が解決されるまで待ちます。';
+        }
+      }
+    </script>
+  </div>
+
+</div><!-- /quiz-section -->
+
+
+<!-- 完了ボタン -->
+<div class="complete-section">
+  <p>🎉 「1-10 イベントと非同期処理」の学習が完了したら記録しましょう！</p>
+  <button class="btn btn-done" onclick="markComplete()">✅ このセクションを完了にする</button>
+  <div id="complete-msg" style="margin-top:10px; font-size:0.88em; color:#276749; display:none;">
+    進捗を保存しました！トップページの進捗バーに反映されます。
+  </div>
+</div>
+
+<!-- ページナビ -->
+<div class="page-nav">
+  <a class="prev" href="09_dom.html">← 1-9 HTMLの操作</a>
+  <a class="home" href="../index.html">🏠 目次へ</a>
+  <a class="next" href="11_html5.html">次へ：1-11 HTML5とJavaScript →</a>
+</div>
+
+<!-- フッター -->
+<footer>
+  <p>
+    HTML5プロフェッショナル Level 2 学習サイト ／
+    <a href="../index.html">🏠 目次</a> ／
+    <a href="../exam/index.html">📝 模擬試験</a> ／
+    <a href="https://github.com/MeshinoKiwamiOkome/html5lv2" target="_blank">GitHub</a>
+  </p>
+  <p style="margin-top:4px;">© MeshinoKiwamiOkome</p>
+</footer>
+
+
+<!-- ============================================================ -->
+<!-- JavaScript -->
+<!-- ============================================================ -->
+<script>
+  /* ===== コピーボタン ===== */
+  function copyPre(btn) {
+    const pre = btn.nextElementSibling;
+    navigator.clipboard.writeText(pre.innerText || pre.textContent).then(() => {
+      btn.textContent = 'copied!';
+      setTimeout(() => btn.textContent = 'copy', 1800);
+    });
+  }
+
+  /* ===== タブ ===== */
+  function switchTab(btn, id) {
+    btn.closest('.tab-wrap').querySelectorAll('.tab-btn')
+       .forEach(b => b.classList.remove('active'));
+    btn.closest('.tab-wrap').querySelectorAll('.tab-content')
+       .forEach(c => c.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById(id).classList.add('active');
+  }
+
+  /* ===== イベントログ ===== */
+  function addEventLog(logId, type, color, info) {
+    const log = document.getElementById(logId);
+    const now = new Date();
+    const time = `${now.getSeconds().toString().padStart(2,'0')}.${now.getMilliseconds().toString().padStart(3,'0')}`;
+    const item = document.createElement('div');
+    item.className = 'event-log-item';
+    item.innerHTML =
+      `<span class="ev-time">${time}</span>` +
+      `<span class="ev-type" style="color:${color};">${type}</span>` +
+      `<span class="ev-info">${info}</span>`;
+    // 先頭に追加（最新が上）
+    log.insertBefore(item, log.firstChild);
+    // 10件を超えたら古いものを削除
+    while (log.children.length > 10) log.removeChild(log.lastChild);
+  }
+
+  /* ===== イベントリスナー デモ ===== */
+  document.getElementById('ev-click-btn').addEventListener('click', (e) => {
+    addEventLog('event-log', 'click', '#90cdf4',
+      `clientX:${e.clientX} clientY:${e.clientY}`);
+  });
+
+  document.getElementById('ev-dbl-btn').addEventListener('dblclick', (e) => {
+    addEventLog('event-log', 'dblclick', '#68d391',
+      `target: ${e.target.textContent.trim().slice(0,20)}`);
+  });
+
+  document.getElementById('ev-hover-btn').addEventListener('mouseenter', () => {
+    addEventLog('event-log', 'mouseenter', '#b794f4', 'ホバー開始');
+  });
+  document.getElementById('ev-hover-btn').addEventListener('mouseleave', () => {
+    addEventLog('event-log', 'mouseleave', '#b794f4', 'ホバー終了');
+  });
+
+  document.getElementById('ev-key-input').addEventListener('keydown', (e) => {
+    addEventLog('event-log', 'keydown', '#f6ad55',
+      `key:"${e.key}" code:"${e.code}" shift:${e.shiftKey} ctrl:${e.ctrlKey}`);
+  });
+
+  document.getElementById('ev-key-input').addEventListener('input', (e) => {
+    addEventLog('event-log', 'input', '#fbd38d',
+      `value:"${e.target.value}"`);
+  });
+
+  /* ===== イベント伝播デモ ===== */
+  function propClick(layer, e) {
+    const stopProp = document.getElementById('stop-propagation').checked;
+    const prevent  = document.getElementById('prevent-default').checked;
+
+    if (stopProp) e.stopPropagation();
+    if (prevent)  e.preventDefault();
+
+    const colors = { outer:'#90cdf4', middle:'#b794f4', inner:'#68d391' };
+    const el = document.getElementById(`prop-${layer}`);
+    el.classList.add('prop-flash');
+    setTimeout(() => el.classList.remove('prop-flash'), 500);
+
+    addEventLog('prop-log', `click@${layer}`, colors[layer],
+      `target:${e.target.id} currentTarget:${e.currentTarget.id}` +
+      (stopProp ? ' [伝播停止]' : ''));
+  }
+
+  /* ===== setTimeout デモ ===== */
+  let timeoutId = null;
+  let timeoutStart = null;
+
+  function runSetTimeout() {
+    const ms  = parseInt(document.getElementById('timeout-ms').value) || 2000;
+    const msg = document.getElementById('timeout-msg').value || 'タイムアウト！';
+    const out = document.getElementById('timeout-output');
+
+    if (timeoutId) clearTimeout(timeoutId);
+    timeoutStart = Date.now();
+
+    out.style.color = '#f6ad55';
+    out.textContent = `⏳ ${ms}ms 後に実行されます...\n\n> const id = setTimeout(() => { ... }, ${ms});`;
+
+    timeoutId = setTimeout(() => {
+      const elapsed = Date.now() - timeoutStart;
+      out.style.color = '#68d391';
+      out.textContent =
+        `✅ 実行されました！\n\n` +
+        `メッセージ: "${msg}"\n` +
+        `設定時間: ${ms}ms\n` +
+        `実際の経過時間: ${elapsed}ms\n\n` +
+        `// setTimeout は最低保証時間であり、\n// 実際の実行タイミングはブラウザの状況による`;
+      timeoutId = null;
+    }, ms);
+  }
+
+  function cancelTimeout() {
+    const out = document.getElementById('timeout-output');
+    if (timeoutId) {
+      clearTimeout(timeoutId);
+      timeoutId = null;
+      const elapsed = Date.now() - timeoutStart;
+      out.style.color = '#fc8181';
+      out.textContent = `❌ キャンセルされました（${elapsed}ms 経過時点）\n\n> clearTimeout(id);`;
+    } else {
+      out.style.color = '#a0aec0';
+      out.textContent = '実行中のタイマーはありません';
+    }
+  }
+
+  /* ===== setInterval デモ ===== */
+  let intervalId   = null;
+  let intervalCount = 0;
+  let intervalStart = null;
+
+  function runSetInterval() {
+    const ms  = parseInt(document.getElementById('interval-ms').value) || 1000;
+    const out = document.getElementById('interval-output');
+    if (intervalId) { stopInterval(); return; }
+
+    intervalCount = 0;
+    intervalStart = Date.now();
+    out.style.color = '#68d391';
+
+    intervalId = setInterval(() => {
+      intervalCount++;
+      const elapsed = Date.now() - intervalStart;
+      out.textContent =
+        `▶ 実行中（${ms}ms 間隔）\n\n` +
+        `カウント: ${intervalCount} 回\n` +
+        `経過時間: ${elapsed}ms\n\n` +
+        `// clearInterval(id) で停止できます`;
+    }, ms);
+
+    out.textContent = `⏳ ${ms}ms 間隔で開始しました...\n\n> const id = setInterval(() => { ... }, ${ms});`;
+  }
+
+  function stopInterval() {
+    const out = document.getElementById('interval-output');
+    if (intervalId) {
+      clearInterval(intervalId);
+      intervalId = null;
+      out.style.color = '#f6ad55';
+      out.textContent =
+        `⏹ 停止しました\n\n` +
+        `合計実行回数: ${intervalCount} 回\n` +
+        `合計経過時間: ${Date.now() - intervalStart}ms\n\n` +
+        `> clearInterval(id);`;
+    }
+  }
+
+  /* ===== 非同期処理デモ ===== */
+  function mockFetch(label, delayMs, shouldFail = false) {
+    return new Promise((resolve, reject) => {
+      setTimeout(() => {
+        if (shouldFail) reject(new Error(`${label} が失敗しました`));
+        else resolve({ data: `${label} のデータ`, time: delayMs });
+      }, delayMs);
+    });
+  }
+
+  async function runAsyncDemo() {
+    const type  = document.getElementById('async-type').value;
+    const delay = parseInt(document.getElementById('async-delay').value) || 1000;
+    const out   = document.getElementById('async-output');
+
+    out.style.color = '#f6ad55';
+    out.textContent = '⏳ 実行中...';
+
+    const startTime = Date.now();
+
+    try {
+      if (type === 'promise') {
+        out.textContent = '⏳ Promise チェーンを実行中...\n\n' +
+          `mockFetch("API-1", ${delay})\n  .then(r => mockFetch("API-2", ${delay}))\n  .then(r => ...)`;
+        const r1 = await mockFetch('API-1', delay);
+        out.textContent += `\n\n✅ API-1 完了: ${r1.data}`;
+        const r2 = await mockFetch('API-2', delay);
+        const elapsed = Date.now() - startTime;
+        out.style.color = '#68d391';
+        out.textContent =
+          `✅ Promise チェーン完了\n\n` +
+          `API-1: ${r1.data}\nAPI-2: ${r2.data}\n\n` +
+          `合計時間: ${elapsed}ms（直列なので ${delay}×2 = ${delay*2}ms かかる）`;
+
+      } else if (type === 'async') {
+        out.textContent = '⏳ async/await を実行中...\n\nconst r1 = await mockFetch("API-1");\nconst r2 = await mockFetch("API-2");';
+        const r1 = await mockFetch('API-1', delay);
+        const r2 = await mockFetch('API-2', delay);
+        const elapsed = Date.now() - startTime;
+        out.style.color = '#68d391';
+        out.textContent =
+          `✅ async/await 完了\n\n` +
+          `r1: ${r1.data}\nr2: ${r2.data}\n\n` +
+          `合計時間: ${elapsed}ms\n（await は直列実行なので ${delay}×2 ≈ ${delay*2}ms）`;
+
+      } else if (type === 'parallel') {
+        out.textContent = '⏳ Promise.all で並行実行中...\n\nconst [r1, r2, r3] = await Promise.all([...]);';
+        const [r1, r2, r3] = await Promise.all([
+          mockFetch('API-1', delay),
+          mockFetch('API-2', Math.floor(delay * 0.7)),
+          mockFetch('API-3', Math.floor(delay * 1.2)),
+        ]);
+        const elapsed = Date.now() - startTime;
+        out.style.color = '#68d391';
+        out.textContent =
+          `✅ Promise.all 完了（並行実行）\n\n` +
+          `r1: ${r1.data}（${delay}ms）\n` +
+          `r2: ${r2.data}（${Math.floor(delay*0.7)}ms）\n` +
+          `r3: ${r3.data}（${Math.floor(delay*1.2)}ms）\n\n` +
+          `合計時間: ${elapsed}ms\n（並行なので最長の ${Math.floor(delay*1.2)}ms ≈ で完了！直列の3倍速）`;
+
+      } else if (type === 'race') {
+        out.textContent = '⏳ Promise.race で最速を待機中...\n\nconst result = await Promise.race([...]);';
+        const result = await Promise.race([
+          mockFetch('Server-A', delay),
+          mockFetch('Server-B', Math.floor(delay * 0.6)),
+          mockFetch('Server-C', Math.floor(delay * 1.4)),
+        ]);
+        const elapsed = Date.now() - startTime;
+        out.style.color = '#68d391';
+        out.textContent =
+          `✅ Promise.race 完了\n\n` +
+          `最速: ${result.data}（${result.time}ms）\n\n` +
+          `合計時間: ${elapsed}ms\n（Server-B が最速で ${Math.floor(delay*0.6)}ms で応答）`;
+
+      } else if (type === 'error') {
+        out.textContent = '⏳ エラーハンドリングをテスト中...';
+        try {
+          const r1 = await mockFetch('API-1', delay);
+          const r2 = await mockFetch('API-2（失敗）', delay, true); // 失敗させる
+          out.textContent = `r2: ${r2.data}`; // ここには到達しない
+        } catch(e) {
+          const elapsed = Date.now() - startTime;
+          out.style.color = '#fc8181';
+          out.textContent =
+            `❌ エラーが発生しました\n\n` +
+            `エラー内容: ${e.message}\n` +
+            `経過時間: ${elapsed}ms\n\n` +
+            `// try/catch で非同期エラーをキャッチできます\n` +
+            `// Promise チェーンなら .catch() を使います`;
+        }
+      }
+    } catch(e) {
+      out.style.color = '#fc8181';
+      out.textContent = `エラー: ${e.message}`;
+    }
+  }
+
+  /* ===== JSコンソール ===== */
+  function runConsole(id) {
+    const input  = document.getElementById(`console-${id}-input`);
+    const output = document.getElementById(`console-${id}-output`);
+    const code   = input.value.trim();
+    if (!code) return;
+
+    const promptLine = document.createElement('div');
+    promptLine.className = 'log-prompt';
+    promptLine.textContent = '> ' + code;
+    output.appendChild(promptLine);
+
+    const origLog   = console.log;
+    const origWarn  = console.warn;
+    const origError = console.error;
+    const origInfo  = console.info;
+
+    function addLine(cls, ...args) {
+      const line = document.createElement('div');
+      line.className = cls;
+      line.textContent = args.map(a => {
+        if (typeof a === 'object' && a !== null) {
+          try { return JSON.stringify(a, null, 2); } catch(e) { return String(a); }
+        }
+        return String(a);
+      }).join(' ');
+      output.appendChild(line);
+      output.scrollTop = output.scrollHeight;
+    }
+
+    console.log   = (...a) => { addLine('log-line',  ...a); origLog(...a);   };
+    console.warn  = (...a) => { addLine('log-warn',  ...a); origWarn(...a);  };
+    console.error = (...a) => { addLine('log-error', ...a); origError(...a); };
+    console.info  = (...a) => { addLine('log-info',  ...a); origInfo(...a);  };
+
+    try {
+      const result = eval(code);
+      if (result !== undefined) {
+        if (result instanceof Promise) {
+          addLine('log-info', '← Promise { <pending> }');
+          result.then(v => {
+            addLine('log-result', '← Promise resolved: ' + (
+              typeof v === 'object' ? JSON.stringify(v) : String(v)
+            ));
+          }).catch(e => {
+            addLine('log-error', '← Promise rejected: ' + e.toString());
+          });
+        } else {
+          addLine('log-result', '← ' + (
+            typeof result === 'object' ? JSON.stringify(result) : String(result)
+          ));
+        }
+      }
+    } catch(e) {
+      addLine('log-error', e.toString());
+    }
+
+    console.log   = origLog;
+    console.warn  = origWarn;
+    console.error = origError;
+    console.info  = origInfo;
+
+    input.value = '';
+    output.scrollTop = output.scrollHeight;
+  }
+
+  function clearConsole(id) {
+    document.getElementById(`console-${id}-output`).innerHTML =
+      '<div class="log-info">// クリアしました</div>';
+  }
+
+  document.querySelectorAll('.js-console-input').forEach(el => {
+    el.addEventListener('keydown', e => {
+      if (e.key === 'Enter') {
+        const id = el.id.replace('console-', '').replace('-input', '');
+        runConsole(id);
+      }
+    });
+  });
+
+  /* ===== 完了ボタン ===== */
+  function markComplete() {
+    const current = parseInt(localStorage.getItem('html5lv2_ch1') || '0', 10);
+    const newVal  = Math.min(100, current + 9);
+    localStorage.setItem('html5lv2_ch1', String(newVal));
+    document.getElementById('complete-msg').style.display = 'block';
+  }
+  if (parseInt(localStorage.getItem('html5lv2_ch1') || '0') >= 90) {
+    document.getElementById('complete-msg').style.display = 'block';
+  }
+</script>
+
+</body>
+</html>

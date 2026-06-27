@@ -1,0 +1,1389 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>2-3 Flexbox | HTML5プロフェッショナル Level 2</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; }
+    body {
+      font-family: 'Segoe UI', 'Helvetica Neue', sans-serif;
+      max-width: 960px; margin: 40px auto; padding: 0 24px;
+      background: #f0f4f8; color: #2d3748; line-height: 1.8;
+    }
+    .breadcrumb {
+      font-size: 0.82em; color: #a0aec0; margin-bottom: 20px;
+      font-family: 'Consolas','Monaco',monospace;
+    }
+    .breadcrumb a { color: #553c9a; text-decoration: none; }
+    .breadcrumb a:hover { text-decoration: underline; }
+
+    .chapter-header {
+      background: linear-gradient(135deg, #553c9a, #2c7a7b);
+      border-radius: 12px; padding: 32px 32px 24px;
+      margin-bottom: 32px; color: #fff;
+      box-shadow: 0 4px 18px rgba(85,60,154,0.35);
+    }
+    .chapter-header .ch-num {
+      font-size: 0.8em; font-family: 'Consolas','Monaco',monospace;
+      opacity: 0.85; letter-spacing: 0.08em; margin-bottom: 6px;
+    }
+    .chapter-header h1 {
+      margin: 0 0 10px; font-size: 1.6em; color: #fff; border: none; padding: 0;
+    }
+    .chapter-header p { margin: 0; font-size: 0.92em; opacity: 0.88; }
+    .badge-row { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 14px; }
+    .badge {
+      background: rgba(255,255,255,0.18);
+      border: 1px solid rgba(255,255,255,0.35);
+      border-radius: 20px; padding: 3px 12px;
+      font-size: 0.76em; font-weight: bold;
+    }
+
+    .section-nav {
+      background: #fff; border: 1px solid #e9d8fd;
+      border-radius: 10px; padding: 18px 22px;
+      margin-bottom: 32px; box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+    }
+    .section-nav h2 {
+      margin: 0 0 12px; font-size: 0.92em; color: #553c9a; border: none; padding: 0;
+    }
+    .section-nav ol { margin: 0; padding-left: 20px; font-size: 0.9em; }
+    .section-nav ol li { margin: 4px 0; }
+    .section-nav ol li a { color: #553c9a; text-decoration: none; }
+    .section-nav ol li a:hover { text-decoration: underline; }
+    .section-nav ol li.current a { color: #1a365d; font-weight: bold; }
+
+    h2 {
+      color: #1a365d; margin-top: 48px;
+      border-left: 5px solid #9f7aea; padding-left: 12px;
+    }
+    h3 { color: #553c9a; margin-top: 28px; }
+
+    code {
+      background: #faf5ff; padding: 2px 6px;
+      border-radius: 4px; font-size: 0.93em;
+      font-family: 'Consolas','Monaco',monospace;
+      color: #553c9a;
+    }
+    pre {
+      background: #1a202c; color: #e2e8f0;
+      padding: 18px 20px; border-radius: 8px;
+      overflow-x: auto; font-size: 0.88em;
+      line-height: 1.7; font-family: 'Consolas','Monaco',monospace;
+    }
+    pre .comment  { color: #68d391; }
+    pre .selector { color: #f6ad55; font-weight: bold; }
+    pre .prop     { color: #81e6d9; }
+    pre .val      { color: #fbd38d; }
+    pre .out      { color: #a0aec0; }
+
+    .pre-wrap { position: relative; margin: 14px 0; }
+    .copy-btn {
+      position: absolute; top: 8px; right: 8px;
+      background: #4a5568; color: #e2e8f0;
+      border: none; border-radius: 4px; padding: 4px 10px;
+      font-size: 0.75em; cursor: pointer;
+      font-family: 'Consolas','Monaco',monospace;
+      transition: background 0.2s; z-index: 1;
+    }
+    .copy-btn:hover { background: #9f7aea; }
+
+    .note {
+      background: #fff; border: 1px dashed #d6bcfa;
+      border-radius: 6px; padding: 14px 18px;
+      font-size: 0.93em; color: #4a5568; margin: 14px 0;
+    }
+    .note strong { color: #553c9a; }
+    .warn {
+      background: #fffaf0; border: 1px solid #f6ad55;
+      border-left: 5px solid #f6ad55; border-radius: 6px;
+      padding: 14px 18px; font-size: 0.93em; color: #744210; margin: 14px 0;
+    }
+    .good {
+      background: #f0fff4; border: 1px solid #68d391;
+      border-left: 5px solid #48bb78; border-radius: 6px;
+      padding: 14px 18px; font-size: 0.93em; color: #276749; margin: 14px 0;
+    }
+    .demo-box {
+      background: #fff; border: 1px solid #e9d8fd;
+      border-radius: 8px; padding: 20px 24px;
+      margin: 12px 0 28px; box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+    }
+
+    /* ===== Flex プレイグラウンド ===== */
+    .flex-playground {
+      background: #1a202c; border-radius: 12px;
+      padding: 20px; margin: 14px 0;
+    }
+    .fp-controls {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 12px; margin-bottom: 16px;
+    }
+    .fp-control {
+      display: flex; flex-direction: column; gap: 4px;
+    }
+    .fp-control label {
+      font-size: 0.78em; font-family: 'Consolas','Monaco',monospace;
+      font-weight: bold; color: #81e6d9;
+    }
+    .fp-control select, .fp-control input {
+      background: #2d3748; border: 1px solid #4a5568;
+      border-radius: 6px; padding: 6px 10px;
+      color: #e2e8f0; font-family: 'Consolas','Monaco',monospace;
+      font-size: 0.85em; outline: none; width: 100%;
+    }
+    .fp-control select:focus,
+    .fp-control input:focus { border-color: #9f7aea; }
+
+    .fp-preview {
+      background: #0d1117; border-radius: 8px;
+      padding: 16px; min-height: 140px;
+      border: 2px dashed #2d3748; position: relative;
+    }
+    .fp-container {
+      display: flex; transition: all 0.3s ease;
+      min-height: 100px; width: 100%;
+    }
+    .fp-item {
+      background: #553c9a; color: #e9d8fd;
+      border-radius: 6px; padding: 8px 12px;
+      font-family: 'Consolas','Monaco',monospace;
+      font-size: 0.82em; font-weight: bold;
+      border: 2px solid #9f7aea; transition: all 0.3s;
+      display: flex; align-items: center; justify-content: center;
+      min-width: 44px; min-height: 44px;
+    }
+    .fp-item:nth-child(2) { background: #2b4c7e; border-color: #4299e1; color: #bee3f8; }
+    .fp-item:nth-child(3) { background: #276749; border-color: #48bb78; color: #c6f6d5; }
+    .fp-item:nth-child(4) { background: #744210; border-color: #f6ad55; color: #fbd38d; }
+    .fp-item:nth-child(5) { background: #9b2335; border-color: #fc8181; color: #fed7d7; }
+
+    .fp-code {
+      margin-top: 12px; padding: 10px 14px;
+      background: #0d1117; border-radius: 6px;
+      font-family: 'Consolas','Monaco',monospace;
+      font-size: 0.82em; color: #68d391; line-height: 1.8;
+      white-space: pre-wrap;
+    }
+
+    /* ===== 軸の説明図 ===== */
+    .axis-diagram {
+      background: #1a202c; border-radius: 10px;
+      padding: 20px; margin: 14px 0; position: relative;
+    }
+    .axis-container {
+      display: flex; gap: 8px; padding: 16px;
+      background: #0d1117; border-radius: 8px;
+      border: 2px dashed #4a5568; position: relative;
+      min-height: 80px; align-items: center;
+    }
+    .axis-item {
+      background: #553c9a; color: #e9d8fd;
+      border-radius: 6px; padding: 10px 16px;
+      font-family: 'Consolas','Monaco',monospace;
+      font-size: 0.85em; font-weight: bold;
+      border: 2px solid #9f7aea;
+    }
+    .axis-arrow-main {
+      position: absolute; bottom: -28px; left: 0; right: 0;
+      display: flex; align-items: center; justify-content: center;
+      color: #f6ad55; font-size: 0.78em; font-weight: bold;
+      font-family: 'Consolas','Monaco',monospace;
+    }
+    .axis-arrow-cross {
+      position: absolute; top: 0; bottom: 0; right: -60px;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      color: #90cdf4; font-size: 0.78em; font-weight: bold;
+      font-family: 'Consolas','Monaco',monospace; gap: 4px;
+    }
+
+    /* ===== アイテムコントロール ===== */
+    .item-controls {
+      background: #1a202c; border-radius: 10px;
+      padding: 16px 20px; margin: 14px 0;
+    }
+    .ic-tabs {
+      display: flex; gap: 6px; margin-bottom: 12px; flex-wrap: wrap;
+    }
+    .ic-tab {
+      padding: 5px 14px; border-radius: 6px;
+      font-family: 'Consolas','Monaco',monospace;
+      font-size: 0.82em; font-weight: bold;
+      cursor: pointer; border: 2px solid #4a5568;
+      background: #2d3748; color: #a0aec0; transition: all 0.15s;
+    }
+    .ic-tab.active {
+      background: #553c9a; color: #e9d8fd; border-color: #9f7aea;
+    }
+    .ic-props {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+      gap: 10px;
+    }
+    .ic-prop {
+      display: flex; flex-direction: column; gap: 4px;
+    }
+    .ic-prop label {
+      font-size: 0.76em; color: #a0aec0;
+      font-family: 'Consolas','Monaco',monospace; font-weight: bold;
+    }
+    .ic-prop select, .ic-prop input {
+      background: #2d3748; border: 1px solid #4a5568;
+      border-radius: 4px; padding: 5px 8px;
+      color: #e2e8f0; font-family: 'Consolas','Monaco',monospace;
+      font-size: 0.82em; outline: none;
+    }
+    .ic-prop select:focus, .ic-prop input:focus { border-color: #9f7aea; }
+
+    /* ===== インタラクティブデモ ===== */
+    .interactive-demo {
+      background: #f5f0ff; border: 1px solid #e9d8fd;
+      border-radius: 8px; padding: 16px 20px; margin: 14px 0;
+    }
+    .demo-label {
+      font-size: 0.85em; font-weight: bold;
+      color: #553c9a; margin-bottom: 10px;
+    }
+    .demo-input-row {
+      display: flex; gap: 10px; align-items: center;
+      flex-wrap: wrap; margin-bottom: 10px;
+    }
+    .demo-input {
+      border: 2px solid #e9d8fd; border-radius: 6px;
+      padding: 7px 12px; font-size: 0.9em;
+      font-family: 'Consolas','Monaco',monospace;
+      color: #2d3748; background: #fff; flex: 1; min-width: 80px;
+    }
+    .demo-input:focus { border-color: #9f7aea; outline: none; }
+    .demo-btn {
+      background: #553c9a; color: #fff; border: none;
+      border-radius: 6px; padding: 8px 18px;
+      font-size: 0.88em; font-weight: bold; cursor: pointer;
+      transition: background 0.2s; white-space: nowrap;
+    }
+    .demo-btn:hover { background: #44337a; }
+    .demo-output {
+      background: #1a202c; color: #b794f4;
+      border-radius: 6px; padding: 10px 14px;
+      font-family: 'Consolas','Monaco',monospace;
+      font-size: 0.85em; min-height: 40px;
+      white-space: pre-wrap; line-height: 1.7;
+    }
+
+    /* ===== タブ ===== */
+    .tab-wrap { margin: 14px 0; }
+    .tab-btns { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: -1px; }
+    .tab-btn {
+      padding: 8px 18px; border: 1px solid #e9d8fd;
+      border-bottom: none; border-radius: 6px 6px 0 0;
+      background: #faf5ff; color: #553c9a;
+      font-size: 0.85em; font-weight: bold;
+      font-family: 'Consolas','Monaco',monospace;
+      cursor: pointer; transition: background 0.15s;
+    }
+    .tab-btn.active { background: #fff; border-bottom: 1px solid #fff; }
+    .tab-btn:hover:not(.active) { background: #f0e6ff; }
+    .tab-content {
+      display: none; background: #fff;
+      border: 1px solid #e9d8fd;
+      border-radius: 0 6px 6px 6px; padding: 18px 20px;
+    }
+    .tab-content.active { display: block; }
+
+    /* ===== テーブル ===== */
+    table.ref-table {
+      border-collapse: collapse; width: 100%;
+      background: #fff; border-radius: 8px;
+      overflow: hidden; box-shadow: 0 2px 6px rgba(0,0,0,0.07);
+      margin: 14px 0; font-size: 0.9em;
+    }
+    table.ref-table th, table.ref-table td {
+      border: 1px solid #e9d8fd; padding: 10px 14px; text-align: left;
+    }
+    table.ref-table thead tr { background: #553c9a; color: #fff; }
+    table.ref-table tbody tr:nth-child(even) { background: #faf5ff; }
+
+    /* ===== 演習問題 ===== */
+    .quiz-section {
+      background: #faf5ff; border-left: 6px solid #9f7aea;
+      border-radius: 0 8px 8px 0; padding: 24px 28px; margin: 48px 0 32px;
+    }
+    .quiz-section > h2 { margin-top: 0; color: #553c9a; border-left-color: #9f7aea; }
+    .quiz-block {
+      background: #fff; border: 1px solid #e9d8fd;
+      border-radius: 8px; padding: 18px 22px; margin-bottom: 22px;
+    }
+    .quiz-block h3 { margin-top: 0; color: #553c9a; }
+    .quiz-block input[type="text"],
+    .quiz-block select {
+      border: 2px solid #e9d8fd; border-radius: 6px;
+      padding: 8px 12px; font-size: 0.95em;
+      width: 100%; max-width: 440px; margin: 6px 0;
+      outline: none; font-family: 'Consolas','Monaco',monospace;
+      transition: border-color 0.2s;
+    }
+    .quiz-block input[type="text"]:focus,
+    .quiz-block select:focus { border-color: #9f7aea; }
+    .quiz-block label { display: block; margin: 8px 0 2px; font-weight: bold; color: #4a5568; }
+    .quiz-block label.checkbox-label {
+      display: flex; align-items: flex-start; gap: 8px;
+      font-weight: normal; cursor: pointer; margin: 6px 0;
+    }
+    .quiz-block label.checkbox-label input { margin-top: 3px; flex-shrink: 0; }
+    .btn {
+      display: inline-block; padding: 9px 20px;
+      border-radius: 6px; border: none; cursor: pointer;
+      font-size: 0.95em; font-weight: bold;
+      transition: opacity 0.2s; margin-top: 8px;
+    }
+    .btn:hover { opacity: 0.85; }
+    .btn-purple { background: #553c9a; color: #fff; }
+    .btn-done   { background: #48bb78; color: #fff; }
+    .result-msg {
+      margin-top: 10px; padding: 10px 14px;
+      border-radius: 6px; font-weight: bold; display: none;
+    }
+    .result-msg.correct { background: #c6f6d5; color: #276749; display: block; }
+    .result-msg.wrong   { background: #fed7d7; color: #9b2335; display: block; }
+    .result-msg.info    { background: #e9d8fd; color: #553c9a; display: block; }
+
+    .page-nav {
+      display: flex; justify-content: space-between;
+      align-items: center; margin-top: 48px;
+      padding-top: 20px; border-top: 2px solid #e9d8fd;
+      gap: 12px; flex-wrap: wrap;
+    }
+    .page-nav a {
+      display: inline-block; padding: 10px 20px;
+      border-radius: 8px; text-decoration: none;
+      font-weight: bold; font-size: 0.9em; transition: opacity 0.2s;
+    }
+    .page-nav a:hover { opacity: 0.8; }
+    .page-nav .prev { background: #edf2f7; color: #4a5568; }
+    .page-nav .next { background: #553c9a; color: #fff; }
+    .page-nav .home { background: #fff; color: #553c9a; border: 2px solid #553c9a; }
+
+    .complete-section {
+      background: #f0fff4; border: 2px solid #48bb78;
+      border-radius: 10px; padding: 20px 24px;
+      margin-top: 40px; text-align: center;
+    }
+    .complete-section p { margin: 0 0 12px; color: #276749; font-weight: bold; }
+
+    footer {
+      margin-top: 48px; padding-top: 16px;
+      border-top: 2px solid #e9d8fd;
+      font-size: 0.82em; color: #a0aec0; text-align: center;
+    }
+    footer a { color: #553c9a; text-decoration: none; }
+    footer a:hover { text-decoration: underline; }
+
+    @media (max-width: 600px) {
+      body { font-size: 0.84em; }
+      .chapter-header { padding: 20px 16px; }
+      .chapter-header h1 { font-size: 1.2em; }
+      .fp-controls { grid-template-columns: 1fr 1fr; }
+      .ic-props { grid-template-columns: 1fr 1fr; }
+      .quiz-section { padding: 16px 12px; }
+      .quiz-block { padding: 14px 12px; }
+      .page-nav { flex-direction: column; align-items: stretch; }
+      .page-nav a { text-align: center; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- パンくず -->
+<div class="breadcrumb">
+  <a href="../index.html">🏠 HTML5 Level 2</a> ›
+  <a href="index.html">Chapter 2：CSSとスタイリング</a> ›
+  2-3 Flexbox
+</div>
+
+<!-- ヘッダー -->
+<div class="chapter-header">
+  <div class="ch-num">CHAPTER 02 › SECTION 03</div>
+  <h1>↔️ 2-3 Flexbox</h1>
+  <p>主軸・交差軸の概念から justify-content・align-items・flex-wrap・
+  flex-grow/shrink/basis・order まで、
+  インタラクティブなプレイグラウンドで Flexbox を完全マスターします。</p>
+  <div class="badge-row">
+    <span class="badge">display: flex</span>
+    <span class="badge">flex-direction</span>
+    <span class="badge">justify-content</span>
+    <span class="badge">align-items</span>
+    <span class="badge">flex-wrap</span>
+    <span class="badge">flex-grow</span>
+    <span class="badge">align-self</span>
+    <span class="badge">order</span>
+  </div>
+</div>
+
+<!-- セクションナビ -->
+<div class="section-nav">
+  <h2>📋 Chapter 2 のセクション</h2>
+  <ol>
+    <li><a href="01_selectors.html">2-1 セレクタと詳細度</a></li>
+    <li><a href="02_boxmodel.html">2-2 ボックスモデル</a></li>
+    <li class="current"><a href="03_flexbox.html">2-3 Flexbox</a></li>
+    <li><a href="04_grid.html">2-4 CSS Grid</a></li>
+    <li><a href="05_positioning.html">2-5 配置とポジショニング</a></li>
+    <li><a href="06_responsive.html">2-6 レスポンシブデザイン</a></li>
+    <li><a href="07_typography.html">2-7 タイポグラフィと色</a></li>
+    <li><a href="08_animation.html">2-8 トランジションとアニメーション</a></li>
+    <li><a href="09_variables.html">2-9 CSS変数と関数</a></li>
+    <li><a href="10_advanced.html">2-10 CSS応用・試験対策</a></li>
+  </ol>
+</div>
+
+
+<!-- ============================================================ -->
+<!-- PART 1: 主軸と交差軸 -->
+<!-- ============================================================ -->
+<h2 id="axes">① 主軸（Main Axis）と交差軸（Cross Axis）</h2>
+
+<div class="note">
+  <strong>重要ポイント：Flexbox の核心は「主軸」と「交差軸」の理解です。
+  <code>flex-direction</code> で主軸の方向を決め、
+  <code>justify-content</code> は主軸方向、
+  <code>align-items</code> は交差軸方向の配置を制御します。</strong>
+</div>
+
+<div class="demo-box">
+  <h3>主軸と交差軸の関係</h3>
+
+  <div class="axis-diagram">
+    <div style="color:#a0aec0; font-size:0.82em; font-family:'Consolas','Monaco',monospace;
+                margin-bottom:10px;">
+      // flex-direction: row（デフォルト）
+    </div>
+    <div style="position:relative; padding-right:80px; padding-bottom:40px;">
+      <div class="axis-container">
+        <div class="axis-item">1</div>
+        <div class="axis-item">2</div>
+        <div class="axis-item">3</div>
+      </div>
+      <div class="axis-arrow-main">
+        ← 主軸（Main Axis）justify-content で制御 →
+      </div>
+      <div class="axis-arrow-cross">
+        <span>↑</span>
+        <span style="writing-mode:vertical-rl; font-size:0.85em;">
+          交差軸 align-items
+        </span>
+        <span>↓</span>
+      </div>
+    </div>
+
+    <div style="margin-top:40px; color:#a0aec0; font-size:0.82em;
+                font-family:'Consolas','Monaco',monospace; margin-bottom:10px;">
+      // flex-direction: column
+    </div>
+    <div style="display:flex; gap:20px; flex-wrap:wrap;">
+      <div style="position:relative; padding-right:80px; padding-bottom:20px;">
+        <div class="axis-container" style="flex-direction:column; width:120px;">
+          <div class="axis-item">1</div>
+          <div class="axis-item" style="margin-top:8px;">2</div>
+          <div class="axis-item" style="margin-top:8px;">3</div>
+        </div>
+        <div style="position:absolute; bottom:-20px; left:0; right:80px;
+                    text-align:center; color:#f6ad55; font-size:0.75em;
+                    font-family:'Consolas','Monaco',monospace; font-weight:bold;">
+          ↑↓ 主軸（縦）
+        </div>
+        <div style="position:absolute; top:50%; right:0; transform:translateY(-50%);
+                    color:#90cdf4; font-size:0.75em;
+                    font-family:'Consolas','Monaco',monospace; font-weight:bold;
+                    writing-mode:horizontal-tb; white-space:nowrap;">
+          ←→ 交差軸
+        </div>
+      </div>
+      <div style="color:#e2e8f0; font-size:0.82em;
+                  font-family:'Consolas','Monaco',monospace; line-height:2;">
+        <div style="color:#f6ad55;">主軸（Main Axis）</div>
+        <div>flex-direction: row → 横方向</div>
+        <div>flex-direction: column → 縦方向</div>
+        <div style="margin-top:8px; color:#90cdf4;">交差軸（Cross Axis）</div>
+        <div>主軸と直交する方向</div>
+        <div>row → 縦方向</div>
+        <div>column → 横方向</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ============================================================ -->
+<!-- PART 2: Flex プレイグラウンド（コンテナプロパティ） -->
+<!-- ============================================================ -->
+<h2 id="container">② コンテナプロパティ</h2>
+
+<div class="note">
+  <strong>重要ポイント：Flexbox のプロパティは「コンテナ（親要素）に設定するもの」と
+  「アイテム（子要素）に設定するもの」に分かれます。
+  まずコンテナプロパティを完全に理解しましょう。</strong>
+</div>
+
+<div class="demo-box">
+  <h3>🎮 Flexbox プレイグラウンド（コンテナ）</h3>
+  <div class="flex-playground">
+    <div class="fp-controls" id="fp-container-controls">
+
+      <div class="fp-control">
+        <label>flex-direction</label>
+        <select id="fp-direction" onchange="updateFlex()">
+          <option value="row">row</option>
+          <option value="row-reverse">row-reverse</option>
+          <option value="column">column</option>
+          <option value="column-reverse">column-reverse</option>
+        </select>
+      </div>
+
+      <div class="fp-control">
+        <label>justify-content</label>
+        <select id="fp-justify" onchange="updateFlex()">
+          <option value="flex-start">flex-start</option>
+          <option value="flex-end">flex-end</option>
+          <option value="center">center</option>
+          <option value="space-between">space-between</option>
+          <option value="space-around">space-around</option>
+          <option value="space-evenly">space-evenly</option>
+        </select>
+      </div>
+
+      <div class="fp-control">
+        <label>align-items</label>
+        <select id="fp-align-items" onchange="updateFlex()">
+          <option value="stretch">stretch</option>
+          <option value="flex-start">flex-start</option>
+          <option value="flex-end">flex-end</option>
+          <option value="center">center</option>
+          <option value="baseline">baseline</option>
+        </select>
+      </div>
+
+      <div class="fp-control">
+        <label>flex-wrap</label>
+        <select id="fp-wrap" onchange="updateFlex()">
+          <option value="nowrap">nowrap</option>
+          <option value="wrap">wrap</option>
+          <option value="wrap-reverse">wrap-reverse</option>
+        </select>
+      </div>
+
+      <div class="fp-control">
+        <label>align-content</label>
+        <select id="fp-align-content" onchange="updateFlex()">
+          <option value="normal">normal</option>
+          <option value="flex-start">flex-start</option>
+          <option value="flex-end">flex-end</option>
+          <option value="center">center</option>
+          <option value="space-between">space-between</option>
+          <option value="space-around">space-around</option>
+          <option value="stretch">stretch</option>
+        </select>
+      </div>
+
+      <div class="fp-control">
+        <label>gap</label>
+        <input type="range" id="fp-gap" min="0" max="32" value="8"
+               oninput="updateFlex()">
+        <span id="fp-gap-val"
+              style="font-size:0.75em; color:#a0aec0;
+                     font-family:'Consolas','Monaco',monospace;">8px</span>
+      </div>
+
+      <div class="fp-control">
+        <label>アイテム数</label>
+        <input type="range" id="fp-count" min="2" max="8" value="4"
+               oninput="updateFlex()">
+        <span id="fp-count-val"
+              style="font-size:0.75em; color:#a0aec0;
+                     font-family:'Consolas','Monaco',monospace;">4個</span>
+      </div>
+
+      <div class="fp-control">
+        <label>コンテナ高さ</label>
+        <input type="range" id="fp-height" min="80" max="300" value="140"
+               oninput="updateFlex()">
+        <span id="fp-height-val"
+              style="font-size:0.75em; color:#a0aec0;
+                     font-family:'Consolas','Monaco',monospace;">140px</span>
+      </div>
+
+    </div>
+
+    <div class="fp-preview">
+      <div class="fp-container" id="fp-container"></div>
+    </div>
+    <div class="fp-code" id="fp-code">← コントロールを操作してコードを確認しましょう</div>
+  </div>
+
+  <h3>コンテナプロパティ一覧</h3>
+  <table class="ref-table">
+    <thead>
+      <tr><th>プロパティ</th><th>値</th><th>説明</th></tr>
+    </thead>
+    <tbody>
+      <tr><td><code>flex-direction</code></td>
+        <td><code>row</code> / <code>column</code> / <code>row-reverse</code> / <code>column-reverse</code></td>
+        <td>主軸の方向</td></tr>
+      <tr><td><code>justify-content</code></td>
+        <td><code>flex-start</code> / <code>center</code> / <code>space-between</code> / <code>space-around</code> / <code>space-evenly</code></td>
+        <td>主軸方向の配置</td></tr>
+      <tr><td><code>align-items</code></td>
+        <td><code>stretch</code> / <code>flex-start</code> / <code>center</code> / <code>flex-end</code> / <code>baseline</code></td>
+        <td>交差軸方向の配置（1行）</td></tr>
+      <tr><td><code>flex-wrap</code></td>
+        <td><code>nowrap</code> / <code>wrap</code> / <code>wrap-reverse</code></td>
+        <td>折り返し</td></tr>
+      <tr><td><code>align-content</code></td>
+        <td><code>flex-start</code> / <code>center</code> / <code>space-between</code> など</td>
+        <td>複数行の交差軸配置</td></tr>
+      <tr><td><code>gap</code></td>
+        <td><code>8px</code> / <code>8px 16px</code></td>
+        <td>アイテム間の隙間</td></tr>
+      <tr><td><code>flex-flow</code></td>
+        <td><code>row wrap</code></td>
+        <td>flex-direction + flex-wrap のショートハンド</td></tr>
+    </tbody>
+  </table>
+</div>
+
+
+<!-- ============================================================ -->
+<!-- PART 3: アイテムプロパティ -->
+<!-- ============================================================ -->
+<h2 id="items">③ アイテムプロパティ</h2>
+
+<div class="note">
+  <strong>重要ポイント：<code>flex-grow</code>・<code>flex-shrink</code>・<code>flex-basis</code> は
+  アイテムの伸縮を制御します。
+  <code>flex: 1</code> は <code>flex-grow: 1; flex-shrink: 1; flex-basis: 0%</code> の
+  ショートハンドです。</strong>
+</div>
+
+<div class="demo-box">
+  <h3>🎮 アイテムプロパティ プレイグラウンド</h3>
+
+  <div class="item-controls">
+    <div class="ic-tabs" id="ic-tabs">
+      <button class="ic-tab active" onclick="selectItem(0, this)">アイテム 1</button>
+      <button class="ic-tab"        onclick="selectItem(1, this)">アイテム 2</button>
+      <button class="ic-tab"        onclick="selectItem(2, this)">アイテム 3</button>
+      <button class="ic-tab"        onclick="selectItem(3, this)">アイテム 4</button>
+    </div>
+    <div class="ic-props">
+      <div class="ic-prop">
+        <label>flex-grow</label>
+        <input type="number" id="ic-grow" min="0" max="5" value="0"
+               oninput="updateItemProps()">
+      </div>
+      <div class="ic-prop">
+        <label>flex-shrink</label>
+        <input type="number" id="ic-shrink" min="0" max="5" value="1"
+               oninput="updateItemProps()">
+      </div>
+      <div class="ic-prop">
+        <label>flex-basis</label>
+        <input type="text" id="ic-basis" value="auto"
+               oninput="updateItemProps()">
+      </div>
+      <div class="ic-prop">
+        <label>align-self</label>
+        <select id="ic-align-self" onchange="updateItemProps()">
+          <option value="auto">auto</option>
+          <option value="flex-start">flex-start</option>
+          <option value="flex-end">flex-end</option>
+          <option value="center">center</option>
+          <option value="stretch">stretch</option>
+          <option value="baseline">baseline</option>
+        </select>
+      </div>
+      <div class="ic-prop">
+        <label>order</label>
+        <input type="number" id="ic-order" min="-5" max="5" value="0"
+               oninput="updateItemProps()">
+      </div>
+      <div class="ic-prop">
+        <label>width（コンテンツ）</label>
+        <input type="text" id="ic-width" value="auto"
+               oninput="updateItemProps()">
+      </div>
+    </div>
+  </div>
+
+  <!-- アイテムプレビュー -->
+  <div style="background:#0d1117; border-radius:8px; padding:16px;
+              border:2px dashed #2d3748; margin-top:12px;">
+    <div style="display:flex; gap:8px; min-height:100px; align-items:stretch;"
+         id="item-preview-container">
+      <div class="fp-item" id="ip-0" style="position:relative;">
+        1<div style="position:absolute; bottom:2px; left:0; right:0;
+                     font-size:0.6em; text-align:center; opacity:0.7;">grow:0</div>
+      </div>
+      <div class="fp-item" id="ip-1" style="position:relative;">
+        2<div style="position:absolute; bottom:2px; left:0; right:0;
+                     font-size:0.6em; text-align:center; opacity:0.7;">grow:0</div>
+      </div>
+      <div class="fp-item" id="ip-2" style="position:relative;">
+        3<div style="position:absolute; bottom:2px; left:0; right:0;
+                     font-size:0.6em; text-align:center; opacity:0.7;">grow:0</div>
+      </div>
+      <div class="fp-item" id="ip-3" style="position:relative;">
+        4<div style="position:absolute; bottom:2px; left:0; right:0;
+                     font-size:0.6em; text-align:center; opacity:0.7;">grow:0</div>
+      </div>
+    </div>
+  </div>
+  <div class="fp-code" id="item-code" style="margin-top:10px;">
+    ← アイテムを選んでプロパティを変更してみましょう
+  </div>
+
+  <div class="pre-wrap" style="margin-top:16px;">
+    <button class="copy-btn" onclick="copyPre(this)">copy</button>
+<pre>
+<span class="comment">/* flex-grow：余白をどれだけ伸びて埋めるか（デフォルト: 0）*/</span>
+<span class="selector">.item-a</span> { <span class="prop">flex-grow</span>: <span class="val">1</span>; } <span class="comment">/* 余白を1の比率で取得 */</span>
+<span class="selector">.item-b</span> { <span class="prop">flex-grow</span>: <span class="val">2</span>; } <span class="comment">/* item-a の2倍の余白を取得 */</span>
+
+<span class="comment">/* flex-shrink：スペース不足時にどれだけ縮むか（デフォルト: 1）*/</span>
+<span class="selector">.item</span>    { <span class="prop">flex-shrink</span>: <span class="val">1</span>; } <span class="comment">/* 縮む（デフォルト）*/</span>
+<span class="selector">.no-shrink</span>{ <span class="prop">flex-shrink</span>: <span class="val">0</span>; } <span class="comment">/* 縮まない */</span>
+
+<span class="comment">/* flex-basis：アイテムの基本サイズ（デフォルト: auto）*/</span>
+<span class="selector">.item</span> { <span class="prop">flex-basis</span>: <span class="val">200px</span>; } <span class="comment">/* 基本幅 200px */</span>
+<span class="selector">.item</span> { <span class="prop">flex-basis</span>: <span class="val">0</span>; }     <span class="comment">/* コンテンツ幅を無視 */</span>
+
+<span class="comment">/* flex ショートハンド */</span>
+<span class="selector">.item</span> { <span class="prop">flex</span>: <span class="val">1</span>; }
+<span class="comment">/* = flex-grow:1; flex-shrink:1; flex-basis:0% */</span>
+
+<span class="selector">.item</span> { <span class="prop">flex</span>: <span class="val">0 0 200px</span>; }
+<span class="comment">/* = flex-grow:0; flex-shrink:0; flex-basis:200px */</span>
+<span class="comment">/* → 固定幅 200px（伸縮しない）*/</span>
+
+<span class="comment">/* align-self：個別の交差軸配置 */</span>
+<span class="selector">.special</span> { <span class="prop">align-self</span>: <span class="val">flex-end</span>; }
+
+<span class="comment">/* order：表示順序（デフォルト: 0）*/</span>
+<span class="selector">.first</span> { <span class="prop">order</span>: <span class="val">-1</span>; } <span class="comment">/* 先頭に移動 */</span>
+<span class="selector">.last</span>  { <span class="prop">order</span>: <span class="val">1</span>; }  <span class="comment">/* 末尾に移動 */</span>
+</pre>
+  </div>
+</div>
+
+
+<!-- ============================================================ -->
+<!-- PART 4: よくある Flexbox レイアウトパターン -->
+<!-- ============================================================ -->
+<h2 id="patterns">④ よくある Flexbox レイアウトパターン</h2>
+
+<div class="demo-box">
+  <div class="tab-wrap">
+    <div class="tab-btns">
+      <button class="tab-btn active" onclick="switchTab(this,'tab-center')">完全中央揃え</button>
+      <button class="tab-btn"        onclick="switchTab(this,'tab-navbar')">ナビゲーション</button>
+      <button class="tab-btn"        onclick="switchTab(this,'tab-card')">カードレイアウト</button>
+      <button class="tab-btn"        onclick="switchTab(this,'tab-holy')">聖杯レイアウト</button>
+    </div>
+
+    <!-- 完全中央揃え -->
+    <div class="tab-content active" id="tab-center">
+      <h3 style="margin-top:0; color:#553c9a;">完全中央揃え</h3>
+      <div style="background:#1a202c; border-radius:8px; padding:4px;
+                  margin-bottom:12px;">
+        <div style="display:flex; justify-content:center; align-items:center;
+                    height:120px; background:#0d1117; border-radius:6px;">
+          <div style="background:#553c9a; color:#e9d8fd; padding:12px 24px;
+                      border-radius:8px; font-family:'Consolas','Monaco',monospace;
+                      font-weight:bold;">
+            完全中央揃え
+          </div>
+        </div>
+      </div>
+      <div class="pre-wrap">
+        <button class="copy-btn" onclick="copyPre(this)">copy</button>
+<pre>
+<span class="comment">/* 完全中央揃え（最もシンプルな方法）*/</span>
+<span class="selector">.container</span> {
+  <span class="prop">display</span>:         <span class="val">flex</span>;
+  <span class="prop">justify-content</span>: <span class="val">center</span>;  <span class="comment">/* 主軸（横）中央 */</span>
+  <span class="prop">align-items</span>:     <span class="val">center</span>;  <span class="comment">/* 交差軸（縦）中央 */</span>
+  <span class="prop">height</span>:          <span class="val">100vh</span>;   <span class="comment">/* 画面全体の高さ */</span>
+}
+
+<span class="comment">/* または margin: auto を使う方法 */</span>
+<span class="selector">.container</span> { <span class="prop">display</span>: <span class="val">flex</span>; }
+<span class="selector">.child</span>     { <span class="prop">margin</span>: <span class="val">auto</span>; }
+</pre>
+      </div>
+    </div>
+
+    <!-- ナビゲーション -->
+    <div class="tab-content" id="tab-navbar">
+      <h3 style="margin-top:0; color:#553c9a;">ナビゲーションバー</h3>
+      <div style="background:#1a202c; border-radius:8px; padding:4px;
+                  margin-bottom:12px;">
+        <div style="display:flex; justify-content:space-between; align-items:center;
+                    padding:12px 20px; background:#0d1117; border-radius:6px;">
+          <div style="color:#f6ad55; font-weight:bold;
+                      font-family:'Consolas','Monaco',monospace;">🏠 Logo</div>
+          <div style="display:flex; gap:16px;">
+            <span style="color:#e2e8f0; font-size:0.88em; cursor:pointer;">Home</span>
+            <span style="color:#e2e8f0; font-size:0.88em; cursor:pointer;">About</span>
+            <span style="color:#e2e8f0; font-size:0.88em; cursor:pointer;">Contact</span>
+          </div>
+          <div style="background:#553c9a; color:#fff; padding:6px 14px;
+                      border-radius:6px; font-size:0.82em; font-weight:bold;
+                      cursor:pointer;">Login</div>
+        </div>
+      </div>
+      <div class="pre-wrap">
+        <button class="copy-btn" onclick="copyPre(this)">copy</button>
+<pre>
+<span class="comment">/* ナビゲーションバー */</span>
+<span class="selector">.navbar</span> {
+  <span class="prop">display</span>:         <span class="val">flex</span>;
+  <span class="prop">justify-content</span>: <span class="val">space-between</span>; <span class="comment">/* 両端揃え */</span>
+  <span class="prop">align-items</span>:     <span class="val">center</span>;
+  <span class="prop">padding</span>:         <span class="val">12px 20px</span>;
+}
+<span class="selector">.nav-links</span> {
+  <span class="prop">display</span>: <span class="val">flex</span>;
+  <span class="prop">gap</span>:     <span class="val">16px</span>;
+}
+<span class="comment">/* ロゴ・リンク・ボタンが自動的に3分割 */</span>
+</pre>
+      </div>
+    </div>
+
+    <!-- カードレイアウト -->
+    <div class="tab-content" id="tab-card">
+      <h3 style="margin-top:0; color:#553c9a;">レスポンシブカードレイアウト</h3>
+      <div style="background:#1a202c; border-radius:8px; padding:12px;
+                  margin-bottom:12px;">
+        <div style="display:flex; flex-wrap:wrap; gap:10px;">
+          <div style="flex:1; min-width:140px; background:#2b4c7e; border-radius:8px;
+                      padding:14px; color:#bee3f8; font-size:0.82em;
+                      font-family:'Consolas','Monaco',monospace;">
+            <div style="font-weight:bold; margin-bottom:4px;">カード 1</div>
+            <div style="opacity:0.8;">flex: 1; min-width: 140px</div>
+          </div>
+          <div style="flex:1; min-width:140px; background:#276749; border-radius:8px;
+                      padding:14px; color:#c6f6d5; font-size:0.82em;
+                      font-family:'Consolas','Monaco',monospace;">
+            <div style="font-weight:bold; margin-bottom:4px;">カード 2</div>
+            <div style="opacity:0.8;">自動で折り返し</div>
+          </div>
+          <div style="flex:1; min-width:140px; background:#744210; border-radius:8px;
+                      padding:14px; color:#fbd38d; font-size:0.82em;
+                      font-family:'Consolas','Monaco',monospace;">
+            <div style="font-weight:bold; margin-bottom:4px;">カード 3</div>
+            <div style="opacity:0.8;">均等に広がる</div>
+          </div>
+        </div>
+      </div>
+      <div class="pre-wrap">
+        <button class="copy-btn" onclick="copyPre(this)">copy</button>
+<pre>
+<span class="comment">/* レスポンシブカードレイアウト */</span>
+<span class="selector">.card-container</span> {
+  <span class="prop">display</span>:   <span class="val">flex</span>;
+  <span class="prop">flex-wrap</span>: <span class="val">wrap</span>;  <span class="comment">/* 折り返しあり */</span>
+  <span class="prop">gap</span>:       <span class="val">16px</span>;
+}
+<span class="selector">.card</span> {
+  <span class="prop">flex</span>:      <span class="val">1</span>;       <span class="comment">/* 均等に広がる */</span>
+  <span class="prop">min-width</span>: <span class="val">200px</span>;  <span class="comment">/* 最小幅を設定 */</span>
+}
+<span class="comment">/* min-width を超えると自動的に折り返す */</span>
+</pre>
+      </div>
+    </div>
+
+    <!-- 聖杯レイアウト -->
+    <div class="tab-content" id="tab-holy">
+      <h3 style="margin-top:0; color:#553c9a;">聖杯レイアウト（Holy Grail）</h3>
+      <div style="background:#1a202c; border-radius:8px; padding:12px;
+                  margin-bottom:12px; font-family:'Consolas','Monaco',monospace;
+                  font-size:0.82em;">
+        <div style="background:#2b4c7e; color:#bee3f8; padding:8px 12px;
+                    border-radius:4px; text-align:center; margin-bottom:8px;">
+          Header
+        </div>
+        <div style="display:flex; gap:8px; margin-bottom:8px;">
+          <div style="background:#553c9a; color:#e9d8fd; padding:8px 12px;
+                      border-radius:4px; width:100px; text-align:center;">
+            Sidebar
+          </div>
+          <div style="background:#276749; color:#c6f6d5; padding:8px 12px;
+                      border-radius:4px; flex:1; text-align:center; min-height:60px;
+                      display:flex; align-items:center; justify-content:center;">
+            Main Content
+          </div>
+          <div style="background:#744210; color:#fbd38d; padding:8px 12px;
+                      border-radius:4px; width:80px; text-align:center;">
+            Aside
+          </div>
+        </div>
+        <div style="background:#2b4c7e; color:#bee3f8; padding:8px 12px;
+                    border-radius:4px; text-align:center;">
+          Footer
+        </div>
+      </div>
+      <div class="pre-wrap">
+        <button class="copy-btn" onclick="copyPre(this)">copy</button>
+<pre>
+<span class="comment">/* 聖杯レイアウト */</span>
+<span class="selector">.page</span> {
+  <span class="prop">display</span>:        <span class="val">flex</span>;
+  <span class="prop">flex-direction</span>: <span class="val">column</span>;
+  <span class="prop">min-height</span>:     <span class="val">100vh</span>;
+}
+<span class="selector">.main-area</span> {
+  <span class="prop">display</span>:  <span class="val">flex</span>;
+  <span class="prop">flex</span>:     <span class="val">1</span>;     <span class="comment">/* 残りの高さを埋める */</span>
+}
+<span class="selector">.sidebar</span> { <span class="prop">width</span>: <span class="val">200px</span>; <span class="prop">flex-shrink</span>: <span class="val">0</span>; }
+<span class="selector">.content</span> { <span class="prop">flex</span>: <span class="val">1</span>; }   <span class="comment">/* 残りを埋める */</span>
+<span class="selector">.aside</span>   { <span class="prop">width</span>: <span class="val">160px</span>; <span class="prop">flex-shrink</span>: <span class="val">0</span>; }
+</pre>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ============================================================ -->
+<!-- まとめ -->
+<!-- ============================================================ -->
+<h2>📌 まとめ</h2>
+<div class="demo-box">
+  <table class="ref-table">
+    <thead>
+      <tr><th>対象</th><th>プロパティ</th><th>主な値</th><th>説明</th></tr>
+    </thead>
+    <tbody>
+      <tr><td rowspan="6">コンテナ</td>
+        <td><code>display</code></td>
+        <td><code>flex</code> / <code>inline-flex</code></td>
+        <td>Flexbox を有効化</td></tr>
+      <tr><td><code>flex-direction</code></td>
+        <td><code>row</code> / <code>column</code></td>
+        <td>主軸の方向</td></tr>
+      <tr><td><code>justify-content</code></td>
+        <td><code>center</code> / <code>space-between</code></td>
+        <td>主軸方向の配置</td></tr>
+      <tr><td><code>align-items</code></td>
+        <td><code>center</code> / <code>stretch</code></td>
+        <td>交差軸方向の配置</td></tr>
+      <tr><td><code>flex-wrap</code></td>
+        <td><code>wrap</code> / <code>nowrap</code></td>
+        <td>折り返し</td></tr>
+      <tr><td><code>gap</code></td>
+        <td><code>8px</code> / <code>8px 16px</code></td>
+        <td>アイテム間の隙間</td></tr>
+      <tr><td rowspan="5">アイテム</td>
+        <td><code>flex-grow</code></td>
+        <td><code>0</code> / <code>1</code> / <code>2</code></td>
+        <td>余白を埋める比率</td></tr>
+      <tr><td><code>flex-shrink</code></td>
+        <td><code>0</code> / <code>1</code></td>
+        <td>縮む比率（0で縮まない）</td></tr>
+      <tr><td><code>flex-basis</code></td>
+        <td><code>auto</code> / <code>200px</code></td>
+        <td>基本サイズ</td></tr>
+      <tr><td><code>align-self</code></td>
+        <td><code>center</code> / <code>flex-end</code></td>
+        <td>個別の交差軸配置</td></tr>
+      <tr><td><code>order</code></td>
+        <td><code>-1</code> / <code>0</code> / <code>1</code></td>
+        <td>表示順序</td></tr>
+    </tbody>
+  </table>
+</div>
+
+
+<!-- ============================================================ -->
+<!-- 演習問題 -->
+<!-- ============================================================ -->
+<div class="quiz-section">
+  <h2>🖊️ 演習問題</h2>
+
+  <!-- Q1 -->
+  <div class="quiz-block">
+    <h3>Q1. 穴埋め問題</h3>
+    <p>以下の説明に合う CSS プロパティ・値を答えてください。</p>
+    <label>① Flexbox で主軸方向の配置を制御するプロパティ：</label>
+    <input type="text" id="q1a" placeholder="プロパティ名">
+    <label>② Flexbox で交差軸方向の配置を制御するプロパティ（コンテナ全体）：</label>
+    <input type="text" id="q1b" placeholder="プロパティ名">
+    <label>③ アイテムが余白を均等に埋めるための <code>flex-grow</code> の値：</label>
+    <input type="text" id="q1c" placeholder="数値">
+    <label>④ アイテムが縮まないようにする <code>flex-shrink</code> の値：</label>
+    <input type="text" id="q1d" placeholder="数値">
+    <br>
+    <button class="btn btn-purple" onclick="checkQ1()">答え合わせ</button>
+    <div class="result-msg" id="q1-result"></div>
+    <script>
+      function checkQ1() {
+        const a = document.getElementById('q1a').value.trim().toLowerCase().replace(/\s/g,'');
+        const b = document.getElementById('q1b').value.trim().toLowerCase().replace(/\s/g,'');
+        const c = document.getElementById('q1c').value.trim();
+        const d = document.getElementById('q1d').value.trim();
+        const r = document.getElementById('q1-result');
+        const ca = a === 'justify-content' || a === 'justifycontent';
+        const cb = b === 'align-items' || b === 'alignitems';
+        const cc = c === '1';
+        const cd = d === '0';
+        const count = [ca,cb,cc,cd].filter(Boolean).length;
+        if (count === 4) {
+          r.className = 'result-msg correct';
+          r.textContent = '✅ 全問正解！完璧です！';
+        } else {
+          r.className = 'result-msg wrong';
+          r.innerHTML = `❌ ${count}/4 問正解。<br>` +
+            `① ${ca?'✅':'❌ justify-content'}　` +
+            `② ${cb?'✅':'❌ align-items'}　` +
+            `③ ${cc?'✅':'❌ 1（flex-grow: 1 で余白を埋める）'}　` +
+            `④ ${cd?'✅':'❌ 0（flex-shrink: 0 で縮まない）'}`;
+        }
+      }
+    </script>
+  </div>
+
+  <!-- Q2 -->
+  <div class="quiz-block">
+    <h3>Q2. 選択問題</h3>
+    <p><code>flex: 1</code> の展開として正しいものはどれですか？</p>
+    <select id="q2">
+      <option value="">-- 選択してください --</option>
+      <option value="a">flex-grow: 1; flex-shrink: 0; flex-basis: auto</option>
+      <option value="b">flex-grow: 1; flex-shrink: 1; flex-basis: 0%</option>
+      <option value="c">flex-grow: 0; flex-shrink: 1; flex-basis: 1px</option>
+      <option value="d">flex-grow: 1; flex-shrink: 1; flex-basis: auto</option>
+    </select>
+    <br>
+    <button class="btn btn-purple" onclick="checkQ2()">答え合わせ</button>
+    <div class="result-msg" id="q2-result"></div>
+    <script>
+      function checkQ2() {
+        const v = document.getElementById('q2').value;
+        const r = document.getElementById('q2-result');
+        if (v === 'b') {
+          r.className = 'result-msg correct';
+          r.innerHTML = '✅ 正解！<br><br>' +
+            '<code>flex: 1</code> は以下の展開です：<br>' +
+            '<code>flex-grow: 1</code>（余白を埋める）<br>' +
+            '<code>flex-shrink: 1</code>（縮む）<br>' +
+            '<code>flex-basis: 0%</code>（基本サイズ 0）<br><br>' +
+            '⚠️ <code>flex: 1</code> と <code>flex: 1 1 auto</code> は異なります！<br>' +
+            '<code>flex: 1 1 auto</code> は flex-basis が auto（コンテンツサイズ基準）です。';
+        } else if (v === '') {
+          r.className = 'result-msg info';
+          r.textContent = '⚠️ 選択肢を選んでください。';
+        } else {
+          r.className = 'result-msg wrong';
+          r.innerHTML = '❌ 不正解。<br>' +
+            '<code>flex: 1</code> = <code>flex-grow: 1; flex-shrink: 1; flex-basis: 0%</code> です。<br>' +
+            'flex-basis が <strong>0%</strong>（auto ではない）点に注意！';
+        }
+      }
+    </script>
+  </div>
+
+  <!-- Q3 -->
+  <div class="quiz-block">
+    <h3>Q3. 正誤チェックボックス問題</h3>
+    <p><strong>正しい記述</strong>をすべて選んでください。</p>
+    <label class="checkbox-label"><input type="checkbox" id="q3a">
+      ① <code>justify-content</code> は主軸方向の配置を制御する</label>
+    <label class="checkbox-label"><input type="checkbox" id="q3b">
+      ② <code>flex-direction: column</code> のとき、<code>justify-content</code> は横方向を制御する</label>
+    <label class="checkbox-label"><input type="checkbox" id="q3c">
+      ③ <code>align-self</code> はアイテム個別の交差軸配置を上書きできる</label>
+    <label class="checkbox-label"><input type="checkbox" id="q3d">
+      ④ <code>order</code> プロパティは HTML の DOM 順序を変更する</label>
+    <label class="checkbox-label"><input type="checkbox" id="q3e">
+      ⑤ <code>flex-wrap: wrap</code> を設定するとアイテムが折り返す</label>
+    <label class="checkbox-label"><input type="checkbox" id="q3f">
+      ⑥ <code>gap</code> プロパティは Flexbox コンテナのアイテム間の隙間を設定できる</label>
+    <br>
+    <button class="btn btn-purple" onclick="checkQ3()">答え合わせ</button>
+    <div class="result-msg" id="q3-result"></div>
+    <script>
+      function checkQ3() {
+        const r = document.getElementById('q3-result');
+        const checks = {
+          a: document.getElementById('q3a').checked,
+          b: document.getElementById('q3b').checked,
+          c: document.getElementById('q3c').checked,
+          d: document.getElementById('q3d').checked,
+          e: document.getElementById('q3e').checked,
+          f: document.getElementById('q3f').checked,
+        };
+        // 正解：①③⑤⑥（a,c,e,f）
+        // ② column のとき justify-content は縦方向を制御する
+        // ④ order は表示順序のみ変更（DOM は変わらない）
+        const correct = { a:true, b:false, c:true, d:false, e:true, f:true };
+        const allOk = Object.keys(correct).every(k => checks[k] === correct[k]);
+        if (allOk) {
+          r.className = 'result-msg correct';
+          r.innerHTML = '✅ 全問正解！完璧です！';
+        } else {
+          r.className = 'result-msg wrong';
+          r.innerHTML =
+            '❌ 不正解の項目があります。<br><br>' +
+            '<strong>正しい記述：</strong>①③⑤⑥<br><br>' +
+            '<strong>誤った記述：</strong><br>' +
+            '・② <code>flex-direction: column</code> のとき、<code>justify-content</code> は<strong>縦方向（主軸）</strong>を制御します。横方向（交差軸）は <code>align-items</code> です。<br>' +
+            '・④ <code>order</code> は<strong>表示順序のみ</strong>変更します。HTML の DOM 順序は変わりません（アクセシビリティに注意）。';
+        }
+      }
+    </script>
+  </div>
+
+  <!-- Q4 -->
+  <div class="quiz-block">
+    <h3>Q4. プレイグラウンド実践</h3>
+    <p>Flexbox プレイグラウンドを使って以下のレイアウトを再現してください。</p>
+    <ul style="font-size:0.92em; color:#4a5568; line-height:2;">
+      <li>アイテムを<strong>横並び・右端揃え</strong>にする</li>
+      <li>アイテム間に<strong>均等なスペース</strong>を入れる（space-between）</li>
+      <li>アイテムを<strong>縦方向中央</strong>に揃える</li>
+    </ul>
+    <label>上記を実現する CSS を答えてください（justify-content の値）：</label>
+    <input type="text" id="q4a" placeholder="justify-content の値">
+    <label>align-items の値：</label>
+    <input type="text" id="q4b" placeholder="align-items の値">
+    <br>
+    <button class="btn btn-purple" onclick="checkQ4()">答え合わせ</button>
+    <div class="result-msg" id="q4-result"></div>
+    <script>
+      function checkQ4() {
+        const a = document.getElementById('q4a').value.trim().toLowerCase().replace(/\s/g,'');
+        const b = document.getElementById('q4b').value.trim().toLowerCase().replace(/\s/g,'');
+        const r = document.getElementById('q4-result');
+        const ca = a === 'space-between';
+        const cb = b === 'center';
+        const count = [ca,cb].filter(Boolean).length;
+        if (count === 2) {
+          r.className = 'result-msg correct';
+          r.innerHTML = '✅ 正解！<br><br>' +
+            '<code>.container {</code><br>' +
+            '<code>  display: flex;</code><br>' +
+            '<code>  justify-content: space-between; /* 均等スペース */</code><br>' +
+            '<code>  align-items: center;             /* 縦中央 */</code><br>' +
+            '<code>}</code>';
+        } else {
+          r.className = 'result-msg wrong';
+          r.innerHTML = `❌ ${count}/2 問正解。<br>` +
+            `justify-content: ${ca?'✅':'❌ space-between（均等スペース）'}　` +
+            `align-items: ${cb?'✅':'❌ center（縦中央）'}`;
+        }
+      }
+    </script>
+  </div>
+
+</div><!-- /quiz-section -->
+
+
+<!-- 完了ボタン -->
+<div class="complete-section">
+  <p>🎉 「2-3 Flexbox」の学習が完了したら記録しましょう！</p>
+  <button class="btn btn-done" onclick="markComplete()">✅ このセクションを完了にする</button>
+  <div id="complete-msg" style="margin-top:10px; font-size:0.88em; color:#276749; display:none;">
+    進捗を保存しました！Chapter 2 の進捗バーに反映されます。
+  </div>
+</div>
+
+<!-- ページナビ -->
+<div class="page-nav">
+  <a class="prev" href="02_boxmodel.html">← 2-2 ボックスモデル</a>
+  <a class="home" href="../index.html">🏠 目次へ</a>
+  <a class="next" href="04_grid.html">次へ：2-4 CSS Grid →</a>
+</div>
+
+<!-- フッター -->
+<footer>
+  <p>
+    HTML5プロフェッショナル Level 2 学習サイト ／
+    <a href="../index.html">🏠 目次</a> ／
+    <a href="../exam/index.html">📝 模擬試験</a>
+  </p>
+  <p style="margin-top:4px;">© MeshinoKiwamiOkome</p>
+</footer>
+
+
+<!-- ============================================================ -->
+<!-- JavaScript -->
+<!-- ============================================================ -->
+<script>
+  /* ===== コピーボタン ===== */
+  function copyPre(btn) {
+    const pre = btn.nextElementSibling;
+    navigator.clipboard.writeText(pre.innerText || pre.textContent).then(() => {
+      btn.textContent = 'copied!';
+      setTimeout(() => btn.textContent = 'copy', 1800);
+    });
+  }
+
+  /* ===== タブ ===== */
+  function switchTab(btn, id) {
+    btn.closest('.tab-wrap').querySelectorAll('.tab-btn')
+       .forEach(b => b.classList.remove('active'));
+    btn.closest('.tab-wrap').querySelectorAll('.tab-content')
+       .forEach(c => c.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById(id).classList.add('active');
+  }
+
+  /* ===== Flex プレイグラウンド ===== */
+  function updateFlex() {
+    const direction    = document.getElementById('fp-direction').value;
+    const justify      = document.getElementById('fp-justify').value;
+    const alignItems   = document.getElementById('fp-align-items').value;
+    const wrap         = document.getElementById('fp-wrap').value;
+    const alignContent = document.getElementById('fp-align-content').value;
+    const gap          = document.getElementById('fp-gap').value;
+    const count        = parseInt(document.getElementById('fp-count').value);
+    const height       = document.getElementById('fp-height').value;
+
+    document.getElementById('fp-gap-val').textContent    = gap + 'px';
+    document.getElementById('fp-count-val').textContent  = count + '個';
+    document.getElementById('fp-height-val').textContent = height + 'px';
+
+    const container = document.getElementById('fp-container');
+    container.style.flexDirection  = direction;
+    container.style.justifyContent = justify;
+    container.style.alignItems     = alignItems;
+    container.style.flexWrap       = wrap;
+    container.style.alignContent   = alignContent;
+    container.style.gap            = gap + 'px';
+    container.style.height         = height + 'px';
+
+    // アイテムを再生成
+    container.innerHTML = '';
+    const labels = ['A','B','C','D','E','F','G','H'];
+    for (let i = 0; i < count; i++) {
+      const item = document.createElement('div');
+      item.className = 'fp-item';
+      item.textContent = labels[i];
+      // 異なる高さでデモ
+      if (i % 3 === 1) item.style.paddingTop = '20px';
+      if (i % 3 === 2) item.style.paddingBottom = '20px';
+      container.appendChild(item);
+    }
+
+    // コード生成
+    const lines = [
+      `.container {`,
+      `  display: flex;`,
+      direction !== 'row'          ? `  flex-direction: ${direction};`    : null,
+      justify !== 'flex-start'     ? `  justify-content: ${justify};`     : null,
+      alignItems !== 'stretch'     ? `  align-items: ${alignItems};`      : null,
+      wrap !== 'nowrap'            ? `  flex-wrap: ${wrap};`              : null,
+      alignContent !== 'normal'    ? `  align-content: ${alignContent};`  : null,
+      parseInt(gap) > 0            ? `  gap: ${gap}px;`                   : null,
+      `}`,
+    ].filter(Boolean);
+
+    document.getElementById('fp-code').textContent = lines.join('\n');
+  }
+
+  updateFlex();
+
+  /* ===== アイテムプロパティ ===== */
+  let selectedItem = 0;
+  const itemProps = [
+    { grow: 0, shrink: 1, basis: 'auto', alignSelf: 'auto', order: 0, width: 'auto' },
+    { grow: 0, shrink: 1, basis: 'auto', alignSelf: 'auto', order: 0, width: 'auto' },
+    { grow: 0, shrink: 1, basis: 'auto', alignSelf: 'auto', order: 0, width: 'auto' },
+    { grow: 0, shrink: 1, basis: 'auto', alignSelf: 'auto', order: 0, width: 'auto' },
+  ];
+
+  function selectItem(idx, btn) {
+    selectedItem = idx;
+    document.querySelectorAll('.ic-tab').forEach(t => t.classList.remove('active'));
+    btn.classList.add('active');
+
+    // 現在のアイテムのプロパティを入力欄に反映
+    const p = itemProps[idx];
+    document.getElementById('ic-grow').value      = p.grow;
+    document.getElementById('ic-shrink').value    = p.shrink;
+    document.getElementById('ic-basis').value     = p.basis;
+    document.getElementById('ic-align-self').value = p.alignSelf;
+    document.getElementById('ic-order').value     = p.order;
+    document.getElementById('ic-width').value     = p.width;
+
+    // 選択中アイテムをハイライト
+    for (let i = 0; i < 4; i++) {
+      const el = document.getElementById(`ip-${i}`);
+      if (el) el.style.outline = i === idx ? '3px solid #f6ad55' : 'none';
+    }
+  }
+
+  function updateItemProps() {
+    const p = itemProps[selectedItem];
+    p.grow      = document.getElementById('ic-grow').value;
+    p.shrink    = document.getElementById('ic-shrink').value;
+    p.basis     = document.getElementById('ic-basis').value;
+    p.alignSelf = document.getElementById('ic-align-self').value;
+    p.order     = document.getElementById('ic-order').value;
+    p.width     = document.getElementById('ic-width').value;
+
+    // 全アイテムにプロパティを適用
+    for (let i = 0; i < 4; i++) {
+      const el = document.getElementById(`ip-${i}`);
+      const ip = itemProps[i];
+      if (!el) continue;
+      el.style.flexGrow   = ip.grow;
+      el.style.flexShrink = ip.shrink;
+      el.style.flexBasis  = ip.basis;
+      el.style.alignSelf  = ip.alignSelf;
+      el.style.order      = ip.order;
+      el.style.width      = ip.width !== 'auto' ? ip.width : '';
+      // ラベル更新
+      const label = el.querySelector('div');
+      if (label) label.textContent = `grow:${ip.grow}`;
+    }
+
+    // コード生成
+    const p2 = itemProps[selectedItem];
+    const lines = [
+      `.item-${selectedItem + 1} {`,
+      p2.grow !== '0'        ? `  flex-grow: ${p2.grow};`        : null,
+      p2.shrink !== '1'      ? `  flex-shrink: ${p2.shrink};`    : null,
+      p2.basis !== 'auto'    ? `  flex-basis: ${p2.basis};`      : null,
+      p2.alignSelf !== 'auto'? `  align-self: ${p2.alignSelf};`  : null,
+      p2.order !== '0'       ? `  order: ${p2.order};`           : null,
+      p2.width !== 'auto'    ? `  width: ${p2.width};`           : null,
+      `}`,
+    ].filter(Boolean);
+
+    if (lines.length === 2) {
+      lines.splice(1, 0, '  /* デフォルト値のまま */');
+    }
+
+    document.getElementById('item-code').textContent = lines.join('\n');
+  }
+
+  // 初期化
+  selectItem(0, document.querySelector('.ic-tab'));
+
+  /* ===== 完了ボタン ===== */
+  function markComplete() {
+    localStorage.setItem('html5lv2_ch2_03', 'done');
+    document.getElementById('complete-msg').style.display = 'block';
+  }
+  if (localStorage.getItem('html5lv2_ch2_03') === 'done') {
+    document.getElementById('complete-msg').style.display = 'block';
+  }
+</script>
+
+</body>
+</html>

@@ -1,0 +1,1502 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>2-2 ボックスモデル | HTML5プロフェッショナル Level 2</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; }
+    body {
+      font-family: 'Segoe UI', 'Helvetica Neue', sans-serif;
+      max-width: 960px; margin: 40px auto; padding: 0 24px;
+      background: #f0f4f8; color: #2d3748; line-height: 1.8;
+    }
+    .breadcrumb {
+      font-size: 0.82em; color: #a0aec0; margin-bottom: 20px;
+      font-family: 'Consolas','Monaco',monospace;
+    }
+    .breadcrumb a { color: #553c9a; text-decoration: none; }
+    .breadcrumb a:hover { text-decoration: underline; }
+
+    .chapter-header {
+      background: linear-gradient(135deg, #553c9a, #2c7a7b);
+      border-radius: 12px; padding: 32px 32px 24px;
+      margin-bottom: 32px; color: #fff;
+      box-shadow: 0 4px 18px rgba(85,60,154,0.35);
+    }
+    .chapter-header .ch-num {
+      font-size: 0.8em; font-family: 'Consolas','Monaco',monospace;
+      opacity: 0.85; letter-spacing: 0.08em; margin-bottom: 6px;
+    }
+    .chapter-header h1 {
+      margin: 0 0 10px; font-size: 1.6em; color: #fff; border: none; padding: 0;
+    }
+    .chapter-header p { margin: 0; font-size: 0.92em; opacity: 0.88; }
+    .badge-row { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 14px; }
+    .badge {
+      background: rgba(255,255,255,0.18);
+      border: 1px solid rgba(255,255,255,0.35);
+      border-radius: 20px; padding: 3px 12px;
+      font-size: 0.76em; font-weight: bold;
+    }
+
+    .section-nav {
+      background: #fff; border: 1px solid #e9d8fd;
+      border-radius: 10px; padding: 18px 22px;
+      margin-bottom: 32px; box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+    }
+    .section-nav h2 {
+      margin: 0 0 12px; font-size: 0.92em; color: #553c9a; border: none; padding: 0;
+    }
+    .section-nav ol { margin: 0; padding-left: 20px; font-size: 0.9em; }
+    .section-nav ol li { margin: 4px 0; }
+    .section-nav ol li a { color: #553c9a; text-decoration: none; }
+    .section-nav ol li a:hover { text-decoration: underline; }
+    .section-nav ol li.current a { color: #1a365d; font-weight: bold; }
+
+    h2 {
+      color: #1a365d; margin-top: 48px;
+      border-left: 5px solid #9f7aea; padding-left: 12px;
+    }
+    h3 { color: #553c9a; margin-top: 28px; }
+
+    code {
+      background: #faf5ff; padding: 2px 6px;
+      border-radius: 4px; font-size: 0.93em;
+      font-family: 'Consolas','Monaco',monospace;
+      color: #553c9a;
+    }
+    pre {
+      background: #1a202c; color: #e2e8f0;
+      padding: 18px 20px; border-radius: 8px;
+      overflow-x: auto; font-size: 0.88em;
+      line-height: 1.7; font-family: 'Consolas','Monaco',monospace;
+    }
+    pre .comment  { color: #68d391; }
+    pre .selector { color: #f6ad55; font-weight: bold; }
+    pre .prop     { color: #81e6d9; }
+    pre .val      { color: #fbd38d; }
+    pre .out      { color: #a0aec0; }
+    pre .hl       { color: #68d391; font-weight: bold; }
+    pre .warn-c   { color: #fc8181; }
+
+    .pre-wrap { position: relative; margin: 14px 0; }
+    .copy-btn {
+      position: absolute; top: 8px; right: 8px;
+      background: #4a5568; color: #e2e8f0;
+      border: none; border-radius: 4px; padding: 4px 10px;
+      font-size: 0.75em; cursor: pointer;
+      font-family: 'Consolas','Monaco',monospace;
+      transition: background 0.2s; z-index: 1;
+    }
+    .copy-btn:hover { background: #9f7aea; }
+
+    .note {
+      background: #fff; border: 1px dashed #d6bcfa;
+      border-radius: 6px; padding: 14px 18px;
+      font-size: 0.93em; color: #4a5568; margin: 14px 0;
+    }
+    .note strong { color: #553c9a; }
+    .warn {
+      background: #fffaf0; border: 1px solid #f6ad55;
+      border-left: 5px solid #f6ad55; border-radius: 6px;
+      padding: 14px 18px; font-size: 0.93em; color: #744210; margin: 14px 0;
+    }
+    .good {
+      background: #f0fff4; border: 1px solid #68d391;
+      border-left: 5px solid #48bb78; border-radius: 6px;
+      padding: 14px 18px; font-size: 0.93em; color: #276749; margin: 14px 0;
+    }
+    .demo-box {
+      background: #fff; border: 1px solid #e9d8fd;
+      border-radius: 8px; padding: 20px 24px;
+      margin: 12px 0 28px; box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+    }
+
+    /* ===== ボックスモデル ビジュアル ===== */
+    .box-model-visual {
+      position: relative; margin: 20px auto;
+      font-family: 'Consolas','Monaco',monospace;
+      font-size: 0.82em; max-width: 480px;
+    }
+    .bm-margin {
+      background: rgba(246,173,85,0.15);
+      border: 2px dashed #f6ad55;
+      border-radius: 4px; padding: 0;
+      position: relative;
+    }
+    .bm-margin-label {
+      position: absolute; top: 4px; left: 8px;
+      color: #f6ad55; font-weight: bold; font-size: 0.85em;
+    }
+    .bm-border {
+      background: rgba(104,211,145,0.15);
+      border: 6px solid #48bb78;
+      margin: 28px 20px 20px;
+      position: relative; border-radius: 2px;
+    }
+    .bm-border-label {
+      position: absolute; top: -20px; left: 0;
+      color: #48bb78; font-weight: bold; font-size: 0.85em;
+    }
+    .bm-padding {
+      background: rgba(144,205,244,0.2);
+      border: 2px dashed #90cdf4;
+      margin: 12px; position: relative;
+    }
+    .bm-padding-label {
+      position: absolute; top: 4px; left: 8px;
+      color: #90cdf4; font-weight: bold; font-size: 0.85em;
+    }
+    .bm-content {
+      background: #553c9a;
+      margin: 20px; padding: 16px;
+      text-align: center; color: #fff;
+      font-weight: bold; font-size: 0.9em;
+      border-radius: 2px; position: relative;
+    }
+    .bm-size-label {
+      font-size: 0.75em; opacity: 0.85; margin-top: 4px;
+    }
+
+    /* ===== ボックスモデル インタラクティブ ===== */
+    .bm-interactive {
+      background: #1a202c; border-radius: 10px;
+      padding: 20px; margin: 14px 0;
+    }
+    .bm-controls {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+      gap: 10px; margin-bottom: 16px;
+    }
+    .bm-control-item {
+      display: flex; flex-direction: column; gap: 4px;
+    }
+    .bm-control-item label {
+      font-size: 0.78em; font-family: 'Consolas','Monaco',monospace;
+      font-weight: bold;
+    }
+    .bm-control-item input[type="range"] {
+      width: 100%; accent-color: #9f7aea;
+    }
+    .bm-control-item .bm-val {
+      font-size: 0.75em; color: #a0aec0; text-align: right;
+      font-family: 'Consolas','Monaco',monospace;
+    }
+    .bm-preview-wrap {
+      background: #0d1117; border-radius: 8px;
+      padding: 20px; display: flex;
+      justify-content: center; align-items: center;
+      min-height: 200px; overflow: auto;
+    }
+    .bm-preview-outer {
+      background: rgba(246,173,85,0.1);
+      border: 2px dashed #f6ad55;
+      display: inline-block; position: relative;
+    }
+    .bm-preview-box {
+      background: #553c9a;
+      display: flex; align-items: center;
+      justify-content: center; color: #fff;
+      font-family: 'Consolas','Monaco',monospace;
+      font-size: 0.82em; font-weight: bold;
+      transition: all 0.2s; text-align: center;
+      line-height: 1.4;
+    }
+    .bm-info {
+      margin-top: 12px; padding: 10px 14px;
+      background: #0d1117; border-radius: 6px;
+      font-family: 'Consolas','Monaco',monospace;
+      font-size: 0.82em; color: #68d391; line-height: 1.8;
+    }
+
+    /* ===== display デモ ===== */
+    .display-demo-area {
+      background: #f7fafc; border: 2px solid #e9d8fd;
+      border-radius: 8px; padding: 16px 20px; margin: 14px 0;
+      min-height: 80px;
+    }
+    .dd-block {
+      background: #553c9a; color: #fff;
+      padding: 8px 14px; margin: 4px 0;
+      border-radius: 4px; font-size: 0.88em;
+      font-family: 'Consolas','Monaco',monospace;
+      transition: all 0.3s;
+    }
+    .dd-inline {
+      background: #2c7a7b; color: #fff;
+      padding: 4px 10px; margin: 2px;
+      border-radius: 4px; font-size: 0.88em;
+      font-family: 'Consolas','Monaco',monospace;
+      display: inline; transition: all 0.3s;
+    }
+    .dd-inline-block {
+      background: #744210; color: #fff;
+      padding: 8px 14px; margin: 4px;
+      border-radius: 4px; font-size: 0.88em;
+      font-family: 'Consolas','Monaco',monospace;
+      display: inline-block; transition: all 0.3s;
+    }
+
+    /* ===== margin collapse デモ ===== */
+    .collapse-demo {
+      background: #f7fafc; border: 2px solid #e9d8fd;
+      border-radius: 8px; padding: 16px 20px; margin: 14px 0;
+    }
+    .collapse-box {
+      background: #553c9a; color: #fff;
+      padding: 10px 16px; border-radius: 4px;
+      font-family: 'Consolas','Monaco',monospace;
+      font-size: 0.85em; text-align: center;
+      transition: margin 0.3s;
+    }
+
+    /* ===== インタラクティブデモ ===== */
+    .interactive-demo {
+      background: #f5f0ff; border: 1px solid #e9d8fd;
+      border-radius: 8px; padding: 16px 20px; margin: 14px 0;
+    }
+    .demo-label {
+      font-size: 0.85em; font-weight: bold;
+      color: #553c9a; margin-bottom: 10px;
+    }
+    .demo-input-row {
+      display: flex; gap: 10px; align-items: center;
+      flex-wrap: wrap; margin-bottom: 10px;
+    }
+    .demo-input {
+      border: 2px solid #e9d8fd; border-radius: 6px;
+      padding: 7px 12px; font-size: 0.9em;
+      font-family: 'Consolas','Monaco',monospace;
+      color: #2d3748; background: #fff; flex: 1; min-width: 80px;
+    }
+    .demo-input:focus { border-color: #9f7aea; outline: none; }
+    .demo-btn {
+      background: #553c9a; color: #fff; border: none;
+      border-radius: 6px; padding: 8px 18px;
+      font-size: 0.88em; font-weight: bold; cursor: pointer;
+      transition: background 0.2s; white-space: nowrap;
+    }
+    .demo-btn:hover { background: #44337a; }
+    .demo-output {
+      background: #1a202c; color: #b794f4;
+      border-radius: 6px; padding: 10px 14px;
+      font-family: 'Consolas','Monaco',monospace;
+      font-size: 0.85em; min-height: 40px;
+      white-space: pre-wrap; line-height: 1.7;
+    }
+
+    /* ===== タブ ===== */
+    .tab-wrap { margin: 14px 0; }
+    .tab-btns { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: -1px; }
+    .tab-btn {
+      padding: 8px 18px; border: 1px solid #e9d8fd;
+      border-bottom: none; border-radius: 6px 6px 0 0;
+      background: #faf5ff; color: #553c9a;
+      font-size: 0.85em; font-weight: bold;
+      font-family: 'Consolas','Monaco',monospace;
+      cursor: pointer; transition: background 0.15s;
+    }
+    .tab-btn.active { background: #fff; border-bottom: 1px solid #fff; }
+    .tab-btn:hover:not(.active) { background: #f0e6ff; }
+    .tab-content {
+      display: none; background: #fff;
+      border: 1px solid #e9d8fd;
+      border-radius: 0 6px 6px 6px; padding: 18px 20px;
+    }
+    .tab-content.active { display: block; }
+
+    /* ===== テーブル ===== */
+    table.ref-table {
+      border-collapse: collapse; width: 100%;
+      background: #fff; border-radius: 8px;
+      overflow: hidden; box-shadow: 0 2px 6px rgba(0,0,0,0.07);
+      margin: 14px 0; font-size: 0.9em;
+    }
+    table.ref-table th, table.ref-table td {
+      border: 1px solid #e9d8fd; padding: 10px 14px; text-align: left;
+    }
+    table.ref-table thead tr { background: #553c9a; color: #fff; }
+    table.ref-table tbody tr:nth-child(even) { background: #faf5ff; }
+
+    /* ===== 演習問題 ===== */
+    .quiz-section {
+      background: #faf5ff; border-left: 6px solid #9f7aea;
+      border-radius: 0 8px 8px 0; padding: 24px 28px; margin: 48px 0 32px;
+    }
+    .quiz-section > h2 { margin-top: 0; color: #553c9a; border-left-color: #9f7aea; }
+    .quiz-block {
+      background: #fff; border: 1px solid #e9d8fd;
+      border-radius: 8px; padding: 18px 22px; margin-bottom: 22px;
+    }
+    .quiz-block h3 { margin-top: 0; color: #553c9a; }
+    .quiz-block input[type="text"],
+    .quiz-block select {
+      border: 2px solid #e9d8fd; border-radius: 6px;
+      padding: 8px 12px; font-size: 0.95em;
+      width: 100%; max-width: 440px; margin: 6px 0;
+      outline: none; font-family: 'Consolas','Monaco',monospace;
+      transition: border-color 0.2s;
+    }
+    .quiz-block input[type="text"]:focus,
+    .quiz-block select:focus { border-color: #9f7aea; }
+    .quiz-block label { display: block; margin: 8px 0 2px; font-weight: bold; color: #4a5568; }
+    .quiz-block label.checkbox-label {
+      display: flex; align-items: flex-start; gap: 8px;
+      font-weight: normal; cursor: pointer; margin: 6px 0;
+    }
+    .quiz-block label.checkbox-label input { margin-top: 3px; flex-shrink: 0; }
+    .btn {
+      display: inline-block; padding: 9px 20px;
+      border-radius: 6px; border: none; cursor: pointer;
+      font-size: 0.95em; font-weight: bold;
+      transition: opacity 0.2s; margin-top: 8px;
+    }
+    .btn:hover { opacity: 0.85; }
+    .btn-purple { background: #553c9a; color: #fff; }
+    .btn-done   { background: #48bb78; color: #fff; }
+    .result-msg {
+      margin-top: 10px; padding: 10px 14px;
+      border-radius: 6px; font-weight: bold; display: none;
+    }
+    .result-msg.correct { background: #c6f6d5; color: #276749; display: block; }
+    .result-msg.wrong   { background: #fed7d7; color: #9b2335; display: block; }
+    .result-msg.info    { background: #e9d8fd; color: #553c9a; display: block; }
+
+    .page-nav {
+      display: flex; justify-content: space-between;
+      align-items: center; margin-top: 48px;
+      padding-top: 20px; border-top: 2px solid #e9d8fd;
+      gap: 12px; flex-wrap: wrap;
+    }
+    .page-nav a {
+      display: inline-block; padding: 10px 20px;
+      border-radius: 8px; text-decoration: none;
+      font-weight: bold; font-size: 0.9em; transition: opacity 0.2s;
+    }
+    .page-nav a:hover { opacity: 0.8; }
+    .page-nav .prev { background: #edf2f7; color: #4a5568; }
+    .page-nav .next { background: #553c9a; color: #fff; }
+    .page-nav .home { background: #fff; color: #553c9a; border: 2px solid #553c9a; }
+
+    .complete-section {
+      background: #f0fff4; border: 2px solid #48bb78;
+      border-radius: 10px; padding: 20px 24px;
+      margin-top: 40px; text-align: center;
+    }
+    .complete-section p { margin: 0 0 12px; color: #276749; font-weight: bold; }
+
+    footer {
+      margin-top: 48px; padding-top: 16px;
+      border-top: 2px solid #e9d8fd;
+      font-size: 0.82em; color: #a0aec0; text-align: center;
+    }
+    footer a { color: #553c9a; text-decoration: none; }
+    footer a:hover { text-decoration: underline; }
+
+    @media (max-width: 600px) {
+      body { font-size: 0.84em; }
+      .chapter-header { padding: 20px 16px; }
+      .chapter-header h1 { font-size: 1.2em; }
+      .bm-controls { grid-template-columns: 1fr 1fr; }
+      .quiz-section { padding: 16px 12px; }
+      .quiz-block { padding: 14px 12px; }
+      .page-nav { flex-direction: column; align-items: stretch; }
+      .page-nav a { text-align: center; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- パンくず -->
+<div class="breadcrumb">
+  <a href="../index.html">🏠 HTML5 Level 2</a> ›
+  <a href="index.html">Chapter 2：CSSとスタイリング</a> ›
+  2-2 ボックスモデル
+</div>
+
+<!-- ヘッダー -->
+<div class="chapter-header">
+  <div class="ch-num">CHAPTER 02 › SECTION 02</div>
+  <h1>📦 2-2 ボックスモデル</h1>
+  <p>すべての HTML 要素はボックスとして扱われます。
+  margin・padding・border・content の4層構造と
+  box-sizing・display・margin の相殺を
+  インタラクティブなビジュアライザで完全理解します。</p>
+  <div class="badge-row">
+    <span class="badge">content</span>
+    <span class="badge">padding</span>
+    <span class="badge">border</span>
+    <span class="badge">margin</span>
+    <span class="badge">box-sizing</span>
+    <span class="badge">display</span>
+    <span class="badge">margin 相殺</span>
+  </div>
+</div>
+
+<!-- セクションナビ -->
+<div class="section-nav">
+  <h2>📋 Chapter 2 のセクション</h2>
+  <ol>
+    <li><a href="01_selectors.html">2-1 セレクタと詳細度</a></li>
+    <li class="current"><a href="02_boxmodel.html">2-2 ボックスモデル</a></li>
+    <li><a href="03_flexbox.html">2-3 Flexbox</a></li>
+    <li><a href="04_grid.html">2-4 CSS Grid</a></li>
+    <li><a href="05_positioning.html">2-5 配置とポジショニング</a></li>
+    <li><a href="06_responsive.html">2-6 レスポンシブデザイン</a></li>
+    <li><a href="07_typography.html">2-7 タイポグラフィと色</a></li>
+    <li><a href="08_animation.html">2-8 トランジションとアニメーション</a></li>
+    <li><a href="09_variables.html">2-9 CSS変数と関数</a></li>
+    <li><a href="10_advanced.html">2-10 CSS応用・試験対策</a></li>
+  </ol>
+</div>
+
+
+<!-- ============================================================ -->
+<!-- PART 1: ボックスモデルの構造 -->
+<!-- ============================================================ -->
+<h2 id="box-model">① ボックスモデルの構造</h2>
+
+<div class="note">
+  <strong>重要ポイント：すべての HTML 要素は content・padding・border・margin の
+  4層で構成される「ボックス」として扱われます。
+  <code>box-sizing</code> の値によって width/height の計算方法が変わります。</strong>
+</div>
+
+<div class="demo-box">
+  <h3>ボックスモデルの4層構造</h3>
+
+  <!-- 静的ビジュアル -->
+  <div class="box-model-visual">
+    <div class="bm-margin">
+      <span class="bm-margin-label">margin（外側の余白）</span>
+      <div class="bm-border">
+        <span class="bm-border-label">border（枠線）</span>
+        <div class="bm-padding">
+          <span class="bm-padding-label">padding（内側の余白）</span>
+          <div class="bm-content">
+            content（内容）
+            <div class="bm-size-label">width × height</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <h3>🎮 ボックスモデル インタラクティブビジュアライザ</h3>
+  <div class="bm-interactive">
+    <div class="bm-controls">
+      <div class="bm-control-item">
+        <label style="color:#fbd38d;">width</label>
+        <input type="range" id="bm-width" min="80" max="300" value="160"
+               oninput="updateBoxModel()">
+        <div class="bm-val" id="bm-width-val">160px</div>
+      </div>
+      <div class="bm-control-item">
+        <label style="color:#fbd38d;">height</label>
+        <input type="range" id="bm-height" min="40" max="200" value="80"
+               oninput="updateBoxModel()">
+        <div class="bm-val" id="bm-height-val">80px</div>
+      </div>
+      <div class="bm-control-item">
+        <label style="color:#90cdf4;">padding</label>
+        <input type="range" id="bm-padding" min="0" max="40" value="16"
+               oninput="updateBoxModel()">
+        <div class="bm-val" id="bm-padding-val">16px</div>
+      </div>
+      <div class="bm-control-item">
+        <label style="color:#48bb78;">border</label>
+        <input type="range" id="bm-border" min="0" max="20" value="4"
+               oninput="updateBoxModel()">
+        <div class="bm-val" id="bm-border-val">4px</div>
+      </div>
+      <div class="bm-control-item">
+        <label style="color:#f6ad55;">margin</label>
+        <input type="range" id="bm-margin" min="0" max="40" value="16"
+               oninput="updateBoxModel()">
+        <div class="bm-val" id="bm-margin-val">16px</div>
+      </div>
+      <div class="bm-control-item">
+        <label style="color:#b794f4;">box-sizing</label>
+        <select id="bm-boxsizing"
+                onchange="updateBoxModel()"
+                style="background:#2d3748; border:1px solid #4a5568;
+                       color:#e2e8f0; border-radius:4px; padding:4px 8px;
+                       font-family:'Consolas','Monaco',monospace; font-size:0.85em;">
+          <option value="content-box">content-box</option>
+          <option value="border-box" selected>border-box</option>
+        </select>
+      </div>
+    </div>
+    <div class="bm-preview-wrap">
+      <div class="bm-preview-outer" id="bm-outer">
+        <div class="bm-preview-box" id="bm-box">
+          content
+        </div>
+      </div>
+    </div>
+    <div class="bm-info" id="bm-info">← スライダーを動かしてボックスモデルを確認しましょう</div>
+  </div>
+
+  <div class="pre-wrap">
+    <button class="copy-btn" onclick="copyPre(this)">copy</button>
+<pre>
+<span class="comment">/* ボックスモデルの基本 */</span>
+<span class="selector">.box</span> {
+  <span class="prop">width</span>:   <span class="val">200px</span>;   <span class="comment">/* コンテンツ幅 */</span>
+  <span class="prop">height</span>:  <span class="val">100px</span>;   <span class="comment">/* コンテンツ高さ */</span>
+  <span class="prop">padding</span>: <span class="val">20px</span>;    <span class="comment">/* 内側の余白（上下左右） */</span>
+  <span class="prop">border</span>:  <span class="val">2px solid #333</span>; <span class="comment">/* 枠線 */</span>
+  <span class="prop">margin</span>:  <span class="val">16px</span>;    <span class="comment">/* 外側の余白 */</span>
+}
+
+<span class="comment">/* content-box（デフォルト）*/</span>
+<span class="comment">/* 実際の幅 = width + padding×2 + border×2 */</span>
+<span class="comment">/* 200 + 20×2 + 2×2 = 244px */</span>
+
+<span class="comment">/* border-box（推奨）*/</span>
+<span class="comment">/* 実際の幅 = width（padding と border を含む）*/</span>
+<span class="comment">/* 200px のまま */</span>
+<span class="selector">.box</span> { <span class="prop">box-sizing</span>: <span class="val">border-box</span>; }
+
+<span class="comment">/* 全要素に border-box を適用（モダンなリセット）*/</span>
+<span class="selector">*, *::before, *::after</span> {
+  <span class="prop">box-sizing</span>: <span class="val">border-box</span>;
+}
+</pre>
+  </div>
+</div>
+
+
+<!-- ============================================================ -->
+<!-- PART 2: margin と padding -->
+<!-- ============================================================ -->
+<h2 id="margin-padding">② margin と padding</h2>
+
+<div class="note">
+  <strong>重要ポイント：margin は要素の外側の余白、padding は内側の余白です。
+  値の指定方法（1〜4個）と margin の相殺（マージンの折り畳み）を理解しましょう。</strong>
+</div>
+
+<div class="demo-box">
+  <div class="tab-wrap">
+    <div class="tab-btns">
+      <button class="tab-btn active" onclick="switchTab(this,'tab-shorthand')">値の指定方法</button>
+      <button class="tab-btn"        onclick="switchTab(this,'tab-collapse')">margin の相殺</button>
+      <button class="tab-btn"        onclick="switchTab(this,'tab-auto')">margin: auto</button>
+      <button class="tab-btn"        onclick="switchTab(this,'tab-negative')">負の margin</button>
+    </div>
+
+    <!-- 値の指定方法 -->
+    <div class="tab-content active" id="tab-shorthand">
+      <h3 style="margin-top:0; color:#553c9a;">値の個数による指定方法</h3>
+      <div class="pre-wrap">
+        <button class="copy-btn" onclick="copyPre(this)">copy</button>
+<pre>
+<span class="comment">/* 値1個：上下左右すべて同じ */</span>
+<span class="selector">p</span> { <span class="prop">margin</span>: <span class="val">16px</span>; }
+<span class="comment">/* → 上:16px 右:16px 下:16px 左:16px */</span>
+
+<span class="comment">/* 値2個：上下 / 左右 */</span>
+<span class="selector">p</span> { <span class="prop">margin</span>: <span class="val">8px 16px</span>; }
+<span class="comment">/* → 上下:8px 左右:16px */</span>
+
+<span class="comment">/* 値3個：上 / 左右 / 下 */</span>
+<span class="selector">p</span> { <span class="prop">margin</span>: <span class="val">8px 16px 24px</span>; }
+<span class="comment">/* → 上:8px 左右:16px 下:24px */</span>
+
+<span class="comment">/* 値4個：上 / 右 / 下 / 左（時計回り）*/</span>
+<span class="selector">p</span> { <span class="prop">margin</span>: <span class="val">8px 16px 24px 32px</span>; }
+<span class="comment">/* → 上:8px 右:16px 下:24px 左:32px */</span>
+
+<span class="comment">/* 個別指定 */</span>
+<span class="selector">p</span> {
+  <span class="prop">margin-top</span>:    <span class="val">8px</span>;
+  <span class="prop">margin-right</span>:  <span class="val">16px</span>;
+  <span class="prop">margin-bottom</span>: <span class="val">24px</span>;
+  <span class="prop">margin-left</span>:   <span class="val">32px</span>;
+}
+
+<span class="comment">/* 論理プロパティ（CSS Logical Properties）*/</span>
+<span class="selector">p</span> {
+  <span class="prop">margin-block</span>:  <span class="val">8px</span>;  <span class="comment">/* 上下（書字方向に応じて）*/</span>
+  <span class="prop">margin-inline</span>: <span class="val">16px</span>; <span class="comment">/* 左右 */</span>
+}
+</pre>
+      </div>
+
+      <div class="interactive-demo">
+        <div class="demo-label">margin / padding の値を入力して視覚的に確認しよう</div>
+        <div class="demo-input-row">
+          <input class="demo-input" id="mp-margin"
+                 placeholder="margin（例：8px 16px）" type="text" value="16px">
+          <input class="demo-input" id="mp-padding"
+                 placeholder="padding（例：8px 16px）" type="text" value="12px 20px">
+          <button class="demo-btn" onclick="applyMarginPadding()">▶ 適用</button>
+          <button class="demo-btn" style="background:#4a5568;"
+                  onclick="resetMarginPadding()">↺ リセット</button>
+        </div>
+        <div style="background:#f7fafc; border:2px solid #e9d8fd;
+                    border-radius:6px; padding:16px; margin-bottom:8px;">
+          <div id="mp-outer"
+               style="background:rgba(246,173,85,0.2); border:2px dashed #f6ad55;
+                      display:inline-block; transition:all 0.3s;">
+            <div id="mp-target"
+                 style="background:#553c9a; color:#fff; border-radius:4px;
+                        font-family:'Consolas','Monaco',monospace; font-size:0.88em;
+                        transition:all 0.3s; white-space:nowrap;">
+              対象要素
+            </div>
+          </div>
+        </div>
+        <div class="demo-output" id="mp-output">← margin と padding を入力して適用してみましょう</div>
+      </div>
+    </div>
+
+    <!-- margin の相殺 -->
+    <div class="tab-content" id="tab-collapse">
+      <h3 style="margin-top:0; color:#553c9a;">margin の相殺（マージンの折り畳み）</h3>
+      <div class="note">
+        <strong>margin の相殺とは：</strong>隣接するブロック要素の上下 margin は
+        <strong>大きいほうの値に統合</strong>されます（加算されない）。
+        左右の margin は相殺されません。
+      </div>
+      <div class="collapse-demo">
+        <div class="collapse-box" id="collapse-a"
+             style="margin-bottom:30px;">
+          要素A（margin-bottom: 30px）
+        </div>
+        <div class="collapse-box" id="collapse-b"
+             style="margin-top:20px;">
+          要素B（margin-top: 20px）
+        </div>
+        <div style="margin-top:12px; font-size:0.85em; color:#718096;">
+          ↑ 実際の間隔は 30px + 20px = 50px ではなく、max(30px, 20px) = <strong>30px</strong>
+        </div>
+      </div>
+      <div class="interactive-demo">
+        <div class="demo-label">margin の相殺をシミュレートしよう</div>
+        <div class="demo-input-row">
+          <label style="font-size:0.85em; color:#553c9a; min-width:120px;">
+            要素A margin-bottom:
+          </label>
+          <input class="demo-input" id="collapse-a-val"
+                 type="number" value="30" min="0" max="80" style="max-width:80px;">
+          <span style="font-size:0.85em; color:#718096;">px</span>
+        </div>
+        <div class="demo-input-row">
+          <label style="font-size:0.85em; color:#553c9a; min-width:120px;">
+            要素B margin-top:
+          </label>
+          <input class="demo-input" id="collapse-b-val"
+                 type="number" value="20" min="0" max="80" style="max-width:80px;">
+          <span style="font-size:0.85em; color:#718096;">px</span>
+          <button class="demo-btn" onclick="runCollapseDemo()">▶ 確認</button>
+        </div>
+        <div class="demo-output" id="collapse-output">← 値を入力して確認してみましょう</div>
+      </div>
+      <div class="pre-wrap">
+        <button class="copy-btn" onclick="copyPre(this)">copy</button>
+<pre>
+<span class="comment">/* margin の相殺が起きる条件 */</span>
+<span class="comment">/* 1. 隣接する兄弟要素の上下 margin */</span>
+<span class="selector">.box-a</span> { <span class="prop">margin-bottom</span>: <span class="val">30px</span>; }
+<span class="selector">.box-b</span> { <span class="prop">margin-top</span>:    <span class="val">20px</span>; }
+<span class="comment">/* 間隔 = max(30, 20) = 30px（相殺！）*/</span>
+
+<span class="comment">/* 相殺を防ぐ方法 */</span>
+<span class="selector">.parent</span> {
+  <span class="prop">overflow</span>: <span class="val">hidden</span>;  <span class="comment">/* BFC を作成 */</span>
+  <span class="comment">/* または */</span>
+  <span class="prop">padding-top</span>: <span class="val">1px</span>;  <span class="comment">/* padding を追加 */</span>
+  <span class="comment">/* または */</span>
+  <span class="prop">border-top</span>: <span class="val">1px solid transparent</span>;
+}
+
+<span class="comment">/* Flexbox / Grid コンテナ内では相殺が起きない */</span>
+<span class="selector">.flex-container</span> { <span class="prop">display</span>: <span class="val">flex</span>; <span class="prop">flex-direction</span>: <span class="val">column</span>; }
+</pre>
+      </div>
+    </div>
+
+    <!-- margin: auto -->
+    <div class="tab-content" id="tab-auto">
+      <h3 style="margin-top:0; color:#553c9a;">margin: auto による中央揃え</h3>
+      <div class="pre-wrap">
+        <button class="copy-btn" onclick="copyPre(this)">copy</button>
+<pre>
+<span class="comment">/* margin: auto で水平中央揃え */</span>
+<span class="selector">.centered</span> {
+  <span class="prop">width</span>:  <span class="val">300px</span>;   <span class="comment">/* 幅が必要！ */</span>
+  <span class="prop">margin</span>: <span class="val">0 auto</span>; <span class="comment">/* 上下:0 左右:auto */</span>
+}
+
+<span class="comment">/* auto の動作 */</span>
+<span class="comment">/* margin-left: auto → 左に最大の余白 → 右寄せ */</span>
+<span class="selector">.right-align</span> { <span class="prop">margin-left</span>: <span class="val">auto</span>; }
+
+<span class="comment">/* Flexbox での margin: auto */</span>
+<span class="selector">.flex-container</span> { <span class="prop">display</span>: <span class="val">flex</span>; }
+<span class="selector">.push-right</span>     { <span class="prop">margin-left</span>: <span class="val">auto</span>; } <span class="comment">/* 右端に押し出す */</span>
+
+<span class="comment">/* ⚠️ 垂直方向の auto は通常効かない */</span>
+<span class="comment">/* Flexbox / Grid では垂直 auto も有効 */</span>
+<span class="selector">.flex-child</span> { <span class="prop">margin</span>: <span class="val">auto</span>; } <span class="comment">/* 上下左右中央 */</span>
+</pre>
+      </div>
+      <div class="interactive-demo">
+        <div class="demo-label">margin: auto の動作を確認しよう</div>
+        <div class="demo-input-row">
+          <select class="demo-input" id="auto-type" style="flex:0 0 auto; width:200px;">
+            <option value="0 auto">margin: 0 auto（中央揃え）</option>
+            <option value="0 0 0 auto">margin-left: auto（右寄せ）</option>
+            <option value="auto 0 0 0">margin-top: auto（下寄せ・flex）</option>
+            <option value="auto">margin: auto（flex 中央）</option>
+          </select>
+          <button class="demo-btn" onclick="applyAutoMargin()">▶ 適用</button>
+        </div>
+        <div style="background:#f7fafc; border:2px solid #e9d8fd;
+                    border-radius:6px; padding:12px; height:80px;
+                    display:flex; align-items:flex-start;">
+          <div id="auto-target"
+               style="background:#553c9a; color:#fff; padding:8px 16px;
+                      border-radius:4px; font-family:'Consolas','Monaco',monospace;
+                      font-size:0.85em; width:140px; text-align:center;
+                      transition:all 0.3s;">
+            対象要素
+          </div>
+        </div>
+        <div class="demo-output" id="auto-output" style="margin-top:8px;">
+          ← 配置方法を選んで適用してみましょう
+        </div>
+      </div>
+    </div>
+
+    <!-- 負の margin -->
+    <div class="tab-content" id="tab-negative">
+      <h3 style="margin-top:0; color:#553c9a;">負の margin</h3>
+      <div class="pre-wrap">
+        <button class="copy-btn" onclick="copyPre(this)">copy</button>
+<pre>
+<span class="comment">/* 負の margin：要素を引き寄せる */</span>
+<span class="selector">.overlap</span> {
+  <span class="prop">margin-top</span>: <span class="val">-20px</span>; <span class="comment">/* 上に20px 引き寄せる */</span>
+}
+
+<span class="comment">/* 実用例：カードのオーバーラップ */</span>
+<span class="selector">.card-overlay</span> {
+  <span class="prop">margin-top</span>: <span class="val">-40px</span>;
+  <span class="prop">position</span>: <span class="val">relative</span>;
+  <span class="prop">z-index</span>: <span class="val">1</span>;
+}
+
+<span class="comment">/* 実用例：コンテナからはみ出す */</span>
+<span class="selector">.full-bleed</span> {
+  <span class="prop">margin-left</span>:  <span class="val">-24px</span>;
+  <span class="prop">margin-right</span>: <span class="val">-24px</span>;
+}
+
+<span class="comment">/* ⚠️ 負の margin は慎重に使う */</span>
+<span class="comment">/* Flexbox / Grid で代替できることが多い */</span>
+</pre>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ============================================================ -->
+<!-- PART 3: display プロパティ -->
+<!-- ============================================================ -->
+<h2 id="display">③ display プロパティ</h2>
+
+<div class="note">
+  <strong>重要ポイント：<code>display</code> は要素の表示形式を決定します。
+  <code>block</code>・<code>inline</code>・<code>inline-block</code> の違いと、
+  <code>none</code>・<code>flex</code>・<code>grid</code> の使い分けが重要です。</strong>
+</div>
+
+<div class="demo-box">
+  <h3>display 値の比較</h3>
+  <table class="ref-table">
+    <thead>
+      <tr><th>値</th><th>幅・高さ</th><th>改行</th><th>説明</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><code>block</code></td>
+        <td>✅ 指定可</td>
+        <td>前後に改行</td>
+        <td>div, p, h1〜h6 のデフォルト</td>
+      </tr>
+      <tr>
+        <td><code>inline</code></td>
+        <td>❌ 指定不可</td>
+        <td>改行なし</td>
+        <td>span, a, strong のデフォルト</td>
+      </tr>
+      <tr>
+        <td><code>inline-block</code></td>
+        <td>✅ 指定可</td>
+        <td>改行なし</td>
+        <td>inline + block の特性を持つ</td>
+      </tr>
+      <tr>
+        <td><code>none</code></td>
+        <td>-</td>
+        <td>-</td>
+        <td>要素を非表示（スペースも消える）</td>
+      </tr>
+      <tr>
+        <td><code>flex</code></td>
+        <td>✅ 指定可</td>
+        <td>前後に改行</td>
+        <td>Flexbox コンテナ</td>
+      </tr>
+      <tr>
+        <td><code>grid</code></td>
+        <td>✅ 指定可</td>
+        <td>前後に改行</td>
+        <td>Grid コンテナ</td>
+      </tr>
+      <tr>
+        <td><code>contents</code></td>
+        <td>-</td>
+        <td>-</td>
+        <td>要素自体のボックスを消す（子要素は残る）</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3>🎮 display ライブデモ</h3>
+  <div class="interactive-demo">
+    <div class="demo-label">display の値を変えて表示の違いを確認しよう</div>
+    <div class="demo-input-row">
+      <select class="demo-input" id="display-val" style="flex:0 0 auto; width:180px;">
+        <option value="block">block</option>
+        <option value="inline">inline</option>
+        <option value="inline-block" selected>inline-block</option>
+        <option value="none">none</option>
+        <option value="flex">flex</option>
+        <option value="grid">grid</option>
+      </select>
+      <button class="demo-btn" onclick="applyDisplay()">▶ 適用</button>
+      <button class="demo-btn" style="background:#4a5568;"
+              onclick="resetDisplay()">↺ リセット</button>
+    </div>
+    <div class="display-demo-area" id="display-demo-area">
+      <div class="dd-inline-block" id="dd-1">要素1</div>
+      <div class="dd-inline-block" id="dd-2">要素2</div>
+      <div class="dd-inline-block" id="dd-3">要素3</div>
+    </div>
+    <div class="demo-output" id="display-output">← display の値を選んで適用してみましょう</div>
+  </div>
+
+  <div class="pre-wrap">
+    <button class="copy-btn" onclick="copyPre(this)">copy</button>
+<pre>
+<span class="comment">/* visibility: hidden vs display: none */</span>
+<span class="selector">.hidden-space</span>  { <span class="prop">visibility</span>: <span class="val">hidden</span>; } <span class="comment">/* 非表示だがスペースは残る */</span>
+<span class="selector">.hidden-remove</span> { <span class="prop">display</span>: <span class="val">none</span>; }      <span class="comment">/* 非表示でスペースも消える */</span>
+
+<span class="comment">/* inline-block の活用 */</span>
+<span class="selector">.nav-item</span> {
+  <span class="prop">display</span>: <span class="val">inline-block</span>;
+  <span class="prop">width</span>:   <span class="val">120px</span>;   <span class="comment">/* inline では幅指定不可 */</span>
+  <span class="prop">padding</span>: <span class="val">8px 16px</span>;
+}
+
+<span class="comment">/* block 要素をインライン化 */</span>
+<span class="selector">li</span> { <span class="prop">display</span>: <span class="val">inline</span>; } <span class="comment">/* 横並びリスト */</span>
+</pre>
+  </div>
+</div>
+
+
+<!-- ============================================================ -->
+<!-- PART 4: border プロパティ -->
+<!-- ============================================================ -->
+<h2 id="border">④ border プロパティ</h2>
+
+<div class="demo-box">
+  <div class="pre-wrap">
+    <button class="copy-btn" onclick="copyPre(this)">copy</button>
+<pre>
+<span class="comment">/* border のショートハンド */</span>
+<span class="selector">.box</span> { <span class="prop">border</span>: <span class="val">2px solid #333</span>; }
+<span class="comment">/* 太さ スタイル 色 の順 */</span>
+
+<span class="comment">/* border-style の種類 */</span>
+<span class="selector">.solid</span>  { <span class="prop">border</span>: <span class="val">2px solid #333</span>; }   <span class="comment">/* 実線 */</span>
+<span class="selector">.dashed</span> { <span class="prop">border</span>: <span class="val">2px dashed #333</span>; }  <span class="comment">/* 破線 */</span>
+<span class="selector">.dotted</span> { <span class="prop">border</span>: <span class="val">2px dotted #333</span>; }  <span class="comment">/* 点線 */</span>
+<span class="selector">.double</span> { <span class="prop">border</span>: <span class="val">4px double #333</span>; }  <span class="comment">/* 二重線 */</span>
+<span class="selector">.none</span>   { <span class="prop">border</span>: <span class="val">none</span>; }             <span class="comment">/* なし */</span>
+
+<span class="comment">/* border-radius：角丸 */</span>
+<span class="selector">.rounded</span> { <span class="prop">border-radius</span>: <span class="val">8px</span>; }
+<span class="selector">.circle</span>  { <span class="prop">border-radius</span>: <span class="val">50%</span>; }  <span class="comment">/* 正方形に適用で円 */</span>
+<span class="selector">.pill</span>    { <span class="prop">border-radius</span>: <span class="val">9999px</span>; } <span class="comment">/* カプセル型 */</span>
+
+<span class="comment">/* 個別指定 */</span>
+<span class="selector">.box</span> {
+  <span class="prop">border-top</span>:    <span class="val">2px solid red</span>;
+  <span class="prop">border-right</span>:  <span class="val">2px solid blue</span>;
+  <span class="prop">border-bottom</span>: <span class="val">2px solid green</span>;
+  <span class="prop">border-left</span>:   <span class="val">2px solid orange</span>;
+}
+
+<span class="comment">/* outline：border に似るがボックスモデルに影響しない */</span>
+<span class="selector">button:focus</span> { <span class="prop">outline</span>: <span class="val">2px solid #553c9a</span>; }
+</pre>
+  </div>
+
+  <h3>🎮 border スタイルデモ</h3>
+  <div class="interactive-demo">
+    <div class="demo-label">border のスタイルを変えて確認しよう</div>
+    <div class="demo-input-row">
+      <input class="demo-input" id="border-width"
+             type="number" value="2" min="1" max="20" style="max-width:70px;">
+      <span style="font-size:0.85em; color:#718096;">px</span>
+      <select class="demo-input" id="border-style" style="flex:0 0 auto; width:130px;">
+        <option value="solid">solid</option>
+        <option value="dashed">dashed</option>
+        <option value="dotted">dotted</option>
+        <option value="double">double</option>
+        <option value="groove">groove</option>
+        <option value="ridge">ridge</option>
+        <option value="inset">inset</option>
+        <option value="outset">outset</option>
+      </select>
+      <input class="demo-input" id="border-color"
+             type="color" value="#553c9a" style="max-width:60px; padding:4px;">
+      <input class="demo-input" id="border-radius-val"
+             type="number" value="8" min="0" max="50" style="max-width:70px;">
+      <span style="font-size:0.85em; color:#718096;">px radius</span>
+      <button class="demo-btn" onclick="applyBorder()">▶ 適用</button>
+    </div>
+    <div style="background:#f7fafc; border:2px solid #e9d8fd;
+                border-radius:6px; padding:20px; text-align:center;">
+      <div id="border-target"
+           style="display:inline-block; padding:16px 32px;
+                  background:#faf5ff; font-family:'Consolas','Monaco',monospace;
+                  font-size:0.9em; color:#553c9a; font-weight:bold;
+                  transition:all 0.3s; border:2px solid #553c9a; border-radius:8px;">
+        border デモ
+      </div>
+    </div>
+    <div class="demo-output" id="border-output" style="margin-top:8px;">
+      ← スタイルを設定して適用してみましょう
+    </div>
+  </div>
+</div>
+
+
+<!-- ============================================================ -->
+<!-- まとめ -->
+<!-- ============================================================ -->
+<h2>📌 まとめ</h2>
+<div class="demo-box">
+  <table class="ref-table">
+    <thead><tr><th>プロパティ</th><th>説明</th><th>重要ポイント</th></tr></thead>
+    <tbody>
+      <tr><td><code>width / height</code></td>
+        <td>コンテンツ領域のサイズ</td>
+        <td>box-sizing によって実際のサイズが変わる</td></tr>
+      <tr><td><code>padding</code></td>
+        <td>内側の余白</td>
+        <td>背景色が適用される・4方向個別指定可</td></tr>
+      <tr><td><code>border</code></td>
+        <td>枠線</td>
+        <td>太さ・スタイル・色の3値</td></tr>
+      <tr><td><code>margin</code></td>
+        <td>外側の余白</td>
+        <td>隣接する上下 margin は相殺される</td></tr>
+      <tr><td><code>box-sizing: content-box</code></td>
+        <td>デフォルト</td>
+        <td>実幅 = width + padding×2 + border×2</td></tr>
+      <tr><td><code>box-sizing: border-box</code></td>
+        <td>推奨</td>
+        <td>実幅 = width（padding・border を含む）</td></tr>
+      <tr><td><code>display: block</code></td>
+        <td>ブロック要素</td>
+        <td>幅・高さ指定可・前後改行</td></tr>
+      <tr><td><code>display: inline</code></td>
+        <td>インライン要素</td>
+        <td>幅・高さ指定不可・改行なし</td></tr>
+      <tr><td><code>display: inline-block</code></td>
+        <td>インラインブロック</td>
+        <td>幅・高さ指定可・改行なし</td></tr>
+      <tr><td><code>display: none</code></td>
+        <td>非表示</td>
+        <td>スペースも消える（visibility: hidden と違う）</td></tr>
+    </tbody>
+  </table>
+</div>
+
+
+<!-- ============================================================ -->
+<!-- 演習問題 -->
+<!-- ============================================================ -->
+<div class="quiz-section">
+  <h2>🖊️ 演習問題</h2>
+
+  <!-- Q1 -->
+  <div class="quiz-block">
+    <h3>Q1. ボックスサイズの計算</h3>
+    <p>以下の CSS が適用された要素の<strong>実際の幅</strong>を答えてください。</p>
+
+    <label>①
+      <code>width: 200px; padding: 20px; border: 2px solid; box-sizing: content-box;</code>
+    </label>
+    <input type="text" id="q1a" placeholder="例：244px">
+
+    <label>②
+      <code>width: 200px; padding: 20px; border: 2px solid; box-sizing: border-box;</code>
+    </label>
+    <input type="text" id="q1b" placeholder="例：200px">
+
+    <label>③
+      <code>width: 300px; padding: 0 15px; border-left: 5px solid; box-sizing: content-box;</code>
+    </label>
+    <input type="text" id="q1c" placeholder="例：335px">
+    <br>
+    <button class="btn btn-purple" onclick="checkQ1()">答え合わせ</button>
+    <div class="result-msg" id="q1-result"></div>
+    <script>
+      function checkQ1() {
+        const normalize = s => s.trim().toLowerCase().replace(/\s/g,'').replace('px','');
+        const a = normalize(document.getElementById('q1a').value);
+        const b = normalize(document.getElementById('q1b').value);
+        const c = normalize(document.getElementById('q1c').value);
+        const r = document.getElementById('q1-result');
+        // ① content-box: 200 + 20*2 + 2*2 = 244px
+        const ca = a === '244';
+        // ② border-box: 200px（そのまま）
+        const cb = b === '200';
+        // ③ content-box: 300 + 15*2 + 5 = 335px（border-leftのみ）
+        const cc = c === '335';
+        const count = [ca,cb,cc].filter(Boolean).length;
+        if (count === 3) {
+          r.className = 'result-msg correct';
+          r.textContent = '✅ 全問正解！完璧です！';
+        } else {
+          r.className = 'result-msg wrong';
+          r.innerHTML = `❌ ${count}/3 問正解。<br>` +
+            `① ${ca?'✅':'❌ 244px（200 + padding20×2 + border2×2）'}　` +
+            `② ${cb?'✅':'❌ 200px（border-box は width に含まれる）'}　` +
+            `③ ${cc?'✅':'❌ 335px（300 + padding15×2 + border-left5のみ）'}`;
+        }
+      }
+    </script>
+  </div>
+
+  <!-- Q2 -->
+  <div class="quiz-block">
+    <h3>Q2. 選択問題</h3>
+    <p>以下の説明として<strong>正しい</strong>ものはどれですか？</p>
+    <p>要素Aの <code>margin-bottom: 40px</code>、要素Bの <code>margin-top: 30px</code> のとき、
+    AとBの実際の間隔は？</p>
+    <select id="q2">
+      <option value="">-- 選択してください --</option>
+      <option value="a">70px（40 + 30）</option>
+      <option value="b">40px（大きいほうが適用）</option>
+      <option value="c">30px（小さいほうが適用）</option>
+      <option value="d">0px（相殺されて消える）</option>
+    </select>
+    <br>
+    <button class="btn btn-purple" onclick="checkQ2()">答え合わせ</button>
+    <div class="result-msg" id="q2-result"></div>
+    <script>
+      function checkQ2() {
+        const v = document.getElementById('q2').value;
+        const r = document.getElementById('q2-result');
+        if (v === 'b') {
+          r.className = 'result-msg correct';
+          r.innerHTML = '✅ 正解！<br><br>' +
+            '<strong>margin の相殺（マージンの折り畳み）：</strong><br>' +
+            '隣接するブロック要素の上下 margin は<strong>大きいほうの値に統合</strong>されます。<br>' +
+            'max(40px, 30px) = <strong>40px</strong><br><br>' +
+            '相殺が起きるのは<strong>上下方向のみ</strong>です。左右は相殺されません。<br>' +
+            'Flexbox / Grid コンテナ内では相殺は起きません。';
+        } else if (v === '') {
+          r.className = 'result-msg info';
+          r.textContent = '⚠️ 選択肢を選んでください。';
+        } else {
+          r.className = 'result-msg wrong';
+          r.innerHTML = '❌ 不正解。<br>' +
+            'margin の相殺により、隣接する上下 margin は<strong>大きいほうの値（40px）</strong>になります。';
+        }
+      }
+    </script>
+  </div>
+
+  <!-- Q3 -->
+  <div class="quiz-block">
+    <h3>Q3. 正誤チェックボックス問題</h3>
+    <p><strong>正しい記述</strong>をすべて選んでください。</p>
+    <label class="checkbox-label"><input type="checkbox" id="q3a">
+      ① <code>box-sizing: border-box</code> では width に padding と border が含まれる</label>
+    <label class="checkbox-label"><input type="checkbox" id="q3b">
+      ② <code>display: inline</code> の要素には width と height を指定できる</label>
+    <label class="checkbox-label"><input type="checkbox" id="q3c">
+      ③ <code>display: none</code> は要素を非表示にし、スペースも消える</label>
+    <label class="checkbox-label"><input type="checkbox" id="q3d">
+      ④ margin の相殺は左右方向でも発生する</label>
+    <label class="checkbox-label"><input type="checkbox" id="q3e">
+      ⑤ <code>visibility: hidden</code> は要素を非表示にするが、スペースは残る</label>
+    <label class="checkbox-label"><input type="checkbox" id="q3f">
+      ⑥ <code>margin: 0 auto</code> で水平中央揃えにするには width の指定が必要</label>
+    <br>
+    <button class="btn btn-purple" onclick="checkQ3()">答え合わせ</button>
+    <div class="result-msg" id="q3-result"></div>
+    <script>
+      function checkQ3() {
+        const r = document.getElementById('q3-result');
+        const checks = {
+          a: document.getElementById('q3a').checked,
+          b: document.getElementById('q3b').checked,
+          c: document.getElementById('q3c').checked,
+          d: document.getElementById('q3d').checked,
+          e: document.getElementById('q3e').checked,
+          f: document.getElementById('q3f').checked,
+        };
+        // 正解：①③⑤⑥（a,c,e,f）
+        // ② inline は width/height 指定不可
+        // ④ margin 相殺は上下のみ
+        const correct = { a:true, b:false, c:true, d:false, e:true, f:true };
+        const allOk = Object.keys(correct).every(k => checks[k] === correct[k]);
+        if (allOk) {
+          r.className = 'result-msg correct';
+          r.innerHTML = '✅ 全問正解！完璧です！';
+        } else {
+          r.className = 'result-msg wrong';
+          r.innerHTML =
+            '❌ 不正解の項目があります。<br><br>' +
+            '<strong>正しい記述：</strong>①③⑤⑥<br><br>' +
+            '<strong>誤った記述：</strong><br>' +
+            '・② <code>display: inline</code> の要素は<strong>width と height を指定できません</strong>。<code>inline-block</code> を使いましょう。<br>' +
+            '・④ margin の相殺は<strong>上下方向のみ</strong>発生します。左右は相殺されません。';
+        }
+      }
+    </script>
+  </div>
+
+  <!-- Q4 -->
+  <div class="quiz-block">
+    <h3>Q4. ビジュアライザ実践</h3>
+    <p>ボックスモデルビジュアライザを使って以下の問いに答えてください。</p>
+    <p>
+      <code>width: 200px; height: 100px; padding: 20px; border: 5px solid;</code><br>
+      <code>box-sizing: content-box;</code> のとき、
+    </p>
+    <label>① 実際の幅（offsetWidth）は？</label>
+    <input type="text" id="q4a" placeholder="例：250px">
+    <label>② 実際の高さ（offsetHeight）は？</label>
+    <input type="text" id="q4b" placeholder="例：150px">
+    <br>
+    <button class="btn btn-purple" onclick="checkQ4()">答え合わせ</button>
+    <div class="result-msg" id="q4-result"></div>
+    <script>
+      function checkQ4() {
+        const normalize = s => s.trim().toLowerCase().replace(/\s/g,'').replace('px','');
+        const a = normalize(document.getElementById('q4a').value);
+        const b = normalize(document.getElementById('q4b').value);
+        const r = document.getElementById('q4-result');
+        // width: 200 + padding20*2 + border5*2 = 250
+        // height: 100 + padding20*2 + border5*2 = 150
+        const ca = a === '250';
+        const cb = b === '150';
+        if (ca && cb) {
+          r.className = 'result-msg correct';
+          r.innerHTML = '✅ 全問正解！<br><br>' +
+            '<strong>計算式（content-box）：</strong><br>' +
+            '実際の幅 = width + padding×2 + border×2<br>' +
+            '= 200 + 20×2 + 5×2 = <strong>250px</strong><br><br>' +
+            '実際の高さ = height + padding×2 + border×2<br>' +
+            '= 100 + 20×2 + 5×2 = <strong>150px</strong>';
+        } else {
+          r.className = 'result-msg wrong';
+          r.innerHTML = `❌ ${[ca,cb].filter(Boolean).length}/2 問正解。<br>` +
+            `① ${ca?'✅':'❌ 250px（200 + 20×2 + 5×2）'}　` +
+            `② ${cb?'✅':'❌ 150px（100 + 20×2 + 5×2）'}`;
+        }
+      }
+    </script>
+  </div>
+
+</div><!-- /quiz-section -->
+
+
+<!-- 完了ボタン -->
+<div class="complete-section">
+  <p>🎉 「2-2 ボックスモデル」の学習が完了したら記録しましょう！</p>
+  <button class="btn btn-done" onclick="markComplete()">✅ このセクションを完了にする</button>
+  <div id="complete-msg" style="margin-top:10px; font-size:0.88em; color:#276749; display:none;">
+    進捗を保存しました！Chapter 2 の進捗バーに反映されます。
+  </div>
+</div>
+
+<!-- ページナビ -->
+<div class="page-nav">
+  <a class="prev" href="01_selectors.html">← 2-1 セレクタと詳細度</a>
+  <a class="home" href="../index.html">🏠 目次へ</a>
+  <a class="next" href="03_flexbox.html">次へ：2-3 Flexbox →</a>
+</div>
+
+<!-- フッター -->
+<footer>
+  <p>
+    HTML5プロフェッショナル Level 2 学習サイト ／
+    <a href="../index.html">🏠 目次</a> ／
+    <a href="../exam/index.html">📝 模擬試験</a>
+  </p>
+  <p style="margin-top:4px;">© MeshinoKiwamiOkome</p>
+</footer>
+
+
+<!-- ============================================================ -->
+<!-- JavaScript -->
+<!-- ============================================================ -->
+<script>
+  /* ===== コピーボタン ===== */
+  function copyPre(btn) {
+    const pre = btn.nextElementSibling;
+    navigator.clipboard.writeText(pre.innerText || pre.textContent).then(() => {
+      btn.textContent = 'copied!';
+      setTimeout(() => btn.textContent = 'copy', 1800);
+    });
+  }
+
+  /* ===== タブ ===== */
+  function switchTab(btn, id) {
+    btn.closest('.tab-wrap').querySelectorAll('.tab-btn')
+       .forEach(b => b.classList.remove('active'));
+    btn.closest('.tab-wrap').querySelectorAll('.tab-content')
+       .forEach(c => c.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById(id).classList.add('active');
+  }
+
+  /* ===== ボックスモデル インタラクティブビジュアライザ ===== */
+  function updateBoxModel() {
+    const w   = parseInt(document.getElementById('bm-width').value);
+    const h   = parseInt(document.getElementById('bm-height').value);
+    const p   = parseInt(document.getElementById('bm-padding').value);
+    const b   = parseInt(document.getElementById('bm-border').value);
+    const m   = parseInt(document.getElementById('bm-margin').value);
+    const bs  = document.getElementById('bm-boxsizing').value;
+
+    document.getElementById('bm-width-val').textContent   = w + 'px';
+    document.getElementById('bm-height-val').textContent  = h + 'px';
+    document.getElementById('bm-padding-val').textContent = p + 'px';
+    document.getElementById('bm-border-val').textContent  = b + 'px';
+    document.getElementById('bm-margin-val').textContent  = m + 'px';
+
+    const box   = document.getElementById('bm-box');
+    const outer = document.getElementById('bm-outer');
+
+    if (bs === 'border-box') {
+      box.style.width      = w + 'px';
+      box.style.height     = h + 'px';
+      box.style.padding    = p + 'px';
+      box.style.border     = b + 'px solid #48bb78';
+      box.style.boxSizing  = 'border-box';
+      outer.style.padding  = m + 'px';
+
+      const actualW = w;
+      const actualH = h;
+      const contentW = Math.max(0, w - p * 2 - b * 2);
+      const contentH = Math.max(0, h - p * 2 - b * 2);
+
+      box.innerHTML = `content<br><span style="font-size:0.75em; opacity:0.8;">
+        content: ${contentW}×${contentH}px</span>`;
+
+      document.getElementById('bm-info').textContent =
+        `box-sizing: border-box\n` +
+        `width: ${w}px（padding・border を含む）\n` +
+        `実際の幅: ${actualW}px\n` +
+        `実際の高さ: ${actualH}px\n` +
+        `コンテンツ幅: ${contentW}px\n` +
+        `コンテンツ高さ: ${contentH}px`;
+    } else {
+      box.style.width      = w + 'px';
+      box.style.height     = h + 'px';
+      box.style.padding    = p + 'px';
+      box.style.border     = b + 'px solid #48bb78';
+      box.style.boxSizing  = 'content-box';
+      outer.style.padding  = m + 'px';
+
+      const actualW = w + p * 2 + b * 2;
+      const actualH = h + p * 2 + b * 2;
+
+      box.innerHTML = `content<br><span style="font-size:0.75em; opacity:0.8;">
+        ${w}×${h}px</span>`;
+
+      document.getElementById('bm-info').textContent =
+        `box-sizing: content-box（デフォルト）\n` +
+        `width: ${w}px（コンテンツのみ）\n` +
+        `実際の幅: ${w} + ${p}×2 + ${b}×2 = ${actualW}px\n` +
+        `実際の高さ: ${h} + ${p}×2 + ${b}×2 = ${actualH}px\n` +
+        `⚠️ border-box を使うと幅の計算が簡単になります`;
+    }
+  }
+
+  updateBoxModel();
+
+  /* ===== margin / padding デモ ===== */
+  function applyMarginPadding() {
+    const margin  = document.getElementById('mp-margin').value  || '0';
+    const padding = document.getElementById('mp-padding').value || '0';
+    const target  = document.getElementById('mp-target');
+    const out     = document.getElementById('mp-output');
+
+    target.style.margin  = margin;
+    target.style.padding = padding;
+
+    out.style.color = '#b794f4';
+    out.textContent =
+      `.target {\n  margin:  ${margin};\n  padding: ${padding};\n}`;
+  }
+
+  function resetMarginPadding() {
+    const target = document.getElementById('mp-target');
+    target.style.margin  = '0';
+    target.style.padding = '8px 12px';
+    document.getElementById('mp-margin').value  = '16px';
+    document.getElementById('mp-padding').value = '12px 20px';
+    document.getElementById('mp-output').textContent = '← リセットしました';
+  }
+
+  /* ===== margin 相殺デモ ===== */
+  function runCollapseDemo() {
+    const a   = parseInt(document.getElementById('collapse-a-val').value) || 0;
+    const b   = parseInt(document.getElementById('collapse-b-val').value) || 0;
+    const out = document.getElementById('collapse-output');
+    const boxA = document.getElementById('collapse-a');
+    const boxB = document.getElementById('collapse-b');
+
+    boxA.style.marginBottom = a + 'px';
+    boxB.style.marginTop    = b + 'px';
+
+    const actual = Math.max(a, b);
+    out.style.color = '#b794f4';
+    out.textContent =
+      `要素A margin-bottom: ${a}px\n` +
+      `要素B margin-top:    ${b}px\n\n` +
+      `期待値（加算）: ${a} + ${b} = ${a + b}px\n` +
+      `実際の間隔（相殺）: max(${a}, ${b}) = ${actual}px\n\n` +
+      `${a === b
+        ? '⚖️ 同じ値なので相殺後も同じ'
+        : `✅ ${actual === a ? '要素A' : '要素B'} の ${actual}px が適用されます`}`;
+  }
+
+  /* ===== margin: auto デモ ===== */
+  function applyAutoMargin() {
+    const type   = document.getElementById('auto-type').value;
+    const target = document.getElementById('auto-target');
+    const out    = document.getElementById('auto-output');
+    const wrap   = target.parentElement;
+
+    wrap.style.display     = 'flex';
+    wrap.style.alignItems  = 'flex-start';
+    target.style.margin    = type;
+
+    const labels = {
+      '0 auto':       'margin: 0 auto → 水平中央揃え（width 必須）',
+      '0 0 0 auto':   'margin-left: auto → 右端に寄せる',
+      'auto 0 0 0':   'margin-top: auto → 下端に寄せる（flex コンテナ内）',
+      'auto':         'margin: auto → Flexbox 内で上下左右中央',
+    };
+
+    if (type === 'auto 0 0 0' || type === 'auto') {
+      wrap.style.alignItems = 'stretch';
+    }
+
+    out.style.color = '#b794f4';
+    out.textContent = labels[type] || `margin: ${type}`;
+  }
+
+  /* ===== display デモ ===== */
+  function applyDisplay() {
+    const val  = document.getElementById('display-val').value;
+    const area = document.getElementById('display-demo-area');
+    const out  = document.getElementById('display-output');
+    const items = area.querySelectorAll('[id^="dd-"]');
+
+    const colors = { block:'#553c9a', inline:'#2c7a7b', 'inline-block':'#744210',
+                     none:'#4a5568', flex:'#276749', grid:'#2b4c7e' };
+    const bg = colors[val] || '#553c9a';
+
+    items.forEach((el, i) => {
+      el.style.display     = val;
+      el.style.background  = bg;
+      el.style.color       = '#fff';
+      el.style.padding     = '8px 14px';
+      el.style.margin      = '4px';
+      el.style.borderRadius = '4px';
+      el.style.fontFamily  = "'Consolas','Monaco',monospace";
+      el.style.fontSize    = '0.88em';
+      el.style.width       = (val === 'block' || val === 'flex' || val === 'grid') ? '100%' : 'auto';
+      if (val === 'none' && i > 0) el.style.display = 'none';
+      if (val === 'none' && i === 0) {
+        el.style.display = 'block';
+        el.textContent = '（display: none → 他の要素は非表示）';
+      } else {
+        el.textContent = `要素${i + 1}（display: ${val}）`;
+      }
+    });
+
+    const descs = {
+      block:        'block：幅いっぱいに広がり、前後に改行が入ります',
+      inline:       'inline：テキストと同じ行に並びます。width/height は無効',
+      'inline-block':'inline-block：横並びで width/height が指定できます',
+      none:         'none：要素が非表示になりスペースも消えます',
+      flex:         'flex：Flexbox コンテナになります（子要素が横並び）',
+      grid:         'grid：Grid コンテナになります',
+    };
+
+    out.style.color = '#b794f4';
+    out.textContent = descs[val] || `display: ${val}`;
+  }
+
+  function resetDisplay() {
+    const area = document.getElementById('display-demo-area');
+    area.innerHTML = `
+      <div class="dd-inline-block" id="dd-1">要素1</div>
+      <div class="dd-inline-block" id="dd-2">要素2</div>
+      <div class="dd-inline-block" id="dd-3">要素3</div>
+    `;
+    document.getElementById('display-output').textContent =
+      '← display の値を選んで適用してみましょう';
+  }
+
+  /* ===== border デモ ===== */
+  function applyBorder() {
+    const width  = document.getElementById('border-width').value;
+    const style  = document.getElementById('border-style').value;
+    const color  = document.getElementById('border-color').value;
+    const radius = document.getElementById('border-radius-val').value;
+    const target = document.getElementById('border-target');
+    const out    = document.getElementById('border-output');
+
+    target.style.border       = `${width}px ${style} ${color}`;
+    target.style.borderRadius = radius + 'px';
+
+    out.style.color = '#b794f4';
+    out.textContent =
+      `.element {\n  border: ${width}px ${style} ${color};\n  border-radius: ${radius}px;\n}`;
+  }
+
+  /* ===== 完了ボタン ===== */
+  function markComplete() {
+    localStorage.setItem('html5lv2_ch2_02', 'done');
+    document.getElementById('complete-msg').style.display = 'block';
+  }
+  if (localStorage.getItem('html5lv2_ch2_02') === 'done') {
+    document.getElementById('complete-msg').style.display = 'block';
+  }
+</script>
+
+</body>
+</html>

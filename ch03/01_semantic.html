@@ -1,0 +1,1519 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>3-1 セマンティック HTML | HTML5プロフェッショナル Level 2</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; }
+    body {
+      font-family: 'Segoe UI', 'Helvetica Neue', sans-serif;
+      max-width: 960px; margin: 40px auto; padding: 0 24px;
+      background: #f0f4f8; color: #2d3748; line-height: 1.8;
+    }
+    .breadcrumb {
+      font-size: 0.82em; color: #a0aec0; margin-bottom: 20px;
+      font-family: 'Consolas','Monaco',monospace;
+    }
+    .breadcrumb a { color: #2b6cb0; text-decoration: none; }
+    .breadcrumb a:hover { text-decoration: underline; }
+
+    .chapter-header {
+      background: linear-gradient(135deg, #2b6cb0, #2c7a7b);
+      border-radius: 12px; padding: 32px 32px 24px;
+      margin-bottom: 32px; color: #fff;
+      box-shadow: 0 4px 18px rgba(43,108,176,0.35);
+    }
+    .chapter-header .ch-num {
+      font-size: 0.8em; font-family: 'Consolas','Monaco',monospace;
+      opacity: 0.85; letter-spacing: 0.08em; margin-bottom: 6px;
+    }
+    .chapter-header h1 {
+      margin: 0 0 10px; font-size: 1.6em; color: #fff; border: none; padding: 0;
+    }
+    .chapter-header p { margin: 0; font-size: 0.92em; opacity: 0.88; }
+    .badge-row { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 14px; }
+    .badge {
+      background: rgba(255,255,255,0.18);
+      border: 1px solid rgba(255,255,255,0.35);
+      border-radius: 20px; padding: 3px 12px;
+      font-size: 0.76em; font-weight: bold;
+    }
+
+    .section-nav {
+      background: #fff; border: 1px solid #bee3f8;
+      border-radius: 10px; padding: 18px 22px;
+      margin-bottom: 32px; box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+    }
+    .section-nav h2 {
+      margin: 0 0 12px; font-size: 0.92em; color: #2b6cb0; border: none; padding: 0;
+    }
+    .section-nav ol { margin: 0; padding-left: 20px; font-size: 0.9em; }
+    .section-nav ol li { margin: 4px 0; }
+    .section-nav ol li a { color: #2b6cb0; text-decoration: none; }
+    .section-nav ol li a:hover { text-decoration: underline; }
+    .section-nav ol li.current a { color: #1a365d; font-weight: bold; }
+
+    h2 {
+      color: #1a365d; margin-top: 48px;
+      border-left: 5px solid #4299e1; padding-left: 12px;
+    }
+    h3 { color: #2b6cb0; margin-top: 28px; }
+
+    code {
+      background: #ebf8ff; padding: 2px 6px;
+      border-radius: 4px; font-size: 0.93em;
+      font-family: 'Consolas','Monaco',monospace;
+      color: #2b6cb0;
+    }
+    pre {
+      background: #1a202c; color: #e2e8f0;
+      padding: 18px 20px; border-radius: 8px;
+      overflow-x: auto; font-size: 0.88em;
+      line-height: 1.7; font-family: 'Consolas','Monaco',monospace;
+    }
+    pre .comment  { color: #68d391; }
+    pre .tag      { color: #f6ad55; font-weight: bold; }
+    pre .attr     { color: #81e6d9; }
+    pre .val      { color: #fbd38d; }
+    pre .text     { color: #e2e8f0; }
+    pre .out      { color: #a0aec0; }
+
+    .pre-wrap { position: relative; margin: 14px 0; }
+    .copy-btn {
+      position: absolute; top: 8px; right: 8px;
+      background: #4a5568; color: #e2e8f0;
+      border: none; border-radius: 4px; padding: 4px 10px;
+      font-size: 0.75em; cursor: pointer;
+      font-family: 'Consolas','Monaco',monospace;
+      transition: background 0.2s; z-index: 1;
+    }
+    .copy-btn:hover { background: #4299e1; }
+
+    .note {
+      background: #fff; border: 1px dashed #90cdf4;
+      border-radius: 6px; padding: 14px 18px;
+      font-size: 0.93em; color: #4a5568; margin: 14px 0;
+    }
+    .note strong { color: #2b6cb0; }
+    .warn {
+      background: #fffaf0; border: 1px solid #f6ad55;
+      border-left: 5px solid #f6ad55; border-radius: 6px;
+      padding: 14px 18px; font-size: 0.93em; color: #744210; margin: 14px 0;
+    }
+    .good {
+      background: #f0fff4; border: 1px solid #68d391;
+      border-left: 5px solid #48bb78; border-radius: 6px;
+      padding: 14px 18px; font-size: 0.93em; color: #276749; margin: 14px 0;
+    }
+    .demo-box {
+      background: #fff; border: 1px solid #bee3f8;
+      border-radius: 8px; padding: 20px 24px;
+      margin: 12px 0 28px; box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+    }
+
+    /* ===== ページ構造ビジュアライザ ===== */
+    .page-visualizer {
+      background: #1a202c; border-radius: 12px;
+      padding: 20px; margin: 14px 0;
+    }
+    .pv-stage {
+      background: #0d1117; border-radius: 8px;
+      padding: 12px; font-family: 'Consolas','Monaco',monospace;
+      font-size: 0.8em;
+    }
+    .pv-element {
+      border-radius: 4px; padding: 6px 10px;
+      margin: 4px 0; cursor: pointer;
+      transition: all 0.2s; position: relative;
+      border: 2px solid transparent;
+    }
+    .pv-element:hover { filter: brightness(1.15); }
+    .pv-element.active { border-color: #f6ad55 !important; }
+    .pv-label {
+      font-weight: bold; font-size: 0.9em;
+    }
+    .pv-desc {
+      font-size: 0.78em; opacity: 0.75; margin-top: 2px;
+    }
+    .pv-children {
+      margin-left: 16px; border-left: 2px dashed rgba(255,255,255,0.15);
+      padding-left: 10px; margin-top: 4px;
+    }
+    /* 要素ごとの色 */
+    .pv-html    { background:#1e3a5f; color:#90cdf4; border-color:#2b6cb0 !important; }
+    .pv-head    { background:#1a3a2a; color:#68d391; }
+    .pv-body    { background:#2d2a1e; color:#fbd38d; }
+    .pv-header  { background:#2b4c7e; color:#bee3f8; }
+    .pv-nav     { background:#276749; color:#c6f6d5; }
+    .pv-main    { background:#553c9a; color:#e9d8fd; }
+    .pv-article { background:#6b46c1; color:#e9d8fd; }
+    .pv-section { background:#44337a; color:#d6bcfa; }
+    .pv-aside   { background:#744210; color:#fbd38d; }
+    .pv-footer  { background:#4a5568; color:#e2e8f0; }
+    .pv-h1      { background:#9b2335; color:#fed7d7; }
+    .pv-p       { background:#2d3748; color:#a0aec0; }
+
+    .pv-info {
+      margin-top: 12px; padding: 10px 14px;
+      background: #0d1117; border-radius: 6px;
+      font-family: 'Consolas','Monaco',monospace;
+      font-size: 0.82em; color: #68d391; line-height: 1.8;
+      white-space: pre-wrap; min-height: 60px;
+    }
+
+    /* ===== 要素カード ===== */
+    .element-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 12px; margin: 14px 0;
+    }
+    .element-card {
+      background: #1a202c; border-radius: 8px;
+      padding: 14px 16px; border: 2px solid #2d3748;
+      transition: border-color 0.2s;
+    }
+    .element-card:hover { border-color: #4299e1; }
+    .ec-tag {
+      display: inline-block;
+      background: #2b4c7e; color: #90cdf4;
+      border-radius: 4px; padding: 2px 8px;
+      font-family: 'Consolas','Monaco',monospace;
+      font-size: 0.82em; font-weight: bold;
+      margin-bottom: 6px;
+    }
+    .ec-title {
+      font-size: 0.9em; font-weight: bold;
+      color: #e2e8f0; margin-bottom: 4px;
+    }
+    .ec-desc {
+      font-size: 0.8em; color: #a0aec0; line-height: 1.6;
+    }
+    .ec-badge {
+      display: inline-block; border-radius: 4px;
+      padding: 1px 7px; font-size: 0.7em; font-weight: bold;
+      margin-top: 6px;
+    }
+    .ec-badge.hot  { background: #9b2335; color: #fed7d7; }
+    .ec-badge.new  { background: #276749; color: #c6f6d5; }
+    .ec-badge.dep  { background: #4a5568; color: #a0aec0; }
+
+    /* ===== 正誤比較 ===== */
+    .compare-grid {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 12px; margin: 14px 0;
+    }
+    .compare-bad  { border-left: 4px solid #fc8181; }
+    .compare-good { border-left: 4px solid #68d391; }
+    .compare-label {
+      font-size: 0.78em; font-weight: bold;
+      font-family: 'Consolas','Monaco',monospace;
+      margin-bottom: 6px; padding: 4px 8px;
+      border-radius: 4px;
+    }
+    .compare-bad  .compare-label { background: #fed7d7; color: #9b2335; }
+    .compare-good .compare-label { background: #c6f6d5; color: #276749; }
+
+    /* ===== アウトライン ビジュアライザ ===== */
+    .outline-demo {
+      background: #1a202c; border-radius: 10px;
+      padding: 16px 20px; margin: 14px 0;
+    }
+    .outline-tree {
+      font-family: 'Consolas','Monaco',monospace;
+      font-size: 0.85em; line-height: 2;
+    }
+    .ot-h1 { color: #f6ad55; font-weight: bold; }
+    .ot-h2 { color: #68d391; font-weight: bold; padding-left: 20px; }
+    .ot-h3 { color: #90cdf4; padding-left: 40px; }
+    .ot-h4 { color: #b794f4; padding-left: 60px; }
+
+    /* ===== インタラクティブデモ ===== */
+    .interactive-demo {
+      background: #f0f8ff; border: 1px solid #bee3f8;
+      border-radius: 8px; padding: 16px 20px; margin: 14px 0;
+    }
+    .demo-label {
+      font-size: 0.85em; font-weight: bold;
+      color: #2b6cb0; margin-bottom: 10px;
+    }
+    .demo-input-row {
+      display: flex; gap: 10px; align-items: center;
+      flex-wrap: wrap; margin-bottom: 10px;
+    }
+    .demo-input {
+      border: 2px solid #bee3f8; border-radius: 6px;
+      padding: 7px 12px; font-size: 0.9em;
+      font-family: 'Consolas','Monaco',monospace;
+      color: #2d3748; background: #fff; flex: 1; min-width: 80px;
+    }
+    .demo-input:focus { border-color: #4299e1; outline: none; }
+    .demo-btn {
+      background: #2b6cb0; color: #fff; border: none;
+      border-radius: 6px; padding: 8px 18px;
+      font-size: 0.88em; font-weight: bold; cursor: pointer;
+      transition: background 0.2s; white-space: nowrap;
+    }
+    .demo-btn:hover { background: #2c5282; }
+    .demo-output {
+      background: #1a202c; color: #90cdf4;
+      border-radius: 6px; padding: 10px 14px;
+      font-family: 'Consolas','Monaco',monospace;
+      font-size: 0.85em; min-height: 40px;
+      white-space: pre-wrap; line-height: 1.7;
+    }
+
+    /* ===== タブ ===== */
+    .tab-wrap { margin: 14px 0; }
+    .tab-btns { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: -1px; }
+    .tab-btn {
+      padding: 8px 18px; border: 1px solid #bee3f8;
+      border-bottom: none; border-radius: 6px 6px 0 0;
+      background: #ebf8ff; color: #2b6cb0;
+      font-size: 0.85em; font-weight: bold;
+      font-family: 'Consolas','Monaco',monospace;
+      cursor: pointer; transition: background 0.15s;
+    }
+    .tab-btn.active { background: #fff; border-bottom: 1px solid #fff; }
+    .tab-btn:hover:not(.active) { background: #bee3f8; }
+    .tab-content {
+      display: none; background: #fff;
+      border: 1px solid #bee3f8;
+      border-radius: 0 6px 6px 6px; padding: 18px 20px;
+    }
+    .tab-content.active { display: block; }
+
+    /* ===== テーブル ===== */
+    table.ref-table {
+      border-collapse: collapse; width: 100%;
+      background: #fff; border-radius: 8px;
+      overflow: hidden; box-shadow: 0 2px 6px rgba(0,0,0,0.07);
+      margin: 14px 0; font-size: 0.9em;
+    }
+    table.ref-table th, table.ref-table td {
+      border: 1px solid #bee3f8; padding: 10px 14px; text-align: left;
+    }
+    table.ref-table thead tr { background: #2b6cb0; color: #fff; }
+    table.ref-table tbody tr:nth-child(even) { background: #ebf8ff; }
+
+    /* ===== 演習問題 ===== */
+    .quiz-section {
+      background: #ebf8ff; border-left: 6px solid #4299e1;
+      border-radius: 0 8px 8px 0; padding: 24px 28px; margin: 48px 0 32px;
+    }
+    .quiz-section > h2 { margin-top: 0; color: #2b6cb0; border-left-color: #4299e1; }
+    .quiz-block {
+      background: #fff; border: 1px solid #bee3f8;
+      border-radius: 8px; padding: 18px 22px; margin-bottom: 22px;
+    }
+    .quiz-block h3 { margin-top: 0; color: #2b6cb0; }
+    .quiz-block input[type="text"],
+    .quiz-block select {
+      border: 2px solid #bee3f8; border-radius: 6px;
+      padding: 8px 12px; font-size: 0.95em;
+      width: 100%; max-width: 440px; margin: 6px 0;
+      outline: none; font-family: 'Consolas','Monaco',monospace;
+      transition: border-color 0.2s;
+    }
+    .quiz-block input[type="text"]:focus,
+    .quiz-block select:focus { border-color: #4299e1; }
+    .quiz-block label { display: block; margin: 8px 0 2px; font-weight: bold; color: #4a5568; }
+    .quiz-block label.checkbox-label {
+      display: flex; align-items: flex-start; gap: 8px;
+      font-weight: normal; cursor: pointer; margin: 6px 0;
+    }
+    .quiz-block label.checkbox-label input { margin-top: 3px; flex-shrink: 0; }
+    .btn {
+      display: inline-block; padding: 9px 20px;
+      border-radius: 6px; border: none; cursor: pointer;
+      font-size: 0.95em; font-weight: bold;
+      transition: opacity 0.2s; margin-top: 8px;
+    }
+    .btn:hover { opacity: 0.85; }
+    .btn-blue { background: #2b6cb0; color: #fff; }
+    .btn-done { background: #48bb78; color: #fff; }
+    .result-msg {
+      margin-top: 10px; padding: 10px 14px;
+      border-radius: 6px; font-weight: bold; display: none;
+    }
+    .result-msg.correct { background: #c6f6d5; color: #276749; display: block; }
+    .result-msg.wrong   { background: #fed7d7; color: #9b2335; display: block; }
+    .result-msg.info    { background: #bee3f8; color: #2b6cb0; display: block; }
+
+    .page-nav {
+      display: flex; justify-content: space-between;
+      align-items: center; margin-top: 48px;
+      padding-top: 20px; border-top: 2px solid #bee3f8;
+      gap: 12px; flex-wrap: wrap;
+    }
+    .page-nav a {
+      display: inline-block; padding: 10px 20px;
+      border-radius: 8px; text-decoration: none;
+      font-weight: bold; font-size: 0.9em; transition: opacity 0.2s;
+    }
+    .page-nav a:hover { opacity: 0.8; }
+    .page-nav .prev { background: #edf2f7; color: #4a5568; }
+    .page-nav .next { background: #2b6cb0; color: #fff; }
+    .page-nav .home { background: #fff; color: #2b6cb0; border: 2px solid #2b6cb0; }
+
+    .complete-section {
+      background: #f0fff4; border: 2px solid #48bb78;
+      border-radius: 10px; padding: 20px 24px;
+      margin-top: 40px; text-align: center;
+    }
+    .complete-section p { margin: 0 0 12px; color: #276749; font-weight: bold; }
+
+    footer {
+      margin-top: 48px; padding-top: 16px;
+      border-top: 2px solid #bee3f8;
+      font-size: 0.82em; color: #a0aec0; text-align: center;
+    }
+    footer a { color: #2b6cb0; text-decoration: none; }
+    footer a:hover { text-decoration: underline; }
+
+    @media (max-width: 600px) {
+      body { font-size: 0.84em; }
+      .chapter-header { padding: 20px 16px; }
+      .chapter-header h1 { font-size: 1.2em; }
+      .compare-grid { grid-template-columns: 1fr; }
+      .element-grid { grid-template-columns: 1fr; }
+      .quiz-section { padding: 16px 12px; }
+      .quiz-block { padding: 14px 12px; }
+      .page-nav { flex-direction: column; align-items: stretch; }
+      .page-nav a { text-align: center; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- パンくず -->
+<div class="breadcrumb">
+  <a href="../index.html">🏠 HTML5 Level 2</a> ›
+  <a href="index.html">Chapter 3：HTML要素と構造</a> ›
+  3-1 セマンティック HTML
+</div>
+
+<!-- ヘッダー -->
+<div class="chapter-header">
+  <div class="ch-num">CHAPTER 03 › SECTION 01</div>
+  <h1>🏛️ 3-1 セマンティック HTML</h1>
+  <p>HTML5 のセマンティック要素は「意味のある」タグを使って
+  文書構造を明確にします。
+  SEO・アクセシビリティ・保守性の向上に直結する
+  最重要トピックです。</p>
+  <div class="badge-row">
+    <span class="badge">header</span>
+    <span class="badge">main</span>
+    <span class="badge">footer</span>
+    <span class="badge">article</span>
+    <span class="badge">section</span>
+    <span class="badge">nav</span>
+    <span class="badge">aside</span>
+    <span class="badge">figure</span>
+  </div>
+</div>
+
+<!-- セクションナビ -->
+<div class="section-nav">
+  <h2>📋 Chapter 3 のセクション</h2>
+  <ol>
+    <li class="current"><a href="01_semantic.html">3-1 セマンティック HTML</a></li>
+    <li><a href="02_forms.html">3-2 フォーム要素</a></li>
+    <li><a href="03_tables.html">3-3 テーブル</a></li>
+    <li><a href="04_media.html">3-4 メディア要素</a></li>
+    <li><a href="05_links.html">3-5 リンクとナビゲーション</a></li>
+    <li><a href="06_aria.html">3-6 ARIA とアクセシビリティ</a></li>
+    <li><a href="07_metadata.html">3-7 メタデータと head</a></li>
+    <li><a href="08_advanced.html">3-8 HTML応用・試験対策</a></li>
+  </ol>
+</div>
+
+
+<!-- ============================================================ -->
+<!-- PART 1: セマンティック HTML とは -->
+<!-- ============================================================ -->
+<h2 id="what">① セマンティック HTML とは</h2>
+
+<div class="note">
+  <strong>重要ポイント：セマンティック（Semantic）とは「意味のある」という意味です。
+  <code>&lt;div&gt;</code> や <code>&lt;span&gt;</code> は汎用要素で意味を持ちませんが、
+  <code>&lt;header&gt;</code> や <code>&lt;article&gt;</code> は
+  コンテンツの役割を明示します。</strong>
+</div>
+
+<div class="demo-box">
+  <div class="compare-grid">
+    <div class="compare-bad">
+      <div class="compare-label">❌ 非セマンティック（div スープ）</div>
+      <pre style="margin:0; font-size:0.82em;">
+<span class="tag">&lt;div</span> <span class="attr">class</span>=<span class="val">"header"</span><span class="tag">&gt;</span>
+  <span class="tag">&lt;div</span> <span class="attr">class</span>=<span class="val">"nav"</span><span class="tag">&gt;</span>...<span class="tag">&lt;/div&gt;</span>
+<span class="tag">&lt;/div&gt;</span>
+<span class="tag">&lt;div</span> <span class="attr">class</span>=<span class="val">"main"</span><span class="tag">&gt;</span>
+  <span class="tag">&lt;div</span> <span class="attr">class</span>=<span class="val">"article"</span><span class="tag">&gt;</span>
+    <span class="tag">&lt;div</span> <span class="attr">class</span>=<span class="val">"title"</span><span class="tag">&gt;</span>見出し<span class="tag">&lt;/div&gt;</span>
+    <span class="tag">&lt;div</span> <span class="attr">class</span>=<span class="val">"content"</span><span class="tag">&gt;</span>本文<span class="tag">&lt;/div&gt;</span>
+  <span class="tag">&lt;/div&gt;</span>
+<span class="tag">&lt;/div&gt;</span>
+<span class="tag">&lt;div</span> <span class="attr">class</span>=<span class="val">"footer"</span><span class="tag">&gt;</span>...<span class="tag">&lt;/div&gt;</span></pre>
+    </div>
+    <div class="compare-good">
+      <div class="compare-label">✅ セマンティック HTML</div>
+      <pre style="margin:0; font-size:0.82em;">
+<span class="tag">&lt;header&gt;</span>
+  <span class="tag">&lt;nav&gt;</span>...<span class="tag">&lt;/nav&gt;</span>
+<span class="tag">&lt;/header&gt;</span>
+<span class="tag">&lt;main&gt;</span>
+  <span class="tag">&lt;article&gt;</span>
+    <span class="tag">&lt;h1&gt;</span>見出し<span class="tag">&lt;/h1&gt;</span>
+    <span class="tag">&lt;p&gt;</span>本文<span class="tag">&lt;/p&gt;</span>
+  <span class="tag">&lt;/article&gt;</span>
+<span class="tag">&lt;/main&gt;</span>
+<span class="tag">&lt;footer&gt;</span>...<span class="tag">&lt;/footer&gt;</span></pre>
+    </div>
+  </div>
+
+  <div class="good">
+    <strong>💡 セマンティック HTML のメリット：</strong><br>
+    ・<strong>アクセシビリティ</strong>：スクリーンリーダーが構造を正しく読み上げる<br>
+    ・<strong>SEO</strong>：検索エンジンがコンテンツの重要度を正しく判断できる<br>
+    ・<strong>保守性</strong>：コードの意図が明確で読みやすい<br>
+    ・<strong>スタイリング</strong>：CSS セレクタが簡潔になる
+  </div>
+</div>
+
+
+<!-- ============================================================ -->
+<!-- PART 2: ページ構造ビジュアライザ -->
+<!-- ============================================================ -->
+<h2 id="structure">② ページ構造ビジュアライザ</h2>
+
+<div class="demo-box">
+  <h3>🎮 セマンティック要素の配置を確認しよう</h3>
+  <div class="page-visualizer">
+    <div style="color:#a0aec0; font-size:0.78em;
+                font-family:'Consolas','Monaco',monospace; margin-bottom:10px;">
+      // クリックして各要素の説明を確認しましょう
+    </div>
+    <div class="pv-stage" id="pv-stage">
+
+      <div class="pv-element pv-html" onclick="showPvInfo('html')">
+        <div class="pv-label">&lt;html lang="ja"&gt;</div>
+        <div class="pv-children">
+
+          <div class="pv-element pv-head" onclick="showPvInfo('head'); event.stopPropagation()">
+            <div class="pv-label">&lt;head&gt;</div>
+            <div class="pv-desc">meta・title・link・script など</div>
+          </div>
+
+          <div class="pv-element pv-body" onclick="showPvInfo('body'); event.stopPropagation()">
+            <div class="pv-label">&lt;body&gt;</div>
+            <div class="pv-children">
+
+              <div class="pv-element pv-header" onclick="showPvInfo('header'); event.stopPropagation()">
+                <div class="pv-label">&lt;header&gt;</div>
+                <div class="pv-children">
+                  <div class="pv-element pv-nav" onclick="showPvInfo('nav'); event.stopPropagation()">
+                    <div class="pv-label">&lt;nav&gt;</div>
+                    <div class="pv-desc">ナビゲーションリンク</div>
+                  </div>
+                </div>
+              </div>
+
+              <div style="display:flex; gap:8px;">
+                <div style="flex:1;">
+                  <div class="pv-element pv-main" onclick="showPvInfo('main'); event.stopPropagation()">
+                    <div class="pv-label">&lt;main&gt;</div>
+                    <div class="pv-children">
+
+                      <div class="pv-element pv-article" onclick="showPvInfo('article'); event.stopPropagation()">
+                        <div class="pv-label">&lt;article&gt;</div>
+                        <div class="pv-children">
+                          <div class="pv-element pv-h1" onclick="showPvInfo('h1'); event.stopPropagation()">
+                            <div class="pv-label">&lt;h1&gt; 記事タイトル</div>
+                          </div>
+                          <div class="pv-element pv-section" onclick="showPvInfo('section'); event.stopPropagation()">
+                            <div class="pv-label">&lt;section&gt;</div>
+                            <div class="pv-desc">セクション1</div>
+                          </div>
+                          <div class="pv-element pv-section" onclick="showPvInfo('section'); event.stopPropagation()">
+                            <div class="pv-label">&lt;section&gt;</div>
+                            <div class="pv-desc">セクション2</div>
+                          </div>
+                        </div>
+                      </div>
+
+                    </div>
+                  </div>
+                </div>
+                <div style="width:120px;">
+                  <div class="pv-element pv-aside" onclick="showPvInfo('aside'); event.stopPropagation()">
+                    <div class="pv-label">&lt;aside&gt;</div>
+                    <div class="pv-desc">サイドバー</div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="pv-element pv-footer" onclick="showPvInfo('footer'); event.stopPropagation()">
+                <div class="pv-label">&lt;footer&gt;</div>
+                <div class="pv-desc">著作権・リンクなど</div>
+              </div>
+
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+    <div class="pv-info" id="pv-info">← 要素をクリックして説明を確認しましょう</div>
+  </div>
+</div>
+
+
+<!-- ============================================================ -->
+<!-- PART 3: 主要セマンティック要素 -->
+<!-- ============================================================ -->
+<h2 id="elements">③ 主要セマンティック要素</h2>
+
+<div class="demo-box">
+  <div class="element-grid">
+
+    <div class="element-card">
+      <div class="ec-tag">&lt;header&gt;</div>
+      <div class="ec-title">ヘッダー</div>
+      <div class="ec-desc">
+        ページまたはセクションの導入部。
+        ロゴ・タイトル・ナビゲーションを含む。
+        ページに複数配置可能（article 内など）。
+      </div>
+      <span class="ec-badge hot">超頻出</span>
+    </div>
+
+    <div class="element-card">
+      <div class="ec-tag">&lt;nav&gt;</div>
+      <div class="ec-title">ナビゲーション</div>
+      <div class="ec-desc">
+        主要なナビゲーションリンクのグループ。
+        全てのリンクグループに使う必要はない。
+        ページ内に複数配置可（aria-label で区別）。
+      </div>
+      <span class="ec-badge hot">超頻出</span>
+    </div>
+
+    <div class="element-card">
+      <div class="ec-tag">&lt;main&gt;</div>
+      <div class="ec-title">メインコンテンツ</div>
+      <div class="ec-desc">
+        ページの主要コンテンツ。
+        <strong>1ページに1つだけ</strong>。
+        header・footer・nav・aside の中には置かない。
+      </div>
+      <span class="ec-badge hot">超頻出</span>
+    </div>
+
+    <div class="element-card">
+      <div class="ec-tag">&lt;article&gt;</div>
+      <div class="ec-title">記事・独立コンテンツ</div>
+      <div class="ec-desc">
+        それ単体で完結する独立したコンテンツ。
+        ブログ記事・ニュース記事・コメント・ウィジェット。
+        article の中に article を入れることも可能。
+      </div>
+      <span class="ec-badge hot">超頻出</span>
+    </div>
+
+    <div class="element-card">
+      <div class="ec-tag">&lt;section&gt;</div>
+      <div class="ec-title">セクション</div>
+      <div class="ec-desc">
+        テーマ的にまとまったコンテンツのグループ。
+        通常は見出し（h1〜h6）を持つ。
+        汎用グループ化には div を使う。
+      </div>
+      <span class="ec-badge hot">超頻出</span>
+    </div>
+
+    <div class="element-card">
+      <div class="ec-tag">&lt;aside&gt;</div>
+      <div class="ec-title">補足コンテンツ</div>
+      <div class="ec-desc">
+        メインコンテンツに関連するが独立した補足情報。
+        サイドバー・関連リンク・広告・引用など。
+      </div>
+      <span class="ec-badge new">標準</span>
+    </div>
+
+    <div class="element-card">
+      <div class="ec-tag">&lt;footer&gt;</div>
+      <div class="ec-title">フッター</div>
+      <div class="ec-desc">
+        ページまたはセクションのフッター。
+        著作権・連絡先・関連リンクなど。
+        article や section の中にも配置可能。
+      </div>
+      <span class="ec-badge new">標準</span>
+    </div>
+
+    <div class="element-card">
+      <div class="ec-tag">&lt;figure&gt;</div>
+      <div class="ec-title">図・画像のグループ</div>
+      <div class="ec-desc">
+        画像・図表・コードなど本文から参照されるコンテンツ。
+        <code>&lt;figcaption&gt;</code> でキャプションを付ける。
+      </div>
+      <span class="ec-badge new">標準</span>
+    </div>
+
+    <div class="element-card">
+      <div class="ec-tag">&lt;time&gt;</div>
+      <div class="ec-title">日時</div>
+      <div class="ec-desc">
+        機械可読な日時情報。
+        <code>datetime</code> 属性に ISO 8601 形式で指定。
+        例：<code>&lt;time datetime="2026-06-27"&gt;</code>
+      </div>
+      <span class="ec-badge new">標準</span>
+    </div>
+
+    <div class="element-card">
+      <div class="ec-tag">&lt;address&gt;</div>
+      <div class="ec-title">連絡先情報</div>
+      <div class="ec-desc">
+        最も近い article または body の
+        連絡先情報を表す。
+        物理的な住所だけでなくメール・SNS も含む。
+      </div>
+      <span class="ec-badge new">標準</span>
+    </div>
+
+    <div class="element-card">
+      <div class="ec-tag">&lt;mark&gt;</div>
+      <div class="ec-title">ハイライト</div>
+      <div class="ec-desc">
+        参照・検索結果のハイライトなど
+        関連性のある部分を強調。
+        装飾目的には使わない（CSS を使う）。
+      </div>
+      <span class="ec-badge new">標準</span>
+    </div>
+
+    <div class="element-card">
+      <div class="ec-tag">&lt;details&gt; / &lt;summary&gt;</div>
+      <div class="ec-title">開閉式コンテンツ</div>
+      <div class="ec-desc">
+        JavaScript なしで開閉できる折りたたみ UI。
+        <code>open</code> 属性で初期状態を開いた状態にできる。
+      </div>
+      <span class="ec-badge new">HTML5</span>
+    </div>
+
+  </div>
+</div>
+
+
+<!-- ============================================================ -->
+<!-- PART 4: article vs section vs div -->
+<!-- ============================================================ -->
+<h2 id="article-section">④ article / section / div の使い分け</h2>
+
+<div class="note">
+  <strong>重要ポイント：試験で最も問われる使い分けです。
+  「単体で意味をなすか」→ article、
+  「見出しを持つグループか」→ section、
+  「それ以外のグループ化」→ div と覚えましょう。</strong>
+</div>
+
+<div class="demo-box">
+  <table class="ref-table">
+    <thead>
+      <tr><th>要素</th><th>使う条件</th><th>典型的な用途</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><code>&lt;article&gt;</code></td>
+        <td>単体で完結・RSS 配信できる・再利用可能</td>
+        <td>ブログ記事・ニュース・コメント・商品カード</td>
+      </tr>
+      <tr>
+        <td><code>&lt;section&gt;</code></td>
+        <td>テーマ的にまとまり・見出しを持つ</td>
+        <td>章・タブパネル・ページのセクション</td>
+      </tr>
+      <tr>
+        <td><code>&lt;div&gt;</code></td>
+        <td>意味的な区切りが不要・スタイリング目的</td>
+        <td>レイアウト用コンテナ・ラッパー</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="tab-wrap">
+    <div class="tab-btns">
+      <button class="tab-btn active" onclick="switchTab(this,'tab-article-ex')">article の例</button>
+      <button class="tab-btn"        onclick="switchTab(this,'tab-section-ex')">section の例</button>
+      <button class="tab-btn"        onclick="switchTab(this,'tab-nesting')">ネスト構造</button>
+    </div>
+
+    <div class="tab-content active" id="tab-article-ex">
+      <h3 style="margin-top:0; color:#2b6cb0;">article の正しい使い方</h3>
+      <div class="pre-wrap">
+        <button class="copy-btn" onclick="copyPre(this)">copy</button>
+<pre>
+<span class="comment">&lt;!-- ブログ記事リスト --&gt;</span>
+<span class="tag">&lt;main&gt;</span>
+  <span class="tag">&lt;h1&gt;</span>最新記事<span class="tag">&lt;/h1&gt;</span>
+
+  <span class="tag">&lt;article&gt;</span>
+    <span class="tag">&lt;header&gt;</span>
+      <span class="tag">&lt;h2&gt;</span>記事タイトル 1<span class="tag">&lt;/h2&gt;</span>
+      <span class="tag">&lt;time</span> <span class="attr">datetime</span>=<span class="val">"2026-06-27"</span><span class="tag">&gt;</span>2026年6月27日<span class="tag">&lt;/time&gt;</span>
+    <span class="tag">&lt;/header&gt;</span>
+    <span class="tag">&lt;p&gt;</span>記事の本文...<span class="tag">&lt;/p&gt;</span>
+    <span class="tag">&lt;footer&gt;</span>
+      <span class="tag">&lt;address&gt;</span>著者：山田太郎<span class="tag">&lt;/address&gt;</span>
+    <span class="tag">&lt;/footer&gt;</span>
+  <span class="tag">&lt;/article&gt;</span>
+
+  <span class="tag">&lt;article&gt;</span>
+    <span class="tag">&lt;h2&gt;</span>記事タイトル 2<span class="tag">&lt;/h2&gt;</span>
+    <span class="tag">&lt;p&gt;</span>記事の本文...<span class="tag">&lt;/p&gt;</span>
+  <span class="tag">&lt;/article&gt;</span>
+
+<span class="tag">&lt;/main&gt;</span>
+</pre>
+      </div>
+    </div>
+
+    <div class="tab-content" id="tab-section-ex">
+      <h3 style="margin-top:0; color:#2b6cb0;">section の正しい使い方</h3>
+      <div class="pre-wrap">
+        <button class="copy-btn" onclick="copyPre(this)">copy</button>
+<pre>
+<span class="comment">&lt;!-- 製品紹介ページ --&gt;</span>
+<span class="tag">&lt;main&gt;</span>
+  <span class="tag">&lt;h1&gt;</span>製品紹介<span class="tag">&lt;/h1&gt;</span>
+
+  <span class="tag">&lt;section&gt;</span>
+    <span class="tag">&lt;h2&gt;</span>特徴<span class="tag">&lt;/h2&gt;</span>  <span class="comment">&lt;!-- section は見出しを持つ --&gt;</span>
+    <span class="tag">&lt;p&gt;</span>この製品の特徴は...<span class="tag">&lt;/p&gt;</span>
+  <span class="tag">&lt;/section&gt;</span>
+
+  <span class="tag">&lt;section&gt;</span>
+    <span class="tag">&lt;h2&gt;</span>仕様<span class="tag">&lt;/h2&gt;</span>
+    <span class="tag">&lt;table&gt;</span>...<span class="tag">&lt;/table&gt;</span>
+  <span class="tag">&lt;/section&gt;</span>
+
+  <span class="tag">&lt;section&gt;</span>
+    <span class="tag">&lt;h2&gt;</span>レビュー<span class="tag">&lt;/h2&gt;</span>
+    <span class="comment">&lt;!-- section の中に article --&gt;</span>
+    <span class="tag">&lt;article&gt;</span>
+      <span class="tag">&lt;h3&gt;</span>ユーザーレビュー 1<span class="tag">&lt;/h3&gt;</span>
+      <span class="tag">&lt;p&gt;</span>とても良い製品です<span class="tag">&lt;/p&gt;</span>
+    <span class="tag">&lt;/article&gt;</span>
+  <span class="tag">&lt;/section&gt;</span>
+
+<span class="tag">&lt;/main&gt;</span>
+</pre>
+      </div>
+    </div>
+
+    <div class="tab-content" id="tab-nesting">
+      <h3 style="margin-top:0; color:#2b6cb0;">セマンティック要素のネスト構造</h3>
+      <div class="pre-wrap">
+        <button class="copy-btn" onclick="copyPre(this)">copy</button>
+<pre>
+<span class="comment">&lt;!-- 典型的なページ構造 --&gt;</span>
+<span class="tag">&lt;body&gt;</span>
+
+  <span class="tag">&lt;header&gt;</span>               <span class="comment">&lt;!-- ページヘッダー --&gt;</span>
+    <span class="tag">&lt;nav&gt;</span>                  <span class="comment">&lt;!-- メインナビ --&gt;</span>
+      <span class="tag">&lt;ul&gt;</span>
+        <span class="tag">&lt;li&gt;&lt;a</span> <span class="attr">href</span>=<span class="val">"/"</span><span class="tag">&gt;</span>ホーム<span class="tag">&lt;/a&gt;&lt;/li&gt;</span>
+      <span class="tag">&lt;/ul&gt;</span>
+    <span class="tag">&lt;/nav&gt;</span>
+  <span class="tag">&lt;/header&gt;</span>
+
+  <span class="tag">&lt;main&gt;</span>                 <span class="comment">&lt;!-- 1ページに1つ --&gt;</span>
+
+    <span class="tag">&lt;article&gt;</span>            <span class="comment">&lt;!-- 独立したコンテンツ --&gt;</span>
+      <span class="tag">&lt;h1&gt;</span>記事タイトル<span class="tag">&lt;/h1&gt;</span>
+
+      <span class="tag">&lt;section&gt;</span>          <span class="comment">&lt;!-- 章 --&gt;</span>
+        <span class="tag">&lt;h2&gt;</span>第1章<span class="tag">&lt;/h2&gt;</span>
+        <span class="tag">&lt;p&gt;</span>本文...<span class="tag">&lt;/p&gt;</span>
+
+        <span class="tag">&lt;figure&gt;</span>         <span class="comment">&lt;!-- 図 --&gt;</span>
+          <span class="tag">&lt;img</span> <span class="attr">src</span>=<span class="val">"chart.png"</span> <span class="attr">alt</span>=<span class="val">"グラフ"</span><span class="tag">&gt;</span>
+          <span class="tag">&lt;figcaption&gt;</span>図1：グラフ<span class="tag">&lt;/figcaption&gt;</span>
+        <span class="tag">&lt;/figure&gt;</span>
+
+      <span class="tag">&lt;/section&gt;</span>
+
+    <span class="tag">&lt;/article&gt;</span>
+
+    <span class="tag">&lt;aside&gt;</span>              <span class="comment">&lt;!-- サイドバー --&gt;</span>
+      <span class="tag">&lt;h2&gt;</span>関連記事<span class="tag">&lt;/h2&gt;</span>
+    <span class="tag">&lt;/aside&gt;</span>
+
+  <span class="tag">&lt;/main&gt;</span>
+
+  <span class="tag">&lt;footer&gt;</span>              <span class="comment">&lt;!-- ページフッター --&gt;</span>
+    <span class="tag">&lt;p&gt;</span>&amp;copy; 2026 MyApp<span class="tag">&lt;/p&gt;</span>
+  <span class="tag">&lt;/footer&gt;</span>
+
+<span class="tag">&lt;/body&gt;</span>
+</pre>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ============================================================ -->
+<!-- PART 5: 見出し階層とアウトライン -->
+<!-- ============================================================ -->
+<h2 id="headings">⑤ 見出し階層とドキュメントアウトライン</h2>
+
+<div class="note">
+  <strong>重要ポイント：見出し（h1〜h6）は
+  スキップせずに階層順に使います。
+  <code>h1</code> はページに1つ（または article ごとに1つ）が推奨です。
+  見出し階層がアクセシビリティとSEOに直結します。</strong>
+</div>
+
+<div class="demo-box">
+  <h3>🎮 ドキュメントアウトライン ビジュアライザ</h3>
+  <div class="interactive-demo">
+    <div class="demo-label">見出し構造を入力してアウトラインを確認しよう</div>
+    <div style="margin-bottom:10px;">
+      <textarea id="heading-input"
+                style="width:100%; height:120px; background:#1a202c; color:#fbd38d;
+                       border:1px solid #4a5568; border-radius:6px; padding:10px;
+                       font-family:'Consolas','Monaco',monospace; font-size:0.85em;
+                       resize:vertical; outline:none; line-height:1.6;"
+                oninput="updateOutline()"
+>h1: ブログ記事タイトル
+  h2: はじめに
+  h2: 本論
+    h3: 背景
+    h3: 詳細
+      h4: ポイント1
+  h2: まとめ</textarea>
+    </div>
+    <div class="outline-demo">
+      <div class="outline-tree" id="outline-tree">
+        <!-- JS で生成 -->
+      </div>
+    </div>
+    <div class="demo-output" id="outline-output" style="margin-top:8px; color:#90cdf4;">
+      ← テキストエリアを編集してアウトラインを確認しましょう
+    </div>
+  </div>
+
+  <div class="compare-grid" style="margin-top:16px;">
+    <div class="compare-bad">
+      <div class="compare-label">❌ 見出し階層のNG例</div>
+      <pre style="margin:0; font-size:0.82em;">
+<span class="tag">&lt;h1&gt;</span>ページタイトル<span class="tag">&lt;/h1&gt;</span>
+<span class="tag">&lt;h3&gt;</span>セクション<span class="tag">&lt;/h3&gt;</span>  <span class="comment">&lt;!-- h2 をスキップ ❌ --&gt;</span>
+<span class="tag">&lt;h5&gt;</span>サブセクション<span class="tag">&lt;/h5&gt;</span> <span class="comment">&lt;!-- h4 をスキップ ❌ --&gt;</span>
+<span class="tag">&lt;h2&gt;</span>別のセクション<span class="tag">&lt;/h2&gt;</span> <span class="comment">&lt;!-- 逆順 ❌ --&gt;</span></pre>
+    </div>
+    <div class="compare-good">
+      <div class="compare-label">✅ 見出し階層のOK例</div>
+      <pre style="margin:0; font-size:0.82em;">
+<span class="tag">&lt;h1&gt;</span>ページタイトル<span class="tag">&lt;/h1&gt;</span>
+<span class="tag">&lt;h2&gt;</span>セクション 1<span class="tag">&lt;/h2&gt;</span>
+  <span class="tag">&lt;h3&gt;</span>サブセクション<span class="tag">&lt;/h3&gt;</span>
+<span class="tag">&lt;h2&gt;</span>セクション 2<span class="tag">&lt;/h2&gt;</span>
+  <span class="tag">&lt;h3&gt;</span>サブセクション<span class="tag">&lt;/h3&gt;</span></pre>
+    </div>
+  </div>
+
+  <div class="pre-wrap">
+    <button class="copy-btn" onclick="copyPre(this)">copy</button>
+<pre>
+<span class="comment">&lt;!-- 見出しのルール --&gt;</span>
+
+<span class="comment">&lt;!-- h1 はページに1つが推奨 --&gt;</span>
+<span class="tag">&lt;h1&gt;</span>ページのメインタイトル<span class="tag">&lt;/h1&gt;</span>
+
+<span class="comment">&lt;!-- article 内では h1 から始めることも可 --&gt;</span>
+<span class="tag">&lt;article&gt;</span>
+  <span class="tag">&lt;h1&gt;</span>記事タイトル<span class="tag">&lt;/h1&gt;</span>  <span class="comment">&lt;!-- article スコープの h1 --&gt;</span>
+  <span class="tag">&lt;section&gt;</span>
+    <span class="tag">&lt;h2&gt;</span>セクション見出し<span class="tag">&lt;/h2&gt;</span>
+  <span class="tag">&lt;/section&gt;</span>
+<span class="tag">&lt;/article&gt;</span>
+
+<span class="comment">&lt;!-- 見出しはスタイリング目的で選ばない --&gt;</span>
+<span class="comment">&lt;!-- 大きくしたいだけなら CSS を使う --&gt;</span>
+<span class="tag">&lt;p</span> <span class="attr">class</span>=<span class="val">"large-text"</span><span class="tag">&gt;</span>大きなテキスト<span class="tag">&lt;/p&gt;</span>  <span class="comment">&lt;!-- ✅ --&gt;</span>
+<span class="tag">&lt;h3&gt;</span>大きなテキスト<span class="tag">&lt;/h3&gt;</span>  <span class="comment">&lt;!-- ❌ 意味なく h3 を使う --&gt;</span>
+</pre>
+  </div>
+</div>
+
+
+<!-- ============================================================ -->
+<!-- PART 6: インライン セマンティック要素 -->
+<!-- ============================================================ -->
+<h2 id="inline">⑥ インライン セマンティック要素</h2>
+
+<div class="demo-box">
+  <table class="ref-table">
+    <thead>
+      <tr><th>要素</th><th>意味</th><th>デフォルト表示</th><th>注意点</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><code>&lt;strong&gt;</code></td>
+        <td>重要性・緊急性</td>
+        <td>太字</td>
+        <td>スクリーンリーダーが強調して読む</td>
+      </tr>
+      <tr>
+        <td><code>&lt;em&gt;</code></td>
+        <td>強調（アクセント）</td>
+        <td>斜体</td>
+        <td>文章の意味が変わる強調に使う</td>
+      </tr>
+      <tr>
+        <td><code>&lt;b&gt;</code></td>
+        <td>意味的な重要性なし</td>
+        <td>太字</td>
+        <td>キーワード・製品名など装飾的な太字</td>
+      </tr>
+      <tr>
+        <td><code>&lt;i&gt;</code></td>
+        <td>意味的な強調なし</td>
+        <td>斜体</td>
+        <td>専門用語・外国語・アイコンフォント</td>
+      </tr>
+      <tr>
+        <td><code>&lt;small&gt;</code></td>
+        <td>細則・注釈</td>
+        <td>小さい文字</td>
+        <td>著作権・免責事項など</td>
+      </tr>
+      <tr>
+        <td><code>&lt;abbr&gt;</code></td>
+        <td>略語</td>
+        <td>点線下線</td>
+        <td><code>title</code> 属性で完全な表記を提供</td>
+      </tr>
+      <tr>
+        <td><code>&lt;cite&gt;</code></td>
+        <td>作品のタイトル</td>
+        <td>斜体</td>
+        <td>書籍・映画・論文などの引用元</td>
+      </tr>
+      <tr>
+        <td><code>&lt;q&gt;</code></td>
+        <td>短い引用</td>
+        <td>引用符付き</td>
+        <td>長い引用には <code>&lt;blockquote&gt;</code></td>
+      </tr>
+      <tr>
+        <td><code>&lt;code&gt;</code></td>
+        <td>コードフラグメント</td>
+        <td>等幅フォント</td>
+        <td>インラインコード。複数行は <code>&lt;pre&gt;</code> と組み合わせ</td>
+      </tr>
+      <tr>
+        <td><code>&lt;kbd&gt;</code></td>
+        <td>キーボード入力</td>
+        <td>等幅フォント</td>
+        <td>例：<kbd>Ctrl</kbd> + <kbd>C</kbd></td>
+      </tr>
+      <tr>
+        <td><code>&lt;del&gt;</code> / <code>&lt;ins&gt;</code></td>
+        <td>削除 / 挿入</td>
+        <td>取り消し線 / 下線</td>
+        <td>文書の変更履歴を示す</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="pre-wrap">
+    <button class="copy-btn" onclick="copyPre(this)">copy</button>
+<pre>
+<span class="comment">&lt;!-- strong vs b / em vs i --&gt;</span>
+
+<span class="comment">&lt;!-- strong：重要性・緊急性 --&gt;</span>
+<span class="tag">&lt;p&gt;</span><span class="tag">&lt;strong&gt;</span>警告：<span class="tag">&lt;/strong&gt;</span>このファイルを削除すると元に戻せません。<span class="tag">&lt;/p&gt;</span>
+
+<span class="comment">&lt;!-- em：文章のアクセント --&gt;</span>
+<span class="tag">&lt;p&gt;</span>私は<span class="tag">&lt;em&gt;</span>猫<span class="tag">&lt;/em&gt;</span>が好きです（犬ではなく）。<span class="tag">&lt;/p&gt;</span>
+
+<span class="comment">&lt;!-- abbr：略語 --&gt;</span>
+<span class="tag">&lt;p&gt;</span><span class="tag">&lt;abbr</span> <span class="attr">title</span>=<span class="val">"HyperText Markup Language"</span><span class="tag">&gt;</span>HTML<span class="tag">&lt;/abbr&gt;</span>は...<span class="tag">&lt;/p&gt;</span>
+
+<span class="comment">&lt;!-- time：日時 --&gt;</span>
+<span class="tag">&lt;p&gt;</span>公開日：<span class="tag">&lt;time</span> <span class="attr">datetime</span>=<span class="val">"2026-06-27T13:00:00+09:00"</span><span class="tag">&gt;</span>
+  2026年6月27日 13:00
+<span class="tag">&lt;/time&gt;&lt;/p&gt;</span>
+
+<span class="comment">&lt;!-- figure / figcaption --&gt;</span>
+<span class="tag">&lt;figure&gt;</span>
+  <span class="tag">&lt;img</span> <span class="attr">src</span>=<span class="val">"chart.png"</span> <span class="attr">alt</span>=<span class="val">"2026年の売上グラフ"</span><span class="tag">&gt;</span>
+  <span class="tag">&lt;figcaption&gt;</span>図1：2026年度 四半期別売上推移<span class="tag">&lt;/figcaption&gt;</span>
+<span class="tag">&lt;/figure&gt;</span>
+
+<span class="comment">&lt;!-- details / summary --&gt;</span>
+<span class="tag">&lt;details&gt;</span>
+  <span class="tag">&lt;summary&gt;</span>詳細を見る<span class="tag">&lt;/summary&gt;</span>
+  <span class="tag">&lt;p&gt;</span>折りたたまれたコンテンツ<span class="tag">&lt;/p&gt;</span>
+<span class="tag">&lt;/details&gt;</span>
+</pre>
+  </div>
+</div>
+
+
+<!-- ============================================================ -->
+<!-- まとめ -->
+<!-- ============================================================ -->
+<h2>📌 まとめ</h2>
+<div class="demo-box">
+  <table class="ref-table">
+    <thead>
+      <tr><th>要素</th><th>役割</th><th>重要ポイント</th></tr>
+    </thead>
+    <tbody>
+      <tr><td><code>&lt;header&gt;</code></td>
+        <td>ページ・セクションの導入部</td>
+        <td>複数配置可・ロゴ・ナビを含む</td></tr>
+      <tr><td><code>&lt;nav&gt;</code></td>
+        <td>主要ナビゲーション</td>
+        <td>全リンクに使う必要なし・複数可</td></tr>
+      <tr><td><code>&lt;main&gt;</code></td>
+        <td>メインコンテンツ</td>
+        <td><strong>1ページに1つだけ</strong></td></tr>
+      <tr><td><code>&lt;article&gt;</code></td>
+        <td>独立した完結コンテンツ</td>
+        <td>単体で意味をなす・RSS 配信できる</td></tr>
+      <tr><td><code>&lt;section&gt;</code></td>
+        <td>テーマ的なグループ</td>
+        <td>見出しを持つ・汎用グループは div</td></tr>
+      <tr><td><code>&lt;aside&gt;</code></td>
+        <td>補足コンテンツ</td>
+        <td>サイドバー・関連情報</td></tr>
+      <tr><td><code>&lt;footer&gt;</code></td>
+        <td>ページ・セクションのフッター</td>
+        <td>複数配置可</td></tr>
+      <tr><td><code>&lt;figure&gt;</code></td>
+        <td>図・画像のグループ</td>
+        <td><code>&lt;figcaption&gt;</code> でキャプション</td></tr>
+      <tr><td><code>&lt;time&gt;</code></td>
+        <td>日時</td>
+        <td><code>datetime</code> 属性に ISO 8601 形式</td></tr>
+      <tr><td><code>&lt;strong&gt;</code> / <code>&lt;em&gt;</code></td>
+        <td>重要性 / 強調</td>
+        <td>b / i は意味的な重要性なし</td></tr>
+    </tbody>
+  </table>
+</div>
+
+
+<!-- ============================================================ -->
+<!-- 演習問題 -->
+<!-- ============================================================ -->
+<div class="quiz-section">
+  <h2>🖊️ 演習問題</h2>
+
+  <!-- Q1 -->
+  <div class="quiz-block">
+    <h3>Q1. 穴埋め問題</h3>
+    <label>① ページの主要コンテンツを表し、1ページに1つだけ使う要素：</label>
+    <input type="text" id="q1a" placeholder="&lt;???&gt;">
+    <label>② それ単体で完結する独立したコンテンツ（ブログ記事など）を表す要素：</label>
+    <input type="text" id="q1b" placeholder="&lt;???&gt;">
+    <label>③ 機械可読な日時情報を表す要素と、日時を指定する属性名：</label>
+    <input type="text" id="q1c" placeholder="要素名 / 属性名">
+    <label>④ 図・画像のキャプションを表す要素（figure の子要素）：</label>
+    <input type="text" id="q1d" placeholder="&lt;???&gt;">
+    <br>
+    <button class="btn btn-blue" onclick="checkQ1()">答え合わせ</button>
+    <div class="result-msg" id="q1-result"></div>
+    <script>
+      function checkQ1() {
+        const normalize = s => s.trim().toLowerCase()
+          .replace(/[<>\/\s]/g,'');
+        const a = normalize(document.getElementById('q1a').value);
+        const b = normalize(document.getElementById('q1b').value);
+        const c = document.getElementById('q1c').value.trim().toLowerCase();
+        const d = normalize(document.getElementById('q1d').value);
+        const r = document.getElementById('q1-result');
+        const ca = a === 'main';
+        const cb = b === 'article';
+        const cc = c.includes('time') && c.includes('datetime');
+        const cd = d === 'figcaption';
+        const count = [ca,cb,cc,cd].filter(Boolean).length;
+        if (count === 4) {
+          r.className = 'result-msg correct';
+          r.textContent = '✅ 全問正解！完璧です！';
+        } else {
+          r.className = 'result-msg wrong';
+          r.innerHTML = `❌ ${count}/4 問正解。<br>` +
+            `① ${ca?'✅':'❌ &lt;main&gt;（1ページに1つ）'}　` +
+            `② ${cb?'✅':'❌ &lt;article&gt;（独立したコンテンツ）'}　` +
+            `③ ${cc?'✅':'❌ &lt;time&gt; / datetime 属性'}　` +
+            `④ ${cd?'✅':'❌ &lt;figcaption&gt;'}`;
+        }
+      }
+    </script>
+  </div>
+
+  <!-- Q2 -->
+  <div class="quiz-block">
+    <h3>Q2. 選択問題</h3>
+    <p>ブログのコメント一覧を表すのに最も適切な要素はどれですか？</p>
+    <select id="q2">
+      <option value="">-- 選択してください --</option>
+      <option value="a">&lt;section&gt; でまとめる</option>
+      <option value="b">各コメントを &lt;article&gt; で表す</option>
+      <option value="c">&lt;aside&gt; でまとめる</option>
+      <option value="d">&lt;div&gt; でまとめる</option>
+    </select>
+    <br>
+    <button class="btn btn-blue" onclick="checkQ2()">答え合わせ</button>
+    <div class="result-msg" id="q2-result"></div>
+    <script>
+      function checkQ2() {
+        const v = document.getElementById('q2').value;
+        const r = document.getElementById('q2-result');
+        if (v === 'b') {
+          r.className = 'result-msg correct';
+          r.innerHTML = '✅ 正解！<br><br>' +
+            '各コメントは<strong>それ単体で意味をなす独立したコンテンツ</strong>なので ' +
+            '<code>&lt;article&gt;</code> が適切です。<br><br>' +
+            '<code>&lt;article&gt;</code> は RSS フィードに配信できるような<br>' +
+            '独立したコンテンツに使います。<br>' +
+            'コメント・ブログ記事・ニュース・商品カードなどが典型例です。';
+        } else if (v === '') {
+          r.className = 'result-msg info';
+          r.textContent = '⚠️ 選択肢を選んでください。';
+        } else {
+          r.className = 'result-msg wrong';
+          r.innerHTML = '❌ 不正解。<br>' +
+            'コメントは単体で完結する独立したコンテンツなので ' +
+            '<code>&lt;article&gt;</code> が最適です。';
+        }
+      }
+    </script>
+  </div>
+
+  <!-- Q3 -->
+  <div class="quiz-block">
+    <h3>Q3. 正誤チェックボックス問題</h3>
+    <p><strong>正しい記述</strong>をすべて選んでください。</p>
+    <label class="checkbox-label"><input type="checkbox" id="q3a">
+      ① <code>&lt;main&gt;</code> 要素は1ページに1つだけ使用する</label>
+    <label class="checkbox-label"><input type="checkbox" id="q3b">
+      ② <code>&lt;section&gt;</code> は汎用的なグループ化に使い、見出しは不要</label>
+    <label class="checkbox-label"><input type="checkbox" id="q3c">
+      ③ <code>&lt;strong&gt;</code> は重要性を表し、スクリーンリーダーが強調して読む</label>
+    <label class="checkbox-label"><input type="checkbox" id="q3d">
+      ④ <code>&lt;header&gt;</code> はページに1つしか配置できない</label>
+    <label class="checkbox-label"><input type="checkbox" id="q3e">
+      ⑤ <code>&lt;article&gt;</code> の中に <code>&lt;article&gt;</code> を入れることができる</label>
+    <label class="checkbox-label"><input type="checkbox" id="q3f">
+      ⑥ 見出しは h1 → h2 → h3 の順に使い、階層をスキップしてはいけない</label>
+    <br>
+    <button class="btn btn-blue" onclick="checkQ3()">答え合わせ</button>
+    <div class="result-msg" id="q3-result"></div>
+    <script>
+      function checkQ3() {
+        const r = document.getElementById('q3-result');
+        const checks = {
+          a: document.getElementById('q3a').checked,
+          b: document.getElementById('q3b').checked,
+          c: document.getElementById('q3c').checked,
+          d: document.getElementById('q3d').checked,
+          e: document.getElementById('q3e').checked,
+          f: document.getElementById('q3f').checked,
+        };
+        // 正解：①③⑤⑥（a,c,e,f）
+        // ② section は見出しを持つべき（汎用グループは div）
+        // ④ header は複数配置可能
+        const correct = { a:true, b:false, c:true, d:false, e:true, f:true };
+        const allOk = Object.keys(correct).every(k => checks[k] === correct[k]);
+        if (allOk) {
+          r.className = 'result-msg correct';
+          r.innerHTML = '✅ 全問正解！完璧です！';
+        } else {
+          r.className = 'result-msg wrong';
+          r.innerHTML =
+            '❌ 不正解の項目があります。<br><br>' +
+            '<strong>正しい記述：</strong>①③⑤⑥<br><br>' +
+            '<strong>誤った記述：</strong><br>' +
+            '・② <code>&lt;section&gt;</code> は通常<strong>見出しを持つ</strong>テーマ的なグループに使います。' +
+            '汎用的なグループ化には <code>&lt;div&gt;</code> を使います。<br>' +
+            '・④ <code>&lt;header&gt;</code> は<strong>複数配置可能</strong>です。' +
+            'ページヘッダーだけでなく、article や section の中にも配置できます。';
+        }
+      }
+    </script>
+  </div>
+
+  <!-- Q4 -->
+  <div class="quiz-block">
+    <h3>Q4. コード補完問題</h3>
+    <p>以下のページ構造を正しいセマンティック HTML で完成させてください。</p>
+    <ul style="font-size:0.92em; color:#4a5568; line-height:2;">
+      <li>ページ全体のヘッダー（ロゴ・ナビを含む）</li>
+      <li>メインコンテンツエリア（ブログ記事1本）</li>
+      <li>記事のタイトルは h1・公開日は time 要素</li>
+      <li>ページフッター</li>
+    </ul>
+    <label>メインコンテンツを囲む要素：</label>
+    <input type="text" id="q4a" placeholder="&lt;???&gt;">
+    <label>ブログ記事1本を囲む要素：</label>
+    <input type="text" id="q4b" placeholder="&lt;???&gt;">
+    <label>公開日「2026-06-27」を機械可読にする属性：</label>
+    <input type="text" id="q4c" placeholder="属性名=&quot;2026-06-27&quot;">
+    <br>
+    <button class="btn btn-blue" onclick="checkQ4()">答え合わせ</button>
+    <div class="result-msg" id="q4-result"></div>
+    <script>
+      function checkQ4() {
+        const normalize = s => s.trim().toLowerCase().replace(/[<>\/\s"']/g,'');
+        const a = normalize(document.getElementById('q4a').value);
+        const b = normalize(document.getElementById('q4b').value);
+        const c = document.getElementById('q4c').value.trim().toLowerCase()
+                    .replace(/\s/g,'').replace(/"/g,'').replace(/'/g,'');
+        const r = document.getElementById('q4-result');
+        const ca = a === 'main';
+        const cb = b === 'article';
+        const cc = c.includes('datetime');
+        const count = [ca,cb,cc].filter(Boolean).length;
+        if (count === 3) {
+          r.className = 'result-msg correct';
+          r.innerHTML = '✅ 全問正解！<br><br>' +
+            '<code>&lt;main&gt;</code> → メインコンテンツ（1ページに1つ）<br>' +
+            '<code>&lt;article&gt;</code> → ブログ記事（独立したコンテンツ）<br>' +
+            '<code>&lt;time datetime="2026-06-27"&gt;</code> → 機械可読な日時';
+        } else {
+          r.className = 'result-msg wrong';
+          r.innerHTML = `❌ ${count}/3 問正解。<br>` +
+            `メインコンテンツ: ${ca?'✅':'❌ &lt;main&gt;'}　` +
+            `記事: ${cb?'✅':'❌ &lt;article&gt;'}　` +
+            `属性: ${cc?'✅':'❌ datetime'}`;
+        }
+      }
+    </script>
+  </div>
+
+</div><!-- /quiz-section -->
+
+
+<!-- 完了ボタン -->
+<div class="complete-section">
+  <p>🎉 「3-1 セマンティック HTML」の学習が完了したら記録しましょう！</p>
+  <button class="btn btn-done" onclick="markComplete()">✅ このセクションを完了にする</button>
+  <div id="complete-msg"
+       style="margin-top:10px; font-size:0.88em; color:#276749; display:none;">
+    進捗を保存しました！Chapter 3 の進捗バーに反映されます。
+  </div>
+</div>
+
+<!-- ページナビ -->
+<div class="page-nav">
+  <a class="prev" href="index.html">← Chapter 3 目次</a>
+  <a class="home" href="../index.html">🏠 目次へ</a>
+  <a class="next" href="02_forms.html">次へ：3-2 フォーム要素 →</a>
+</div>
+
+<!-- フッター -->
+<footer>
+  <p>
+    HTML5プロフェッショナル Level 2 学習サイト ／
+    <a href="../index.html">🏠 目次</a> ／
+    <a href="../exam/index.html">📝 模擬試験</a>
+  </p>
+  <p style="margin-top:4px;">© MeshinoKiwamiOkome</p>
+</footer>
+
+
+<!-- ============================================================ -->
+<!-- JavaScript -->
+<!-- ============================================================ -->
+<script>
+  /* ===== コピーボタン ===== */
+  function copyPre(btn) {
+    const pre = btn.nextElementSibling;
+    navigator.clipboard.writeText(pre.innerText || pre.textContent).then(() => {
+      btn.textContent = 'copied!';
+      setTimeout(() => btn.textContent = 'copy', 1800);
+    });
+  }
+
+  /* ===== タブ ===== */
+  function switchTab(btn, id) {
+    btn.closest('.tab-wrap').querySelectorAll('.tab-btn')
+       .forEach(b => b.classList.remove('active'));
+    btn.closest('.tab-wrap').querySelectorAll('.tab-content')
+       .forEach(c => c.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById(id).classList.add('active');
+  }
+
+  /* ===== ページビジュアライザ ===== */
+  const pvInfo = {
+    html: {
+      title: '<html lang="ja">',
+      desc:
+        '文書のルート要素。\n' +
+        'lang 属性で言語を指定（日本語は "ja"）。\n' +
+        'スクリーンリーダーや検索エンジンが言語を判断するために重要。',
+    },
+    head: {
+      title: '<head>',
+      desc:
+        'メタデータを含む要素。画面には表示されない。\n' +
+        '・<title>：タブに表示されるタイトル\n' +
+        '・<meta charset>：文字コード\n' +
+        '・<link>：CSS ファイルの読み込み\n' +
+        '・<script>：JavaScript の読み込み',
+    },
+    body: {
+      title: '<body>',
+      desc:
+        'ページに表示されるコンテンツを含む。\n' +
+        '1つの HTML 文書に1つだけ。\n' +
+        'セマンティック要素（header/main/footer 等）を直接配置する。',
+    },
+    header: {
+      title: '<header>',
+      desc:
+        'ページまたはセクションの導入部。\n' +
+        '・ページヘッダー：ロゴ・サイトタイトル・ナビゲーション\n' +
+        '・article/section ヘッダー：タイトル・メタ情報\n' +
+        '複数配置可能（ページ・article・section ごとに）。',
+    },
+    nav: {
+      title: '<nav>',
+      desc:
+        '主要なナビゲーションリンクのグループ。\n' +
+        '全てのリンクグループに使う必要はない。\n' +
+        'ページ内に複数ある場合は aria-label で区別する。\n' +
+        '例：メインナビ・パンくず・フッターナビ',
+    },
+    main: {
+      title: '<main>',
+      desc:
+        'ページの主要コンテンツ。\n' +
+        '⚠️ 1ページに1つだけ！\n' +
+        'header・footer・nav・aside の中には置かない。\n' +
+        'スクリーンリーダーの「メインコンテンツへスキップ」の対象。',
+    },
+    article: {
+      title: '<article>',
+      desc:
+        'それ単体で完結する独立したコンテンツ。\n' +
+        '「RSS フィードに配信できるか？」が判断基準。\n' +
+        '例：ブログ記事・ニュース記事・コメント・商品カード\n' +
+        'article の中に article を入れることも可能。',
+    },
+    section: {
+      title: '<section>',
+      desc:
+        'テーマ的にまとまったコンテンツのグループ。\n' +
+        '通常は見出し（h1〜h6）を持つ。\n' +
+        '汎用的なグループ化には div を使う。\n' +
+        '例：章・タブパネル・ページのセクション',
+    },
+    aside: {
+      title: '<aside>',
+      desc:
+        'メインコンテンツに関連するが独立した補足情報。\n' +
+        '例：サイドバー・関連リンク・広告・引用ボックス\n' +
+        'メインコンテンツの外側に配置することが多い。',
+    },
+    footer: {
+      title: '<footer>',
+      desc:
+        'ページまたはセクションのフッター。\n' +
+        '著作権情報・連絡先・関連リンクなど。\n' +
+        '複数配置可能（ページ・article・section ごとに）。',
+    },
+    h1: {
+      title: '<h1>',
+      desc:
+        'ページの最も重要な見出し。\n' +
+        '1ページに1つが推奨（article 内では article スコープの h1 も可）。\n' +
+        '見出しは h1 → h2 → h3 の順に使い、スキップしない。\n' +
+        'スタイリング目的で見出しレベルを選ばない。',
+    },
+  };
+
+  function showPvInfo(key) {
+    const info = pvInfo[key];
+    if (!info) return;
+    document.getElementById('pv-info').textContent =
+      `${info.title}\n\n${info.desc}`;
+    document.querySelectorAll('.pv-element').forEach(el => {
+      el.classList.remove('active');
+    });
+  }
+
+  /* ===== アウトライン ビジュアライザ ===== */
+  function updateOutline() {
+    const raw   = document.getElementById('heading-input').value;
+    const lines = raw.split('\n').filter(l => l.trim());
+    const tree  = document.getElementById('outline-tree');
+    const out   = document.getElementById('outline-output');
+
+    let html     = '';
+    let errors   = [];
+    let prevLevel = 0;
+
+    lines.forEach((line, i) => {
+      const m = line.match(/h([1-6])\s*:\s*(.+)/i);
+      if (!m) return;
+      const level = parseInt(m[1]);
+      const text  = m[2].trim();
+      const indent = (level - 1) * 20;
+      const colors = ['#f6ad55','#68d391','#90cdf4','#b794f4','#fc8181','#81e6d9'];
+      const color  = colors[level - 1] || '#e2e8f0';
+
+      if (prevLevel > 0 && level > prevLevel + 1) {
+        errors.push(`行${i+1}：h${prevLevel} の次に h${level} はスキップです`);
+      }
+      prevLevel = level;
+
+      html += `<div style="padding-left:${indent}px; color:${color};
+                font-weight:${level<=2?'bold':'normal'}; line-height:2;">
+        ${'─'.repeat(level > 1 ? 1 : 0)} h${level}: ${text}
+      </div>`;
+    });
+
+    tree.innerHTML = html || '<div style="color:#4a5568;">（見出しが見つかりません）</div>';
+
+    if (errors.length > 0) {
+      out.style.color = '#fc8181';
+      out.textContent = '⚠️ 見出し階層の問題:\n' + errors.join('\n');
+    } else if (lines.length > 0) {
+      out.style.color = '#68d391';
+      out.textContent = '✅ 見出し階層は正しく設定されています';
+    } else {
+      out.style.color = '#90cdf4';
+      out.textContent = '← テキストエリアに見出し構造を入力してください';
+    }
+  }
+
+  updateOutline();
+
+  /* ===== 完了ボタン ===== */
+  function markComplete() {
+    localStorage.setItem('html5lv2_ch3_01', 'done');
+    document.getElementById('complete-msg').style.display = 'block';
+  }
+  if (localStorage.getItem('html5lv2_ch3_01') === 'done') {
+    document.getElementById('complete-msg').style.display = 'block';
+  }
+</script>
+
+</body>
+</html>

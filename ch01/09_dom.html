@@ -1,0 +1,1709 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>1-9 HTMLの操作（DOM） | HTML5プロフェッショナル Level 2</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; }
+    body {
+      font-family: 'Segoe UI', 'Helvetica Neue', sans-serif;
+      max-width: 960px; margin: 40px auto; padding: 0 24px;
+      background: #f0f4f8; color: #2d3748; line-height: 1.8;
+    }
+    .breadcrumb {
+      font-size: 0.82em; color: #a0aec0; margin-bottom: 20px;
+      font-family: 'Consolas','Monaco',monospace;
+    }
+    .breadcrumb a { color: #2c7a7b; text-decoration: none; }
+    .breadcrumb a:hover { text-decoration: underline; }
+
+    .chapter-header {
+      background: linear-gradient(135deg, #1a365d, #2c7a7b);
+      border-radius: 12px; padding: 32px 32px 24px;
+      margin-bottom: 32px; color: #fff;
+      box-shadow: 0 4px 18px rgba(44,122,123,0.35);
+    }
+    .chapter-header .ch-num {
+      font-size: 0.8em; font-family: 'Consolas','Monaco',monospace;
+      opacity: 0.85; letter-spacing: 0.08em; margin-bottom: 6px;
+    }
+    .chapter-header h1 {
+      margin: 0 0 10px; font-size: 1.6em; color: #fff; border: none; padding: 0;
+    }
+    .chapter-header p { margin: 0; font-size: 0.92em; opacity: 0.88; }
+    .badge-row { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 14px; }
+    .badge {
+      background: rgba(255,255,255,0.18);
+      border: 1px solid rgba(255,255,255,0.35);
+      border-radius: 20px; padding: 3px 12px;
+      font-size: 0.76em; font-weight: bold;
+    }
+
+    .section-nav {
+      background: #fff; border: 1px solid #bee3f8;
+      border-radius: 10px; padding: 18px 22px;
+      margin-bottom: 32px; box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+    }
+    .section-nav h2 {
+      margin: 0 0 12px; font-size: 0.92em; color: #1a365d; border: none; padding: 0;
+    }
+    .section-nav ol { margin: 0; padding-left: 20px; font-size: 0.9em; }
+    .section-nav ol li { margin: 4px 0; }
+    .section-nav ol li a { color: #2c7a7b; text-decoration: none; }
+    .section-nav ol li a:hover { text-decoration: underline; }
+    .section-nav ol li.current a { color: #1a365d; font-weight: bold; }
+
+    h2 {
+      color: #1a365d; margin-top: 48px;
+      border-left: 5px solid #2c7a7b; padding-left: 12px;
+    }
+    h3 { color: #2c7a7b; margin-top: 28px; }
+
+    code {
+      background: #edf2f7; padding: 2px 6px;
+      border-radius: 4px; font-size: 0.93em;
+      font-family: 'Consolas','Monaco',monospace;
+    }
+    pre {
+      background: #1a202c; color: #e2e8f0;
+      padding: 18px 20px; border-radius: 8px;
+      overflow-x: auto; font-size: 0.88em;
+      line-height: 1.7; font-family: 'Consolas','Monaco',monospace;
+    }
+    pre .comment { color: #68d391; }
+    pre .kw      { color: #90cdf4; }
+    pre .str     { color: #fbd38d; }
+    pre .num     { color: #fc8181; }
+    pre .fn      { color: #b794f4; }
+    pre .op      { color: #f6ad55; }
+    pre .out     { color: #a0aec0; }
+    pre .prop    { color: #81e6d9; }
+    pre .tag     { color: #fc8181; }
+
+    .pre-wrap { position: relative; margin: 14px 0; }
+    .copy-btn {
+      position: absolute; top: 8px; right: 8px;
+      background: #4a5568; color: #e2e8f0;
+      border: none; border-radius: 4px; padding: 4px 10px;
+      font-size: 0.75em; cursor: pointer;
+      font-family: 'Consolas','Monaco',monospace;
+      transition: background 0.2s; z-index: 1;
+    }
+    .copy-btn:hover { background: #2c7a7b; }
+
+    .note {
+      background: #fff; border: 1px dashed #81e6d9;
+      border-radius: 6px; padding: 14px 18px;
+      font-size: 0.93em; color: #4a5568; margin: 14px 0;
+    }
+    .note strong { color: #1a365d; }
+    .warn {
+      background: #fffaf0; border: 1px solid #f6ad55;
+      border-left: 5px solid #f6ad55; border-radius: 6px;
+      padding: 14px 18px; font-size: 0.93em; color: #744210; margin: 14px 0;
+    }
+    .good {
+      background: #f0fff4; border: 1px solid #68d391;
+      border-left: 5px solid #48bb78; border-radius: 6px;
+      padding: 14px 18px; font-size: 0.93em; color: #276749; margin: 14px 0;
+    }
+    .demo-box {
+      background: #fff; border: 1px solid #bee3f8;
+      border-radius: 8px; padding: 20px 24px;
+      margin: 12px 0 28px; box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+    }
+
+    /* ===== DOM ツリービジュアル ===== */
+    .dom-tree {
+      background: #1a202c; border-radius: 10px;
+      padding: 20px; margin: 14px 0;
+      font-family: 'Consolas','Monaco',monospace; font-size: 0.82em;
+      line-height: 2;
+    }
+    .dom-node {
+      display: inline-flex; align-items: center; gap: 6px;
+      border-radius: 6px; padding: 2px 10px;
+      cursor: pointer; transition: opacity 0.15s;
+    }
+    .dom-node:hover { opacity: 0.8; }
+    .dom-node.element { background: #2b4c7e; color: #90cdf4; }
+    .dom-node.text    { background: #276749; color: #9ae6b4; }
+    .dom-node.attr    { background: #744210; color: #fbd38d; }
+    .dom-indent { display: inline-block; }
+
+    /* ===== ライブ DOM デモ ===== */
+    .live-demo-area {
+      background: #f7fafc; border: 2px solid #bee3f8;
+      border-radius: 8px; padding: 16px 20px;
+      margin: 14px 0; min-height: 80px;
+    }
+    .live-demo-area h4 {
+      margin: 0 0 8px; font-size: 0.88em;
+      color: #718096; font-weight: normal;
+    }
+
+    /* ===== インタラクティブデモ ===== */
+    .interactive-demo {
+      background: #ebf8ff; border: 1px solid #bee3f8;
+      border-radius: 8px; padding: 16px 20px; margin: 14px 0;
+    }
+    .demo-label {
+      font-size: 0.85em; font-weight: bold;
+      color: #1a365d; margin-bottom: 10px;
+    }
+    .demo-input-row {
+      display: flex; gap: 10px; align-items: center;
+      flex-wrap: wrap; margin-bottom: 10px;
+    }
+    .demo-input {
+      border: 2px solid #bee3f8; border-radius: 6px;
+      padding: 7px 12px; font-size: 0.9em;
+      font-family: 'Consolas','Monaco',monospace;
+      color: #2d3748; background: #fff; flex: 1; min-width: 80px;
+    }
+    .demo-input:focus { border-color: #2c7a7b; outline: none; }
+    .demo-btn {
+      background: #2c7a7b; color: #fff; border: none;
+      border-radius: 6px; padding: 8px 18px;
+      font-size: 0.88em; font-weight: bold; cursor: pointer;
+      transition: background 0.2s; white-space: nowrap;
+    }
+    .demo-btn:hover { background: #1a365d; }
+    .demo-btn.danger { background: #e53e3e; }
+    .demo-btn.danger:hover { background: #9b2335; }
+    .demo-output {
+      background: #1a202c; color: #68d391;
+      border-radius: 6px; padding: 10px 14px;
+      font-family: 'Consolas','Monaco',monospace;
+      font-size: 0.85em; min-height: 40px;
+      white-space: pre-wrap; line-height: 1.7;
+    }
+
+    /* ===== タブ ===== */
+    .tab-wrap { margin: 14px 0; }
+    .tab-btns { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: -1px; }
+    .tab-btn {
+      padding: 8px 18px; border: 1px solid #bee3f8;
+      border-bottom: none; border-radius: 6px 6px 0 0;
+      background: #edf2f7; color: #2c7a7b;
+      font-size: 0.85em; font-weight: bold;
+      font-family: 'Consolas','Monaco',monospace;
+      cursor: pointer; transition: background 0.15s;
+    }
+    .tab-btn.active { background: #fff; border-bottom: 1px solid #fff; }
+    .tab-btn:hover:not(.active) { background: #e6fffa; }
+    .tab-content {
+      display: none; background: #fff;
+      border: 1px solid #bee3f8;
+      border-radius: 0 6px 6px 6px; padding: 18px 20px;
+    }
+    .tab-content.active { display: block; }
+
+    /* ===== テーブル ===== */
+    table.ref-table {
+      border-collapse: collapse; width: 100%;
+      background: #fff; border-radius: 8px;
+      overflow: hidden; box-shadow: 0 2px 6px rgba(0,0,0,0.07);
+      margin: 14px 0; font-size: 0.9em;
+    }
+    table.ref-table th, table.ref-table td {
+      border: 1px solid #bee3f8; padding: 10px 14px; text-align: left;
+    }
+    table.ref-table thead tr { background: #1a365d; color: #fff; }
+    table.ref-table tbody tr:nth-child(even) { background: #ebf8ff; }
+
+    /* ===== JSコンソール ===== */
+    .js-console {
+      background: #1a202c; border-radius: 10px;
+      overflow: hidden; margin: 16px 0;
+      box-shadow: 0 4px 14px rgba(0,0,0,0.25);
+    }
+    .js-console-bar {
+      background: #2d3748; padding: 8px 16px;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .js-console-bar .dot { width: 12px; height: 12px; border-radius: 50%; }
+    .dot-red    { background: #fc8181; }
+    .dot-yellow { background: #f6ad55; }
+    .dot-green  { background: #68d391; }
+    .js-console-bar span {
+      font-size: 0.78em; color: #a0aec0;
+      font-family: 'Consolas','Monaco',monospace; margin-left: 6px;
+    }
+    .js-console-output {
+      padding: 14px 16px; min-height: 80px;
+      font-family: 'Consolas','Monaco',monospace;
+      font-size: 0.85em; line-height: 1.8;
+      max-height: 280px; overflow-y: auto;
+    }
+    .log-line   { color: #e2e8f0; }
+    .log-info   { color: #90cdf4; }
+    .log-warn   { color: #f6ad55; }
+    .log-error  { color: #fc8181; }
+    .log-result { color: #68d391; }
+    .log-prompt { color: #a0aec0; }
+    .js-console-input-row {
+      display: flex; align-items: center;
+      border-top: 1px solid #2d3748; padding: 8px 12px; gap: 8px;
+    }
+    .js-console-input-row span {
+      color: #68d391; font-family: 'Consolas','Monaco',monospace;
+      font-size: 0.9em; flex-shrink: 0;
+    }
+    .js-console-input {
+      flex: 1; background: transparent; border: none; outline: none;
+      color: #e2e8f0; font-family: 'Consolas','Monaco',monospace;
+      font-size: 0.88em; caret-color: #68d391;
+    }
+    .js-console-run {
+      background: #2c7a7b; color: #fff; border: none;
+      border-radius: 4px; padding: 4px 12px;
+      font-size: 0.78em; font-weight: bold; cursor: pointer;
+      transition: background 0.2s;
+    }
+    .js-console-run:hover { background: #1a365d; }
+    .js-console-clear {
+      background: #4a5568; color: #e2e8f0; border: none;
+      border-radius: 4px; padding: 4px 10px;
+      font-size: 0.78em; cursor: pointer; transition: background 0.2s;
+    }
+    .js-console-clear:hover { background: #718096; }
+
+    /* ===== 演習問題 ===== */
+    .quiz-section {
+      background: #ebf8ff; border-left: 6px solid #4299e1;
+      border-radius: 0 8px 8px 0; padding: 24px 28px; margin: 48px 0 32px;
+    }
+    .quiz-section > h2 { margin-top: 0; color: #1a365d; border-left-color: #4299e1; }
+    .quiz-block {
+      background: #fff; border: 1px solid #bee3f8;
+      border-radius: 8px; padding: 18px 22px; margin-bottom: 22px;
+    }
+    .quiz-block h3 { margin-top: 0; color: #1a365d; }
+    .quiz-block input[type="text"],
+    .quiz-block select {
+      border: 2px solid #bee3f8; border-radius: 6px;
+      padding: 8px 12px; font-size: 0.95em;
+      width: 100%; max-width: 440px; margin: 6px 0;
+      outline: none; font-family: 'Consolas','Monaco',monospace;
+      transition: border-color 0.2s;
+    }
+    .quiz-block input[type="text"]:focus,
+    .quiz-block select:focus { border-color: #2c7a7b; }
+    .quiz-block label { display: block; margin: 8px 0 2px; font-weight: bold; color: #4a5568; }
+    .quiz-block label.checkbox-label {
+      display: flex; align-items: flex-start; gap: 8px;
+      font-weight: normal; cursor: pointer; margin: 6px 0;
+    }
+    .quiz-block label.checkbox-label input { margin-top: 3px; flex-shrink: 0; }
+    .btn {
+      display: inline-block; padding: 9px 20px;
+      border-radius: 6px; border: none; cursor: pointer;
+      font-size: 0.95em; font-weight: bold;
+      transition: opacity 0.2s; margin-top: 8px;
+    }
+    .btn:hover { opacity: 0.85; }
+    .btn-teal { background: #2c7a7b; color: #fff; }
+    .btn-done { background: #48bb78; color: #fff; }
+    .result-msg {
+      margin-top: 10px; padding: 10px 14px;
+      border-radius: 6px; font-weight: bold; display: none;
+    }
+    .result-msg.correct { background: #c6f6d5; color: #276749; display: block; }
+    .result-msg.wrong   { background: #fed7d7; color: #9b2335; display: block; }
+    .result-msg.info    { background: #bee3f8; color: #1a365d; display: block; }
+
+    .page-nav {
+      display: flex; justify-content: space-between;
+      align-items: center; margin-top: 48px;
+      padding-top: 20px; border-top: 2px solid #bee3f8;
+      gap: 12px; flex-wrap: wrap;
+    }
+    .page-nav a {
+      display: inline-block; padding: 10px 20px;
+      border-radius: 8px; text-decoration: none;
+      font-weight: bold; font-size: 0.9em; transition: opacity 0.2s;
+    }
+    .page-nav a:hover { opacity: 0.8; }
+    .page-nav .prev { background: #edf2f7; color: #4a5568; }
+    .page-nav .next { background: #2c7a7b; color: #fff; }
+    .page-nav .home { background: #fff; color: #2c7a7b; border: 2px solid #2c7a7b; }
+
+    .complete-section {
+      background: #f0fff4; border: 2px solid #48bb78;
+      border-radius: 10px; padding: 20px 24px;
+      margin-top: 40px; text-align: center;
+    }
+    .complete-section p { margin: 0 0 12px; color: #276749; font-weight: bold; }
+
+    footer {
+      margin-top: 48px; padding-top: 16px;
+      border-top: 2px solid #bee3f8;
+      font-size: 0.82em; color: #a0aec0; text-align: center;
+    }
+    footer a { color: #2c7a7b; text-decoration: none; }
+    footer a:hover { text-decoration: underline; }
+
+    @media (max-width: 600px) {
+      body { font-size: 0.84em; }
+      .chapter-header { padding: 20px 16px; }
+      .chapter-header h1 { font-size: 1.2em; }
+      .quiz-section { padding: 16px 12px; }
+      .quiz-block { padding: 14px 12px; }
+      .page-nav { flex-direction: column; align-items: stretch; }
+      .page-nav a { text-align: center; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- パンくず -->
+<div class="breadcrumb">
+  <a href="../index.html">🏠 HTML5 Level 2</a> ›
+  Chapter 1：速習JavaScript入門 › 1-9 HTMLの操作（DOM）
+</div>
+
+<!-- ヘッダー -->
+<div class="chapter-header">
+  <div class="ch-num">CHAPTER 01 › SECTION 09</div>
+  <h1>🌳 1-9 HTMLの操作（DOM）</h1>
+  <p>DOM（Document Object Model）の構造・要素の取得・
+  テキスト・属性・スタイルの変更・要素の追加と削除を
+  ライブデモで実際に操作しながら学びます。</p>
+  <div class="badge-row">
+    <span class="badge">getElementById</span>
+    <span class="badge">querySelector</span>
+    <span class="badge">textContent / innerHTML</span>
+    <span class="badge">setAttribute</span>
+    <span class="badge">classList</span>
+    <span class="badge">createElement</span>
+    <span class="badge">appendChild / remove</span>
+  </div>
+</div>
+
+<!-- セクションナビ -->
+<div class="section-nav">
+  <h2>📋 Chapter 1 のセクション</h2>
+  <ol>
+    <li><a href="01_variables.html">1-1 変数の宣言と値の代入</a></li>
+    <li><a href="02_operators.html">1-2 さまざまな演算</a></li>
+    <li><a href="03_types.html">1-3 型とオブジェクト</a></li>
+    <li><a href="04_functions.html">1-4 関数</a></li>
+    <li><a href="05_scope.html">1-5 スコープ</a></li>
+    <li><a href="06_conditions.html">1-6 条件分岐</a></li>
+    <li><a href="07_loops.html">1-7 繰り返しの処理</a></li>
+    <li><a href="08_classes.html">1-8 オブジェクトとクラス</a></li>
+    <li class="current"><a href="09_dom.html">1-9 HTMLの操作</a></li>
+    <li><a href="10_events.html">1-10 イベントと非同期処理</a></li>
+    <li><a href="11_html5.html">1-11 HTML5とJavaScript</a></li>
+  </ol>
+</div>
+
+
+<!-- ============================================================ -->
+<!-- PART 1: DOM とは -->
+<!-- ============================================================ -->
+<h2 id="dom-intro">① DOM とは</h2>
+
+<div class="note">
+  <strong>重要ポイント：DOM（Document Object Model）はHTMLをJavaScriptから操作するための
+  インターフェースです。HTMLの各要素がノード（節）としてツリー構造で管理されます。</strong>
+</div>
+
+<div class="demo-box">
+  <h3>DOM ツリーの構造</h3>
+  <div class="dom-tree" id="dom-tree-visual">
+    <div>
+      <span class="dom-node element" onclick="showNodeInfo('document')">📄 document</span>
+    </div>
+    <div style="padding-left:20px;">
+      <span class="dom-node element" onclick="showNodeInfo('html')">&lt;html&gt;</span>
+    </div>
+    <div style="padding-left:40px;">
+      <span class="dom-node element" onclick="showNodeInfo('head')">&lt;head&gt;</span>
+      <span style="color:#a0aec0; margin-left:8px; font-size:0.82em;">← メタ情報</span>
+    </div>
+    <div style="padding-left:40px;">
+      <span class="dom-node element" onclick="showNodeInfo('body')">&lt;body&gt;</span>
+    </div>
+    <div style="padding-left:60px;">
+      <span class="dom-node element" onclick="showNodeInfo('h1')">&lt;h1 id="title"&gt;</span>
+    </div>
+    <div style="padding-left:80px;">
+      <span class="dom-node text" onclick="showNodeInfo('text-h1')">"Hello, World!"</span>
+      <span style="color:#a0aec0; margin-left:8px; font-size:0.82em;">← テキストノード</span>
+    </div>
+    <div style="padding-left:60px;">
+      <span class="dom-node element" onclick="showNodeInfo('p')">&lt;p class="desc"&gt;</span>
+    </div>
+    <div style="padding-left:80px;">
+      <span class="dom-node text" onclick="showNodeInfo('text-p')">"説明文..."</span>
+    </div>
+    <div style="padding-left:60px;">
+      <span class="dom-node element" onclick="showNodeInfo('ul')">&lt;ul id="list"&gt;</span>
+    </div>
+    <div style="padding-left:80px;">
+      <span class="dom-node element" onclick="showNodeInfo('li')">&lt;li&gt;</span>
+      <span class="dom-node element" style="margin-left:8px;" onclick="showNodeInfo('li')">&lt;li&gt;</span>
+      <span class="dom-node element" style="margin-left:8px;" onclick="showNodeInfo('li')">&lt;li&gt;</span>
+    </div>
+  </div>
+
+  <!-- ノード情報パネル -->
+  <div id="node-info" style="display:none; margin-top:10px;
+    background:#1a202c; border-radius:8px; padding:14px 18px;
+    font-family:'Consolas','Monaco',monospace; font-size:0.85em;
+    line-height:1.9; color:#e2e8f0; white-space:pre-wrap;">
+  </div>
+
+  <div class="pre-wrap">
+    <button class="copy-btn" onclick="copyPre(this)">copy</button>
+<pre>
+<span class="comment">// DOM の基本的な考え方</span>
+<span class="comment">// HTML → DOM ツリー → JavaScript で操作</span>
+
+<span class="comment">// document オブジェクトがエントリーポイント</span>
+console.<span class="fn">log</span>(document.<span class="prop">title</span>);    <span class="out">// → ページのタイトル</span>
+console.<span class="fn">log</span>(document.<span class="prop">URL</span>);      <span class="out">// → 現在のURL</span>
+console.<span class="fn">log</span>(document.<span class="prop">body</span>);     <span class="out">// → body 要素</span>
+console.<span class="fn">log</span>(document.<span class="prop">head</span>);     <span class="out">// → head 要素</span>
+
+<span class="comment">// ノードの種類</span>
+<span class="comment">// Element ノード：&lt;div&gt;, &lt;p&gt; など HTML 要素</span>
+<span class="comment">// Text ノード：要素内のテキスト</span>
+<span class="comment">// Attribute ノード：id, class などの属性</span>
+</pre>
+  </div>
+</div>
+
+
+<!-- ============================================================ -->
+<!-- PART 2: 要素の取得 -->
+<!-- ============================================================ -->
+<h2 id="get-element">② 要素の取得</h2>
+
+<div class="note">
+  <strong>重要ポイント：<code>getElementById</code>・<code>querySelector</code>・
+  <code>querySelectorAll</code> などで DOM 要素を取得します。
+  現代のJavaScriptでは <code>querySelector</code> 系が推奨されます。</strong>
+</div>
+
+<div class="demo-box">
+  <h3>要素取得メソッド一覧</h3>
+  <table class="ref-table">
+    <thead>
+      <tr><th>メソッド</th><th>取得対象</th><th>戻り値</th><th>推奨度</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><code>getElementById(id)</code></td>
+        <td>id 属性で1つ取得</td>
+        <td>Element / null</td>
+        <td>⭐⭐⭐</td>
+      </tr>
+      <tr>
+        <td><code>querySelector(css)</code></td>
+        <td>CSSセレクタで最初の1つ</td>
+        <td>Element / null</td>
+        <td>⭐⭐⭐⭐（推奨）</td>
+      </tr>
+      <tr>
+        <td><code>querySelectorAll(css)</code></td>
+        <td>CSSセレクタで全て</td>
+        <td>NodeList</td>
+        <td>⭐⭐⭐⭐（推奨）</td>
+      </tr>
+      <tr>
+        <td><code>getElementsByClassName(cls)</code></td>
+        <td>class 名で全て</td>
+        <td>HTMLCollection（ライブ）</td>
+        <td>⭐⭐</td>
+      </tr>
+      <tr>
+        <td><code>getElementsByTagName(tag)</code></td>
+        <td>タグ名で全て</td>
+        <td>HTMLCollection（ライブ）</td>
+        <td>⭐⭐</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3>🎮 セレクタ練習エリア</h3>
+  <div class="live-demo-area" id="selector-demo-area">
+    <h4>↓ この要素たちを JavaScript で取得してみよう</h4>
+    <h2 id="demo-title" style="margin:8px 0; font-size:1.1em; color:#1a365d;">
+      タイトル要素（id="demo-title"）
+    </h2>
+    <p class="demo-text" style="margin:4px 0; color:#4a5568;">
+      段落1（class="demo-text"）
+    </p>
+    <p class="demo-text" style="margin:4px 0; color:#4a5568;">
+      段落2（class="demo-text"）
+    </p>
+    <ul id="demo-list" style="margin:8px 0; padding-left:20px;">
+      <li data-index="0">リスト項目 A</li>
+      <li data-index="1">リスト項目 B</li>
+      <li data-index="2">リスト項目 C</li>
+    </ul>
+    <button id="demo-btn" style="padding:6px 14px; background:#2c7a7b;
+      color:#fff; border:none; border-radius:6px; cursor:pointer;">
+      ボタン（id="demo-btn"）
+    </button>
+  </div>
+
+  <div class="interactive-demo">
+    <div class="demo-label">セレクタを入力して要素を取得してみよう</div>
+    <div class="demo-input-row">
+      <select class="demo-input" id="sel-method" style="flex:0 0 auto; width:220px;">
+        <option value="querySelector">querySelector</option>
+        <option value="querySelectorAll">querySelectorAll</option>
+        <option value="getElementById">getElementById</option>
+        <option value="getElementsByClassName">getElementsByClassName</option>
+        <option value="getElementsByTagName">getElementsByTagName</option>
+      </select>
+      <input class="demo-input" id="sel-query"
+             placeholder="セレクタ（例：#demo-title, .demo-text, li）"
+             type="text" value="#demo-title">
+      <button class="demo-btn" onclick="runSelectorDemo()">▶ 取得</button>
+    </div>
+    <div class="demo-output" id="selector-output">← セレクタを入力して要素を取得してみましょう</div>
+  </div>
+
+  <div class="pre-wrap">
+    <button class="copy-btn" onclick="copyPre(this)">copy</button>
+<pre>
+<span class="comment">// getElementById：id で1つ取得</span>
+<span class="kw">const</span> title = document.<span class="fn">getElementById</span>(<span class="str">"demo-title"</span>);
+console.<span class="fn">log</span>(title.<span class="prop">textContent</span>); <span class="out">// → "タイトル要素..."</span>
+
+<span class="comment">// querySelector：CSSセレクタで最初の1つ</span>
+<span class="kw">const</span> firstText = document.<span class="fn">querySelector</span>(<span class="str">".demo-text"</span>);
+<span class="kw">const</span> btn       = document.<span class="fn">querySelector</span>(<span class="str">"#demo-btn"</span>);
+<span class="kw">const</span> firstLi   = document.<span class="fn">querySelector</span>(<span class="str">"li:first-child"</span>);
+
+<span class="comment">// querySelectorAll：CSSセレクタで全て（NodeList）</span>
+<span class="kw">const</span> allTexts = document.<span class="fn">querySelectorAll</span>(<span class="str">".demo-text"</span>);
+console.<span class="fn">log</span>(allTexts.<span class="prop">length</span>); <span class="out">// → 2</span>
+
+<span class="comment">// NodeList は forEach で反復できる</span>
+allTexts.<span class="fn">forEach</span>(el <span class="op">=></span> console.<span class="fn">log</span>(el.<span class="prop">textContent</span>));
+
+<span class="comment">// data 属性でのセレクタ</span>
+<span class="kw">const</span> item1 = document.<span class="fn">querySelector</span>(<span class="str">'[data-index="1"]'</span>);
+</pre>
+  </div>
+</div>
+
+
+<!-- ============================================================ -->
+<!-- PART 3: テキスト・属性・スタイルの変更 -->
+<!-- ============================================================ -->
+<h2 id="modify">③ テキスト・属性・スタイルの変更</h2>
+
+<div class="note">
+  <strong>重要ポイント：取得した要素の <code>textContent</code>・<code>innerHTML</code>・
+  <code>setAttribute</code>・<code>style</code>・<code>classList</code> を使って
+  要素の内容・属性・見た目を変更できます。</strong>
+</div>
+
+<div class="demo-box">
+  <h3>🎮 ライブ DOM 操作デモ</h3>
+
+  <!-- 操作対象の要素 -->
+  <div class="live-demo-area">
+    <h4>↓ 下のコントロールで操作してみよう</h4>
+    <div id="live-target"
+         style="padding:16px 20px; background:#ebf8ff; border-radius:8px;
+                border:2px solid #bee3f8; font-size:1.1em; color:#1a365d;
+                transition:all 0.3s ease; text-align:center; margin-top:8px;">
+      ここを操作してみよう！
+    </div>
+  </div>
+
+  <div class="tab-wrap">
+    <div class="tab-btns">
+      <button class="tab-btn active" onclick="switchTab(this,'tab-text')">テキスト変更</button>
+      <button class="tab-btn"        onclick="switchTab(this,'tab-style')">スタイル変更</button>
+      <button class="tab-btn"        onclick="switchTab(this,'tab-class')">クラス操作</button>
+      <button class="tab-btn"        onclick="switchTab(this,'tab-attr')">属性操作</button>
+    </div>
+
+    <!-- テキスト変更 -->
+    <div class="tab-content active" id="tab-text">
+      <h3 style="margin-top:0; color:#1a365d;">textContent / innerHTML</h3>
+      <div class="demo-input-row">
+        <input class="demo-input" id="text-val"
+               placeholder="新しいテキスト" type="text" value="Hello, DOM!">
+        <select class="demo-input" id="text-prop" style="flex:0 0 auto; width:160px;">
+          <option value="textContent">textContent</option>
+          <option value="innerHTML">innerHTML</option>
+        </select>
+        <button class="demo-btn" onclick="changeText()">▶ 変更</button>
+        <button class="demo-btn" style="background:#4a5568;"
+                onclick="resetLiveTarget()">↺ リセット</button>
+      </div>
+      <div class="demo-output" id="text-output">← テキストを入力して変更してみましょう</div>
+      <div class="pre-wrap" style="margin-top:12px;">
+        <button class="copy-btn" onclick="copyPre(this)">copy</button>
+<pre>
+<span class="kw">const</span> el = document.<span class="fn">getElementById</span>(<span class="str">"live-target"</span>);
+
+<span class="comment">// textContent：テキストのみ（HTMLタグはエスケープ）</span>
+el.<span class="prop">textContent</span> = <span class="str">"Hello, DOM!"</span>;
+
+<span class="comment">// innerHTML：HTMLタグも解釈される（XSS に注意！）</span>
+el.<span class="prop">innerHTML</span> = <span class="str">"&lt;strong&gt;太字&lt;/strong&gt;テキスト"</span>;
+
+<span class="comment">// innerText：レンダリング後のテキスト（CSS を考慮）</span>
+el.<span class="prop">innerText</span> = <span class="str">"表示テキスト"</span>;
+</pre>
+      </div>
+      <div class="warn">
+        ⚠️ <strong>innerHTML はXSSに注意！</strong><br>
+        ユーザーが入力した値をそのまま innerHTML に設定すると
+        スクリプトインジェクション攻撃（XSS）の危険があります。
+        ユーザー入力には必ず <code>textContent</code> を使いましょう。
+      </div>
+    </div>
+
+    <!-- スタイル変更 -->
+    <div class="tab-content" id="tab-style">
+      <h3 style="margin-top:0; color:#1a365d;">style プロパティ</h3>
+      <div class="demo-input-row">
+        <select class="demo-input" id="style-prop" style="flex:0 0 auto; width:180px;">
+          <option value="backgroundColor">backgroundColor</option>
+          <option value="color">color</option>
+          <option value="fontSize">fontSize</option>
+          <option value="borderRadius">borderRadius</option>
+          <option value="padding">padding</option>
+          <option value="opacity">opacity</option>
+        </select>
+        <input class="demo-input" id="style-val"
+               placeholder="値（例：#ff6b6b, 24px）" type="text" value="#ff6b6b">
+        <button class="demo-btn" onclick="changeStyle()">▶ 変更</button>
+        <button class="demo-btn" style="background:#4a5568;"
+                onclick="resetLiveTarget()">↺ リセット</button>
+      </div>
+      <div class="demo-output" id="style-output">← プロパティと値を選んで変更してみましょう</div>
+      <div class="pre-wrap" style="margin-top:12px;">
+        <button class="copy-btn" onclick="copyPre(this)">copy</button>
+<pre>
+<span class="kw">const</span> el = document.<span class="fn">getElementById</span>(<span class="str">"live-target"</span>);
+
+<span class="comment">// style プロパティ（インラインスタイル）</span>
+el.<span class="prop">style</span>.<span class="prop">backgroundColor</span> = <span class="str">"#ff6b6b"</span>;
+el.<span class="prop">style</span>.<span class="prop">color</span>            = <span class="str">"#fff"</span>;
+el.<span class="prop">style</span>.<span class="prop">fontSize</span>         = <span class="str">"24px"</span>;
+el.<span class="prop">style</span>.<span class="prop">borderRadius</span>     = <span class="str">"12px"</span>;
+
+<span class="comment">// CSS プロパティ名はキャメルケースで指定</span>
+<span class="comment">// background-color → backgroundColor</span>
+<span class="comment">// border-radius    → borderRadius</span>
+
+<span class="comment">// 複数のスタイルをまとめて変更</span>
+el.<span class="prop">style</span>.<span class="prop">cssText</span> = <span class="str">"background:#ff6b6b; color:#fff; padding:20px;"</span>;
+</pre>
+      </div>
+    </div>
+
+    <!-- クラス操作 -->
+    <div class="tab-content" id="tab-class">
+      <h3 style="margin-top:0; color:#1a365d;">classList API</h3>
+      <div class="demo-input-row">
+        <select class="demo-input" id="class-op" style="flex:0 0 auto; width:140px;">
+          <option value="add">add（追加）</option>
+          <option value="remove">remove（削除）</option>
+          <option value="toggle">toggle（切替）</option>
+          <option value="contains">contains（確認）</option>
+          <option value="replace">replace（置換）</option>
+        </select>
+        <input class="demo-input" id="class-name"
+               placeholder="クラス名" type="text" value="highlight">
+        <button class="demo-btn" onclick="changeClass()">▶ 実行</button>
+        <button class="demo-btn" style="background:#4a5568;"
+                onclick="resetLiveTarget()">↺ リセット</button>
+      </div>
+      <div class="demo-output" id="class-output">← クラス操作を選んで実行してみましょう</div>
+      <div class="pre-wrap" style="margin-top:12px;">
+        <button class="copy-btn" onclick="copyPre(this)">copy</button>
+<pre>
+<span class="kw">const</span> el = document.<span class="fn">getElementById</span>(<span class="str">"live-target"</span>);
+
+<span class="comment">// classList API</span>
+el.<span class="prop">classList</span>.<span class="fn">add</span>(<span class="str">"highlight"</span>);         <span class="comment">// クラスを追加</span>
+el.<span class="prop">classList</span>.<span class="fn">remove</span>(<span class="str">"highlight"</span>);      <span class="comment">// クラスを削除</span>
+el.<span class="prop">classList</span>.<span class="fn">toggle</span>(<span class="str">"highlight"</span>);      <span class="comment">// あれば削除、なければ追加</span>
+el.<span class="prop">classList</span>.<span class="fn">contains</span>(<span class="str">"highlight"</span>);   <span class="comment">// → true / false</span>
+el.<span class="prop">classList</span>.<span class="fn">replace</span>(<span class="str">"old"</span>, <span class="str">"new"</span>);  <span class="comment">// クラスを置換</span>
+
+<span class="comment">// 複数クラスを一度に追加</span>
+el.<span class="prop">classList</span>.<span class="fn">add</span>(<span class="str">"active"</span>, <span class="str">"visible"</span>, <span class="str">"animated"</span>);
+
+<span class="comment">// className で全クラスを確認</span>
+console.<span class="fn">log</span>(el.<span class="prop">className</span>); <span class="out">// → "highlight active visible animated"</span>
+</pre>
+      </div>
+    </div>
+
+    <!-- 属性操作 -->
+    <div class="tab-content" id="tab-attr">
+      <h3 style="margin-top:0; color:#1a365d;">属性の操作</h3>
+      <div class="demo-input-row">
+        <select class="demo-input" id="attr-op" style="flex:0 0 auto; width:180px;">
+          <option value="getAttribute">getAttribute（取得）</option>
+          <option value="setAttribute">setAttribute（設定）</option>
+          <option value="removeAttribute">removeAttribute（削除）</option>
+          <option value="hasAttribute">hasAttribute（確認）</option>
+          <option value="dataset">dataset（data-*属性）</option>
+        </select>
+        <input class="demo-input" id="attr-name"
+               placeholder="属性名（例：id, title）" type="text" value="title">
+        <input class="demo-input" id="attr-val"
+               placeholder="値（setAttribute 用）" type="text" value="ツールチップ！">
+        <button class="demo-btn" onclick="changeAttr()">▶ 実行</button>
+      </div>
+      <div class="demo-output" id="attr-output">← 属性操作を選んで実行してみましょう</div>
+      <div class="pre-wrap" style="margin-top:12px;">
+        <button class="copy-btn" onclick="copyPre(this)">copy</button>
+<pre>
+<span class="kw">const</span> el = document.<span class="fn">getElementById</span>(<span class="str">"live-target"</span>);
+
+<span class="comment">// 属性の取得・設定・削除・確認</span>
+el.<span class="fn">getAttribute</span>(<span class="str">"id"</span>);              <span class="out">// → "live-target"</span>
+el.<span class="fn">setAttribute</span>(<span class="str">"title"</span>, <span class="str">"ヒント"</span>); <span class="comment">// title 属性を設定</span>
+el.<span class="fn">removeAttribute</span>(<span class="str">"title"</span>);       <span class="comment">// title 属性を削除</span>
+el.<span class="fn">hasAttribute</span>(<span class="str">"id"</span>);             <span class="out">// → true</span>
+
+<span class="comment">// data-* 属性（dataset）</span>
+<span class="comment">// &lt;div data-user-id="123" data-role="admin"&gt;</span>
+el.<span class="prop">dataset</span>.<span class="prop">userId</span>; <span class="out">// → "123"（data-user-id → userId）</span>
+el.<span class="prop">dataset</span>.<span class="prop">role</span>;   <span class="out">// → "admin"</span>
+el.<span class="prop">dataset</span>.<span class="prop">newKey</span> = <span class="str">"value"</span>; <span class="comment">// data-new-key を追加</span>
+</pre>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ============================================================ -->
+<!-- PART 4: 要素の追加・削除 -->
+<!-- ============================================================ -->
+<h2 id="create-remove">④ 要素の追加・削除</h2>
+
+<div class="note">
+  <strong>重要ポイント：<code>createElement</code> で新しい要素を作成し、
+  <code>appendChild</code> や <code>insertBefore</code> で DOM に追加します。
+  <code>remove()</code> や <code>removeChild()</code> で削除できます。</strong>
+</div>
+
+<div class="demo-box">
+  <h3>🎮 ライブ リスト操作デモ</h3>
+
+  <div class="live-demo-area">
+    <h4>↓ 下のコントロールでリストを操作してみよう</h4>
+    <ul id="live-list" style="margin:8px 0; padding-left:24px; line-height:2;">
+      <li style="color:#2d3748;">初期アイテム 1</li>
+      <li style="color:#2d3748;">初期アイテム 2</li>
+      <li style="color:#2d3748;">初期アイテム 3</li>
+    </ul>
+  </div>
+
+  <div class="demo-input-row" style="margin-top:12px;">
+    <input class="demo-input" id="list-item-text"
+           placeholder="追加するテキスト" type="text" value="新しいアイテム">
+    <select class="demo-input" id="list-insert-pos" style="flex:0 0 auto; width:160px;">
+      <option value="append">末尾に追加</option>
+      <option value="prepend">先頭に追加</option>
+      <option value="before">選択の前に挿入</option>
+    </select>
+    <button class="demo-btn" onclick="addListItem()">➕ 追加</button>
+    <button class="demo-btn danger" onclick="removeLastItem()">➖ 末尾削除</button>
+    <button class="demo-btn" style="background:#4a5568;" onclick="clearList()">🗑️ 全削除</button>
+    <button class="demo-btn" style="background:#553c9a;" onclick="resetList()">↺ リセット</button>
+  </div>
+  <div class="demo-output" id="list-output" style="margin-top:10px;">
+    ← リストを操作してみましょう
+  </div>
+
+  <div class="pre-wrap">
+    <button class="copy-btn" onclick="copyPre(this)">copy</button>
+<pre>
+<span class="comment">// 要素の作成と追加</span>
+<span class="kw">const</span> ul = document.<span class="fn">getElementById</span>(<span class="str">"live-list"</span>);
+
+<span class="comment">// 1. createElement で新しい要素を作成</span>
+<span class="kw">const</span> li = document.<span class="fn">createElement</span>(<span class="str">"li"</span>);
+li.<span class="prop">textContent</span> = <span class="str">"新しいアイテム"</span>;
+
+<span class="comment">// 2. DOM に追加</span>
+ul.<span class="fn">appendChild</span>(li);          <span class="comment">// 末尾に追加</span>
+ul.<span class="fn">prepend</span>(li);              <span class="comment">// 先頭に追加</span>
+ul.<span class="fn">insertBefore</span>(li, ul.<span class="prop">firstChild</span>); <span class="comment">// 指定位置の前に挿入</span>
+
+<span class="comment">// insertAdjacentHTML（位置を指定して HTML を挿入）</span>
+ul.<span class="fn">insertAdjacentHTML</span>(<span class="str">"beforeend"</span>, <span class="str">"&lt;li&gt;末尾に追加&lt;/li&gt;"</span>);
+ul.<span class="fn">insertAdjacentHTML</span>(<span class="str">"afterbegin"</span>, <span class="str">"&lt;li&gt;先頭に追加&lt;/li&gt;"</span>);
+
+<span class="comment">// 要素の削除</span>
+<span class="kw">const</span> lastLi = ul.<span class="prop">lastElementChild</span>;
+lastLi.<span class="fn">remove</span>();              <span class="comment">// 要素自身を削除</span>
+ul.<span class="fn">removeChild</span>(lastLi);      <span class="comment">// 親から子を削除</span>
+
+<span class="comment">// 全子要素を削除</span>
+ul.<span class="prop">innerHTML</span> = <span class="str">""</span>;           <span class="comment">// innerHTML を空にする</span>
+<span class="kw">while</span> (ul.<span class="prop">firstChild</span>) {
+  ul.<span class="fn">removeChild</span>(ul.<span class="prop">firstChild</span>);
+}
+</pre>
+  </div>
+
+  <h3>要素のナビゲーション（親・子・兄弟）</h3>
+  <div class="pre-wrap">
+    <button class="copy-btn" onclick="copyPre(this)">copy</button>
+<pre>
+<span class="kw">const</span> el = document.<span class="fn">querySelector</span>(<span class="str">"#live-list li"</span>);
+
+<span class="comment">// 親・子・兄弟要素へのアクセス</span>
+el.<span class="prop">parentElement</span>;          <span class="comment">// 親要素（ul）</span>
+el.<span class="prop">parentNode</span>;             <span class="comment">// 親ノード（テキストノードも含む）</span>
+el.<span class="prop">children</span>;               <span class="comment">// 子要素のコレクション</span>
+el.<span class="prop">firstElementChild</span>;      <span class="comment">// 最初の子要素</span>
+el.<span class="prop">lastElementChild</span>;       <span class="comment">// 最後の子要素</span>
+el.<span class="prop">nextElementSibling</span>;     <span class="comment">// 次の兄弟要素</span>
+el.<span class="prop">previousElementSibling</span>; <span class="comment">// 前の兄弟要素</span>
+
+<span class="comment">// closest：祖先要素を CSS セレクタで検索</span>
+el.<span class="fn">closest</span>(<span class="str">"ul"</span>);           <span class="comment">// 最も近い ul 祖先要素</span>
+el.<span class="fn">closest</span>(<span class="str">".container"</span>);  <span class="comment">// 最も近い .container 祖先要素</span>
+</pre>
+  </div>
+</div>
+
+
+<!-- ============================================================ -->
+<!-- PART 5: DOMContentLoaded -->
+<!-- ============================================================ -->
+<h2 id="domready">⑤ DOMContentLoaded と script の配置</h2>
+
+<div class="note">
+  <strong>重要ポイント：JavaScriptが実行されるタイミングによっては、
+  まだ DOM が構築されていない場合があります。
+  <code>DOMContentLoaded</code> イベントや <code>defer</code> 属性を使って
+  DOM の準備完了後に実行するようにします。</strong>
+</div>
+
+<div class="demo-box">
+  <div class="tab-wrap">
+    <div class="tab-btns">
+      <button class="tab-btn active" onclick="switchTab(this,'tab-domready')">DOMContentLoaded</button>
+      <button class="tab-btn"        onclick="switchTab(this,'tab-defer')">defer / async</button>
+      <button class="tab-btn"        onclick="switchTab(this,'tab-position')">script の配置</button>
+    </div>
+
+    <div class="tab-content active" id="tab-domready">
+      <h3 style="margin-top:0; color:#1a365d;">DOMContentLoaded イベント</h3>
+      <div class="pre-wrap">
+        <button class="copy-btn" onclick="copyPre(this)">copy</button>
+<pre>
+<span class="comment">// DOMContentLoaded：HTML の解析完了後に実行</span>
+<span class="comment">// （画像・CSS の読み込み完了は待たない）</span>
+document.<span class="fn">addEventListener</span>(<span class="str">"DOMContentLoaded"</span>, () <span class="op">=></span> {
+  <span class="comment">// ここで DOM 操作を行う</span>
+  <span class="kw">const</span> title = document.<span class="fn">getElementById</span>(<span class="str">"title"</span>);
+  title.<span class="prop">textContent</span> = <span class="str">"DOM 準備完了！"</span>;
+});
+
+<span class="comment">// load：すべてのリソース（画像・CSS）読み込み完了後</span>
+window.<span class="fn">addEventListener</span>(<span class="str">"load"</span>, () <span class="op">=></span> {
+  console.<span class="fn">log</span>(<span class="str">"すべて読み込み完了"</span>);
+});
+
+<span class="comment">// readyState で現在の状態を確認</span>
+console.<span class="fn">log</span>(document.<span class="prop">readyState</span>);
+<span class="out">// → "loading"（解析中）</span>
+<span class="out">// → "interactive"（DOMContentLoaded 後）</span>
+<span class="out">// → "complete"（load 後）</span>
+</pre>
+      </div>
+    </div>
+
+    <div class="tab-content" id="tab-defer">
+      <h3 style="margin-top:0; color:#1a365d;">defer / async 属性</h3>
+      <div class="pre-wrap">
+        <button class="copy-btn" onclick="copyPre(this)">copy</button>
+<pre>
+<span class="comment">&lt;!-- 通常：HTML の解析をブロックする --&gt;</span>
+<span class="tag">&lt;script</span> src=<span class="str">"app.js"</span><span class="tag">&gt;&lt;/script&gt;</span>
+
+<span class="comment">&lt;!-- defer：HTML 解析後に実行（順序保証）--&gt;</span>
+<span class="tag">&lt;script</span> src=<span class="str">"app.js"</span> <span class="prop">defer</span><span class="tag">&gt;&lt;/script&gt;</span>
+
+<span class="comment">&lt;!-- async：ダウンロード完了次第実行（順序不保証）--&gt;</span>
+<span class="tag">&lt;script</span> src=<span class="str">"app.js"</span> <span class="prop">async</span><span class="tag">&gt;&lt;/script&gt;</span>
+</pre>
+      </div>
+      <table class="ref-table" style="margin-top:12px;">
+        <thead>
+          <tr><th>属性</th><th>ダウンロード</th><th>実行タイミング</th><th>順序</th><th>推奨場面</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>なし</td>
+            <td>HTML をブロック</td>
+            <td>即時</td>
+            <td>保証</td>
+            <td>インラインスクリプト</td>
+          </tr>
+          <tr>
+            <td><code>defer</code></td>
+            <td>並行</td>
+            <td>DOM 構築後</td>
+            <td>✅ 保証</td>
+            <td>DOM 操作が必要なスクリプト</td>
+          </tr>
+          <tr>
+            <td><code>async</code></td>
+            <td>並行</td>
+            <td>ダウンロード完了後</td>
+            <td>❌ 不保証</td>
+            <td>独立した解析スクリプト</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="tab-content" id="tab-position">
+      <h3 style="margin-top:0; color:#1a365d;">script タグの配置場所</h3>
+      <div class="pre-wrap">
+        <button class="copy-btn" onclick="copyPre(this)">copy</button>
+<pre>
+<span class="comment">&lt;!-- ❌ head 内（DOM が未構築で要素を取得できない）--&gt;</span>
+<span class="tag">&lt;head&gt;</span>
+  <span class="tag">&lt;script&gt;</span>
+    document.<span class="fn">getElementById</span>(<span class="str">"title"</span>); <span class="out">// → null（まだ存在しない）</span>
+  <span class="tag">&lt;/script&gt;</span>
+<span class="tag">&lt;/head&gt;</span>
+
+<span class="comment">&lt;!-- ✅ body の末尾（DOM が構築済み）--&gt;</span>
+<span class="tag">&lt;body&gt;</span>
+  <span class="tag">&lt;h1</span> id=<span class="str">"title"</span><span class="tag">&gt;</span>タイトル<span class="tag">&lt;/h1&gt;</span>
+  <span class="comment">&lt;!-- ... --&gt;</span>
+  <span class="tag">&lt;script</span> src=<span class="str">"app.js"</span><span class="tag">&gt;&lt;/script&gt;</span> <span class="comment">&lt;!-- ← ここに配置 --&gt;</span>
+<span class="tag">&lt;/body&gt;</span>
+
+<span class="comment">&lt;!-- ✅ defer 属性（head 内でも安全）--&gt;</span>
+<span class="tag">&lt;head&gt;</span>
+  <span class="tag">&lt;script</span> src=<span class="str">"app.js"</span> <span class="prop">defer</span><span class="tag">&gt;&lt;/script&gt;</span>
+<span class="tag">&lt;/head&gt;</span>
+</pre>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ============================================================ -->
+<!-- まとめ -->
+<!-- ============================================================ -->
+<h2>📌 まとめ</h2>
+<div class="demo-box">
+  <table class="ref-table">
+    <thead><tr><th>操作</th><th>メソッド / プロパティ</th><th>説明</th></tr></thead>
+    <tbody>
+      <tr><td rowspan="3">要素の取得</td>
+        <td><code>getElementById(id)</code></td>
+        <td>id で1つ取得</td></tr>
+      <tr><td><code>querySelector(css)</code></td>
+        <td>CSSセレクタで最初の1つ</td></tr>
+      <tr><td><code>querySelectorAll(css)</code></td>
+        <td>CSSセレクタで全て（NodeList）</td></tr>
+      <tr><td rowspan="3">テキスト・HTML</td>
+        <td><code>textContent</code></td>
+        <td>テキストのみ（XSS 安全）</td></tr>
+      <tr><td><code>innerHTML</code></td>
+        <td>HTML タグも解釈（XSS 注意）</td></tr>
+      <tr><td><code>innerText</code></td>
+        <td>表示テキスト（CSS 考慮）</td></tr>
+      <tr><td rowspan="2">スタイル</td>
+        <td><code>style.プロパティ</code></td>
+        <td>インラインスタイルを変更</td></tr>
+      <tr><td><code>classList.add/remove/toggle</code></td>
+        <td>クラスを操作（推奨）</td></tr>
+      <tr><td rowspan="3">属性</td>
+        <td><code>getAttribute / setAttribute</code></td>
+        <td>属性の取得・設定</td></tr>
+      <tr><td><code>removeAttribute / hasAttribute</code></td>
+        <td>属性の削除・確認</td></tr>
+      <tr><td><code>dataset</code></td>
+        <td>data-* 属性へのアクセス</td></tr>
+      <tr><td rowspan="3">要素の追加・削除</td>
+        <td><code>createElement / appendChild</code></td>
+        <td>要素を作成して追加</td></tr>
+      <tr><td><code>prepend / insertBefore</code></td>
+        <td>先頭・指定位置に挿入</td></tr>
+      <tr><td><code>remove / removeChild</code></td>
+        <td>要素を削除</td></tr>
+    </tbody>
+  </table>
+</div>
+
+
+<!-- ============================================================ -->
+<!-- 演習問題 -->
+<!-- ============================================================ -->
+<div class="quiz-section">
+  <h2>🖊️ 演習問題</h2>
+
+  <!-- Q1 -->
+  <div class="quiz-block">
+    <h3>Q1. 穴埋め問題</h3>
+    <p>以下の説明に合う答えを入力してください。</p>
+    <label>① CSSセレクタで最初の要素を1つ取得するメソッド：</label>
+    <input type="text" id="q1a" placeholder="document.???()">
+    <label>② 要素のテキストを安全に変更するプロパティ（XSS 対策）：</label>
+    <input type="text" id="q1b" placeholder="プロパティ名">
+    <label>③ クラスの追加・削除・トグルを行う API：</label>
+    <input type="text" id="q1c" placeholder="el.???">
+    <label>④ HTML が解析完了したときに発火するイベント名：</label>
+    <input type="text" id="q1d" placeholder="イベント名">
+    <br>
+    <button class="btn btn-teal" onclick="checkQ1()">答え合わせ</button>
+    <div class="result-msg" id="q1-result"></div>
+    <script>
+      function checkQ1() {
+        const a = document.getElementById('q1a').value.trim()
+                    .replace(/document\.|querySelector|\(\)|[()]/gi,'').toLowerCase();
+        const b = document.getElementById('q1b').value.trim().toLowerCase();
+        const c = document.getElementById('q1c').value.trim()
+                    .replace(/el\.|classList/gi,'').toLowerCase();
+        const d = document.getElementById('q1d').value.trim()
+                    .replace(/['"]/g,'').toLowerCase().replace(/\s/g,'');
+        const r = document.getElementById('q1-result');
+        const ca = a === 'queryselector' || a === 'queryselector()';
+        const cb = b === 'textcontent';
+        const cc = c === 'classlist' || c === '';
+        const cd = d === 'domcontentloaded';
+        const count = [ca,cb,cc,cd].filter(Boolean).length;
+        if (count === 4) {
+          r.className = 'result-msg correct';
+          r.textContent = '✅ 全問正解！完璧です！';
+        } else {
+          r.className = 'result-msg wrong';
+          r.innerHTML = `❌ ${count}/4 問正解。<br>` +
+            `① ${ca?'✅':'❌ querySelector'}　` +
+            `② ${cb?'✅':'❌ textContent'}　` +
+            `③ ${cc?'✅':'❌ classList'}　` +
+            `④ ${cd?'✅':'❌ DOMContentLoaded'}`;
+        }
+      }
+    </script>
+  </div>
+
+  <!-- Q2 -->
+  <div class="quiz-block">
+    <h3>Q2. 選択問題</h3>
+    <p>以下のコードについて正しい説明はどれですか？</p>
+    <div class="pre-wrap" style="margin-bottom:12px;">
+<pre style="margin:0;">
+<span class="kw">const</span> el = document.<span class="fn">querySelector</span>(<span class="str">"#box"</span>);
+el.<span class="prop">innerHTML</span> = userInput;
+</pre>
+    </div>
+    <select id="q2">
+      <option value="">-- 選択してください --</option>
+      <option value="a">userInput に HTML タグが含まれていても安全に表示される</option>
+      <option value="b">userInput に &lt;script&gt; タグが含まれると XSS 攻撃になる可能性がある</option>
+      <option value="c">innerHTML は textContent より高速に動作する</option>
+      <option value="d">innerHTML はテキストのみを設定するプロパティである</option>
+    </select>
+    <br>
+    <button class="btn btn-teal" onclick="checkQ2()">答え合わせ</button>
+    <div class="result-msg" id="q2-result"></div>
+    <script>
+      function checkQ2() {
+        const v = document.getElementById('q2').value;
+        const r = document.getElementById('q2-result');
+        if (v === 'b') {
+          r.className = 'result-msg correct';
+          r.innerHTML = '✅ 正解！<br><br>' +
+            '<code>innerHTML</code> はHTMLとして解釈されるため、<br>' +
+            'ユーザー入力をそのまま設定すると <strong>XSS（クロスサイトスクリプティング）</strong> 攻撃の危険があります。<br><br>' +
+            '<strong>対策：</strong>ユーザー入力には <code>textContent</code> を使いましょう。<br>' +
+            '<code>el.textContent = userInput;</code> ← HTMLタグはエスケープされる';
+        } else if (v === '') {
+          r.className = 'result-msg info';
+          r.textContent = '⚠️ 選択肢を選んでください。';
+        } else {
+          r.className = 'result-msg wrong';
+          r.innerHTML = '❌ 不正解。<br>' +
+            '<code>innerHTML</code> はHTMLを解釈するため、ユーザー入力をそのまま設定すると <strong>XSS</strong> の危険があります。';
+        }
+      }
+    </script>
+  </div>
+
+  <!-- Q3 -->
+  <div class="quiz-block">
+    <h3>Q3. 正誤チェックボックス問題</h3>
+    <p><strong>正しい記述</strong>をすべて選んでください。</p>
+    <label class="checkbox-label"><input type="checkbox" id="q3a">
+      ① <code>querySelectorAll</code> は NodeList を返す</label>
+    <label class="checkbox-label"><input type="checkbox" id="q3b">
+      ② <code>getElementById</code> は CSSセレクタを引数に取る</label>
+    <label class="checkbox-label"><input type="checkbox" id="q3c">
+      ③ <code>classList.toggle</code> はクラスがあれば削除、なければ追加する</label>
+    <label class="checkbox-label"><input type="checkbox" id="q3d">
+      ④ <code>defer</code> 属性を付けると DOM 構築後にスクリプトが実行される</label>
+    <label class="checkbox-label"><input type="checkbox" id="q3e">
+      ⑤ <code>textContent</code> はHTMLタグをそのまま解釈して表示する</label>
+    <label class="checkbox-label"><input type="checkbox" id="q3f">
+      ⑥ <code>createElement</code> で作成した要素は <code>appendChild</code> などで DOM に追加するまで表示されない</label>
+    <br>
+    <button class="btn btn-teal" onclick="checkQ3()">答え合わせ</button>
+    <div class="result-msg" id="q3-result"></div>
+    <script>
+      function checkQ3() {
+        const r = document.getElementById('q3-result');
+        const checks = {
+          a: document.getElementById('q3a').checked,
+          b: document.getElementById('q3b').checked,
+          c: document.getElementById('q3c').checked,
+          d: document.getElementById('q3d').checked,
+          e: document.getElementById('q3e').checked,
+          f: document.getElementById('q3f').checked,
+        };
+        // 正解：①③④⑥（a,c,d,f）
+        // ② getElementById は id 名のみ（# 不要）
+        // ⑤ textContent はHTMLタグをエスケープして文字列として表示
+        const correct = { a:true, b:false, c:true, d:true, e:false, f:true };
+        const allOk = Object.keys(correct).every(k => checks[k] === correct[k]);
+        if (allOk) {
+          r.className = 'result-msg correct';
+          r.innerHTML = '✅ 全問正解！完璧です！';
+        } else {
+          r.className = 'result-msg wrong';
+          r.innerHTML =
+            '❌ 不正解の項目があります。<br><br>' +
+            '<strong>正しい記述：</strong>①③④⑥<br><br>' +
+            '<strong>誤った記述：</strong><br>' +
+            '・② <code>getElementById</code> は <strong>id 名のみ</strong>（<code>#</code> なし）を引数に取ります。CSSセレクタを使うのは <code>querySelector</code> です。<br>' +
+            '・⑤ <code>textContent</code> はHTMLタグを<strong>エスケープして文字列として表示</strong>します。HTMLを解釈するのは <code>innerHTML</code> です。';
+        }
+      }
+    </script>
+  </div>
+
+  <!-- Q4 コンソール実践 -->
+  <div class="quiz-block">
+    <h3>Q4. ライブ DOM 操作実践</h3>
+    <p>下のデモエリアに対して、以下の操作をコンソールで実行してください。</p>
+    <ul style="font-size:0.92em; color:#4a5568; line-height:2;">
+      <li>① <code>id="q4-target"</code> の要素を取得する</li>
+      <li>② テキストを <code>"DOM操作マスター！"</code> に変更する</li>
+      <li>③ 背景色を <code>"#c6f6d5"</code> に変更する</li>
+      <li>④ <code>"success"</code> クラスを追加する</li>
+    </ul>
+
+    <div class="live-demo-area" style="margin-bottom:12px;">
+      <div id="q4-target"
+           style="padding:14px 18px; background:#edf2f7; border-radius:8px;
+                  border:2px solid #cbd5e0; color:#4a5568; text-align:center;
+                  transition:all 0.3s ease; font-size:1em;">
+        ここを操作してください
+      </div>
+    </div>
+
+    <div class="js-console" id="console-q4">
+      <div class="js-console-bar">
+        <div class="dot dot-red"></div>
+        <div class="dot dot-yellow"></div>
+        <div class="dot dot-green"></div>
+        <span>DOM Practice Console</span>
+      </div>
+      <div class="js-console-output" id="console-q4-output">
+        <div class="log-info">// id="q4-target" の要素を操作してみましょう</div>
+        <div class="log-info">// const el = document.getElementById("q4-target");</div>
+      </div>
+      <div class="js-console-input-row">
+        <span>&gt;</span>
+        <input class="js-console-input" id="console-q4-input"
+               placeholder="const el = document.getElementById('q4-target');"
+               type="text">
+        <button class="js-console-clear" onclick="clearConsole('q4')">クリア</button>
+        <button class="js-console-run"   onclick="runConsole('q4')">▶ 実行</button>
+      </div>
+    </div>
+
+    <label style="margin-top:12px; display:block;">
+      すべての操作が完了したら、<code>el.classList.contains("success")</code> の結果は？
+    </label>
+    <select id="q4-sel">
+      <option value="">-- 選択してください --</option>
+      <option value="true">true</option>
+      <option value="false">false</option>
+      <option value="undefined">undefined</option>
+    </select>
+    <br>
+    <button class="btn btn-teal" onclick="checkQ4()">答え合わせ</button>
+    <div class="result-msg" id="q4-result"></div>
+    <script>
+      function checkQ4() {
+        const v   = document.getElementById('q4-sel').value;
+        const r   = document.getElementById('q4-result');
+        const el  = document.getElementById('q4-target');
+        const ok  = el && el.classList.contains('success');
+        if (v === 'true' && ok) {
+          r.className = 'result-msg correct';
+          r.innerHTML = '✅ 正解！DOM 操作が正しく完了しています！<br><br>' +
+            '実行したコード：<br>' +
+            '<code>const el = document.getElementById("q4-target");</code><br>' +
+            '<code>el.textContent = "DOM操作マスター！";</code><br>' +
+            '<code>el.style.backgroundColor = "#c6f6d5";</code><br>' +
+            '<code>el.classList.add("success");</code>';
+        } else if (v === 'true' && !ok) {
+          r.className = 'result-msg wrong';
+          r.innerHTML = '❌ "success" クラスがまだ追加されていません。<br>' +
+            'コンソールで <code>el.classList.add("success")</code> を実行してください。';
+        } else if (v === '') {
+          r.className = 'result-msg info';
+          r.textContent = '⚠️ コンソールで操作を実行してから選択してください。';
+        } else {
+          r.className = 'result-msg wrong';
+          r.innerHTML = '❌ 不正解。<br>' +
+            '<code>classList.add("success")</code> でクラスを追加すると、<br>' +
+            '<code>classList.contains("success")</code> は <strong>true</strong> を返します。';
+        }
+      }
+    </script>
+  </div>
+
+</div><!-- /quiz-section -->
+
+
+<!-- 完了ボタン -->
+<div class="complete-section">
+  <p>🎉 「1-9 HTMLの操作（DOM）」の学習が完了したら記録しましょう！</p>
+  <button class="btn btn-done" onclick="markComplete()">✅ このセクションを完了にする</button>
+  <div id="complete-msg" style="margin-top:10px; font-size:0.88em; color:#276749; display:none;">
+    進捗を保存しました！トップページの進捗バーに反映されます。
+  </div>
+</div>
+
+<!-- ページナビ -->
+<div class="page-nav">
+  <a class="prev" href="08_classes.html">← 1-8 オブジェクトとクラス</a>
+  <a class="home" href="../index.html">🏠 目次へ</a>
+  <a class="next" href="10_events.html">次へ：1-10 イベントと非同期処理 →</a>
+</div>
+
+<!-- フッター -->
+<footer>
+  <p>
+    HTML5プロフェッショナル Level 2 学習サイト ／
+    <a href="../index.html">🏠 目次</a> ／
+    <a href="../exam/index.html">📝 模擬試験</a> ／
+    <a href="https://github.com/MeshinoKiwamiOkome/html5lv2" target="_blank">GitHub</a>
+  </p>
+  <p style="margin-top:4px;">© MeshinoKiwamiOkome</p>
+</footer>
+
+
+<!-- ============================================================ -->
+<!-- JavaScript -->
+<!-- ============================================================ -->
+<script>
+  /* ===== コピーボタン ===== */
+  function copyPre(btn) {
+    const pre = btn.nextElementSibling;
+    navigator.clipboard.writeText(pre.innerText || pre.textContent).then(() => {
+      btn.textContent = 'copied!';
+      setTimeout(() => btn.textContent = 'copy', 1800);
+    });
+  }
+
+  /* ===== タブ ===== */
+  function switchTab(btn, id) {
+    btn.closest('.tab-wrap').querySelectorAll('.tab-btn')
+       .forEach(b => b.classList.remove('active'));
+    btn.closest('.tab-wrap').querySelectorAll('.tab-content')
+       .forEach(c => c.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById(id).classList.add('active');
+  }
+
+  /* ===== DOM ツリー ノード情報 ===== */
+  const nodeInfoData = {
+    document: {
+      color: '#90cdf4',
+      text: `// document オブジェクト\nconsole.log(document.title);   // → ページタイトル\nconsole.log(document.URL);     // → 現在のURL\nconsole.log(document.body);    // → <body> 要素\nconsole.log(document.head);    // → <head> 要素\nconsole.log(document.readyState); // → "complete"`
+    },
+    html: {
+      color: '#f6ad55',
+      text: `// <html> 要素\nconst html = document.documentElement;\nconsole.log(html.lang);        // → "ja"\nconsole.log(html.tagName);     // → "HTML"\nconsole.log(html.children.length); // → 2（head, body）`
+    },
+    head: {
+      color: '#b794f4',
+      text: `// <head> 要素\nconst head = document.head;\nconsole.log(head.children);    // HTMLCollection\n// meta, title, link, script などが含まれる`
+    },
+    body: {
+      color: '#68d391',
+      text: `// <body> 要素\nconst body = document.body;\nconsole.log(body.children);    // すべての直下の子要素\nconsole.log(body.innerHTML);   // body の HTML 全体\nbody.style.backgroundColor = "#f0f4f8";`
+    },
+    h1: {
+      color: '#fc8181',
+      text: `// <h1 id="title"> 要素\nconst h1 = document.getElementById("title");\n// または\nconst h1 = document.querySelector("h1");\n\nconsole.log(h1.tagName);       // → "H1"\nconsole.log(h1.id);            // → "title"\nconsole.log(h1.textContent);   // → テキスト内容\nh1.style.color = "#2c7a7b";    // 色を変更`
+    },
+    'text-h1': {
+      color: '#9ae6b4',
+      text: `// テキストノード\n// 要素内のテキストは「テキストノード」として管理される\nconst h1 = document.querySelector("h1");\nconsole.log(h1.firstChild.nodeType); // → 3（TEXT_NODE）\nconsole.log(h1.firstChild.nodeValue); // → テキスト内容\n\n// textContent でテキストを変更\nh1.textContent = "新しいタイトル";`
+    },
+    p: {
+      color: '#fbd38d',
+      text: `// <p class="desc"> 要素\nconst p = document.querySelector(".desc");\nconsole.log(p.className);      // → "desc"\nconsole.log(p.classList);      // DOMTokenList\np.classList.add("highlight");  // クラスを追加\np.style.fontSize = "18px";     // フォントサイズ変更`
+    },
+    ul: {
+      color: '#81e6d9',
+      text: `// <ul id="list"> 要素\nconst ul = document.getElementById("list");\nconsole.log(ul.children.length); // → li の数\nconsole.log(ul.childElementCount); // → li の数\n\n// 子要素を反復\nul.querySelectorAll("li").forEach(li => {\n  console.log(li.textContent);\n});`
+    },
+    li: {
+      color: '#e9d8fd',
+      text: `// <li> 要素\nconst li = document.querySelector("li");\nconsole.log(li.parentElement);  // → <ul>\nconsole.log(li.nextElementSibling); // → 次の <li>\nconsole.log(li.dataset.index);  // → data-index の値\n\n// 要素を削除\nli.remove(); // または li.parentNode.removeChild(li);`
+    }
+  };
+
+  function showNodeInfo(key) {
+    const panel = document.getElementById('node-info');
+    if (panel.dataset.current === key && panel.style.display !== 'none') {
+      panel.style.display = 'none'; panel.dataset.current = ''; return;
+    }
+    panel.dataset.current = key;
+    panel.style.display = 'block';
+    const d = nodeInfoData[key];
+    panel.style.color = d.color;
+    panel.textContent = d.text;
+    panel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }
+
+  /* ===== セレクタデモ ===== */
+  function runSelectorDemo() {
+    const method = document.getElementById('sel-method').value;
+    const query  = document.getElementById('sel-query').value.trim();
+    const out    = document.getElementById('selector-output');
+    if (!query) return;
+
+    const area = document.getElementById('selector-demo-area');
+    let result, desc;
+
+    try {
+      // セレクタデモエリア内で検索
+      if (method === 'querySelector') {
+        result = area.querySelector(query);
+        desc = result
+          ? `取得成功！\ntagName: ${result.tagName}\ntextContent: "${result.textContent.trim().slice(0,40)}"\nid: "${result.id}"\nclassName: "${result.className}"`
+          : `null（"${query}" に一致する要素が見つかりません）`;
+      } else if (method === 'querySelectorAll') {
+        result = area.querySelectorAll(query);
+        desc = `NodeList（${result.length} 件）\n` +
+          [...result].map((el, i) =>
+            `  [${i}] <${el.tagName.toLowerCase()}> "${el.textContent.trim().slice(0,30)}"`
+          ).join('\n');
+      } else if (method === 'getElementById') {
+        result = document.getElementById(query.replace('#',''));
+        desc = result
+          ? `取得成功！\ntagName: ${result.tagName}\ntextContent: "${result.textContent.trim().slice(0,40)}"`
+          : `null（id="${query.replace('#','')}" が見つかりません）`;
+      } else if (method === 'getElementsByClassName') {
+        result = area.getElementsByClassName(query.replace('.',''));
+        desc = `HTMLCollection（${result.length} 件）\n` +
+          [...result].map((el, i) =>
+            `  [${i}] <${el.tagName.toLowerCase()}> "${el.textContent.trim().slice(0,30)}"`
+          ).join('\n');
+      } else if (method === 'getElementsByTagName') {
+        result = area.getElementsByTagName(query.replace('<','').replace('>',''));
+        desc = `HTMLCollection（${result.length} 件）\n` +
+          [...result].map((el, i) =>
+            `  [${i}] <${el.tagName.toLowerCase()}> "${el.textContent.trim().slice(0,30)}"`
+          ).join('\n');
+      }
+    } catch(e) {
+      out.style.color = '#fc8181';
+      out.textContent = `エラー: ${e.message}`;
+      return;
+    }
+
+    out.style.color = result ? '#68d391' : '#f6ad55';
+    out.textContent = `> document.${method}("${query}")\n\n${desc}`;
+  }
+
+  /* ===== ライブターゲット リセット ===== */
+  function resetLiveTarget() {
+    const el = document.getElementById('live-target');
+    el.textContent = 'ここを操作してみよう！';
+    el.style.cssText = 'padding:16px 20px; background:#ebf8ff; border-radius:8px; border:2px solid #bee3f8; font-size:1.1em; color:#1a365d; transition:all 0.3s ease; text-align:center; margin-top:8px;';
+    el.className = '';
+    el.removeAttribute('title');
+  }
+
+  /* ===== テキスト変更 ===== */
+  function changeText() {
+    const val  = document.getElementById('text-val').value;
+    const prop = document.getElementById('text-prop').value;
+    const el   = document.getElementById('live-target');
+    const out  = document.getElementById('text-output');
+    el[prop] = val;
+    out.style.color = '#68d391';
+    out.textContent =
+      `> el.${prop} = "${val}"\n\n` +
+      `現在の textContent: "${el.textContent.slice(0,50)}"\n` +
+      `現在の innerHTML:   "${el.innerHTML.slice(0,80)}"` +
+      (prop === 'innerHTML' && val.includes('<')
+        ? '\n\n⚠️ innerHTML はHTMLタグを解釈します。ユーザー入力には textContent を使いましょう。'
+        : '');
+  }
+
+  /* ===== スタイル変更 ===== */
+  function changeStyle() {
+    const prop = document.getElementById('style-prop').value;
+    const val  = document.getElementById('style-val').value;
+    const el   = document.getElementById('live-target');
+    const out  = document.getElementById('style-output');
+    try {
+      el.style[prop] = val;
+      out.style.color = '#68d391';
+      out.textContent =
+        `> el.style.${prop} = "${val}"\n\n` +
+        `適用されたスタイル：${prop}: ${el.style[prop]}\n\n` +
+        `// CSS プロパティ名はキャメルケースで指定\n// background-color → backgroundColor\n// border-radius    → borderRadius`;
+    } catch(e) {
+      out.style.color = '#fc8181';
+      out.textContent = `エラー: ${e.message}`;
+    }
+  }
+
+  /* ===== クラス操作 ===== */
+  function changeClass() {
+    const op   = document.getElementById('class-op').value.replace('（追加）','').replace('（削除）','').replace('（切替）','').replace('（確認）','').replace('（置換）','').trim();
+    const name = document.getElementById('class-name').value.trim() || 'highlight';
+    const el   = document.getElementById('live-target');
+    const out  = document.getElementById('class-output');
+    let result;
+
+    const cleanOp = op.split('（')[0];
+
+    if (cleanOp === 'add') {
+      el.classList.add(name);
+      el.style.outline = '3px solid #f6ad55';
+      result = `クラス "${name}" を追加しました`;
+    } else if (cleanOp === 'remove') {
+      el.classList.remove(name);
+      result = `クラス "${name}" を削除しました`;
+    } else if (cleanOp === 'toggle') {
+      const added = el.classList.toggle(name);
+      result = added ? `クラス "${name}" を追加しました（toggle）` : `クラス "${name}" を削除しました（toggle）`;
+    } else if (cleanOp === 'contains') {
+      result = `classList.contains("${name}") → ${el.classList.contains(name)}`;
+    } else if (cleanOp === 'replace') {
+      el.classList.replace('highlight', name);
+      result = `クラス "highlight" を "${name}" に置換しました`;
+    }
+
+    out.style.color = '#68d391';
+    out.textContent =
+      `> el.classList.${cleanOp}("${name}")\n\n` +
+      `${result}\n\n` +
+      `現在のクラス一覧: "${el.className || '（なし）'}"`;
+  }
+
+  /* ===== 属性操作 ===== */
+  function changeAttr() {
+    const opRaw = document.getElementById('attr-op').value;
+    const op    = opRaw.split('（')[0];
+    const name  = document.getElementById('attr-name').value.trim() || 'title';
+    const val   = document.getElementById('attr-val').value.trim();
+    const el    = document.getElementById('live-target');
+    const out   = document.getElementById('attr-output');
+    let result;
+
+    if (op === 'getAttribute') {
+      result = el.getAttribute(name);
+      out.textContent = `> el.getAttribute("${name}")\n  → ${result === null ? 'null（属性が存在しない）' : '"' + result + '"'}`;
+    } else if (op === 'setAttribute') {
+      el.setAttribute(name, val);
+      result = el.getAttribute(name);
+      out.textContent = `> el.setAttribute("${name}", "${val}")\n  → 設定完了\n\n確認: el.getAttribute("${name}") → "${result}"`;
+    } else if (op === 'removeAttribute') {
+      el.removeAttribute(name);
+      out.textContent = `> el.removeAttribute("${name}")\n  → 削除完了\n\n確認: el.hasAttribute("${name}") → ${el.hasAttribute(name)}`;
+    } else if (op === 'hasAttribute') {
+      result = el.hasAttribute(name);
+      out.textContent = `> el.hasAttribute("${name}")\n  → ${result}`;
+    } else if (op === 'dataset') {
+      el.dataset.demo = 'テストデータ';
+      out.textContent = `> el.dataset.demo = "テストデータ"\n  → data-demo 属性が追加されました\n\n確認: el.dataset.demo → "${el.dataset.demo}"\nel.getAttribute("data-demo") → "${el.getAttribute('data-demo')}"`;
+    }
+
+    out.style.color = '#68d391';
+  }
+
+  /* ===== リスト操作 ===== */
+  function addListItem() {
+    const text = document.getElementById('list-item-text').value.trim() || '新しいアイテム';
+    const pos  = document.getElementById('list-insert-pos').value;
+    const ul   = document.getElementById('live-list');
+    const out  = document.getElementById('list-output');
+
+    const li = document.createElement('li');
+    li.textContent = text;
+    li.style.color = '#276749';
+    li.style.fontWeight = 'bold';
+    li.style.animation = 'none';
+
+    if (pos === 'append') {
+      ul.appendChild(li);
+    } else if (pos === 'prepend') {
+      ul.prepend(li);
+    } else if (pos === 'before') {
+      const first = ul.firstElementChild;
+      if (first) ul.insertBefore(li, first);
+      else ul.appendChild(li);
+    }
+
+    out.style.color = '#68d391';
+    out.textContent =
+      `// ${pos === 'append' ? '末尾に追加' : pos === 'prepend' ? '先頭に追加' : '先頭の前に挿入'}\n` +
+      `const li = document.createElement("li");\nli.textContent = "${text}";\n` +
+      (pos === 'append'  ? 'ul.appendChild(li);' :
+       pos === 'prepend' ? 'ul.prepend(li);' :
+       'ul.insertBefore(li, ul.firstElementChild);') +
+      `\n\n現在のアイテム数: ${ul.children.length}`;
+  }
+
+  function removeLastItem() {
+    const ul  = document.getElementById('live-list');
+    const out = document.getElementById('list-output');
+    const last = ul.lastElementChild;
+    if (!last) {
+      out.style.color = '#f6ad55';
+      out.textContent = 'リストが空です';
+      return;
+    }
+    const text = last.textContent;
+    last.remove();
+    out.style.color = '#fc8181';
+    out.textContent =
+      `// 末尾の要素を削除\nul.lastElementChild.remove();\n\n削除した要素: "${text}"\n残りのアイテム数: ${ul.children.length}`;
+  }
+
+  function clearList() {
+    const ul  = document.getElementById('live-list');
+    const out = document.getElementById('list-output');
+    const count = ul.children.length;
+    ul.innerHTML = '';
+    out.style.color = '#f6ad55';
+    out.textContent = `// 全要素を削除\nul.innerHTML = "";\n\n${count} 件のアイテムを削除しました`;
+  }
+
+  function resetList() {
+    const ul = document.getElementById('live-list');
+    ul.innerHTML = `
+      <li style="color:#2d3748;">初期アイテム 1</li>
+      <li style="color:#2d3748;">初期アイテム 2</li>
+      <li style="color:#2d3748;">初期アイテム 3</li>
+    `;
+    document.getElementById('list-output').textContent = 'リストをリセットしました';
+    document.getElementById('list-output').style.color = '#a0aec0';
+  }
+
+  /* ===== JSコンソール ===== */
+  function runConsole(id) {
+    const input  = document.getElementById(`console-${id}-input`);
+    const output = document.getElementById(`console-${id}-output`);
+    const code   = input.value.trim();
+    if (!code) return;
+
+    const promptLine = document.createElement('div');
+    promptLine.className = 'log-prompt';
+    promptLine.textContent = '> ' + code;
+    output.appendChild(promptLine);
+
+    const origLog   = console.log;
+    const origWarn  = console.warn;
+    const origError = console.error;
+    const origInfo  = console.info;
+
+    function addLine(cls, ...args) {
+      const line = document.createElement('div');
+      line.className = cls;
+      line.textContent = args.map(a => {
+        if (a instanceof Element) return `<${a.tagName.toLowerCase()} id="${a.id}" class="${a.className}">`;
+        if (typeof a === 'object' && a !== null) {
+          try { return JSON.stringify(a); } catch(e) { return String(a); }
+        }
+        return String(a);
+      }).join(' ');
+      output.appendChild(line);
+    }
+
+    console.log   = (...a) => { addLine('log-line',  ...a); origLog(...a);   };
+    console.warn  = (...a) => { addLine('log-warn',  ...a); origWarn(...a);  };
+    console.error = (...a) => { addLine('log-error', ...a); origError(...a); };
+    console.info  = (...a) => { addLine('log-info',  ...a); origInfo(...a);  };
+
+    try {
+      const result = eval(code);
+      if (result !== undefined) {
+        let display;
+        if (result instanceof Element) {
+          display = `<${result.tagName.toLowerCase()} id="${result.id}" class="${result.className}">`;
+        } else if (result instanceof NodeList || result instanceof HTMLCollection) {
+          display = `NodeList/HTMLCollection (${result.length} items)`;
+        } else if (typeof result === 'object' && result !== null) {
+          try { display = JSON.stringify(result); } catch(e) { display = String(result); }
+        } else {
+          display = String(result);
+        }
+        addLine('log-result', '← ' + display);
+      }
+    } catch(e) {
+      addLine('log-error', e.toString());
+    }
+
+    console.log   = origLog;
+    console.warn  = origWarn;
+    console.error = origError;
+    console.info  = origInfo;
+
+    input.value = '';
+    output.scrollTop = output.scrollHeight;
+  }
+
+  function clearConsole(id) {
+    document.getElementById(`console-${id}-output`).innerHTML =
+      '<div class="log-info">// クリアしました</div>';
+  }
+
+  document.querySelectorAll('.js-console-input').forEach(el => {
+    el.addEventListener('keydown', e => {
+      if (e.key === 'Enter') {
+        const id = el.id.replace('console-', '').replace('-input', '');
+        runConsole(id);
+      }
+    });
+  });
+
+  /* ===== 完了ボタン ===== */
+  function markComplete() {
+    const current = parseInt(localStorage.getItem('html5lv2_ch1') || '0', 10);
+    const newVal  = Math.min(100, current + 9);
+    localStorage.setItem('html5lv2_ch1', String(newVal));
+    document.getElementById('complete-msg').style.display = 'block';
+  }
+  if (parseInt(localStorage.getItem('html5lv2_ch1') || '0') >= 81) {
+    document.getElementById('complete-msg').style.display = 'block';
+  }
+</script>
+
+</body>
+</html>

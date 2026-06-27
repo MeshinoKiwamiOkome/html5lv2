@@ -1,0 +1,1922 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>1-11 HTML5とJavaScript | HTML5プロフェッショナル Level 2</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; }
+    body {
+      font-family: 'Segoe UI', 'Helvetica Neue', sans-serif;
+      max-width: 960px; margin: 40px auto; padding: 0 24px;
+      background: #f0f4f8; color: #2d3748; line-height: 1.8;
+    }
+    .breadcrumb {
+      font-size: 0.82em; color: #a0aec0; margin-bottom: 20px;
+      font-family: 'Consolas','Monaco',monospace;
+    }
+    .breadcrumb a { color: #2c7a7b; text-decoration: none; }
+    .breadcrumb a:hover { text-decoration: underline; }
+
+    .chapter-header {
+      background: linear-gradient(135deg, #1a365d, #2c7a7b);
+      border-radius: 12px; padding: 32px 32px 24px;
+      margin-bottom: 32px; color: #fff;
+      box-shadow: 0 4px 18px rgba(44,122,123,0.35);
+    }
+    .chapter-header .ch-num {
+      font-size: 0.8em; font-family: 'Consolas','Monaco',monospace;
+      opacity: 0.85; letter-spacing: 0.08em; margin-bottom: 6px;
+    }
+    .chapter-header h1 {
+      margin: 0 0 10px; font-size: 1.6em; color: #fff; border: none; padding: 0;
+    }
+    .chapter-header p { margin: 0; font-size: 0.92em; opacity: 0.88; }
+    .badge-row { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 14px; }
+    .badge {
+      background: rgba(255,255,255,0.18);
+      border: 1px solid rgba(255,255,255,0.35);
+      border-radius: 20px; padding: 3px 12px;
+      font-size: 0.76em; font-weight: bold;
+    }
+
+    .section-nav {
+      background: #fff; border: 1px solid #bee3f8;
+      border-radius: 10px; padding: 18px 22px;
+      margin-bottom: 32px; box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+    }
+    .section-nav h2 {
+      margin: 0 0 12px; font-size: 0.92em; color: #1a365d; border: none; padding: 0;
+    }
+    .section-nav ol { margin: 0; padding-left: 20px; font-size: 0.9em; }
+    .section-nav ol li { margin: 4px 0; }
+    .section-nav ol li a { color: #2c7a7b; text-decoration: none; }
+    .section-nav ol li a:hover { text-decoration: underline; }
+    .section-nav ol li.current a { color: #1a365d; font-weight: bold; }
+
+    h2 {
+      color: #1a365d; margin-top: 48px;
+      border-left: 5px solid #2c7a7b; padding-left: 12px;
+    }
+    h3 { color: #2c7a7b; margin-top: 28px; }
+
+    code {
+      background: #edf2f7; padding: 2px 6px;
+      border-radius: 4px; font-size: 0.93em;
+      font-family: 'Consolas','Monaco',monospace;
+    }
+    pre {
+      background: #1a202c; color: #e2e8f0;
+      padding: 18px 20px; border-radius: 8px;
+      overflow-x: auto; font-size: 0.88em;
+      line-height: 1.7; font-family: 'Consolas','Monaco',monospace;
+    }
+    pre .comment { color: #68d391; }
+    pre .kw      { color: #90cdf4; }
+    pre .str     { color: #fbd38d; }
+    pre .num     { color: #fc8181; }
+    pre .fn      { color: #b794f4; }
+    pre .op      { color: #f6ad55; }
+    pre .out     { color: #a0aec0; }
+    pre .prop    { color: #81e6d9; }
+    pre .tag     { color: #fc8181; }
+
+    .pre-wrap { position: relative; margin: 14px 0; }
+    .copy-btn {
+      position: absolute; top: 8px; right: 8px;
+      background: #4a5568; color: #e2e8f0;
+      border: none; border-radius: 4px; padding: 4px 10px;
+      font-size: 0.75em; cursor: pointer;
+      font-family: 'Consolas','Monaco',monospace;
+      transition: background 0.2s; z-index: 1;
+    }
+    .copy-btn:hover { background: #2c7a7b; }
+
+    .note {
+      background: #fff; border: 1px dashed #81e6d9;
+      border-radius: 6px; padding: 14px 18px;
+      font-size: 0.93em; color: #4a5568; margin: 14px 0;
+    }
+    .note strong { color: #1a365d; }
+    .warn {
+      background: #fffaf0; border: 1px solid #f6ad55;
+      border-left: 5px solid #f6ad55; border-radius: 6px;
+      padding: 14px 18px; font-size: 0.93em; color: #744210; margin: 14px 0;
+    }
+    .good {
+      background: #f0fff4; border: 1px solid #68d391;
+      border-left: 5px solid #48bb78; border-radius: 6px;
+      padding: 14px 18px; font-size: 0.93em; color: #276749; margin: 14px 0;
+    }
+    .demo-box {
+      background: #fff; border: 1px solid #bee3f8;
+      border-radius: 8px; padding: 20px 24px;
+      margin: 12px 0 28px; box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+    }
+
+    /* ===== API カード ===== */
+    .api-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 12px; margin: 14px 0;
+    }
+    .api-card {
+      border-radius: 10px; padding: 16px 18px;
+      cursor: pointer; border: 2px solid transparent;
+      transition: transform 0.15s, box-shadow 0.15s, border-color 0.15s;
+    }
+    .api-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 6px 16px rgba(0,0,0,0.12);
+    }
+    .api-card.active { border-color: #68d391; }
+    .api-card .ac-icon { font-size: 1.6em; margin-bottom: 6px; }
+    .api-card .ac-name {
+      font-weight: bold; font-size: 0.9em; margin-bottom: 4px;
+    }
+    .api-card .ac-desc { font-size: 0.78em; line-height: 1.5; }
+
+    /* ===== Storage デモ ===== */
+    .storage-panel {
+      background: #1a202c; border-radius: 10px;
+      padding: 16px 20px; margin: 14px 0;
+      font-family: 'Consolas','Monaco',monospace; font-size: 0.85em;
+    }
+    .storage-row {
+      display: flex; gap: 8px; align-items: center;
+      margin-bottom: 8px; flex-wrap: wrap;
+    }
+    .storage-key, .storage-val {
+      background: #2d3748; border: 1px solid #4a5568;
+      border-radius: 6px; padding: 6px 12px;
+      color: #e2e8f0; font-family: 'Consolas','Monaco',monospace;
+      font-size: 0.88em; outline: none; flex: 1; min-width: 80px;
+    }
+    .storage-key:focus, .storage-val:focus { border-color: #2c7a7b; }
+    .storage-btn {
+      background: #2c7a7b; color: #fff; border: none;
+      border-radius: 6px; padding: 7px 14px;
+      font-size: 0.82em; font-weight: bold; cursor: pointer;
+      white-space: nowrap; transition: background 0.2s;
+    }
+    .storage-btn:hover { background: #1a365d; }
+    .storage-btn.danger { background: #e53e3e; }
+    .storage-btn.danger:hover { background: #9b2335; }
+    .storage-display {
+      background: #0d1117; border-radius: 6px;
+      padding: 10px 14px; min-height: 60px;
+      color: #68d391; font-size: 0.82em; line-height: 1.8;
+      white-space: pre-wrap;
+    }
+
+    /* ===== Canvas デモ ===== */
+    #demo-canvas {
+      border: 2px solid #bee3f8; border-radius: 8px;
+      background: #1a202c; display: block;
+      max-width: 100%; cursor: crosshair;
+    }
+    .canvas-controls {
+      display: flex; gap: 8px; flex-wrap: wrap;
+      margin-top: 10px; align-items: center;
+    }
+    .canvas-btn {
+      background: #2c7a7b; color: #fff; border: none;
+      border-radius: 6px; padding: 7px 14px;
+      font-size: 0.85em; font-weight: bold; cursor: pointer;
+      transition: background 0.2s;
+    }
+    .canvas-btn:hover { background: #1a365d; }
+    .color-swatch {
+      width: 32px; height: 32px; border-radius: 6px;
+      border: 2px solid #4a5568; cursor: pointer;
+      transition: transform 0.15s, border-color 0.15s;
+    }
+    .color-swatch:hover { transform: scale(1.15); }
+    .color-swatch.active { border-color: #68d391; transform: scale(1.1); }
+
+    /* ===== インタラクティブデモ ===== */
+    .interactive-demo {
+      background: #ebf8ff; border: 1px solid #bee3f8;
+      border-radius: 8px; padding: 16px 20px; margin: 14px 0;
+    }
+    .demo-label {
+      font-size: 0.85em; font-weight: bold;
+      color: #1a365d; margin-bottom: 10px;
+    }
+    .demo-input-row {
+      display: flex; gap: 10px; align-items: center;
+      flex-wrap: wrap; margin-bottom: 10px;
+    }
+    .demo-input {
+      border: 2px solid #bee3f8; border-radius: 6px;
+      padding: 7px 12px; font-size: 0.9em;
+      font-family: 'Consolas','Monaco',monospace;
+      color: #2d3748; background: #fff; flex: 1; min-width: 80px;
+    }
+    .demo-input:focus { border-color: #2c7a7b; outline: none; }
+    .demo-btn {
+      background: #2c7a7b; color: #fff; border: none;
+      border-radius: 6px; padding: 8px 18px;
+      font-size: 0.88em; font-weight: bold; cursor: pointer;
+      transition: background 0.2s; white-space: nowrap;
+    }
+    .demo-btn:hover { background: #1a365d; }
+    .demo-output {
+      background: #1a202c; color: #68d391;
+      border-radius: 6px; padding: 10px 14px;
+      font-family: 'Consolas','Monaco',monospace;
+      font-size: 0.85em; min-height: 40px;
+      white-space: pre-wrap; line-height: 1.7;
+    }
+
+    /* ===== タブ ===== */
+    .tab-wrap { margin: 14px 0; }
+    .tab-btns { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: -1px; }
+    .tab-btn {
+      padding: 8px 18px; border: 1px solid #bee3f8;
+      border-bottom: none; border-radius: 6px 6px 0 0;
+      background: #edf2f7; color: #2c7a7b;
+      font-size: 0.85em; font-weight: bold;
+      font-family: 'Consolas','Monaco',monospace;
+      cursor: pointer; transition: background 0.15s;
+    }
+    .tab-btn.active { background: #fff; border-bottom: 1px solid #fff; }
+    .tab-btn:hover:not(.active) { background: #e6fffa; }
+    .tab-content {
+      display: none; background: #fff;
+      border: 1px solid #bee3f8;
+      border-radius: 0 6px 6px 6px; padding: 18px 20px;
+    }
+    .tab-content.active { display: block; }
+
+    /* ===== テーブル ===== */
+    table.ref-table {
+      border-collapse: collapse; width: 100%;
+      background: #fff; border-radius: 8px;
+      overflow: hidden; box-shadow: 0 2px 6px rgba(0,0,0,0.07);
+      margin: 14px 0; font-size: 0.9em;
+    }
+    table.ref-table th, table.ref-table td {
+      border: 1px solid #bee3f8; padding: 10px 14px; text-align: left;
+    }
+    table.ref-table thead tr { background: #1a365d; color: #fff; }
+    table.ref-table tbody tr:nth-child(even) { background: #ebf8ff; }
+
+    /* ===== JSコンソール ===== */
+    .js-console {
+      background: #1a202c; border-radius: 10px;
+      overflow: hidden; margin: 16px 0;
+      box-shadow: 0 4px 14px rgba(0,0,0,0.25);
+    }
+    .js-console-bar {
+      background: #2d3748; padding: 8px 16px;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .js-console-bar .dot { width: 12px; height: 12px; border-radius: 50%; }
+    .dot-red    { background: #fc8181; }
+    .dot-yellow { background: #f6ad55; }
+    .dot-green  { background: #68d391; }
+    .js-console-bar span {
+      font-size: 0.78em; color: #a0aec0;
+      font-family: 'Consolas','Monaco',monospace; margin-left: 6px;
+    }
+    .js-console-output {
+      padding: 14px 16px; min-height: 80px;
+      font-family: 'Consolas','Monaco',monospace;
+      font-size: 0.85em; line-height: 1.8;
+      max-height: 280px; overflow-y: auto;
+    }
+    .log-line   { color: #e2e8f0; }
+    .log-info   { color: #90cdf4; }
+    .log-warn   { color: #f6ad55; }
+    .log-error  { color: #fc8181; }
+    .log-result { color: #68d391; }
+    .log-prompt { color: #a0aec0; }
+    .js-console-input-row {
+      display: flex; align-items: center;
+      border-top: 1px solid #2d3748; padding: 8px 12px; gap: 8px;
+    }
+    .js-console-input-row span {
+      color: #68d391; font-family: 'Consolas','Monaco',monospace;
+      font-size: 0.9em; flex-shrink: 0;
+    }
+    .js-console-input {
+      flex: 1; background: transparent; border: none; outline: none;
+      color: #e2e8f0; font-family: 'Consolas','Monaco',monospace;
+      font-size: 0.88em; caret-color: #68d391;
+    }
+    .js-console-run {
+      background: #2c7a7b; color: #fff; border: none;
+      border-radius: 4px; padding: 4px 12px;
+      font-size: 0.78em; font-weight: bold; cursor: pointer;
+      transition: background 0.2s;
+    }
+    .js-console-run:hover { background: #1a365d; }
+    .js-console-clear {
+      background: #4a5568; color: #e2e8f0; border: none;
+      border-radius: 4px; padding: 4px 10px;
+      font-size: 0.78em; cursor: pointer; transition: background 0.2s;
+    }
+    .js-console-clear:hover { background: #718096; }
+
+    /* ===== 演習問題 ===== */
+    .quiz-section {
+      background: #ebf8ff; border-left: 6px solid #4299e1;
+      border-radius: 0 8px 8px 0; padding: 24px 28px; margin: 48px 0 32px;
+    }
+    .quiz-section > h2 { margin-top: 0; color: #1a365d; border-left-color: #4299e1; }
+    .quiz-block {
+      background: #fff; border: 1px solid #bee3f8;
+      border-radius: 8px; padding: 18px 22px; margin-bottom: 22px;
+    }
+    .quiz-block h3 { margin-top: 0; color: #1a365d; }
+    .quiz-block input[type="text"],
+    .quiz-block select {
+      border: 2px solid #bee3f8; border-radius: 6px;
+      padding: 8px 12px; font-size: 0.95em;
+      width: 100%; max-width: 440px; margin: 6px 0;
+      outline: none; font-family: 'Consolas','Monaco',monospace;
+      transition: border-color 0.2s;
+    }
+    .quiz-block input[type="text"]:focus,
+    .quiz-block select:focus { border-color: #2c7a7b; }
+    .quiz-block label { display: block; margin: 8px 0 2px; font-weight: bold; color: #4a5568; }
+    .quiz-block label.checkbox-label {
+      display: flex; align-items: flex-start; gap: 8px;
+      font-weight: normal; cursor: pointer; margin: 6px 0;
+    }
+    .quiz-block label.checkbox-label input { margin-top: 3px; flex-shrink: 0; }
+    .btn {
+      display: inline-block; padding: 9px 20px;
+      border-radius: 6px; border: none; cursor: pointer;
+      font-size: 0.95em; font-weight: bold;
+      transition: opacity 0.2s; margin-top: 8px;
+    }
+    .btn:hover { opacity: 0.85; }
+    .btn-teal { background: #2c7a7b; color: #fff; }
+    .btn-done { background: #48bb78; color: #fff; }
+    .result-msg {
+      margin-top: 10px; padding: 10px 14px;
+      border-radius: 6px; font-weight: bold; display: none;
+    }
+    .result-msg.correct { background: #c6f6d5; color: #276749; display: block; }
+    .result-msg.wrong   { background: #fed7d7; color: #9b2335; display: block; }
+    .result-msg.info    { background: #bee3f8; color: #1a365d; display: block; }
+
+    /* ===== 章完了バナー ===== */
+    .chapter-complete-banner {
+      background: linear-gradient(135deg, #276749, #2c7a7b);
+      border-radius: 12px; padding: 28px 32px;
+      margin: 40px 0; text-align: center; color: #fff;
+      box-shadow: 0 4px 18px rgba(44,122,123,0.35);
+    }
+    .chapter-complete-banner h3 {
+      margin: 0 0 8px; font-size: 1.3em; color: #fff;
+    }
+    .chapter-complete-banner p {
+      margin: 0 0 16px; opacity: 0.9; font-size: 0.95em;
+    }
+    .next-chapter-btn {
+      display: inline-block; background: #fff; color: #1a365d;
+      padding: 12px 28px; border-radius: 8px;
+      font-weight: bold; font-size: 0.95em; text-decoration: none;
+      transition: opacity 0.2s; margin: 4px;
+    }
+    .next-chapter-btn:hover { opacity: 0.88; }
+    .next-chapter-btn.outline {
+      background: transparent; color: #fff;
+      border: 2px solid rgba(255,255,255,0.6);
+    }
+
+    .page-nav {
+      display: flex; justify-content: space-between;
+      align-items: center; margin-top: 48px;
+      padding-top: 20px; border-top: 2px solid #bee3f8;
+      gap: 12px; flex-wrap: wrap;
+    }
+    .page-nav a {
+      display: inline-block; padding: 10px 20px;
+      border-radius: 8px; text-decoration: none;
+      font-weight: bold; font-size: 0.9em; transition: opacity 0.2s;
+    }
+    .page-nav a:hover { opacity: 0.8; }
+    .page-nav .prev { background: #edf2f7; color: #4a5568; }
+    .page-nav .next { background: #2c7a7b; color: #fff; }
+    .page-nav .home { background: #fff; color: #2c7a7b; border: 2px solid #2c7a7b; }
+
+    .complete-section {
+      background: #f0fff4; border: 2px solid #48bb78;
+      border-radius: 10px; padding: 20px 24px;
+      margin-top: 40px; text-align: center;
+    }
+    .complete-section p { margin: 0 0 12px; color: #276749; font-weight: bold; }
+
+    footer {
+      margin-top: 48px; padding-top: 16px;
+      border-top: 2px solid #bee3f8;
+      font-size: 0.82em; color: #a0aec0; text-align: center;
+    }
+    footer a { color: #2c7a7b; text-decoration: none; }
+    footer a:hover { text-decoration: underline; }
+
+    @media (max-width: 600px) {
+      body { font-size: 0.84em; }
+      .chapter-header { padding: 20px 16px; }
+      .chapter-header h1 { font-size: 1.2em; }
+      .api-grid { grid-template-columns: 1fr 1fr; }
+      .quiz-section { padding: 16px 12px; }
+      .quiz-block { padding: 14px 12px; }
+      .page-nav { flex-direction: column; align-items: stretch; }
+      .page-nav a { text-align: center; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- パンくず -->
+<div class="breadcrumb">
+  <a href="../index.html">🏠 HTML5 Level 2</a> ›
+  Chapter 1：速習JavaScript入門 › 1-11 HTML5とJavaScript
+</div>
+
+<!-- ヘッダー -->
+<div class="chapter-header">
+  <div class="ch-num">CHAPTER 01 › SECTION 11（最終）</div>
+  <h1>🌐 1-11 HTML5とJavaScript</h1>
+  <p>Web Storage・Canvas・Geolocation・Web Workers・
+  History API など HTML5 が提供する JavaScript API を
+  インタラクティブなデモで体験しながら学びます。</p>
+  <div class="badge-row">
+    <span class="badge">localStorage</span>
+    <span class="badge">sessionStorage</span>
+    <span class="badge">Canvas API</span>
+    <span class="badge">Geolocation</span>
+    <span class="badge">Web Workers</span>
+    <span class="badge">History API</span>
+    <span class="badge">Intersection Observer</span>
+  </div>
+</div>
+
+<!-- セクションナビ -->
+<div class="section-nav">
+  <h2>📋 Chapter 1 のセクション</h2>
+  <ol>
+    <li><a href="01_variables.html">1-1 変数の宣言と値の代入</a></li>
+    <li><a href="02_operators.html">1-2 さまざまな演算</a></li>
+    <li><a href="03_types.html">1-3 型とオブジェクト</a></li>
+    <li><a href="04_functions.html">1-4 関数</a></li>
+    <li><a href="05_scope.html">1-5 スコープ</a></li>
+    <li><a href="06_conditions.html">1-6 条件分岐</a></li>
+    <li><a href="07_loops.html">1-7 繰り返しの処理</a></li>
+    <li><a href="08_classes.html">1-8 オブジェクトとクラス</a></li>
+    <li><a href="09_dom.html">1-9 HTMLの操作</a></li>
+    <li><a href="10_events.html">1-10 イベントと非同期処理</a></li>
+    <li class="current"><a href="11_html5.html">1-11 HTML5とJavaScript</a></li>
+  </ol>
+</div>
+
+
+<!-- ============================================================ -->
+<!-- PART 1: HTML5 API 概観 -->
+<!-- ============================================================ -->
+<h2 id="overview">① HTML5 JavaScript API 概観</h2>
+
+<div class="note">
+  <strong>重要ポイント：HTML5 はブラウザに豊富な JavaScript API を追加しました。
+  試験では各 API の用途・使い方・制約を理解することが重要です。</strong>
+</div>
+
+<div class="demo-box">
+  <h3>主要 HTML5 API（クリックで詳細）</h3>
+  <div class="api-grid">
+    <div class="api-card" style="background:#ebf8ff;"
+         onclick="showApiDetail('storage', this)">
+      <div class="ac-icon">💾</div>
+      <div class="ac-name" style="color:#2b4c7e;">Web Storage</div>
+      <div class="ac-desc" style="color:#4a5568;">
+        localStorage / sessionStorage でデータを保存
+      </div>
+    </div>
+    <div class="api-card" style="background:#f0fff4;"
+         onclick="showApiDetail('canvas', this)">
+      <div class="ac-icon">🎨</div>
+      <div class="ac-name" style="color:#276749;">Canvas API</div>
+      <div class="ac-desc" style="color:#4a5568;">
+        2D/3D グラフィックスを描画
+      </div>
+    </div>
+    <div class="api-card" style="background:#faf5ff;"
+         onclick="showApiDetail('geo', this)">
+      <div class="ac-icon">📍</div>
+      <div class="ac-name" style="color:#553c9a;">Geolocation</div>
+      <div class="ac-desc" style="color:#4a5568;">
+        デバイスの位置情報を取得
+      </div>
+    </div>
+    <div class="api-card" style="background:#fffaf0;"
+         onclick="showApiDetail('worker', this)">
+      <div class="ac-icon">⚙️</div>
+      <div class="ac-name" style="color:#744210;">Web Workers</div>
+      <div class="ac-desc" style="color:#4a5568;">
+        バックグラウンドスレッドで処理
+      </div>
+    </div>
+    <div class="api-card" style="background:#fff5f5;"
+         onclick="showApiDetail('history', this)">
+      <div class="ac-icon">📜</div>
+      <div class="ac-name" style="color:#9b2335;">History API</div>
+      <div class="ac-desc" style="color:#4a5568;">
+        ブラウザ履歴を操作（SPA）
+      </div>
+    </div>
+    <div class="api-card" style="background:#e6fffa;"
+         onclick="showApiDetail('observer', this)">
+      <div class="ac-icon">👁️</div>
+      <div class="ac-name" style="color:#1a4731;">Intersection Observer</div>
+      <div class="ac-desc" style="color:#4a5568;">
+        要素の表示状態を監視
+      </div>
+    </div>
+    <div class="api-card" style="background:#ebf8ff;"
+         onclick="showApiDetail('drag', this)">
+      <div class="ac-icon">🖱️</div>
+      <div class="ac-name" style="color:#2b4c7e;">Drag &amp; Drop</div>
+      <div class="ac-desc" style="color:#4a5568;">
+        ドラッグ＆ドロップ操作
+      </div>
+    </div>
+    <div class="api-card" style="background:#f0fff4;"
+         onclick="showApiDetail('websocket', this)">
+      <div class="ac-icon">🔌</div>
+      <div class="ac-name" style="color:#276749;">WebSocket</div>
+      <div class="ac-desc" style="color:#4a5568;">
+        リアルタイム双方向通信
+      </div>
+    </div>
+  </div>
+
+  <!-- API 詳細パネル -->
+  <div id="api-detail" style="display:none; margin-top:14px;
+    background:#1a202c; border-radius:8px; padding:16px 20px;
+    font-family:'Consolas','Monaco',monospace; font-size:0.85em;
+    line-height:1.9; white-space:pre-wrap; color:#e2e8f0;">
+  </div>
+</div>
+
+
+<!-- ============================================================ -->
+<!-- PART 2: Web Storage -->
+<!-- ============================================================ -->
+<h2 id="storage">② Web Storage（localStorage / sessionStorage）</h2>
+
+<div class="note">
+  <strong>重要ポイント：<code>localStorage</code> はブラウザを閉じても保持され、
+  <code>sessionStorage</code> はタブを閉じると消えます。
+  どちらも文字列のみ保存できます（オブジェクトは JSON.stringify が必要）。</strong>
+</div>
+
+<div class="demo-box">
+  <h3>localStorage vs sessionStorage 比較</h3>
+  <table class="ref-table">
+    <thead>
+      <tr><th>特徴</th><th>localStorage</th><th>sessionStorage</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>データの保持</td>
+        <td>ブラウザを閉じても保持</td>
+        <td>タブ/ウィンドウを閉じると消える</td></tr>
+      <tr><td>スコープ</td>
+        <td>同一オリジン全体</td>
+        <td>同一タブのみ</td></tr>
+      <tr><td>容量</td>
+        <td>約 5MB</td>
+        <td>約 5MB</td></tr>
+      <tr><td>データ型</td>
+        <td>文字列のみ</td>
+        <td>文字列のみ</td></tr>
+      <tr><td>用途</td>
+        <td>設定・ログイン状態の保持</td>
+        <td>フォームの一時保存・セッション管理</td></tr>
+    </tbody>
+  </table>
+
+  <h3>🎮 Web Storage ライブデモ</h3>
+  <div class="storage-panel">
+    <div style="color:#a0aec0; font-size:0.82em; margin-bottom:10px;">
+      // localStorage を操作してみよう（ページを再読み込みしてもデータが残る）
+    </div>
+    <div class="storage-row">
+      <input class="storage-key" id="ls-key"   placeholder="キー" value="username">
+      <input class="storage-val" id="ls-val"   placeholder="値"   value="Alice">
+      <button class="storage-btn" onclick="lsSet()">setItem</button>
+      <button class="storage-btn" onclick="lsGet()">getItem</button>
+      <button class="storage-btn danger" onclick="lsRemove()">removeItem</button>
+      <button class="storage-btn danger" onclick="lsClear()">clear</button>
+    </div>
+    <div style="color:#a0aec0; font-size:0.78em; margin-bottom:6px;">
+      現在の localStorage の内容：
+    </div>
+    <div class="storage-display" id="ls-display">← setItem でデータを保存してみましょう</div>
+  </div>
+
+  <div class="pre-wrap">
+    <button class="copy-btn" onclick="copyPre(this)">copy</button>
+<pre>
+<span class="comment">// localStorage の基本操作</span>
+localStorage.<span class="fn">setItem</span>(<span class="str">"username"</span>, <span class="str">"Alice"</span>);
+localStorage.<span class="fn">getItem</span>(<span class="str">"username"</span>);   <span class="out">// → "Alice"</span>
+localStorage.<span class="fn">removeItem</span>(<span class="str">"username"</span>);
+localStorage.<span class="fn">clear</span>();               <span class="comment">// 全削除</span>
+localStorage.<span class="prop">length</span>;               <span class="out">// → 保存件数</span>
+localStorage.<span class="fn">key</span>(<span class="num">0</span>);               <span class="out">// → 0番目のキー名</span>
+
+<span class="comment">// オブジェクトを保存する場合は JSON.stringify が必要</span>
+<span class="kw">const</span> user = { name: <span class="str">"Alice"</span>, age: <span class="num">25</span> };
+localStorage.<span class="fn">setItem</span>(<span class="str">"user"</span>, JSON.<span class="fn">stringify</span>(user));
+
+<span class="comment">// 読み込み時は JSON.parse</span>
+<span class="kw">const</span> saved = JSON.<span class="fn">parse</span>(localStorage.<span class="fn">getItem</span>(<span class="str">"user"</span>));
+console.<span class="fn">log</span>(saved.<span class="prop">name</span>); <span class="out">// → "Alice"</span>
+
+<span class="comment">// sessionStorage も同じ API（スコープが異なるだけ）</span>
+sessionStorage.<span class="fn">setItem</span>(<span class="str">"temp"</span>, <span class="str">"一時データ"</span>);
+</pre>
+  </div>
+</div>
+
+
+<!-- ============================================================ -->
+<!-- PART 3: Canvas API -->
+<!-- ============================================================ -->
+<h2 id="canvas">③ Canvas API</h2>
+
+<div class="note">
+  <strong>重要ポイント：<code>&lt;canvas&gt;</code> 要素と
+  <code>getContext("2d")</code> で取得した描画コンテキストを使って
+  図形・テキスト・画像などを描画できます。</strong>
+</div>
+
+<div class="demo-box">
+  <h3>🎨 Canvas ライブ描画デモ</h3>
+  <canvas id="demo-canvas" width="600" height="220"></canvas>
+  <div class="canvas-controls">
+    <button class="canvas-btn" onclick="drawShapes()">🔷 図形を描く</button>
+    <button class="canvas-btn" onclick="drawText()">📝 テキストを描く</button>
+    <button class="canvas-btn" onclick="drawGradient()">🌈 グラデーション</button>
+    <button class="canvas-btn" onclick="startDrawMode()">✏️ 手書きモード</button>
+    <button class="canvas-btn" onclick="clearCanvas()" style="background:#4a5568;">🗑️ クリア</button>
+    <span style="font-size:0.82em; color:#718096; margin-left:4px;">色：</span>
+    <div class="color-swatch active" id="sw-white"
+         style="background:#ffffff;" onclick="setDrawColor('#ffffff', this)"></div>
+    <div class="color-swatch" id="sw-cyan"
+         style="background:#68d391;" onclick="setDrawColor('#68d391', this)"></div>
+    <div class="color-swatch" id="sw-blue"
+         style="background:#90cdf4;" onclick="setDrawColor('#90cdf4', this)"></div>
+    <div class="color-swatch" id="sw-yellow"
+         style="background:#fbd38d;" onclick="setDrawColor('#fbd38d', this)"></div>
+    <div class="color-swatch" id="sw-red"
+         style="background:#fc8181;" onclick="setDrawColor('#fc8181', this)"></div>
+  </div>
+
+  <div class="pre-wrap" style="margin-top:16px;">
+    <button class="copy-btn" onclick="copyPre(this)">copy</button>
+<pre>
+<span class="comment">// Canvas の基本</span>
+<span class="kw">const</span> canvas = document.<span class="fn">getElementById</span>(<span class="str">"myCanvas"</span>);
+<span class="kw">const</span> ctx    = canvas.<span class="fn">getContext</span>(<span class="str">"2d"</span>); <span class="comment">// 2D 描画コンテキスト</span>
+
+<span class="comment">// 矩形</span>
+ctx.<span class="prop">fillStyle</span>   = <span class="str">"#4299e1"</span>;
+ctx.<span class="fn">fillRect</span>(<span class="num">10</span>, <span class="num">10</span>, <span class="num">100</span>, <span class="num">60</span>);   <span class="comment">// x, y, width, height</span>
+ctx.<span class="prop">strokeStyle</span> = <span class="str">"#fff"</span>;
+ctx.<span class="prop">lineWidth</span>   = <span class="num">2</span>;
+ctx.<span class="fn">strokeRect</span>(<span class="num">10</span>, <span class="num">10</span>, <span class="num">100</span>, <span class="num">60</span>);
+
+<span class="comment">// 円（パス）</span>
+ctx.<span class="fn">beginPath</span>();
+ctx.<span class="fn">arc</span>(<span class="num">200</span>, <span class="num">50</span>, <span class="num">40</span>, <span class="num">0</span>, Math.<span class="prop">PI</span> <span class="op">*</span> <span class="num">2</span>); <span class="comment">// x, y, r, 開始角, 終了角</span>
+ctx.<span class="prop">fillStyle</span> = <span class="str">"#68d391"</span>;
+ctx.<span class="fn">fill</span>();
+
+<span class="comment">// テキスト</span>
+ctx.<span class="prop">font</span>      = <span class="str">"bold 24px sans-serif"</span>;
+ctx.<span class="prop">fillStyle</span> = <span class="str">"#fff"</span>;
+ctx.<span class="fn">fillText</span>(<span class="str">"Hello Canvas!"</span>, <span class="num">10</span>, <span class="num">120</span>);
+
+<span class="comment">// グラデーション</span>
+<span class="kw">const</span> grad = ctx.<span class="fn">createLinearGradient</span>(<span class="num">0</span>, <span class="num">0</span>, <span class="num">200</span>, <span class="num">0</span>);
+grad.<span class="fn">addColorStop</span>(<span class="num">0</span>,   <span class="str">"#4299e1"</span>);
+grad.<span class="fn">addColorStop</span>(<span class="num">1</span>,   <span class="str">"#9f7aea"</span>);
+ctx.<span class="prop">fillStyle</span> = grad;
+ctx.<span class="fn">fillRect</span>(<span class="num">0</span>, <span class="num">150</span>, <span class="num">200</span>, <span class="num">40</span>);
+</pre>
+  </div>
+</div>
+
+
+<!-- ============================================================ -->
+<!-- PART 4: Geolocation / History / その他 -->
+<!-- ============================================================ -->
+<h2 id="other-apis">④ Geolocation・History API・その他</h2>
+
+<div class="demo-box">
+  <div class="tab-wrap">
+    <div class="tab-btns">
+      <button class="tab-btn active" onclick="switchTab(this,'tab-geo')">Geolocation</button>
+      <button class="tab-btn"        onclick="switchTab(this,'tab-history')">History API</button>
+      <button class="tab-btn"        onclick="switchTab(this,'tab-worker')">Web Workers</button>
+      <button class="tab-btn"        onclick="switchTab(this,'tab-observer')">Intersection Observer</button>
+    </div>
+
+    <!-- Geolocation -->
+    <div class="tab-content active" id="tab-geo">
+      <h3 style="margin-top:0; color:#1a365d;">Geolocation API</h3>
+      <div class="pre-wrap">
+        <button class="copy-btn" onclick="copyPre(this)">copy</button>
+<pre>
+<span class="comment">// 現在位置を1回取得</span>
+navigator.<span class="prop">geolocation</span>.<span class="fn">getCurrentPosition</span>(
+  (<span class="prop">position</span>) <span class="op">=></span> {
+    <span class="kw">const</span> { <span class="prop">latitude</span>, <span class="prop">longitude</span>, <span class="prop">accuracy</span> } = <span class="prop">position</span>.<span class="prop">coords</span>;
+    console.<span class="fn">log</span>(<span class="str">`緯度: <span class="op">${</span><span class="prop">latitude</span><span class="op">}</span>`</span>);
+    console.<span class="fn">log</span>(<span class="str">`経度: <span class="op">${</span><span class="prop">longitude</span><span class="op">}</span>`</span>);
+    console.<span class="fn">log</span>(<span class="str">`精度: <span class="op">${</span><span class="prop">accuracy</span><span class="op">}</span>m`</span>);
+  },
+  (<span class="prop">error</span>) <span class="op">=></span> {
+    console.<span class="fn">log</span>(<span class="str">"エラー:"</span>, <span class="prop">error</span>.<span class="prop">message</span>);
+  },
+  { <span class="prop">enableHighAccuracy</span>: <span class="kw">true</span>, <span class="prop">timeout</span>: <span class="num">5000</span> }
+);
+
+<span class="comment">// 位置の継続監視</span>
+<span class="kw">const</span> watchId = navigator.<span class="prop">geolocation</span>.<span class="fn">watchPosition</span>(
+  (<span class="prop">pos</span>) <span class="op">=></span> console.<span class="fn">log</span>(<span class="prop">pos</span>.<span class="prop">coords</span>.<span class="prop">latitude</span>)
+);
+<span class="comment">// 監視を停止</span>
+navigator.<span class="prop">geolocation</span>.<span class="fn">clearWatch</span>(watchId);
+</pre>
+      </div>
+      <div class="interactive-demo">
+        <div class="demo-label">Geolocation API を試してみよう（ブラウザの許可が必要）</div>
+        <div class="demo-input-row">
+          <button class="demo-btn" onclick="getLocation()">📍 現在位置を取得</button>
+        </div>
+        <div class="demo-output" id="geo-output">← ボタンを押して位置情報を取得してみましょう</div>
+      </div>
+      <div class="warn">
+        ⚠️ <strong>Geolocation はユーザーの許可が必要です。</strong><br>
+        HTTPS 環境でのみ動作します（localhost は例外）。
+        ユーザーが拒否した場合は <code>error.code === 1</code>（PERMISSION_DENIED）になります。
+      </div>
+    </div>
+
+    <!-- History API -->
+    <div class="tab-content" id="tab-history">
+      <h3 style="margin-top:0; color:#1a365d;">History API（SPA ルーティング）</h3>
+      <div class="pre-wrap">
+        <button class="copy-btn" onclick="copyPre(this)">copy</button>
+<pre>
+<span class="comment">// pushState：URL を変更してもページ遷移しない</span>
+history.<span class="fn">pushState</span>(
+  { <span class="prop">page</span>: <span class="str">"about"</span> },  <span class="comment">// state オブジェクト</span>
+  <span class="str">"About"</span>,           <span class="comment">// タイトル（多くのブラウザで無視）</span>
+  <span class="str">"/about"</span>           <span class="comment">// 新しい URL</span>
+);
+
+<span class="comment">// replaceState：現在の履歴エントリを置き換え</span>
+history.<span class="fn">replaceState</span>({ <span class="prop">page</span>: <span class="str">"home"</span> }, <span class="str">""</span>, <span class="str">"/"</span>);
+
+<span class="comment">// 前後の履歴に移動</span>
+history.<span class="fn">back</span>();     <span class="comment">// 戻る</span>
+history.<span class="fn">forward</span>(); <span class="comment">// 進む</span>
+history.<span class="fn">go</span>(<span class="op">-</span><span class="num">2</span>);    <span class="comment">// 2つ戻る</span>
+
+<span class="comment">// popstate：ブラウザの戻る/進むボタンで発火</span>
+window.<span class="fn">addEventListener</span>(<span class="str">"popstate"</span>, (<span class="prop">e</span>) <span class="op">=></span> {
+  console.<span class="fn">log</span>(<span class="str">"URL が変わった:"</span>, location.<span class="prop">pathname</span>);
+  console.<span class="fn">log</span>(<span class="str">"state:"</span>, <span class="prop">e</span>.<span class="prop">state</span>);
+  <span class="comment">// ここでコンテンツを切り替える（SPA）</span>
+});
+</pre>
+      </div>
+      <div class="interactive-demo">
+        <div class="demo-label">History API を試してみよう</div>
+        <div class="demo-input-row">
+          <input class="demo-input" id="history-path"
+                 placeholder="パス（例：/about）" type="text" value="/demo/page1">
+          <button class="demo-btn" onclick="runPushState()">pushState</button>
+          <button class="demo-btn" style="background:#553c9a;"
+                  onclick="runReplaceState()">replaceState</button>
+        </div>
+        <div class="demo-output" id="history-output">← パスを入力して試してみましょう</div>
+      </div>
+    </div>
+
+    <!-- Web Workers -->
+    <div class="tab-content" id="tab-worker">
+      <h3 style="margin-top:0; color:#1a365d;">Web Workers</h3>
+      <div class="note">
+        <strong>Web Workers とは：</strong>メインスレッドとは別のスレッドで
+        JavaScript を実行する仕組みです。
+        重い計算処理をバックグラウンドで行い、UI のフリーズを防ぎます。
+      </div>
+      <div class="pre-wrap">
+        <button class="copy-btn" onclick="copyPre(this)">copy</button>
+<pre>
+<span class="comment">// メインスレッド（main.js）</span>
+<span class="kw">const</span> worker = <span class="kw">new</span> Worker(<span class="str">"worker.js"</span>);
+
+<span class="comment">// Worker にメッセージを送る</span>
+worker.<span class="fn">postMessage</span>({ <span class="prop">type</span>: <span class="str">"calculate"</span>, <span class="prop">data</span>: <span class="num">1000000</span> });
+
+<span class="comment">// Worker からのメッセージを受け取る</span>
+worker.<span class="fn">addEventListener</span>(<span class="str">"message"</span>, (<span class="prop">e</span>) <span class="op">=></span> {
+  console.<span class="fn">log</span>(<span class="str">"結果:"</span>, <span class="prop">e</span>.<span class="prop">data</span>);
+  worker.<span class="fn">terminate</span>(); <span class="comment">// Worker を終了</span>
+});
+
+<span class="comment">// ---- worker.js ----</span>
+self.<span class="fn">addEventListener</span>(<span class="str">"message"</span>, (<span class="prop">e</span>) <span class="op">=></span> {
+  <span class="kw">const</span> n = <span class="prop">e</span>.<span class="prop">data</span>.<span class="prop">data</span>;
+  <span class="kw">let</span> sum = <span class="num">0</span>;
+  <span class="kw">for</span> (<span class="kw">let</span> i = <span class="num">1</span>; i <span class="op">&lt;=</span> n; i++) sum <span class="op">+=</span> i;
+  self.<span class="fn">postMessage</span>(sum); <span class="comment">// 結果を返す</span>
+});
+
+<span class="comment">// Worker の制約</span>
+<span class="comment">// ✅ XMLHttpRequest, fetch が使える</span>
+<span class="comment">// ✅ setTimeout, setInterval が使える</span>
+<span class="comment">// ❌ DOM にアクセスできない</span>
+<span class="comment">// ❌ window オブジェクトにアクセスできない</span>
+</pre>
+      </div>
+      <div class="interactive-demo">
+        <div class="demo-label">Blob URL を使ったインライン Worker デモ</div>
+        <div class="demo-input-row">
+          <input class="demo-input" id="worker-n" type="number"
+                 value="10000000" placeholder="計算する数（例：10000000）">
+          <button class="demo-btn" onclick="runWorkerDemo()">⚙️ Worker で計算</button>
+          <button class="demo-btn" style="background:#744210;"
+                  onclick="runMainThreadDemo()">🔴 メインスレッドで計算</button>
+        </div>
+        <div class="demo-output" id="worker-output">← Worker とメインスレッドの速度を比較してみましょう</div>
+      </div>
+    </div>
+
+    <!-- Intersection Observer -->
+    <div class="tab-content" id="tab-observer">
+      <h3 style="margin-top:0; color:#1a365d;">Intersection Observer API</h3>
+      <div class="note">
+        <strong>Intersection Observer とは：</strong>要素がビューポートに入ったり
+        出たりするタイミングを効率的に監視する API です。
+        スクロールイベントより高パフォーマンスです。
+      </div>
+      <div class="pre-wrap">
+        <button class="copy-btn" onclick="copyPre(this)">copy</button>
+<pre>
+<span class="comment">// Intersection Observer の基本</span>
+<span class="kw">const</span> observer = <span class="kw">new</span> IntersectionObserver(
+  (<span class="prop">entries</span>) <span class="op">=></span> {
+    <span class="prop">entries</span>.<span class="fn">forEach</span>((<span class="prop">entry</span>) <span class="op">=></span> {
+      <span class="kw">if</span> (<span class="prop">entry</span>.<span class="prop">isIntersecting</span>) {
+        <span class="comment">// 要素がビューポートに入った</span>
+        <span class="prop">entry</span>.<span class="prop">target</span>.<span class="prop">classList</span>.<span class="fn">add</span>(<span class="str">"visible"</span>);
+        observer.<span class="fn">unobserve</span>(<span class="prop">entry</span>.<span class="prop">target</span>); <span class="comment">// 1回だけ</span>
+      }
+    });
+  },
+  {
+    <span class="prop">threshold</span>:  <span class="num">0.1</span>,  <span class="comment">// 10% 見えたら発火</span>
+    <span class="prop">rootMargin</span>: <span class="str">"0px"</span>
+  }
+);
+
+<span class="comment">// 監視する要素を登録</span>
+document.<span class="fn">querySelectorAll</span>(<span class="str">".lazy-item"</span>)
+  .<span class="fn">forEach</span>(el <span class="op">=></span> observer.<span class="fn">observe</span>(el));
+
+<span class="comment">// 用途</span>
+<span class="comment">// ✅ 遅延読み込み（lazy loading）</span>
+<span class="comment">// ✅ スクロールアニメーション</span>
+<span class="comment">// ✅ 無限スクロール</span>
+<span class="comment">// ✅ 広告の表示計測</span>
+</pre>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ============================================================ -->
+<!-- まとめ -->
+<!-- ============================================================ -->
+<h2>📌 まとめ</h2>
+<div class="demo-box">
+  <table class="ref-table">
+    <thead><tr><th>API</th><th>主な用途</th><th>重要ポイント</th></tr></thead>
+    <tbody>
+      <tr><td><code>localStorage</code></td>
+        <td>永続的なデータ保存</td>
+        <td>文字列のみ・JSON.stringify が必要・約5MB</td></tr>
+      <tr><td><code>sessionStorage</code></td>
+        <td>タブ内の一時データ</td>
+        <td>タブを閉じると消える・同一タブのみ</td></tr>
+      <tr><td>Canvas API</td>
+        <td>2D/3D グラフィックス描画</td>
+        <td>getContext("2d") で描画コンテキスト取得</td></tr>
+      <tr><td>Geolocation</td>
+        <td>位置情報の取得</td>
+        <td>ユーザー許可必須・HTTPS 必須</td></tr>
+      <tr><td>Web Workers</td>
+        <td>バックグラウンド処理</td>
+        <td>DOM アクセス不可・postMessage で通信</td></tr>
+      <tr><td>History API</td>
+        <td>SPA のルーティング</td>
+        <td>pushState で URL 変更・popstate で検知</td></tr>
+      <tr><td>Intersection Observer</td>
+        <td>要素の表示状態監視</td>
+        <td>スクロールイベントより高パフォーマンス</td></tr>
+      <tr><td>WebSocket</td>
+        <td>リアルタイム双方向通信</td>
+        <td>ws:// または wss:// プロトコル</td></tr>
+    </tbody>
+  </table>
+</div>
+
+
+<!-- ============================================================ -->
+<!-- 演習問題 -->
+<!-- ============================================================ -->
+<div class="quiz-section">
+  <h2>🖊️ 演習問題</h2>
+
+  <!-- Q1 -->
+  <div class="quiz-block">
+    <h3>Q1. 穴埋め問題</h3>
+    <p>以下の説明に合う答えを入力してください。</p>
+    <label>① ブラウザを閉じてもデータが保持される Web Storage：</label>
+    <input type="text" id="q1a" placeholder="???Storage">
+    <label>② Canvas で 2D 描画コンテキストを取得するメソッドの引数：</label>
+    <input type="text" id="q1b" placeholder='"???"'>
+    <label>③ Web Workers でメインスレッドとデータをやり取りするメソッド：</label>
+    <input type="text" id="q1c" placeholder="???Message">
+    <label>④ SPA で URL を変更してもページ遷移しない History API のメソッド：</label>
+    <input type="text" id="q1d" placeholder="history.???State">
+    <br>
+    <button class="btn btn-teal" onclick="checkQ1()">答え合わせ</button>
+    <div class="result-msg" id="q1-result"></div>
+    <script>
+      function checkQ1() {
+        const a = document.getElementById('q1a').value.trim().toLowerCase()
+                    .replace(/storage/i,'').replace(/\s/g,'');
+        const b = document.getElementById('q1b').value.trim().replace(/['"]/g,'').toLowerCase();
+        const c = document.getElementById('q1c').value.trim().toLowerCase()
+                    .replace(/message/i,'').replace(/post/i,'').replace(/[()]/g,'');
+        const d = document.getElementById('q1d').value.trim().toLowerCase()
+                    .replace(/history\.|state/i,'').replace(/[()]/g,'');
+        const r = document.getElementById('q1-result');
+        const ca = a === 'local' || a === 'localstorage';
+        const cb = b === '2d';
+        const cc = c === '' || c === 'post';
+        const cd = d === 'push' || d === 'pushstate';
+        const count = [ca,cb,cc,cd].filter(Boolean).length;
+        if (count === 4) {
+          r.className = 'result-msg correct';
+          r.textContent = '✅ 全問正解！完璧です！';
+        } else {
+          r.className = 'result-msg wrong';
+          r.innerHTML = `❌ ${count}/4 問正解。<br>` +
+            `① ${ca?'✅':'❌ localStorage'}　` +
+            `② ${cb?'✅':'❌ "2d"'}　` +
+            `③ ${cc?'✅':'❌ postMessage'}　` +
+            `④ ${cd?'✅':'❌ pushState'}`;
+        }
+      }
+    </script>
+  </div>
+
+  <!-- Q2 -->
+  <div class="quiz-block">
+    <h3>Q2. 選択問題</h3>
+    <p>localStorage についての説明として<strong>誤っている</strong>ものはどれですか？</p>
+    <select id="q2">
+      <option value="">-- 選択してください --</option>
+      <option value="a">ブラウザを閉じてもデータが保持される</option>
+      <option value="b">オブジェクトをそのまま保存できる（JSON変換不要）</option>
+      <option value="c">同一オリジン（プロトコル+ドメイン+ポート）でのみアクセスできる</option>
+      <option value="d">容量は約 5MB である</option>
+    </select>
+    <br>
+    <button class="btn btn-teal" onclick="checkQ2()">答え合わせ</button>
+    <div class="result-msg" id="q2-result"></div>
+    <script>
+      function checkQ2() {
+        const v = document.getElementById('q2').value;
+        const r = document.getElementById('q2-result');
+        if (v === 'b') {
+          r.className = 'result-msg correct';
+          r.innerHTML = '✅ 正解！<br><br>' +
+            '<strong>誤りの理由：</strong><br>' +
+            'localStorage は<strong>文字列のみ</strong>保存できます。<br>' +
+            'オブジェクトをそのまま保存しようとすると <code>"[object Object]"</code> という文字列になってしまいます。<br><br>' +
+            '<strong>正しい方法：</strong><br>' +
+            '<code>localStorage.setItem("user", JSON.stringify({ name: "Alice" }));</code><br>' +
+            '<code>const user = JSON.parse(localStorage.getItem("user"));</code>';
+        } else if (v === '') {
+          r.className = 'result-msg info';
+          r.textContent = '⚠️ 選択肢を選んでください。';
+        } else {
+          r.className = 'result-msg wrong';
+          r.innerHTML = '❌ 不正解。<br>' +
+            'localStorage は<strong>文字列のみ</strong>保存できます。<br>' +
+            'オブジェクトを保存するには <code>JSON.stringify()</code> が必要です。';
+        }
+      }
+    </script>
+  </div>
+
+  <!-- Q3 -->
+  <div class="quiz-block">
+    <h3>Q3. 正誤チェックボックス問題</h3>
+    <p><strong>正しい記述</strong>をすべて選んでください。</p>
+    <label class="checkbox-label"><input type="checkbox" id="q3a">
+      ① <code>sessionStorage</code> はタブを閉じるとデータが消える</label>
+    <label class="checkbox-label"><input type="checkbox" id="q3b">
+      ② Web Workers は DOM に直接アクセスできる</label>
+    <label class="checkbox-label"><input type="checkbox" id="q3c">
+      ③ Geolocation API は HTTPS 環境でのみ動作する（localhost は除く）</label>
+    <label class="checkbox-label"><input type="checkbox" id="q3d">
+      ④ Canvas の <code>getContext("2d")</code> は 2D 描画コンテキストを返す</label>
+    <label class="checkbox-label"><input type="checkbox" id="q3e">
+      ⑤ <code>history.pushState</code> を呼ぶとページが再読み込みされる</label>
+    <label class="checkbox-label"><input type="checkbox" id="q3f">
+      ⑥ Intersection Observer はスクロールイベントより高パフォーマンスで要素の表示を監視できる</label>
+    <br>
+    <button class="btn btn-teal" onclick="checkQ3()">答え合わせ</button>
+    <div class="result-msg" id="q3-result"></div>
+    <script>
+      function checkQ3() {
+        const r = document.getElementById('q3-result');
+        const checks = {
+          a: document.getElementById('q3a').checked,
+          b: document.getElementById('q3b').checked,
+          c: document.getElementById('q3c').checked,
+          d: document.getElementById('q3d').checked,
+          e: document.getElementById('q3e').checked,
+          f: document.getElementById('q3f').checked,
+        };
+        // 正解：①③④⑥（a,c,d,f）
+        // ② Web Workers は DOM にアクセスできない
+        // ⑤ pushState はページ再読み込みしない（それが目的）
+        const correct = { a:true, b:false, c:true, d:true, e:false, f:true };
+        const allOk = Object.keys(correct).every(k => checks[k] === correct[k]);
+        if (allOk) {
+          r.className = 'result-msg correct';
+          r.innerHTML = '✅ 全問正解！完璧です！';
+        } else {
+          r.className = 'result-msg wrong';
+          r.innerHTML =
+            '❌ 不正解の項目があります。<br><br>' +
+            '<strong>正しい記述：</strong>①③④⑥<br><br>' +
+            '<strong>誤った記述：</strong><br>' +
+            '・② Web Workers は<strong>DOM にアクセスできません</strong>。メインスレッドと <code>postMessage</code> でデータをやり取りします。<br>' +
+            '・⑤ <code>history.pushState</code> は<strong>ページを再読み込みしません</strong>。URL だけを変更します（これが SPA の核心）。';
+        }
+      }
+    </script>
+  </div>
+
+  <!-- Q4 コンソール実践 -->
+  <div class="quiz-block">
+    <h3>Q4. コンソール実践問題</h3>
+    <p>localStorage を使って「訪問回数カウンター」を実装してください。</p>
+    <ul style="font-size:0.92em; color:#4a5568; line-height:2;">
+      <li>localStorage の <code>"visitCount"</code> キーに訪問回数を保存する</li>
+      <li>ページを読み込むたびにカウントを +1 する</li>
+      <li>現在の訪問回数を <code>console.log</code> で出力する</li>
+      <li>（コンソールで何度か実行して回数が増えることを確認）</li>
+    </ul>
+    <div class="js-console" id="console-q4">
+      <div class="js-console-bar">
+        <div class="dot dot-red"></div>
+        <div class="dot dot-yellow"></div>
+        <div class="dot dot-green"></div>
+        <span>localStorage Practice Console</span>
+      </div>
+      <div class="js-console-output" id="console-q4-output">
+        <div class="log-info">// ヒント: parseInt(localStorage.getItem("visitCount") || "0")</div>
+        <div class="log-info">// 現在の visitCount: <span id="current-visit-count">読み込み中...</span></div>
+      </div>
+      <div class="js-console-input-row">
+        <span>&gt;</span>
+        <input class="js-console-input" id="console-q4-input"
+               placeholder="const count = parseInt(localStorage.getItem('visitCount') || '0') + 1; ..."
+               type="text">
+        <button class="js-console-clear" onclick="clearConsole('q4')">クリア</button>
+        <button class="js-console-run"   onclick="runConsole('q4')">▶ 実行</button>
+      </div>
+    </div>
+    <label style="margin-top:12px; display:block;">
+      コードを3回実行した後の <code>localStorage.getItem("visitCount")</code> の値は？
+    </label>
+    <input type="text" id="q4-ans" placeholder="数値を入力">
+    <br>
+    <button class="btn btn-teal" onclick="checkQ4()">答え合わせ</button>
+    <div class="result-msg" id="q4-result"></div>
+    <script>
+      // 現在の visitCount を表示
+      document.addEventListener('DOMContentLoaded', () => {
+        const el = document.getElementById('current-visit-count');
+        if (el) el.textContent = localStorage.getItem('visitCount') || '0（未設定）';
+      });
+
+      function checkQ4() {
+        const v   = document.getElementById('q4-ans').value.trim();
+        const r   = document.getElementById('q4-result');
+        const cur = parseInt(localStorage.getItem('visitCount') || '0');
+        if (!isNaN(parseInt(v)) && parseInt(v) === cur && cur >= 3) {
+          r.className = 'result-msg correct';
+          r.innerHTML = `✅ 正解！現在の visitCount = ${cur}<br><br>` +
+            '模範解答：<br>' +
+            '<code>const count = parseInt(localStorage.getItem("visitCount") || "0") + 1;</code><br>' +
+            '<code>localStorage.setItem("visitCount", String(count));</code><br>' +
+            '<code>console.log(`訪問回数: ${count}回目`);</code><br><br>' +
+            '実行するたびにカウントが増え、ページを再読み込みしてもデータが保持されます。';
+        } else if (v === '') {
+          r.className = 'result-msg info';
+          r.textContent = '⚠️ コンソールでコードを3回実行してから答えを入力してください。';
+        } else if (cur < 3) {
+          r.className = 'result-msg wrong';
+          r.innerHTML = `❌ まずコンソールでコードを3回以上実行してください。<br>現在の visitCount = ${cur}`;
+        } else {
+          r.className = 'result-msg wrong';
+          r.innerHTML = `❌ 不正解。<br>現在の localStorage の visitCount = ${cur} です。`;
+        }
+      }
+    </script>
+  </div>
+
+</div><!-- /quiz-section -->
+
+
+<!-- ============================================================ -->
+<!-- Chapter 1 完了バナー -->
+<!-- ============================================================ -->
+<div class="chapter-complete-banner">
+  <h3>🎉 Chapter 1「速習JavaScript入門」完了！</h3>
+  <p>
+    変数・演算子・型・関数・スコープ・条件分岐・ループ・クラス・DOM・イベント・HTML5 API まで<br>
+    JavaScript の基礎をすべて学習しました。次の Chapter へ進みましょう！
+  </p>
+  <a href="../ch02/index.html" class="next-chapter-btn">
+    Chapter 2 へ進む →
+  </a>
+  <a href="../index.html" class="next-chapter-btn outline">
+    🏠 目次に戻る
+  </a>
+</div>
+
+
+<!-- 完了ボタン -->
+<div class="complete-section">
+  <p>🎉 「1-11 HTML5とJavaScript」の学習が完了したら記録しましょう！</p>
+  <button class="btn btn-done" onclick="markComplete()">✅ このセクションを完了にする</button>
+  <div id="complete-msg" style="margin-top:10px; font-size:0.88em; color:#276749; display:none;">
+    Chapter 1 の全セクションが完了しました！お疲れ様でした！
+  </div>
+</div>
+
+<!-- ページナビ -->
+<div class="page-nav">
+  <a class="prev" href="10_events.html">← 1-10 イベントと非同期処理</a>
+  <a class="home" href="../index.html">🏠 目次へ</a>
+  <a class="next" href="../ch02/index.html">Chapter 2 へ →</a>
+</div>
+
+<!-- フッター -->
+<footer>
+  <p>
+    HTML5プロフェッショナル Level 2 学習サイト ／
+    <a href="../index.html">🏠 目次</a> ／
+    <a href="../exam/index.html">📝 模擬試験</a> ／
+    <a href="https://github.com/MeshinoKiwamiOkome/html5lv2" target="_blank">GitHub</a>
+  </p>
+  <p style="margin-top:4px;">© MeshinoKiwamiOkome</p>
+</footer>
+
+
+<!-- ============================================================ -->
+<!-- JavaScript -->
+<!-- ============================================================ -->
+<script>
+  /* ===== コピーボタン ===== */
+  function copyPre(btn) {
+    const pre = btn.nextElementSibling;
+    navigator.clipboard.writeText(pre.innerText || pre.textContent).then(() => {
+      btn.textContent = 'copied!';
+      setTimeout(() => btn.textContent = 'copy', 1800);
+    });
+  }
+
+  /* ===== タブ ===== */
+  function switchTab(btn, id) {
+    btn.closest('.tab-wrap').querySelectorAll('.tab-btn')
+       .forEach(b => b.classList.remove('active'));
+    btn.closest('.tab-wrap').querySelectorAll('.tab-content')
+       .forEach(c => c.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById(id).classList.add('active');
+  }
+
+  /* ===== API 詳細パネル ===== */
+  const apiDetails = {
+    storage: {
+      color: '#90cdf4',
+      text:
+`// Web Storage
+// localStorage：永続保存（ブラウザを閉じても保持）
+localStorage.setItem("key", "value");
+localStorage.getItem("key");       // → "value"
+localStorage.removeItem("key");
+localStorage.clear();
+
+// sessionStorage：タブを閉じると消える
+sessionStorage.setItem("temp", "一時データ");
+
+// ⚠️ 文字列のみ保存可能
+// オブジェクトは JSON.stringify / JSON.parse が必要`
+    },
+    canvas: {
+      color: '#68d391',
+      text:
+`// Canvas API
+const canvas = document.getElementById("myCanvas");
+const ctx = canvas.getContext("2d");
+
+// 矩形・円・テキスト・グラデーションを描画
+ctx.fillStyle = "#4299e1";
+ctx.fillRect(10, 10, 100, 60);
+ctx.beginPath();
+ctx.arc(200, 50, 40, 0, Math.PI * 2);
+ctx.fill();
+ctx.font = "bold 24px sans-serif";
+ctx.fillText("Hello!", 10, 120);`
+    },
+    geo: {
+      color: '#b794f4',
+      text:
+`// Geolocation API
+// ⚠️ HTTPS 必須・ユーザー許可必須
+navigator.geolocation.getCurrentPosition(
+  (pos) => {
+    console.log(pos.coords.latitude);   // 緯度
+    console.log(pos.coords.longitude);  // 経度
+    console.log(pos.coords.accuracy);   // 精度(m)
+  },
+  (err) => console.log(err.message)
+);`
+    },
+    worker: {
+      color: '#f6ad55',
+      text:
+`// Web Workers
+// バックグラウンドスレッドで重い処理を実行
+const worker = new Worker("worker.js");
+worker.postMessage({ data: 1000000 });
+worker.addEventListener("message", (e) => {
+  console.log("結果:", e.data);
+});
+
+// ❌ DOM アクセス不可
+// ✅ fetch / XMLHttpRequest 使用可
+// ✅ postMessage でデータ交換`
+    },
+    history: {
+      color: '#fc8181',
+      text:
+`// History API（SPA ルーティング）
+// URL を変更してもページ遷移しない
+history.pushState({ page: "about" }, "", "/about");
+history.replaceState({ page: "home" }, "", "/");
+history.back();    // 戻る
+history.forward(); // 進む
+
+// 戻る/進むボタンで発火
+window.addEventListener("popstate", (e) => {
+  console.log("URL:", location.pathname);
+  console.log("state:", e.state);
+});`
+    },
+    observer: {
+      color: '#81e6d9',
+      text:
+`// Intersection Observer
+// スクロールより高パフォーマンスで要素の表示を監視
+const observer = new IntersectionObserver(
+  (entries) => {
+    entries.forEach((entry) => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add("visible");
+        observer.unobserve(entry.target);
+      }
+    });
+  },
+  { threshold: 0.1 } // 10%見えたら発火
+);
+document.querySelectorAll(".lazy")
+  .forEach(el => observer.observe(el));`
+    },
+    drag: {
+      color: '#fbd38d',
+      text:
+`// Drag & Drop API
+const draggable = document.getElementById("item");
+draggable.setAttribute("draggable", "true");
+
+draggable.addEventListener("dragstart", (e) => {
+  e.dataTransfer.setData("text/plain", "item-id");
+});
+
+const dropZone = document.getElementById("zone");
+dropZone.addEventListener("dragover", (e) => {
+  e.preventDefault(); // デフォルト動作をキャンセル
+});
+dropZone.addEventListener("drop", (e) => {
+  e.preventDefault();
+  const id = e.dataTransfer.getData("text/plain");
+  console.log("ドロップ:", id);
+});`
+    },
+    websocket: {
+      color: '#9ae6b4',
+      text:
+`// WebSocket（リアルタイム双方向通信）
+const ws = new WebSocket("wss://example.com/ws");
+
+ws.addEventListener("open", () => {
+  console.log("接続完了");
+  ws.send(JSON.stringify({ type: "hello" }));
+});
+
+ws.addEventListener("message", (e) => {
+  const data = JSON.parse(e.data);
+  console.log("受信:", data);
+});
+
+ws.addEventListener("close", () => {
+  console.log("切断");
+});
+
+ws.close(); // 接続を閉じる`
+    }
+  };
+
+  function showApiDetail(key, card) {
+    document.querySelectorAll('.api-card').forEach(c => c.classList.remove('active'));
+    const detail = document.getElementById('api-detail');
+    if (detail.dataset.current === key && detail.style.display !== 'none') {
+      detail.style.display = 'none'; detail.dataset.current = ''; return;
+    }
+    card.classList.add('active');
+    detail.dataset.current = key;
+    detail.style.display = 'block';
+    const d = apiDetails[key];
+    detail.style.color = d.color;
+    detail.textContent = d.text;
+    detail.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }
+
+  /* ===== localStorage デモ ===== */
+  function lsRefresh() {
+    const disp = document.getElementById('ls-display');
+    const len  = localStorage.length;
+    if (len === 0) {
+      disp.textContent = '（localStorage は空です）';
+      return;
+    }
+    const lines = [];
+    for (let i = 0; i < len; i++) {
+      const k = localStorage.key(i);
+      const v = localStorage.getItem(k);
+      lines.push(`"${k}": ${v}`);
+    }
+    disp.textContent = `// localStorage（${len} 件）\n{\n  ${lines.join(',\n  ')}\n}`;
+  }
+
+  function lsSet() {
+    const k = document.getElementById('ls-key').value.trim();
+    const v = document.getElementById('ls-val').value.trim();
+    if (!k) return;
+    localStorage.setItem(k, v);
+    lsRefresh();
+  }
+
+  function lsGet() {
+    const k    = document.getElementById('ls-key').value.trim();
+    const disp = document.getElementById('ls-display');
+    if (!k) return;
+    const v = localStorage.getItem(k);
+    disp.textContent = v === null
+      ? `localStorage.getItem("${k}") → null（存在しません）`
+      : `localStorage.getItem("${k}") → "${v}"`;
+  }
+
+  function lsRemove() {
+    const k = document.getElementById('ls-key').value.trim();
+    if (!k) return;
+    localStorage.removeItem(k);
+    lsRefresh();
+  }
+
+  function lsClear() {
+    localStorage.clear();
+    document.getElementById('ls-display').textContent = '// localStorage.clear() を実行しました\n（すべてのデータが削除されました）';
+  }
+
+  // 初期表示
+  lsRefresh();
+
+  /* ===== Canvas デモ ===== */
+  const canvas    = document.getElementById('demo-canvas');
+  const ctx       = canvas.getContext('2d');
+  let isDrawMode  = false;
+  let isDrawing   = false;
+  let drawColor   = '#ffffff';
+  let lastX = 0, lastY = 0;
+
+  function clearCanvas() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    isDrawMode = false;
+    canvas.style.cursor = 'crosshair';
+  }
+
+  function drawShapes() {
+    isDrawMode = false;
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    // 背景
+    ctx.fillStyle = '#1a202c';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    // 矩形
+    ctx.fillStyle = '#4299e1';
+    ctx.fillRect(20, 20, 120, 80);
+    ctx.strokeStyle = '#90cdf4';
+    ctx.lineWidth = 2;
+    ctx.strokeRect(20, 20, 120, 80);
+
+    // 円
+    ctx.beginPath();
+    ctx.arc(220, 60, 50, 0, Math.PI * 2);
+    ctx.fillStyle = '#68d391';
+    ctx.fill();
+    ctx.strokeStyle = '#9ae6b4';
+    ctx.lineWidth = 2;
+    ctx.stroke();
+
+    // 三角形
+    ctx.beginPath();
+    ctx.moveTo(320, 110);
+    ctx.lineTo(380, 10);
+    ctx.lineTo(440, 110);
+    ctx.closePath();
+    ctx.fillStyle = '#f6ad55';
+    ctx.fill();
+    ctx.strokeStyle = '#fbd38d';
+    ctx.lineWidth = 2;
+    ctx.stroke();
+
+    // 星形
+    drawStar(ctx, 530, 60, 5, 45, 20);
+    ctx.fillStyle = '#b794f4';
+    ctx.fill();
+    ctx.strokeStyle = '#d6bcfa';
+    ctx.lineWidth = 1;
+    ctx.stroke();
+
+    // ラベル
+    ctx.font = 'bold 13px sans-serif';
+    ctx.fillStyle = '#e2e8f0';
+    ctx.textAlign = 'center';
+    ctx.fillText('矩形', 80, 125);
+    ctx.fillText('円', 220, 125);
+    ctx.fillText('三角形', 380, 125);
+    ctx.fillText('星形', 530, 125);
+
+    // 説明
+    ctx.font = '12px monospace';
+    ctx.fillStyle = '#a0aec0';
+    ctx.textAlign = 'left';
+    ctx.fillText('fillRect()  arc()  moveTo/lineTo  star path', 20, 170);
+  }
+
+  function drawStar(ctx, cx, cy, spikes, outerR, innerR) {
+    let rot = (Math.PI / 2) * 3;
+    const step = Math.PI / spikes;
+    ctx.beginPath();
+    ctx.moveTo(cx, cy - outerR);
+    for (let i = 0; i < spikes; i++) {
+      ctx.lineTo(cx + Math.cos(rot) * outerR, cy + Math.sin(rot) * outerR);
+      rot += step;
+      ctx.lineTo(cx + Math.cos(rot) * innerR, cy + Math.sin(rot) * innerR);
+      rot += step;
+    }
+    ctx.lineTo(cx, cy - outerR);
+    ctx.closePath();
+  }
+
+  function drawText() {
+    isDrawMode = false;
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.fillStyle = '#1a202c';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    const texts = [
+      { text: 'Hello Canvas!', x: 20,  y: 50,  size: 28, color: '#90cdf4', bold: true },
+      { text: 'fillText()',    x: 20,  y: 90,  size: 18, color: '#68d391', bold: false },
+      { text: 'strokeText()',  x: 20,  y: 125, size: 18, color: '#f6ad55', bold: false },
+      { text: 'HTML5 Canvas',  x: 300, y: 80,  size: 22, color: '#b794f4', bold: true },
+    ];
+
+    texts.forEach(t => {
+      ctx.font = `${t.bold ? 'bold ' : ''}${t.size}px sans-serif`;
+      ctx.fillStyle = t.color;
+      ctx.fillText(t.text, t.x, t.y);
+    });
+
+    // strokeText
+    ctx.font = 'bold 20px sans-serif';
+    ctx.strokeStyle = '#f6ad55';
+    ctx.lineWidth = 1;
+    ctx.strokeText('strokeText()', 20, 125);
+
+    // textAlign
+    ctx.font = '14px monospace';
+    ctx.fillStyle = '#a0aec0';
+    ctx.textAlign = 'left';
+    ctx.fillText('textAlign: left / center / right', 20, 165);
+    ctx.textAlign = 'center';
+    ctx.fillStyle = '#81e6d9';
+    ctx.fillText('center', canvas.width / 2, 195);
+    ctx.textAlign = 'left';
+  }
+
+  function drawGradient() {
+    isDrawMode = false;
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    // 線形グラデーション
+    const lg = ctx.createLinearGradient(0, 0, canvas.width, 0);
+    lg.addColorStop(0,    '#1a365d');
+    lg.addColorStop(0.33, '#2c7a7b');
+    lg.addColorStop(0.66, '#553c9a');
+    lg.addColorStop(1,    '#9b2335');
+    ctx.fillStyle = lg;
+    ctx.fillRect(0, 0, canvas.width, 80);
+
+    ctx.font = 'bold 16px sans-serif';
+    ctx.fillStyle = '#fff';
+    ctx.textAlign = 'center';
+    ctx.fillText('線形グラデーション（createLinearGradient）', canvas.width / 2, 45);
+
+    // 放射状グラデーション
+    const rg = ctx.createRadialGradient(300, 155, 10, 300, 155, 70);
+    rg.addColorStop(0, '#fbd38d');
+    rg.addColorStop(0.5, '#f6ad55');
+    rg.addColorStop(1, 'rgba(244,160,0,0)');
+    ctx.fillStyle = rg;
+    ctx.fillRect(0, 90, canvas.width, 130);
+
+    ctx.fillStyle = '#1a202c';
+    ctx.fillRect(0, 90, canvas.width, 130);
+    ctx.fillStyle = rg;
+    ctx.beginPath();
+    ctx.arc(300, 155, 70, 0, Math.PI * 2);
+    ctx.fill();
+
+    ctx.font = 'bold 14px sans-serif';
+    ctx.fillStyle = '#1a202c';
+    ctx.textAlign = 'center';
+    ctx.fillText('放射状グラデーション（createRadialGradient）', 300, 200);
+  }
+
+  function startDrawMode() {
+    isDrawMode = true;
+    ctx.fillStyle = '#1a202c';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.font = '14px sans-serif';
+    ctx.fillStyle = '#4a5568';
+    ctx.textAlign = 'center';
+    ctx.fillText('✏️ 手書きモード：ドラッグして描いてみよう', canvas.width / 2, canvas.height / 2);
+    ctx.textAlign = 'left';
+    canvas.style.cursor = 'crosshair';
+  }
+
+  function setDrawColor(color, swatch) {
+    drawColor = color;
+    document.querySelectorAll('.color-swatch').forEach(s => s.classList.remove('active'));
+    swatch.classList.add('active');
+  }
+
+  // 手書き
+  canvas.addEventListener('mousedown', (e) => {
+    if (!isDrawMode) return;
+    isDrawing = true;
+    const rect = canvas.getBoundingClientRect();
+    const scaleX = canvas.width  / rect.width;
+    const scaleY = canvas.height / rect.height;
+    lastX = (e.clientX - rect.left) * scaleX;
+    lastY = (e.clientY - rect.top)  * scaleY;
+  });
+
+  canvas.addEventListener('mousemove', (e) => {
+    if (!isDrawMode || !isDrawing) return;
+    const rect  = canvas.getBoundingClientRect();
+    const scaleX = canvas.width  / rect.width;
+    const scaleY = canvas.height / rect.height;
+    const x = (e.clientX - rect.left) * scaleX;
+    const y = (e.clientY - rect.top)  * scaleY;
+    ctx.beginPath();
+    ctx.moveTo(lastX, lastY);
+    ctx.lineTo(x, y);
+    ctx.strokeStyle = drawColor;
+    ctx.lineWidth = 3;
+    ctx.lineCap = 'round';
+    ctx.stroke();
+    lastX = x; lastY = y;
+  });
+
+  canvas.addEventListener('mouseup',    () => { isDrawing = false; });
+  canvas.addEventListener('mouseleave', () => { isDrawing = false; });
+
+  // タッチ対応
+  canvas.addEventListener('touchstart', (e) => {
+    e.preventDefault();
+    if (!isDrawMode) return;
+    isDrawing = true;
+    const rect  = canvas.getBoundingClientRect();
+    const scaleX = canvas.width  / rect.width;
+    const scaleY = canvas.height / rect.height;
+    const t = e.touches[0];
+    lastX = (t.clientX - rect.left) * scaleX;
+    lastY = (t.clientY - rect.top)  * scaleY;
+  }, { passive: false });
+
+  canvas.addEventListener('touchmove', (e) => {
+    e.preventDefault();
+    if (!isDrawMode || !isDrawing) return;
+    const rect  = canvas.getBoundingClientRect();
+    const scaleX = canvas.width  / rect.width;
+    const scaleY = canvas.height / rect.height;
+    const t = e.touches[0];
+    const x = (t.clientX - rect.left) * scaleX;
+    const y = (t.clientY - rect.top)  * scaleY;
+    ctx.beginPath();
+    ctx.moveTo(lastX, lastY);
+    ctx.lineTo(x, y);
+    ctx.strokeStyle = drawColor;
+    ctx.lineWidth = 3;
+    ctx.lineCap = 'round';
+    ctx.stroke();
+    lastX = x; lastY = y;
+  }, { passive: false });
+
+  canvas.addEventListener('touchend', () => { isDrawing = false; });
+
+  // 初期描画
+  drawShapes();
+
+  /* ===== Geolocation デモ ===== */
+  function getLocation() {
+    const out = document.getElementById('geo-output');
+    if (!navigator.geolocation) {
+      out.style.color = '#fc8181';
+      out.textContent = 'エラー：このブラウザは Geolocation をサポートしていません';
+      return;
+    }
+    out.style.color = '#f6ad55';
+    out.textContent = '⏳ 位置情報を取得中...（ブラウザの許可ダイアログが表示されます）';
+
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        const { latitude, longitude, accuracy, altitude } = pos.coords;
+        out.style.color = '#68d391';
+        out.textContent =
+          `✅ 位置情報を取得しました\n\n` +
+          `緯度 (latitude):  ${latitude.toFixed(6)}\n` +
+          `経度 (longitude): ${longitude.toFixed(6)}\n` +
+          `精度 (accuracy):  ${accuracy.toFixed(1)}m\n` +
+          `高度 (altitude):  ${altitude !== null ? altitude + 'm' : '取得不可'}\n\n` +
+          `// Google Maps で確認\n// https://maps.google.com/?q=${latitude},${longitude}`;
+      },
+      (err) => {
+        out.style.color = '#fc8181';
+        const msgs = {
+          1: 'PERMISSION_DENIED：ユーザーが位置情報の使用を拒否しました',
+          2: 'POSITION_UNAVAILABLE：位置情報を取得できませんでした',
+          3: 'TIMEOUT：タイムアウトしました',
+        };
+        out.textContent = `❌ エラー（code: ${err.code}）\n${msgs[err.code] || err.message}`;
+      },
+      { enableHighAccuracy: true, timeout: 8000, maximumAge: 0 }
+    );
+  }
+
+  /* ===== History API デモ ===== */
+  function runPushState() {
+    const path = document.getElementById('history-path').value.trim() || '/demo';
+    const out  = document.getElementById('history-output');
+    const state = { page: path, time: Date.now() };
+    history.pushState(state, '', path);
+    out.style.color = '#68d391';
+    out.textContent =
+      `> history.pushState(state, "", "${path}")\n\n` +
+      `✅ URL が変更されました（ページ遷移なし）\n` +
+      `現在の URL: ${location.pathname}\n\n` +
+      `state: ${JSON.stringify(state)}\n\n` +
+      `// ブラウザの「戻る」ボタンで元の URL に戻れます\n` +
+      `// popstate イベントが発火します`;
+  }
+
+  function runReplaceState() {
+    const path = document.getElementById('history-path').value.trim() || '/demo';
+    const out  = document.getElementById('history-output');
+    const state = { page: path, replaced: true };
+    history.replaceState(state, '', path);
+    out.style.color = '#b794f4';
+    out.textContent =
+      `> history.replaceState(state, "", "${path}")\n\n` +
+      `✅ 現在の履歴エントリを置き換えました\n` +
+      `現在の URL: ${location.pathname}\n\n` +
+      `// pushState と違い、履歴に新しいエントリは追加されません\n` +
+      `// 「戻る」ボタンでは replaceState 前の URL に戻ります`;
+  }
+
+  window.addEventListener('popstate', (e) => {
+    const out = document.getElementById('history-output');
+    if (out) {
+      out.style.color = '#f6ad55';
+      out.textContent =
+        `⚡ popstate イベントが発火しました！\n\n` +
+        `現在の URL: ${location.pathname}\n` +
+        `state: ${JSON.stringify(e.state)}`;
+    }
+  });
+
+  /* ===== Web Workers デモ（Blob URL を使ったインライン Worker）===== */
+  function runWorkerDemo() {
+    const n   = parseInt(document.getElementById('worker-n').value) || 10000000;
+    const out = document.getElementById('worker-output');
+
+    if (n > 100000000) {
+      out.style.color = '#fc8181';
+      out.textContent = '⚠️ 数が大きすぎます。1億以下にしてください。';
+      return;
+    }
+
+    out.style.color = '#f6ad55';
+    out.textContent = `⏳ Worker で 1 〜 ${n.toLocaleString()} の合計を計算中...`;
+
+    const workerCode = `
+      self.addEventListener("message", (e) => {
+        const n = e.data;
+        let sum = 0;
+        for (let i = 1; i <= n; i++) sum += i;
+        self.postMessage(sum);
+      });
+    `;
+    const blob   = new Blob([workerCode], { type: 'application/javascript' });
+    const url    = URL.createObjectURL(blob);
+    const worker = new Worker(url);
+
+    const start = performance.now();
+    worker.postMessage(n);
+    worker.addEventListener('message', (e) => {
+      const elapsed = (performance.now() - start).toFixed(1);
+      out.style.color = '#68d391';
+      out.textContent =
+        `✅ Worker 計算完了\n\n` +
+        `計算範囲: 1 〜 ${n.toLocaleString()}\n` +
+        `合計: ${e.data.toLocaleString()}\n` +
+        `処理時間: ${elapsed}ms\n\n` +
+        `// Worker はバックグラウンドで実行されるため\n` +
+        `// 計算中も UI はフリーズしません！`;
+      worker.terminate();
+      URL.revokeObjectURL(url);
+    });
+  }
+
+  function runMainThreadDemo() {
+    const n   = parseInt(document.getElementById('worker-n').value) || 10000000;
+    const out = document.getElementById('worker-output');
+
+    if (n > 50000000) {
+      out.style.color = '#fc8181';
+      out.textContent = '⚠️ メインスレッドでは5000万以下にしてください（UI がフリーズします）。';
+      return;
+    }
+
+    out.style.color = '#f6ad55';
+    out.textContent = `⏳ メインスレッドで計算中...（UI がフリーズする可能性があります）`;
+
+    setTimeout(() => {
+      const start = performance.now();
+      let sum = 0;
+      for (let i = 1; i <= n; i++) sum += i;
+      const elapsed = (performance.now() - start).toFixed(1);
+      out.style.color = '#f6ad55';
+      out.textContent =
+        `⚠️ メインスレッド計算完了\n\n` +
+        `計算範囲: 1 〜 ${n.toLocaleString()}\n` +
+        `合計: ${sum.toLocaleString()}\n` +
+        `処理時間: ${elapsed}ms\n\n` +
+        `// メインスレッドで実行すると\n` +
+        `// 計算中は UI がフリーズします。\n` +
+        `// Worker を使えばこの問題を解決できます！`;
+    }, 50);
+  }
+
+  /* ===== JSコンソール ===== */
+  function runConsole(id) {
+    const input  = document.getElementById(`console-${id}-input`);
+    const output = document.getElementById(`console-${id}-output`);
+    const code   = input.value.trim();
+    if (!code) return;
+
+    const promptLine = document.createElement('div');
+    promptLine.className = 'log-prompt';
+    promptLine.textContent = '> ' + code;
+    output.appendChild(promptLine);
+
+    const origLog   = console.log;
+    const origWarn  = console.warn;
+    const origError = console.error;
+    const origInfo  = console.info;
+
+    function addLine(cls, ...args) {
+      const line = document.createElement('div');
+      line.className = cls;
+      line.textContent = args.map(a => {
+        if (typeof a === 'object' && a !== null) {
+          try { return JSON.stringify(a, null, 2); } catch(e) { return String(a); }
+        }
+        return String(a);
+      }).join(' ');
+      output.appendChild(line);
+      output.scrollTop = output.scrollHeight;
+    }
+
+    console.log   = (...a) => { addLine('log-line',  ...a); origLog(...a);   };
+    console.warn  = (...a) => { addLine('log-warn',  ...a); origWarn(...a);  };
+    console.error = (...a) => { addLine('log-error', ...a); origError(...a); };
+    console.info  = (...a) => { addLine('log-info',  ...a); origInfo(...a);  };
+
+    try {
+      const result = eval(code);
+      if (result !== undefined) {
+        addLine('log-result', '← ' + (
+          typeof result === 'object' ? JSON.stringify(result) : String(result)
+        ));
+      }
+      // visitCount 更新後に表示を更新
+      const el = document.getElementById('current-visit-count');
+      if (el) el.textContent = localStorage.getItem('visitCount') || '0（未設定）';
+    } catch(e) {
+      addLine('log-error', e.toString());
+    }
+
+    console.log   = origLog;
+    console.warn  = origWarn;
+    console.error = origError;
+    console.info  = origInfo;
+
+    input.value = '';
+    output.scrollTop = output.scrollHeight;
+  }
+
+  function clearConsole(id) {
+    document.getElementById(`console-${id}-output`).innerHTML =
+      '<div class="log-info">// クリアしました</div>';
+  }
+
+  document.querySelectorAll('.js-console-input').forEach(el => {
+    el.addEventListener('keydown', e => {
+      if (e.key === 'Enter') {
+        const id = el.id.replace('console-', '').replace('-input', '');
+        runConsole(id);
+      }
+    });
+  });
+
+  /* ===== 完了ボタン ===== */
+  function markComplete() {
+    localStorage.setItem('html5lv2_ch1', '100');
+    document.getElementById('complete-msg').style.display = 'block';
+  }
+  if (parseInt(localStorage.getItem('html5lv2_ch1') || '0') >= 99) {
+    document.getElementById('complete-msg').style.display = 'block';
+  }
+</script>
+
+</body>
+</html>
