@@ -1,0 +1,1744 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>1-7 繰り返しの処理 | HTML5プロフェッショナル Level 2</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; }
+    body {
+      font-family: 'Segoe UI', 'Helvetica Neue', sans-serif;
+      max-width: 960px; margin: 40px auto; padding: 0 24px;
+      background: #f0f4f8; color: #2d3748; line-height: 1.8;
+    }
+    .breadcrumb {
+      font-size: 0.82em; color: #a0aec0; margin-bottom: 20px;
+      font-family: 'Consolas','Monaco',monospace;
+    }
+    .breadcrumb a { color: #2c7a7b; text-decoration: none; }
+    .breadcrumb a:hover { text-decoration: underline; }
+
+    .chapter-header {
+      background: linear-gradient(135deg, #1a365d, #2c7a7b);
+      border-radius: 12px; padding: 32px 32px 24px;
+      margin-bottom: 32px; color: #fff;
+      box-shadow: 0 4px 18px rgba(44,122,123,0.35);
+    }
+    .chapter-header .ch-num {
+      font-size: 0.8em; font-family: 'Consolas','Monaco',monospace;
+      opacity: 0.85; letter-spacing: 0.08em; margin-bottom: 6px;
+    }
+    .chapter-header h1 {
+      margin: 0 0 10px; font-size: 1.6em; color: #fff; border: none; padding: 0;
+    }
+    .chapter-header p { margin: 0; font-size: 0.92em; opacity: 0.88; }
+    .badge-row { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 14px; }
+    .badge {
+      background: rgba(255,255,255,0.18);
+      border: 1px solid rgba(255,255,255,0.35);
+      border-radius: 20px; padding: 3px 12px;
+      font-size: 0.76em; font-weight: bold;
+    }
+
+    .section-nav {
+      background: #fff; border: 1px solid #bee3f8;
+      border-radius: 10px; padding: 18px 22px;
+      margin-bottom: 32px; box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+    }
+    .section-nav h2 {
+      margin: 0 0 12px; font-size: 0.92em; color: #1a365d; border: none; padding: 0;
+    }
+    .section-nav ol { margin: 0; padding-left: 20px; font-size: 0.9em; }
+    .section-nav ol li { margin: 4px 0; }
+    .section-nav ol li a { color: #2c7a7b; text-decoration: none; }
+    .section-nav ol li a:hover { text-decoration: underline; }
+    .section-nav ol li.current a { color: #1a365d; font-weight: bold; }
+
+    h2 {
+      color: #1a365d; margin-top: 48px;
+      border-left: 5px solid #2c7a7b; padding-left: 12px;
+    }
+    h3 { color: #2c7a7b; margin-top: 28px; }
+
+    code {
+      background: #edf2f7; padding: 2px 6px;
+      border-radius: 4px; font-size: 0.93em;
+      font-family: 'Consolas','Monaco',monospace;
+    }
+    pre {
+      background: #1a202c; color: #e2e8f0;
+      padding: 18px 20px; border-radius: 8px;
+      overflow-x: auto; font-size: 0.88em;
+      line-height: 1.7; font-family: 'Consolas','Monaco',monospace;
+    }
+    pre .comment { color: #68d391; }
+    pre .kw      { color: #90cdf4; }
+    pre .str     { color: #fbd38d; }
+    pre .num     { color: #fc8181; }
+    pre .fn      { color: #b794f4; }
+    pre .op      { color: #f6ad55; }
+    pre .out     { color: #a0aec0; }
+    pre .hl      { color: #68d391; font-weight: bold; }
+
+    .pre-wrap { position: relative; margin: 14px 0; }
+    .copy-btn {
+      position: absolute; top: 8px; right: 8px;
+      background: #4a5568; color: #e2e8f0;
+      border: none; border-radius: 4px; padding: 4px 10px;
+      font-size: 0.75em; cursor: pointer;
+      font-family: 'Consolas','Monaco',monospace;
+      transition: background 0.2s; z-index: 1;
+    }
+    .copy-btn:hover { background: #2c7a7b; }
+
+    .note {
+      background: #fff; border: 1px dashed #81e6d9;
+      border-radius: 6px; padding: 14px 18px;
+      font-size: 0.93em; color: #4a5568; margin: 14px 0;
+    }
+    .note strong { color: #1a365d; }
+    .warn {
+      background: #fffaf0; border: 1px solid #f6ad55;
+      border-left: 5px solid #f6ad55; border-radius: 6px;
+      padding: 14px 18px; font-size: 0.93em; color: #744210; margin: 14px 0;
+    }
+    .good {
+      background: #f0fff4; border: 1px solid #68d391;
+      border-left: 5px solid #48bb78; border-radius: 6px;
+      padding: 14px 18px; font-size: 0.93em; color: #276749; margin: 14px 0;
+    }
+    .demo-box {
+      background: #fff; border: 1px solid #bee3f8;
+      border-radius: 8px; padding: 20px 24px;
+      margin: 12px 0 28px; box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+    }
+
+    /* ===== ループビジュアライザ ===== */
+    .loop-visualizer {
+      background: #1a202c; border-radius: 10px;
+      padding: 18px 20px; margin: 14px 0;
+      font-family: 'Consolas','Monaco',monospace; font-size: 0.85em;
+    }
+    .loop-track {
+      display: flex; align-items: center;
+      gap: 0; margin: 10px 0; flex-wrap: wrap;
+    }
+    .loop-cell {
+      border: 2px solid #4a5568; background: #2d3748;
+      padding: 8px 12px; text-align: center;
+      min-width: 48px; transition: all 0.25s ease;
+      font-weight: bold;
+    }
+    .loop-cell:first-child { border-radius: 6px 0 0 6px; }
+    .loop-cell:last-child  { border-radius: 0 6px 6px 0; }
+    .loop-cell .lc-idx { font-size: 0.65em; color: #a0aec0; display: block; }
+    .loop-cell .lc-val { color: #fbd38d; font-size: 0.88em; }
+    .loop-cell.active {
+      background: #276749; border-color: #68d391;
+    }
+    .loop-cell.active .lc-val { color: #68d391; }
+    .loop-cell.done {
+      background: #2b4c7e; border-color: #4299e1; opacity: 0.6;
+    }
+    .loop-cell.done .lc-val { color: #90cdf4; }
+    .loop-controls {
+      display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px;
+    }
+    .loop-ctrl-btn {
+      background: #2c7a7b; color: #fff; border: none;
+      border-radius: 6px; padding: 6px 14px;
+      font-size: 0.82em; font-weight: bold; cursor: pointer;
+      transition: background 0.2s;
+    }
+    .loop-ctrl-btn:hover { background: #1a365d; }
+    .loop-ctrl-btn.secondary { background: #4a5568; }
+    .loop-ctrl-btn.secondary:hover { background: #718096; }
+    .loop-info {
+      margin-top: 10px; padding: 8px 12px;
+      background: #0d1117; border-radius: 6px;
+      color: #68d391; font-size: 0.82em; line-height: 1.8;
+    }
+
+    /* ===== ループ比較カード ===== */
+    .loop-type-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 12px; margin: 14px 0;
+    }
+    .loop-type-card {
+      border-radius: 10px; padding: 16px 18px;
+      cursor: pointer; border: 2px solid transparent;
+      transition: transform 0.15s, box-shadow 0.15s, border-color 0.15s;
+    }
+    .loop-type-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 6px 16px rgba(0,0,0,0.12);
+    }
+    .loop-type-card.active { border-color: #68d391; }
+    .loop-type-card .ltc-tag {
+      font-size: 0.72em; font-weight: bold;
+      border-radius: 10px; padding: 2px 10px;
+      display: inline-block; margin-bottom: 8px;
+    }
+    .loop-type-card .ltc-name {
+      font-family: 'Consolas','Monaco',monospace;
+      font-size: 1em; font-weight: bold; margin-bottom: 6px;
+    }
+    .loop-type-card .ltc-use {
+      font-size: 0.8em; line-height: 1.5;
+    }
+
+    /* ===== インタラクティブデモ ===== */
+    .interactive-demo {
+      background: #ebf8ff; border: 1px solid #bee3f8;
+      border-radius: 8px; padding: 16px 20px; margin: 14px 0;
+    }
+    .demo-label {
+      font-size: 0.85em; font-weight: bold;
+      color: #1a365d; margin-bottom: 10px;
+    }
+    .demo-input-row {
+      display: flex; gap: 10px; align-items: center;
+      flex-wrap: wrap; margin-bottom: 10px;
+    }
+    .demo-input {
+      border: 2px solid #bee3f8; border-radius: 6px;
+      padding: 7px 12px; font-size: 0.9em;
+      font-family: 'Consolas','Monaco',monospace;
+      color: #2d3748; background: #fff; flex: 1; min-width: 80px;
+    }
+    .demo-input:focus { border-color: #2c7a7b; outline: none; }
+    .demo-btn {
+      background: #2c7a7b; color: #fff; border: none;
+      border-radius: 6px; padding: 8px 18px;
+      font-size: 0.88em; font-weight: bold; cursor: pointer;
+      transition: background 0.2s; white-space: nowrap;
+    }
+    .demo-btn:hover { background: #1a365d; }
+    .demo-output {
+      background: #1a202c; color: #68d391;
+      border-radius: 6px; padding: 10px 14px;
+      font-family: 'Consolas','Monaco',monospace;
+      font-size: 0.85em; min-height: 40px;
+      white-space: pre-wrap; line-height: 1.7;
+    }
+
+    /* ===== タブ ===== */
+    .tab-wrap { margin: 14px 0; }
+    .tab-btns { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: -1px; }
+    .tab-btn {
+      padding: 8px 18px; border: 1px solid #bee3f8;
+      border-bottom: none; border-radius: 6px 6px 0 0;
+      background: #edf2f7; color: #2c7a7b;
+      font-size: 0.85em; font-weight: bold;
+      font-family: 'Consolas','Monaco',monospace;
+      cursor: pointer; transition: background 0.15s;
+    }
+    .tab-btn.active { background: #fff; border-bottom: 1px solid #fff; }
+    .tab-btn:hover:not(.active) { background: #e6fffa; }
+    .tab-content {
+      display: none; background: #fff;
+      border: 1px solid #bee3f8;
+      border-radius: 0 6px 6px 6px; padding: 18px 20px;
+    }
+    .tab-content.active { display: block; }
+
+    /* ===== テーブル ===== */
+    table.ref-table {
+      border-collapse: collapse; width: 100%;
+      background: #fff; border-radius: 8px;
+      overflow: hidden; box-shadow: 0 2px 6px rgba(0,0,0,0.07);
+      margin: 14px 0; font-size: 0.9em;
+    }
+    table.ref-table th, table.ref-table td {
+      border: 1px solid #bee3f8; padding: 10px 14px; text-align: left;
+    }
+    table.ref-table thead tr { background: #1a365d; color: #fff; }
+    table.ref-table tbody tr:nth-child(even) { background: #ebf8ff; }
+
+    /* ===== JSコンソール ===== */
+    .js-console {
+      background: #1a202c; border-radius: 10px;
+      overflow: hidden; margin: 16px 0;
+      box-shadow: 0 4px 14px rgba(0,0,0,0.25);
+    }
+    .js-console-bar {
+      background: #2d3748; padding: 8px 16px;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .js-console-bar .dot { width: 12px; height: 12px; border-radius: 50%; }
+    .dot-red    { background: #fc8181; }
+    .dot-yellow { background: #f6ad55; }
+    .dot-green  { background: #68d391; }
+    .js-console-bar span {
+      font-size: 0.78em; color: #a0aec0;
+      font-family: 'Consolas','Monaco',monospace; margin-left: 6px;
+    }
+    .js-console-output {
+      padding: 14px 16px; min-height: 80px;
+      font-family: 'Consolas','Monaco',monospace;
+      font-size: 0.85em; line-height: 1.8;
+      max-height: 280px; overflow-y: auto;
+    }
+    .log-line   { color: #e2e8f0; }
+    .log-info   { color: #90cdf4; }
+    .log-warn   { color: #f6ad55; }
+    .log-error  { color: #fc8181; }
+    .log-result { color: #68d391; }
+    .log-prompt { color: #a0aec0; }
+    .js-console-input-row {
+      display: flex; align-items: center;
+      border-top: 1px solid #2d3748; padding: 8px 12px; gap: 8px;
+    }
+    .js-console-input-row span {
+      color: #68d391; font-family: 'Consolas','Monaco',monospace;
+      font-size: 0.9em; flex-shrink: 0;
+    }
+    .js-console-input {
+      flex: 1; background: transparent; border: none; outline: none;
+      color: #e2e8f0; font-family: 'Consolas','Monaco',monospace;
+      font-size: 0.88em; caret-color: #68d391;
+    }
+    .js-console-run {
+      background: #2c7a7b; color: #fff; border: none;
+      border-radius: 4px; padding: 4px 12px;
+      font-size: 0.78em; font-weight: bold; cursor: pointer;
+      transition: background 0.2s;
+    }
+    .js-console-run:hover { background: #1a365d; }
+    .js-console-clear {
+      background: #4a5568; color: #e2e8f0; border: none;
+      border-radius: 4px; padding: 4px 10px;
+      font-size: 0.78em; cursor: pointer; transition: background 0.2s;
+    }
+    .js-console-clear:hover { background: #718096; }
+
+    /* ===== 演習問題 ===== */
+    .quiz-section {
+      background: #ebf8ff; border-left: 6px solid #4299e1;
+      border-radius: 0 8px 8px 0; padding: 24px 28px; margin: 48px 0 32px;
+    }
+    .quiz-section > h2 { margin-top: 0; color: #1a365d; border-left-color: #4299e1; }
+    .quiz-block {
+      background: #fff; border: 1px solid #bee3f8;
+      border-radius: 8px; padding: 18px 22px; margin-bottom: 22px;
+    }
+    .quiz-block h3 { margin-top: 0; color: #1a365d; }
+    .quiz-block input[type="text"],
+    .quiz-block select {
+      border: 2px solid #bee3f8; border-radius: 6px;
+      padding: 8px 12px; font-size: 0.95em;
+      width: 100%; max-width: 440px; margin: 6px 0;
+      outline: none; font-family: 'Consolas','Monaco',monospace;
+      transition: border-color 0.2s;
+    }
+    .quiz-block input[type="text"]:focus,
+    .quiz-block select:focus { border-color: #2c7a7b; }
+    .quiz-block label { display: block; margin: 8px 0 2px; font-weight: bold; color: #4a5568; }
+    .quiz-block label.checkbox-label {
+      display: flex; align-items: flex-start; gap: 8px;
+      font-weight: normal; cursor: pointer; margin: 6px 0;
+    }
+    .quiz-block label.checkbox-label input { margin-top: 3px; flex-shrink: 0; }
+    .btn {
+      display: inline-block; padding: 9px 20px;
+      border-radius: 6px; border: none; cursor: pointer;
+      font-size: 0.95em; font-weight: bold;
+      transition: opacity 0.2s; margin-top: 8px;
+    }
+    .btn:hover { opacity: 0.85; }
+    .btn-teal { background: #2c7a7b; color: #fff; }
+    .btn-done { background: #48bb78; color: #fff; }
+    .result-msg {
+      margin-top: 10px; padding: 10px 14px;
+      border-radius: 6px; font-weight: bold; display: none;
+    }
+    .result-msg.correct { background: #c6f6d5; color: #276749; display: block; }
+    .result-msg.wrong   { background: #fed7d7; color: #9b2335; display: block; }
+    .result-msg.info    { background: #bee3f8; color: #1a365d; display: block; }
+
+    .page-nav {
+      display: flex; justify-content: space-between;
+      align-items: center; margin-top: 48px;
+      padding-top: 20px; border-top: 2px solid #bee3f8;
+      gap: 12px; flex-wrap: wrap;
+    }
+    .page-nav a {
+      display: inline-block; padding: 10px 20px;
+      border-radius: 8px; text-decoration: none;
+      font-weight: bold; font-size: 0.9em; transition: opacity 0.2s;
+    }
+    .page-nav a:hover { opacity: 0.8; }
+    .page-nav .prev { background: #edf2f7; color: #4a5568; }
+    .page-nav .next { background: #2c7a7b; color: #fff; }
+    .page-nav .home { background: #fff; color: #2c7a7b; border: 2px solid #2c7a7b; }
+
+    .complete-section {
+      background: #f0fff4; border: 2px solid #48bb78;
+      border-radius: 10px; padding: 20px 24px;
+      margin-top: 40px; text-align: center;
+    }
+    .complete-section p { margin: 0 0 12px; color: #276749; font-weight: bold; }
+
+    footer {
+      margin-top: 48px; padding-top: 16px;
+      border-top: 2px solid #bee3f8;
+      font-size: 0.82em; color: #a0aec0; text-align: center;
+    }
+    footer a { color: #2c7a7b; text-decoration: none; }
+    footer a:hover { text-decoration: underline; }
+
+    @media (max-width: 600px) {
+      body { font-size: 0.84em; }
+      .chapter-header { padding: 20px 16px; }
+      .chapter-header h1 { font-size: 1.2em; }
+      .loop-type-grid { grid-template-columns: 1fr 1fr; }
+      .loop-cell { min-width: 40px; padding: 6px 8px; }
+      .quiz-section { padding: 16px 12px; }
+      .quiz-block { padding: 14px 12px; }
+      .page-nav { flex-direction: column; align-items: stretch; }
+      .page-nav a { text-align: center; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- パンくず -->
+<div class="breadcrumb">
+  <a href="../index.html">🏠 HTML5 Level 2</a> ›
+  Chapter 1：速習JavaScript入門 › 1-7 繰り返しの処理
+</div>
+
+<!-- ヘッダー -->
+<div class="chapter-header">
+  <div class="ch-num">CHAPTER 01 › SECTION 07</div>
+  <h1>🔁 1-7 繰り返しの処理</h1>
+  <p>for・while・do-while・for...of・for...in の各ループ構文を
+  ステップ実行ビジュアライザで体験しながら学びます。
+  break・continue・配列の反復メソッドまで網羅します。</p>
+  <div class="badge-row">
+    <span class="badge">for</span>
+    <span class="badge">while</span>
+    <span class="badge">do-while</span>
+    <span class="badge">for...of</span>
+    <span class="badge">for...in</span>
+    <span class="badge">break / continue</span>
+    <span class="badge">forEach / map / filter</span>
+  </div>
+</div>
+
+<!-- セクションナビ -->
+<div class="section-nav">
+  <h2>📋 Chapter 1 のセクション</h2>
+  <ol>
+    <li><a href="01_variables.html">1-1 変数の宣言と値の代入</a></li>
+    <li><a href="02_operators.html">1-2 さまざまな演算</a></li>
+    <li><a href="03_types.html">1-3 型とオブジェクト</a></li>
+    <li><a href="04_functions.html">1-4 関数</a></li>
+    <li><a href="05_scope.html">1-5 スコープ</a></li>
+    <li><a href="06_conditions.html">1-6 条件分岐</a></li>
+    <li class="current"><a href="07_loops.html">1-7 繰り返しの処理</a></li>
+    <li><a href="08_classes.html">1-8 オブジェクトとクラス</a></li>
+    <li><a href="09_dom.html">1-9 HTMLの操作</a></li>
+    <li><a href="10_events.html">1-10 イベントと非同期処理</a></li>
+    <li><a href="11_html5.html">1-11 HTML5とJavaScript</a></li>
+  </ol>
+</div>
+
+
+<!-- ============================================================ -->
+<!-- PART 1: for ループ -->
+<!-- ============================================================ -->
+<h2 id="for">① for ループ</h2>
+
+<div class="note">
+  <strong>重要ポイント：for ループは「繰り返す回数が決まっている」ときに使います。
+  <code>初期化; 条件; 更新</code> の3つの式で制御します。</strong>
+</div>
+
+<div class="demo-box">
+  <h3>🎬 for ループ ステップ実行ビジュアライザ</h3>
+  <div class="loop-visualizer">
+    <div style="color:#a0aec0; font-size:0.82em; margin-bottom:8px;">
+      // for (let i = 0; i &lt; 配列.length; i++)
+    </div>
+    <div class="loop-track" id="for-track"></div>
+    <div class="loop-controls">
+      <button class="loop-ctrl-btn" onclick="forStep()">▶ 次のステップ</button>
+      <button class="loop-ctrl-btn" onclick="forAuto()">⏩ 自動実行</button>
+      <button class="loop-ctrl-btn secondary" onclick="forReset()">↺ リセット</button>
+    </div>
+    <div class="loop-info" id="for-info">← ステップ実行ボタンを押してループの動作を確認しましょう</div>
+  </div>
+
+  <div class="interactive-demo">
+    <div class="demo-label">for ループのパラメータを変えて動作を確認しよう</div>
+    <div class="demo-input-row">
+      <label style="font-size:0.85em; color:#1a365d; min-width:60px;">開始値</label>
+      <input class="demo-input" id="for-start" type="number" value="0" style="max-width:70px;">
+      <label style="font-size:0.85em; color:#1a365d; min-width:60px;">終了値</label>
+      <input class="demo-input" id="for-end"   type="number" value="5" style="max-width:70px;">
+      <label style="font-size:0.85em; color:#1a365d; min-width:60px;">増分</label>
+      <input class="demo-input" id="for-step"  type="number" value="1" style="max-width:70px;">
+      <button class="demo-btn" onclick="runForDemo()">▶ 実行</button>
+    </div>
+    <div class="demo-output" id="for-demo-output">← パラメータを設定して実行してみましょう</div>
+  </div>
+
+  <div class="pre-wrap">
+    <button class="copy-btn" onclick="copyPre(this)">copy</button>
+<pre>
+<span class="comment">// for ループの基本構文</span>
+<span class="comment">// for (初期化; 条件; 更新) { 処理 }</span>
+<span class="kw">for</span> (<span class="kw">let</span> i = <span class="num">0</span>; i <span class="op">&lt;</span> <span class="num">5</span>; i++) {
+  console.<span class="fn">log</span>(i); <span class="out">// → 0, 1, 2, 3, 4</span>
+}
+
+<span class="comment">// 配列の繰り返し</span>
+<span class="kw">const</span> fruits = [<span class="str">"apple"</span>, <span class="str">"banana"</span>, <span class="str">"cherry"</span>];
+<span class="kw">for</span> (<span class="kw">let</span> i = <span class="num">0</span>; i <span class="op">&lt;</span> fruits.<span class="prop">length</span>; i++) {
+  console.<span class="fn">log</span>(i, fruits[i]);
+}
+<span class="out">// → 0 "apple"</span>
+<span class="out">// → 1 "banana"</span>
+<span class="out">// → 2 "cherry"</span>
+
+<span class="comment">// 逆順ループ</span>
+<span class="kw">for</span> (<span class="kw">let</span> i = fruits.<span class="prop">length</span> <span class="op">-</span> <span class="num">1</span>; i <span class="op">&gt;=</span> <span class="num">0</span>; i<span class="op">--</span>) {
+  console.<span class="fn">log</span>(fruits[i]);
+}
+<span class="out">// → "cherry", "banana", "apple"</span>
+
+<span class="comment">// 2ずつ増やす</span>
+<span class="kw">for</span> (<span class="kw">let</span> i = <span class="num">0</span>; i <span class="op">&lt;=</span> <span class="num">10</span>; i <span class="op">+=</span> <span class="num">2</span>) {
+  console.<span class="fn">log</span>(i); <span class="out">// → 0, 2, 4, 6, 8, 10</span>
+}
+</pre>
+  </div>
+</div>
+
+
+<!-- ============================================================ -->
+<!-- PART 2: while / do-while ループ -->
+<!-- ============================================================ -->
+<h2 id="while">② while / do-while ループ</h2>
+
+<div class="note">
+  <strong>重要ポイント：while は「繰り返す回数が不明なとき」に使います。
+  do-while は「必ず1回は実行してから条件を確認する」ときに使います。</strong>
+</div>
+
+<div class="demo-box">
+  <div class="tab-wrap">
+    <div class="tab-btns">
+      <button class="tab-btn active" onclick="switchTab(this,'tab-while')">while</button>
+      <button class="tab-btn"        onclick="switchTab(this,'tab-dowhile')">do-while</button>
+      <button class="tab-btn"        onclick="switchTab(this,'tab-compare-loops')">for vs while</button>
+    </div>
+
+    <!-- while -->
+    <div class="tab-content active" id="tab-while">
+      <h3 style="margin-top:0; color:#1a365d;">while ループ</h3>
+      <div class="pre-wrap">
+        <button class="copy-btn" onclick="copyPre(this)">copy</button>
+<pre>
+<span class="comment">// while ループ：条件が true の間繰り返す</span>
+<span class="kw">let</span> count = <span class="num">0</span>;
+<span class="kw">while</span> (count <span class="op">&lt;</span> <span class="num">5</span>) {
+  console.<span class="fn">log</span>(count);
+  count++;
+}
+<span class="out">// → 0, 1, 2, 3, 4</span>
+
+<span class="comment">// 実用例：ユーザー入力の検証（疑似コード）</span>
+<span class="kw">let</span> input = <span class="str">""</span>;
+<span class="kw">while</span> (input <span class="op">===</span> <span class="str">""</span>) {
+  input = <span class="fn">prompt</span>(<span class="str">"名前を入力してください"</span>);
+}
+
+<span class="comment">// 2の累乗を 1000 以下まで出力</span>
+<span class="kw">let</span> n = <span class="num">1</span>;
+<span class="kw">while</span> (n <span class="op">&lt;=</span> <span class="num">1000</span>) {
+  console.<span class="fn">log</span>(n);
+  n <span class="op">*=</span> <span class="num">2</span>;
+}
+<span class="out">// → 1, 2, 4, 8, 16, 32, 64, 128, 256, 512</span>
+</pre>
+      </div>
+      <div class="warn">
+        ⚠️ <strong>無限ループに注意！</strong><br>
+        while の条件が常に true になると無限ループになります。
+        ループ内で必ず条件を変化させる処理を書きましょう。
+      </div>
+    </div>
+
+    <!-- do-while -->
+    <div class="tab-content" id="tab-dowhile">
+      <h3 style="margin-top:0; color:#1a365d;">do-while ループ</h3>
+      <div class="pre-wrap">
+        <button class="copy-btn" onclick="copyPre(this)">copy</button>
+<pre>
+<span class="comment">// do-while：先に処理して後で条件を確認</span>
+<span class="comment">// → 必ず最低1回は実行される</span>
+<span class="kw">let</span> count = <span class="num">0</span>;
+<span class="kw">do</span> {
+  console.<span class="fn">log</span>(count);
+  count++;
+} <span class="kw">while</span> (count <span class="op">&lt;</span> <span class="num">3</span>);
+<span class="out">// → 0, 1, 2</span>
+
+<span class="comment">// while との違い：条件が最初から false でも1回実行</span>
+<span class="kw">let</span> x = <span class="num">10</span>;
+
+<span class="comment">// while：条件が false なので実行されない</span>
+<span class="kw">while</span> (x <span class="op">&lt;</span> <span class="num">5</span>) {
+  console.<span class="fn">log</span>(<span class="str">"while"</span>); <span class="out">// → 実行されない</span>
+}
+
+<span class="comment">// do-while：1回は実行される</span>
+<span class="kw">do</span> {
+  console.<span class="fn">log</span>(<span class="str">"do-while"</span>); <span class="out">// → "do-while"（1回実行）</span>
+} <span class="kw">while</span> (x <span class="op">&lt;</span> <span class="num">5</span>);
+</pre>
+      </div>
+    </div>
+
+    <!-- for vs while -->
+    <div class="tab-content" id="tab-compare-loops">
+      <h3 style="margin-top:0; color:#1a365d;">for vs while の使い分け</h3>
+      <table class="ref-table">
+        <thead>
+          <tr><th>ループ</th><th>使う場面</th><th>特徴</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>for</code></td>
+            <td>繰り返す回数が決まっている</td>
+            <td>初期化・条件・更新が1行にまとまる</td>
+          </tr>
+          <tr>
+            <td><code>while</code></td>
+            <td>繰り返す回数が不明・条件次第</td>
+            <td>条件のみ。初期化と更新は別途必要</td>
+          </tr>
+          <tr>
+            <td><code>do-while</code></td>
+            <td>最低1回は実行したい</td>
+            <td>後判定。メニュー表示などに使う</td>
+          </tr>
+          <tr>
+            <td><code>for...of</code></td>
+            <td>配列・文字列などの反復可能オブジェクト</td>
+            <td>インデックス不要・シンプル</td>
+          </tr>
+          <tr>
+            <td><code>for...in</code></td>
+            <td>オブジェクトのキーを列挙</td>
+            <td>プロトタイプチェーンも含む点に注意</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <h3>🎮 while ループシミュレーター</h3>
+  <div class="interactive-demo">
+    <div class="demo-label">初期値・条件・更新を設定して while ループの動作を確認しよう</div>
+    <div class="demo-input-row">
+      <label style="font-size:0.85em; color:#1a365d; min-width:80px;">初期値 n =</label>
+      <input class="demo-input" id="while-init" type="number" value="1" style="max-width:70px;">
+      <label style="font-size:0.85em; color:#1a365d; min-width:80px;">条件 n &lt;=</label>
+      <input class="demo-input" id="while-cond" type="number" value="100" style="max-width:70px;">
+      <select class="demo-input" id="while-op" style="flex:0 0 auto; width:140px;">
+        <option value="double">n *= 2（2倍）</option>
+        <option value="triple">n *= 3（3倍）</option>
+        <option value="add10">n += 10（+10）</option>
+        <option value="sq">n = n*n（2乗）</option>
+      </select>
+      <button class="demo-btn" onclick="runWhileDemo()">▶ 実行</button>
+    </div>
+    <div class="demo-output" id="while-output">← 設定して実行してみましょう</div>
+  </div>
+</div>
+
+
+<!-- ============================================================ -->
+<!-- PART 3: for...of / for...in -->
+<!-- ============================================================ -->
+<h2 id="forof">③ for...of / for...in</h2>
+
+<div class="note">
+  <strong>重要ポイント：<code>for...of</code> は配列・文字列などの「値」を順番に取り出します。
+  <code>for...in</code> はオブジェクトの「キー」を列挙します。</strong><br>
+  配列に <code>for...in</code> を使うとインデックスが文字列で返るため注意が必要です。
+</div>
+
+<div class="demo-box">
+  <div class="tab-wrap">
+    <div class="tab-btns">
+      <button class="tab-btn active" onclick="switchTab(this,'tab-forof')">for...of</button>
+      <button class="tab-btn"        onclick="switchTab(this,'tab-forin')">for...in</button>
+      <button class="tab-btn"        onclick="switchTab(this,'tab-foreach')">forEach</button>
+    </div>
+
+    <!-- for...of -->
+    <div class="tab-content active" id="tab-forof">
+      <h3 style="margin-top:0; color:#1a365d;">for...of：値を順番に取り出す</h3>
+      <div class="pre-wrap">
+        <button class="copy-btn" onclick="copyPre(this)">copy</button>
+<pre>
+<span class="comment">// 配列の各要素を取り出す</span>
+<span class="kw">const</span> fruits = [<span class="str">"apple"</span>, <span class="str">"banana"</span>, <span class="str">"cherry"</span>];
+<span class="kw">for</span> (<span class="kw">const</span> fruit <span class="kw">of</span> fruits) {
+  console.<span class="fn">log</span>(fruit);
+}
+<span class="out">// → "apple", "banana", "cherry"</span>
+
+<span class="comment">// インデックスも必要な場合は entries() を使う</span>
+<span class="kw">for</span> (<span class="kw">const</span> [i, fruit] <span class="kw">of</span> fruits.<span class="fn">entries</span>()) {
+  console.<span class="fn">log</span>(i, fruit);
+}
+<span class="out">// → 0 "apple", 1 "banana", 2 "cherry"</span>
+
+<span class="comment">// 文字列の各文字を取り出す</span>
+<span class="kw">for</span> (<span class="kw">const</span> ch <span class="kw">of</span> <span class="str">"Hello"</span>) {
+  console.<span class="fn">log</span>(ch);
+}
+<span class="out">// → "H", "e", "l", "l", "o"</span>
+
+<span class="comment">// Set・Map にも使える</span>
+<span class="kw">const</span> set = <span class="kw">new</span> Set([<span class="num">1</span>, <span class="num">2</span>, <span class="num">3</span>, <span class="num">2</span>, <span class="num">1</span>]);
+<span class="kw">for</span> (<span class="kw">const</span> v <span class="kw">of</span> set) {
+  console.<span class="fn">log</span>(v);
+}
+<span class="out">// → 1, 2, 3（重複なし）</span>
+</pre>
+      </div>
+    </div>
+
+    <!-- for...in -->
+    <div class="tab-content" id="tab-forin">
+      <h3 style="margin-top:0; color:#1a365d;">for...in：オブジェクトのキーを列挙</h3>
+      <div class="pre-wrap">
+        <button class="copy-btn" onclick="copyPre(this)">copy</button>
+<pre>
+<span class="comment">// オブジェクトのキーを列挙</span>
+<span class="kw">const</span> user = { name: <span class="str">"Alice"</span>, age: <span class="num">25</span>, city: <span class="str">"Tokyo"</span> };
+<span class="kw">for</span> (<span class="kw">const</span> key <span class="kw">in</span> user) {
+  console.<span class="fn">log</span>(key, user[key]);
+}
+<span class="out">// → "name" "Alice"</span>
+<span class="out">// → "age" 25</span>
+<span class="out">// → "city" "Tokyo"</span>
+
+<span class="comment">// 配列に for...in を使うと問題が起きることがある</span>
+<span class="kw">const</span> arr = [<span class="str">"a"</span>, <span class="str">"b"</span>, <span class="str">"c"</span>];
+<span class="kw">for</span> (<span class="kw">const</span> i <span class="kw">in</span> arr) {
+  console.<span class="fn">log</span>(<span class="kw">typeof</span> i, i); <span class="out">// → "string" "0" など（インデックスが文字列）</span>
+}
+<span class="comment">// ⚠️ 配列には for...of または for ループを使うこと！</span>
+
+<span class="comment">// hasOwnProperty でプロトタイプのプロパティを除外</span>
+<span class="kw">for</span> (<span class="kw">const</span> key <span class="kw">in</span> user) {
+  <span class="kw">if</span> (user.<span class="fn">hasOwnProperty</span>(key)) {
+    console.<span class="fn">log</span>(key, user[key]);
+  }
+}
+</pre>
+      </div>
+      <div class="warn">
+        ⚠️ <strong>配列に for...in は使わないこと！</strong><br>
+        配列のインデックスが文字列として返り、プロトタイプのプロパティも列挙される可能性があります。
+        配列の繰り返しには <code>for...of</code> または <code>forEach</code> を使いましょう。
+      </div>
+    </div>
+
+    <!-- forEach -->
+    <div class="tab-content" id="tab-foreach">
+      <h3 style="margin-top:0; color:#1a365d;">forEach：配列の反復処理</h3>
+      <div class="pre-wrap">
+        <button class="copy-btn" onclick="copyPre(this)">copy</button>
+<pre>
+<span class="comment">// forEach：配列の各要素にコールバックを適用</span>
+<span class="kw">const</span> nums = [<span class="num">1</span>, <span class="num">2</span>, <span class="num">3</span>, <span class="num">4</span>, <span class="num">5</span>];
+nums.<span class="fn">forEach</span>((<span class="param">n</span>, <span class="param">i</span>) <span class="op">=></span> {
+  console.<span class="fn">log</span>(<span class="str">`[<span class="op">${</span><span class="param">i</span><span class="op">}</span>] <span class="op">${</span><span class="param">n</span><span class="op">}</span>`</span>);
+});
+<span class="out">// → [0] 1, [1] 2, [2] 3, [3] 4, [4] 5</span>
+
+<span class="comment">// for...of との違い：forEach は break できない</span>
+<span class="comment">// break が必要なら for...of を使う</span>
+<span class="kw">for</span> (<span class="kw">const</span> n <span class="kw">of</span> nums) {
+  <span class="kw">if</span> (n <span class="op">===</span> <span class="num">3</span>) <span class="kw">break</span>; <span class="comment">// OK</span>
+  console.<span class="fn">log</span>(n);
+}
+<span class="out">// → 1, 2</span>
+
+<span class="comment">// forEach は戻り値を返さない（undefined）</span>
+<span class="comment">// 変換には map、絞り込みには filter を使う</span>
+<span class="kw">const</span> doubled = nums.<span class="fn">map</span>(n <span class="op">=></span> n <span class="op">*</span> <span class="num">2</span>);
+<span class="kw">const</span> evens   = nums.<span class="fn">filter</span>(n <span class="op">=></span> n <span class="op">%</span> <span class="num">2</span> <span class="op">===</span> <span class="num">0</span>);
+console.<span class="fn">log</span>(doubled); <span class="out">// → [2, 4, 6, 8, 10]</span>
+console.<span class="fn">log</span>(evens);   <span class="out">// → [2, 4]</span>
+</pre>
+      </div>
+    </div>
+  </div>
+
+  <h3>🎮 for...of / for...in インタラクティブデモ</h3>
+  <div class="interactive-demo">
+    <div class="demo-label">データと反復方法を選んで動作を確認しよう</div>
+    <div class="demo-input-row">
+      <select class="demo-input" id="iter-type" style="flex:0 0 auto; width:180px;">
+        <option value="forof-arr">for...of（配列）</option>
+        <option value="forof-str">for...of（文字列）</option>
+        <option value="forin-obj">for...in（オブジェクト）</option>
+        <option value="foreach">forEach</option>
+        <option value="entries">entries()でインデックス付き</option>
+      </select>
+      <input class="demo-input" id="iter-data"
+             placeholder="データ（例：1,2,3 または Hello）" type="text" value="apple,banana,cherry">
+      <button class="demo-btn" onclick="runIterDemo()">▶ 実行</button>
+    </div>
+    <div class="demo-output" id="iter-output">← 反復方法とデータを選んで実行してみましょう</div>
+  </div>
+</div>
+
+
+<!-- ============================================================ -->
+<!-- PART 4: break / continue -->
+<!-- ============================================================ -->
+<h2 id="break-continue">④ break / continue</h2>
+
+<div class="note">
+  <strong>重要ポイント：<code>break</code> はループを即座に終了します。
+  <code>continue</code> は現在の繰り返しをスキップして次の繰り返しに進みます。</strong>
+</div>
+
+<div class="demo-box">
+  <div class="loop-type-grid">
+    <div class="loop-type-card" style="background:#f0fff4;"
+         onclick="showBreakContinue('break',this)">
+      <span class="ltc-tag" style="background:#276749; color:#fff;">ループ終了</span>
+      <div class="ltc-name" style="color:#276749;">break</div>
+      <div class="ltc-use" style="color:#4a5568;">
+        ループを即座に終了する<br>
+        目的の値が見つかったとき
+      </div>
+    </div>
+    <div class="loop-type-card" style="background:#ebf8ff;"
+         onclick="showBreakContinue('continue',this)">
+      <span class="ltc-tag" style="background:#2b4c7e; color:#fff;">スキップ</span>
+      <div class="ltc-name" style="color:#2b4c7e;">continue</div>
+      <div class="ltc-use" style="color:#4a5568;">
+        現在の繰り返しをスキップ<br>
+        特定の条件を除外したいとき
+      </div>
+    </div>
+    <div class="loop-type-card" style="background:#faf5ff;"
+         onclick="showBreakContinue('label',this)">
+      <span class="ltc-tag" style="background:#553c9a; color:#fff;">ネスト対応</span>
+      <div class="ltc-name" style="color:#553c9a;">ラベル付き break</div>
+      <div class="ltc-use" style="color:#4a5568;">
+        ネストしたループを<br>
+        一度に抜け出す
+      </div>
+    </div>
+  </div>
+
+  <!-- 詳細パネル -->
+  <div id="bc-detail" style="display:none; margin-top:12px;
+    background:#1a202c; border-radius:8px; padding:16px 20px;
+    font-family:'Consolas','Monaco',monospace; font-size:0.85em;
+    line-height:1.9; white-space:pre-wrap; color:#e2e8f0;">
+  </div>
+
+  <h3>🎮 break / continue シミュレーター</h3>
+  <div class="interactive-demo">
+    <div class="demo-label">配列と条件を設定して break / continue の動作を確認しよう</div>
+    <div class="demo-input-row">
+      <input class="demo-input" id="bc-arr"
+             placeholder="配列（例：1,2,3,4,5,6,7,8,9,10）"
+             type="text" value="1,2,3,4,5,6,7,8,9,10">
+      <select class="demo-input" id="bc-type" style="flex:0 0 auto; width:140px;">
+        <option value="break">break</option>
+        <option value="continue">continue</option>
+      </select>
+      <input class="demo-input" id="bc-cond"
+             placeholder="条件の値（例：5）" type="number" value="5" style="max-width:80px;">
+      <button class="demo-btn" onclick="runBcDemo()">▶ 実行</button>
+    </div>
+    <div class="demo-output" id="bc-output">← 設定して実行してみましょう</div>
+  </div>
+
+  <div class="pre-wrap">
+    <button class="copy-btn" onclick="copyPre(this)">copy</button>
+<pre>
+<span class="comment">// break：ループを終了する</span>
+<span class="kw">const</span> nums = [<span class="num">1</span>, <span class="num">2</span>, <span class="num">3</span>, <span class="num">4</span>, <span class="num">5</span>, <span class="num">6</span>, <span class="num">7</span>];
+<span class="kw">for</span> (<span class="kw">const</span> n <span class="kw">of</span> nums) {
+  <span class="kw">if</span> (n <span class="op">===</span> <span class="num">5</span>) <span class="kw">break</span>; <span class="comment">// 5 が見つかったらループ終了</span>
+  console.<span class="fn">log</span>(n);
+}
+<span class="out">// → 1, 2, 3, 4</span>
+
+<span class="comment">// continue：現在の繰り返しをスキップ</span>
+<span class="kw">for</span> (<span class="kw">let</span> i = <span class="num">0</span>; i <span class="op">&lt;</span> <span class="num">7</span>; i++) {
+  <span class="kw">if</span> (i <span class="op">%</span> <span class="num">2</span> <span class="op">===</span> <span class="num">0</span>) <span class="kw">continue</span>; <span class="comment">// 偶数はスキップ</span>
+  console.<span class="fn">log</span>(i);
+}
+<span class="out">// → 1, 3, 5</span>
+
+<span class="comment">// ラベル付き break（ネストしたループを一度に抜ける）</span>
+<span class="hl">outer:</span> <span class="kw">for</span> (<span class="kw">let</span> i = <span class="num">0</span>; i <span class="op">&lt;</span> <span class="num">3</span>; i++) {
+  <span class="kw">for</span> (<span class="kw">let</span> j = <span class="num">0</span>; j <span class="op">&lt;</span> <span class="num">3</span>; j++) {
+    <span class="kw">if</span> (i <span class="op">===</span> <span class="num">1</span> <span class="op">&amp;&amp;</span> j <span class="op">===</span> <span class="num">1</span>) <span class="kw">break</span> <span class="hl">outer</span>; <span class="comment">// 外側のループも終了</span>
+    console.<span class="fn">log</span>(i, j);
+  }
+}
+<span class="out">// → 0 0, 0 1, 0 2, 1 0</span>
+</pre>
+  </div>
+</div>
+
+
+<!-- ============================================================ -->
+<!-- PART 5: 配列の反復メソッド -->
+<!-- ============================================================ -->
+<h2 id="array-methods">⑤ 配列の反復メソッド</h2>
+
+<div class="note">
+  <strong>重要ポイント：<code>map</code>・<code>filter</code>・<code>reduce</code>・<code>find</code>・<code>some</code>・<code>every</code> などの
+  配列メソッドを使うと、ループを使わずに簡潔に書けます。</strong>
+</div>
+
+<div class="demo-box">
+  <h3>配列メソッド早見表</h3>
+  <table class="ref-table">
+    <thead>
+      <tr><th>メソッド</th><th>説明</th><th>戻り値</th><th>元の配列</th></tr>
+    </thead>
+    <tbody>
+      <tr><td><code>forEach(fn)</code></td><td>各要素に処理を実行</td><td>undefined</td><td>変更なし</td></tr>
+      <tr><td><code>map(fn)</code></td><td>各要素を変換した新配列</td><td>新しい配列</td><td>変更なし</td></tr>
+      <tr><td><code>filter(fn)</code></td><td>条件を満たす要素の新配列</td><td>新しい配列</td><td>変更なし</td></tr>
+      <tr><td><code>reduce(fn, init)</code></td><td>要素を集約して1つの値に</td><td>任意の値</td><td>変更なし</td></tr>
+      <tr><td><code>find(fn)</code></td><td>条件を満たす最初の要素</td><td>要素 or undefined</td><td>変更なし</td></tr>
+      <tr><td><code>findIndex(fn)</code></td><td>条件を満たす最初のインデックス</td><td>数値（-1）</td><td>変更なし</td></tr>
+      <tr><td><code>some(fn)</code></td><td>1つでも条件を満たすか</td><td>boolean</td><td>変更なし</td></tr>
+      <tr><td><code>every(fn)</code></td><td>すべて条件を満たすか</td><td>boolean</td><td>変更なし</td></tr>
+      <tr><td><code>flat(depth)</code></td><td>ネスト配列を平坦化</td><td>新しい配列</td><td>変更なし</td></tr>
+      <tr><td><code>flatMap(fn)</code></td><td>map + flat を同時に</td><td>新しい配列</td><td>変更なし</td></tr>
+    </tbody>
+  </table>
+
+  <h3>🎮 配列メソッド実験ラボ</h3>
+  <div class="interactive-demo">
+    <div class="demo-label">配列と操作を選んで結果を確認しよう</div>
+    <div class="demo-input-row">
+      <input class="demo-input" id="arr-method-data"
+             placeholder="配列（カンマ区切り）" type="text" value="1,2,3,4,5,6,7,8,9,10">
+    </div>
+    <div class="demo-input-row">
+      <select class="demo-input" id="arr-method-sel">
+        <option value="map2">map(n => n * 2)　各要素を2倍</option>
+        <option value="map-sq">map(n => n ** 2)　各要素を2乗</option>
+        <option value="filter-even">filter(n => n % 2 === 0)　偶数のみ</option>
+        <option value="filter-gt5">filter(n => n > 5)　5より大きい</option>
+        <option value="reduce-sum">reduce((a,n) => a+n, 0)　合計</option>
+        <option value="reduce-max">reduce((m,n) => n>m?n:m)　最大値</option>
+        <option value="find-gt3">find(n => n > 3)　最初の3超え</option>
+        <option value="some-even">some(n => n % 2 === 0)　偶数があるか</option>
+        <option value="every-pos">every(n => n > 0)　全て正か</option>
+        <option value="chain">filter偶数 → map2乗 → reduce合計</option>
+      </select>
+      <button class="demo-btn" onclick="runArrMethodDemo()">▶ 実行</button>
+    </div>
+    <div class="demo-output" id="arr-method-output">← 配列とメソッドを選んで実行してみましょう</div>
+  </div>
+
+  <div class="pre-wrap">
+    <button class="copy-btn" onclick="copyPre(this)">copy</button>
+<pre>
+<span class="kw">const</span> nums = [<span class="num">1</span>, <span class="num">2</span>, <span class="num">3</span>, <span class="num">4</span>, <span class="num">5</span>];
+
+<span class="comment">// map：各要素を変換した新配列を返す</span>
+<span class="kw">const</span> doubled = nums.<span class="fn">map</span>(n <span class="op">=></span> n <span class="op">*</span> <span class="num">2</span>);
+console.<span class="fn">log</span>(doubled); <span class="out">// → [2, 4, 6, 8, 10]</span>
+
+<span class="comment">// filter：条件を満たす要素だけの新配列を返す</span>
+<span class="kw">const</span> evens = nums.<span class="fn">filter</span>(n <span class="op">=></span> n <span class="op">%</span> <span class="num">2</span> <span class="op">===</span> <span class="num">0</span>);
+console.<span class="fn">log</span>(evens); <span class="out">// → [2, 4]</span>
+
+<span class="comment">// reduce：要素を集約して1つの値にする</span>
+<span class="kw">const</span> sum = nums.<span class="fn">reduce</span>((acc, n) <span class="op">=></span> acc <span class="op">+</span> n, <span class="num">0</span>);
+console.<span class="fn">log</span>(sum); <span class="out">// → 15</span>
+
+<span class="comment">// find：条件を満たす最初の要素を返す</span>
+<span class="kw">const</span> found = nums.<span class="fn">find</span>(n <span class="op">=></span> n <span class="op">&gt;</span> <span class="num">3</span>);
+console.<span class="fn">log</span>(found); <span class="out">// → 4</span>
+
+<span class="comment">// some：1つでも条件を満たせば true</span>
+console.<span class="fn">log</span>(nums.<span class="fn">some</span>(n <span class="op">=></span> n <span class="op">&gt;</span> <span class="num">4</span>));  <span class="out">// → true</span>
+
+<span class="comment">// every：すべて条件を満たせば true</span>
+console.<span class="fn">log</span>(nums.<span class="fn">every</span>(n <span class="op">&gt;</span> <span class="num">0</span>));    <span class="out">// → true</span>
+console.<span class="fn">log</span>(nums.<span class="fn">every</span>(n <span class="op">&gt;</span> <span class="num">3</span>));    <span class="out">// → false</span>
+
+<span class="comment">// メソッドチェーン</span>
+<span class="kw">const</span> result = [<span class="num">1</span>,<span class="num">2</span>,<span class="num">3</span>,<span class="num">4</span>,<span class="num">5</span>,<span class="num">6</span>,<span class="num">7</span>,<span class="num">8</span>,<span class="num">9</span>,<span class="num">10</span>]
+  .<span class="fn">filter</span>(n <span class="op">=></span> n <span class="op">%</span> <span class="num">2</span> <span class="op">===</span> <span class="num">0</span>)  <span class="comment">// 偶数のみ → [2,4,6,8,10]</span>
+  .<span class="fn">map</span>(n <span class="op">=></span> n <span class="op">**</span> <span class="num">2</span>)           <span class="comment">// 2乗 → [4,16,36,64,100]</span>
+  .<span class="fn">reduce</span>((a, n) <span class="op">=></span> a <span class="op">+</span> n, <span class="num">0</span>); <span class="comment">// 合計 → 220</span>
+console.<span class="fn">log</span>(result); <span class="out">// → 220</span>
+</pre>
+  </div>
+</div>
+
+
+<!-- ============================================================ -->
+<!-- まとめ -->
+<!-- ============================================================ -->
+<h2>📌 まとめ</h2>
+<div class="demo-box">
+  <table class="ref-table">
+    <thead><tr><th>構文</th><th>使う場面</th><th>ポイント</th></tr></thead>
+    <tbody>
+      <tr><td><code>for</code></td>
+        <td>回数が決まっている繰り返し</td>
+        <td>初期化・条件・更新を1行で制御</td></tr>
+      <tr><td><code>while</code></td>
+        <td>回数が不明・条件次第</td>
+        <td>無限ループに注意</td></tr>
+      <tr><td><code>do-while</code></td>
+        <td>最低1回は実行したい</td>
+        <td>後判定。条件が最初から false でも1回実行</td></tr>
+      <tr><td><code>for...of</code></td>
+        <td>配列・文字列・Set・Map の値を取り出す</td>
+        <td>break/continue が使える</td></tr>
+      <tr><td><code>for...in</code></td>
+        <td>オブジェクトのキーを列挙</td>
+        <td>配列には使わない</td></tr>
+      <tr><td><code>forEach</code></td>
+        <td>配列の各要素に処理を実行</td>
+        <td>break できない・戻り値なし</td></tr>
+      <tr><td><code>break</code></td>
+        <td>ループを即座に終了</td>
+        <td>ラベル付きで外側のループも終了可能</td></tr>
+      <tr><td><code>continue</code></td>
+        <td>現在の繰り返しをスキップ</td>
+        <td>次の繰り返しに進む</td></tr>
+      <tr><td><code>map / filter / reduce</code></td>
+        <td>配列の変換・絞り込み・集約</td>
+        <td>メソッドチェーンで組み合わせ可能</td></tr>
+    </tbody>
+  </table>
+</div>
+
+
+<!-- ============================================================ -->
+<!-- 演習問題 -->
+<!-- ============================================================ -->
+<div class="quiz-section">
+  <h2>🖊️ 演習問題</h2>
+
+  <!-- Q1 -->
+  <div class="quiz-block">
+    <h3>Q1. 穴埋め問題</h3>
+    <p>以下のコードの実行結果を答えてください。</p>
+    <label>① 以下のコードの出力回数：
+      <code>for (let i = 2; i &lt;= 10; i += 2) { console.log(i); }</code>
+    </label>
+    <input type="text" id="q1a" placeholder="回数">
+    <label>② <code>continue</code> を使って奇数をスキップした場合、
+      <code>[1,2,3,4,5]</code> から出力される値：</label>
+    <input type="text" id="q1b" placeholder="例：1,3,5">
+    <label>③ 配列の各要素を2倍にした新配列を返すメソッド：</label>
+    <input type="text" id="q1c" placeholder="メソッド名">
+    <label>④ 配列の中に条件を満たす要素が1つでもあれば true を返すメソッド：</label>
+    <input type="text" id="q1d" placeholder="メソッド名">
+    <br>
+    <button class="btn btn-teal" onclick="checkQ1()">答え合わせ</button>
+    <div class="result-msg" id="q1-result"></div>
+    <script>
+      function checkQ1() {
+        const a = document.getElementById('q1a').value.trim();
+        const b = document.getElementById('q1b').value.trim().replace(/\s/g,'');
+        const c = document.getElementById('q1c').value.trim().toLowerCase().replace(/[()]/g,'');
+        const d = document.getElementById('q1d').value.trim().toLowerCase().replace(/[()]/g,'');
+        const r = document.getElementById('q1-result');
+        const ca = a === '5';
+        const cb = b === '2,4' || b === '2と4';
+        const cc = c === 'map';
+        const cd = d === 'some';
+        const count = [ca,cb,cc,cd].filter(Boolean).length;
+        if (count === 4) {
+          r.className = 'result-msg correct';
+          r.textContent = '✅ 全問正解！完璧です！';
+        } else {
+          r.className = 'result-msg wrong';
+          r.innerHTML = `❌ ${count}/4 問正解。<br>` +
+            `① ${ca?'✅':'❌ 5回（2,4,6,8,10）'}　` +
+            `② ${cb?'✅':'❌ 2,4（奇数1,3,5をスキップ）'}　` +
+            `③ ${cc?'✅':'❌ map'}　` +
+            `④ ${cd?'✅':'❌ some'}`;
+        }
+      }
+    </script>
+  </div>
+
+  <!-- Q2 -->
+  <div class="quiz-block">
+    <h3>Q2. 選択問題</h3>
+    <p>以下のコードを実行した結果として正しいものはどれですか？</p>
+    <div class="pre-wrap" style="margin-bottom:12px;">
+<pre style="margin:0;">
+<span class="kw">const</span> arr = [<span class="num">1</span>, <span class="num">2</span>, <span class="num">3</span>, <span class="num">4</span>, <span class="num">5</span>];
+<span class="kw">const</span> result = arr.<span class="fn">filter</span>(n <span class="op">=></span> n <span class="op">%</span> <span class="num">2</span> <span class="op">!==</span> <span class="num">0</span>).<span class="fn">map</span>(n <span class="op">=></span> n <span class="op">*</span> <span class="num">10</span>);
+console.<span class="fn">log</span>(result);
+</pre>
+    </div>
+    <select id="q2">
+      <option value="">-- 選択してください --</option>
+      <option value="a">[10, 20, 30, 40, 50]</option>
+      <option value="b">[10, 30, 50]</option>
+      <option value="c">[2, 4]</option>
+      <option value="d">[1, 3, 5]</option>
+    </select>
+    <br>
+    <button class="btn btn-teal" onclick="checkQ2()">答え合わせ</button>
+    <div class="result-msg" id="q2-result"></div>
+    <script>
+      function checkQ2() {
+        const v = document.getElementById('q2').value;
+        const r = document.getElementById('q2-result');
+        if (v === 'b') {
+          r.className = 'result-msg correct';
+          r.innerHTML = '✅ 正解！<br><br>' +
+            '<strong>処理の流れ：</strong><br>' +
+            '① <code>filter(n => n % 2 !== 0)</code>：奇数のみ → <code>[1, 3, 5]</code><br>' +
+            '② <code>map(n => n * 10)</code>：各要素を10倍 → <code>[10, 30, 50]</code>';
+        } else if (v === '') {
+          r.className = 'result-msg info';
+          r.textContent = '⚠️ 選択肢を選んでください。';
+        } else {
+          r.className = 'result-msg wrong';
+          r.innerHTML = '❌ 不正解。<br>' +
+            'まず <code>filter</code> で奇数（1,3,5）を取り出し、<br>' +
+            '次に <code>map</code> で各要素を10倍します。';
+        }
+      }
+    </script>
+  </div>
+
+  <!-- Q3 -->
+  <div class="quiz-block">
+    <h3>Q3. 正誤チェックボックス問題</h3>
+    <p><strong>正しい記述</strong>をすべて選んでください。</p>
+    <label class="checkbox-label"><input type="checkbox" id="q3a">
+      ① <code>for...of</code> は配列の値を順番に取り出す</label>
+    <label class="checkbox-label"><input type="checkbox" id="q3b">
+      ② <code>for...in</code> は配列に使うと安全で推奨される</label>
+    <label class="checkbox-label"><input type="checkbox" id="q3c">
+      ③ <code>forEach</code> の中では <code>break</code> が使えない</label>
+    <label class="checkbox-label"><input type="checkbox" id="q3d">
+      ④ <code>do-while</code> は条件が最初から false でも最低1回実行される</label>
+    <label class="checkbox-label"><input type="checkbox" id="q3e">
+      ⑤ <code>map</code> は元の配列を変更する</label>
+    <label class="checkbox-label"><input type="checkbox" id="q3f">
+      ⑥ <code>every</code> はすべての要素が条件を満たすとき true を返す</label>
+    <br>
+    <button class="btn btn-teal" onclick="checkQ3()">答え合わせ</button>
+    <div class="result-msg" id="q3-result"></div>
+    <script>
+      function checkQ3() {
+        const r = document.getElementById('q3-result');
+        const checks = {
+          a: document.getElementById('q3a').checked,
+          b: document.getElementById('q3b').checked,
+          c: document.getElementById('q3c').checked,
+          d: document.getElementById('q3d').checked,
+          e: document.getElementById('q3e').checked,
+          f: document.getElementById('q3f').checked,
+        };
+        // 正解：①③④⑥（a,c,d,f）
+        // ② for...in は配列に使うべきでない
+        // ⑤ map は元の配列を変更しない（新しい配列を返す）
+        const correct = { a:true, b:false, c:true, d:true, e:false, f:true };
+        const allOk = Object.keys(correct).every(k => checks[k] === correct[k]);
+        if (allOk) {
+          r.className = 'result-msg correct';
+          r.innerHTML = '✅ 全問正解！完璧です！';
+        } else {
+          r.className = 'result-msg wrong';
+          r.innerHTML =
+            '❌ 不正解の項目があります。<br><br>' +
+            '<strong>正しい記述：</strong>①③④⑥<br><br>' +
+            '<strong>誤った記述：</strong><br>' +
+            '・② <code>for...in</code> は配列に使うと<strong>インデックスが文字列で返る</strong>など問題があります。配列には <code>for...of</code> を使いましょう。<br>' +
+            '・⑤ <code>map</code> は元の配列を<strong>変更しません</strong>。新しい配列を返します。';
+        }
+      }
+    </script>
+  </div>
+
+  <!-- Q4 コンソール実践 -->
+  <div class="quiz-block">
+    <h3>Q4. コンソール実践問題</h3>
+    <p>以下の処理をコンソールで実装してください。</p>
+    <ul style="font-size:0.92em; color:#4a5568; line-height:2;">
+      <li>配列 <code>[3, 1, 4, 1, 5, 9, 2, 6, 5, 3]</code> から</li>
+      <li>重複を除いた（<code>Set</code> を使う）</li>
+      <li>5以上の値のみを取り出し</li>
+      <li>降順（大きい順）に並べた配列を作る</li>
+    </ul>
+    <div class="js-console" id="console-q4">
+      <div class="js-console-bar">
+        <div class="dot dot-red"></div>
+        <div class="dot dot-yellow"></div>
+        <div class="dot dot-green"></div>
+        <span>Practice Console</span>
+      </div>
+      <div class="js-console-output" id="console-q4-output">
+        <div class="log-info">// ヒント: [...new Set(arr)] で重複除去</div>
+        <div class="log-info">// .filter() で絞り込み、.sort((a,b) => b-a) で降順</div>
+      </div>
+      <div class="js-console-input-row">
+        <span>&gt;</span>
+        <input class="js-console-input" id="console-q4-input"
+               placeholder="const arr = [3,1,4,1,5,9,2,6,5,3]; ..."
+               type="text">
+        <button class="js-console-clear" onclick="clearConsole('q4')">クリア</button>
+        <button class="js-console-run"   onclick="runConsole('q4')">▶ 実行</button>
+      </div>
+    </div>
+    <label style="margin-top:12px; display:block;">
+      正しい結果を入力してください（カンマ区切り）：
+    </label>
+    <input type="text" id="q4-ans" placeholder="例：9,6,5">
+    <br>
+    <button class="btn btn-teal" onclick="checkQ4()">答え合わせ</button>
+    <div class="result-msg" id="q4-result"></div>
+    <script>
+      function checkQ4() {
+        const v = document.getElementById('q4-ans').value.trim().replace(/\s/g,'');
+        const r = document.getElementById('q4-result');
+        // [3,1,4,1,5,9,2,6,5,3] → Set → [3,1,4,5,9,2,6] → filter>=5 → [5,9,6] → sort desc → [9,6,5]
+        if (v === '9,6,5') {
+          r.className = 'result-msg correct';
+          r.innerHTML = '✅ 正解！<br><br>' +
+            '模範解答：<br>' +
+            '<code>const arr = [3,1,4,1,5,9,2,6,5,3];</code><br>' +
+            '<code>const result = [...new Set(arr)]</code><br>' +
+            '<code>  .filter(n => n >= 5)</code><br>' +
+            '<code>  .sort((a, b) => b - a);</code><br>' +
+            '<code>console.log(result); // → [9, 6, 5]</code><br><br>' +
+            '<strong>処理の流れ：</strong><br>' +
+            '① <code>[...new Set(arr)]</code> → <code>[3,1,4,5,9,2,6]</code>（重複除去）<br>' +
+            '② <code>.filter(n => n >= 5)</code> → <code>[5,9,6]</code><br>' +
+            '③ <code>.sort((a,b) => b-a)</code> → <code>[9,6,5]</code>（降順）';
+        } else if (v === '') {
+          r.className = 'result-msg info';
+          r.textContent = '⚠️ コンソールでコードを実行してから答えを入力してください。';
+        } else {
+          r.className = 'result-msg wrong';
+          r.innerHTML = '❌ 不正解。<br>' +
+            '手順：① Set で重複除去 → ② filter で5以上 → ③ sort で降順<br>' +
+            '期待する結果：<code>[9, 6, 5]</code>';
+        }
+      }
+    </script>
+  </div>
+
+</div><!-- /quiz-section -->
+
+
+<!-- 完了ボタン -->
+<div class="complete-section">
+  <p>🎉 「1-7 繰り返しの処理」の学習が完了したら記録しましょう！</p>
+  <button class="btn btn-done" onclick="markComplete()">✅ このセクションを完了にする</button>
+  <div id="complete-msg" style="margin-top:10px; font-size:0.88em; color:#276749; display:none;">
+    進捗を保存しました！トップページの進捗バーに反映されます。
+  </div>
+</div>
+
+<!-- ページナビ -->
+<div class="page-nav">
+  <a class="prev" href="06_conditions.html">← 1-6 条件分岐</a>
+  <a class="home" href="../index.html">🏠 目次へ</a>
+  <a class="next" href="08_classes.html">次へ：1-8 オブジェクトとクラス →</a>
+</div>
+
+<!-- フッター -->
+<footer>
+  <p>
+    HTML5プロフェッショナル Level 2 学習サイト ／
+    <a href="../index.html">🏠 目次</a> ／
+    <a href="../exam/index.html">📝 模擬試験</a> ／
+    <a href="https://github.com/MeshinoKiwamiOkome/html5lv2" target="_blank">GitHub</a>
+  </p>
+  <p style="margin-top:4px;">© MeshinoKiwamiOkome</p>
+</footer>
+
+
+<!-- ============================================================ -->
+<!-- JavaScript -->
+<!-- ============================================================ -->
+<script>
+  /* ===== コピーボタン ===== */
+  function copyPre(btn) {
+    const pre = btn.nextElementSibling;
+    navigator.clipboard.writeText(pre.innerText || pre.textContent).then(() => {
+      btn.textContent = 'copied!';
+      setTimeout(() => btn.textContent = 'copy', 1800);
+    });
+  }
+
+  /* ===== タブ ===== */
+  function switchTab(btn, id) {
+    btn.closest('.tab-wrap').querySelectorAll('.tab-btn')
+       .forEach(b => b.classList.remove('active'));
+    btn.closest('.tab-wrap').querySelectorAll('.tab-content')
+       .forEach(c => c.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById(id).classList.add('active');
+  }
+
+  /* ===== for ループ ビジュアライザ ===== */
+  const forArr = ['🍎', '🍌', '🍒', '🍇', '🍊'];
+  let forIdx   = -1;
+  let forTimer = null;
+
+  function buildForTrack() {
+    const track = document.getElementById('for-track');
+    track.innerHTML = '';
+    forArr.forEach((v, i) => {
+      const cell = document.createElement('div');
+      cell.className = 'loop-cell';
+      cell.id = `for-cell-${i}`;
+      cell.innerHTML = `<span class="lc-idx">[${i}]</span><span class="lc-val">${v}</span>`;
+      track.appendChild(cell);
+    });
+  }
+  buildForTrack();
+
+  function forStep() {
+    if (forIdx >= forArr.length) { forReset(); return; }
+    if (forIdx >= 0) {
+      const prev = document.getElementById(`for-cell-${forIdx}`);
+      if (prev) prev.className = 'loop-cell done';
+    }
+    forIdx++;
+    if (forIdx >= forArr.length) {
+      document.getElementById('for-info').textContent =
+        `✅ ループ完了！ i = ${forIdx} が length(${forArr.length}) 以上になったので終了`;
+      return;
+    }
+    const cur = document.getElementById(`for-cell-${forIdx}`);
+    if (cur) cur.className = 'loop-cell active';
+    document.getElementById('for-info').textContent =
+      `▶ i = ${forIdx}：fruits[${forIdx}] = "${forArr[forIdx]}" を処理中`;
+  }
+
+  function forAuto() {
+    if (forTimer) { clearInterval(forTimer); forTimer = null; return; }
+    forReset();
+    forTimer = setInterval(() => {
+      forStep();
+      if (forIdx >= forArr.length) { clearInterval(forTimer); forTimer = null; }
+    }, 700);
+  }
+
+  function forReset() {
+    if (forTimer) { clearInterval(forTimer); forTimer = null; }
+    forIdx = -1;
+    buildForTrack();
+    document.getElementById('for-info').textContent =
+      '← ステップ実行ボタンを押してループの動作を確認しましょう';
+  }
+
+  /* ===== for ループ パラメータデモ ===== */
+  function runForDemo() {
+    const start = parseInt(document.getElementById('for-start').value) || 0;
+    const end   = parseInt(document.getElementById('for-end').value)   || 5;
+    const step  = parseInt(document.getElementById('for-step').value)  || 1;
+    const out   = document.getElementById('for-demo-output');
+
+    if (step === 0) {
+      out.style.color = '#fc8181';
+      out.textContent = 'エラー：増分に 0 は指定できません（無限ループになります）';
+      return;
+    }
+    const results = [];
+    const maxIter = 50;
+    let iter = 0;
+    if (step > 0) {
+      for (let i = start; i < end && iter < maxIter; i += step, iter++) results.push(i);
+    } else {
+      for (let i = start; i > end && iter < maxIter; i += step, iter++) results.push(i);
+    }
+    const cond = step > 0 ? `i < ${end}` : `i > ${end}`;
+    out.style.color = '#68d391';
+    out.textContent =
+      `// for (let i = ${start}; ${cond}; i += ${step})\n\n` +
+      `出力：${results.join(', ')}\n` +
+      `繰り返し回数：${results.length} 回` +
+      (iter >= maxIter ? '\n⚠️ 最大50回で打ち切りました' : '');
+  }
+
+  /* ===== while ループデモ ===== */
+  function runWhileDemo() {
+    const init = parseFloat(document.getElementById('while-init').value) || 1;
+    const cond = parseFloat(document.getElementById('while-cond').value) || 100;
+    const op   = document.getElementById('while-op').value;
+    const out  = document.getElementById('while-output');
+
+    const opFn = {
+      double: n => n * 2,
+      triple: n => n * 3,
+      add10:  n => n + 10,
+      sq:     n => n * n,
+    };
+    const opLabel = {
+      double: 'n *= 2', triple: 'n *= 3', add10: 'n += 10', sq: 'n = n*n'
+    };
+
+    const results = [];
+    let n = init;
+    let iter = 0;
+    while (n <= cond && iter < 30) {
+      results.push(n);
+      n = opFn[op](n);
+      iter++;
+    }
+
+    out.style.color = '#68d391';
+    out.textContent =
+      `// let n = ${init};\n// while (n <= ${cond}) { ${opLabel[op]}; }\n\n` +
+      `出力：${results.join(', ')}\n` +
+      `繰り返し回数：${results.length} 回\n` +
+      `終了時の n：${n}（${n} > ${cond} なのでループ終了）`;
+  }
+
+  /* ===== for...of / for...in デモ ===== */
+  function runIterDemo() {
+    const type = document.getElementById('iter-type').value;
+    const raw  = document.getElementById('iter-data').value.trim();
+    const out  = document.getElementById('iter-output');
+
+    let lines = [];
+    let code  = '';
+
+    if (type === 'forof-arr') {
+      const arr = raw.split(',').map(s => s.trim()).filter(Boolean);
+      code = `for (const item of [${arr.map(v => `"${v}"`).join(', ')}])`;
+      arr.forEach((v, i) => lines.push(`  [${i}] → "${v}"`));
+    } else if (type === 'forof-str') {
+      const str = raw.split(',')[0] || raw;
+      code = `for (const ch of "${str}")`;
+      [...str].forEach((c, i) => lines.push(`  [${i}] → "${c}"`));
+    } else if (type === 'forin-obj') {
+      const pairs = raw.split(',').map(s => s.trim());
+      const obj = {};
+      pairs.forEach((p, i) => { obj[`key${i}`] = p; });
+      code = `for (const key in { ${pairs.map((v,i) => `key${i}: "${v}"`).join(', ')} })`;
+      Object.entries(obj).forEach(([k, v]) => lines.push(`  ${k} → "${v}"`));
+    } else if (type === 'foreach') {
+      const arr = raw.split(',').map(s => s.trim()).filter(Boolean);
+      code = `[...].forEach((item, i) => ...)`;
+      arr.forEach((v, i) => lines.push(`  forEach[${i}]: item="${v}", index=${i}`));
+    } else if (type === 'entries') {
+      const arr = raw.split(',').map(s => s.trim()).filter(Boolean);
+      code = `for (const [i, item] of arr.entries())`;
+      arr.forEach((v, i) => lines.push(`  i=${i}, item="${v}"`));
+    }
+
+    out.style.color = '#68d391';
+    out.textContent = `// ${code}\n\n` + lines.join('\n');
+  }
+
+  /* ===== break / continue 詳細 ===== */
+  const bcData = {
+    break: {
+      color: '#68d391',
+      text:
+`// break：ループを即座に終了する
+const nums = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+
+// 5 が見つかったらループを終了
+for (const n of nums) {
+  if (n === 5) break;
+  console.log(n);
+}
+// → 1, 2, 3, 4
+
+// 配列から最初の偶数を探す
+let firstEven;
+for (const n of nums) {
+  if (n % 2 === 0) {
+    firstEven = n;
+    break; // 見つかったらすぐ終了（効率的）
+  }
+}
+console.log(firstEven); // → 2`
+    },
+    continue: {
+      color: '#90cdf4',
+      text:
+`// continue：現在の繰り返しをスキップして次へ
+const nums = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+
+// 偶数をスキップして奇数のみ出力
+for (const n of nums) {
+  if (n % 2 === 0) continue; // 偶数はスキップ
+  console.log(n);
+}
+// → 1, 3, 5, 7, 9
+
+// 3の倍数をスキップ
+for (let i = 1; i <= 10; i++) {
+  if (i % 3 === 0) continue;
+  console.log(i);
+}
+// → 1, 2, 4, 5, 7, 8, 10`
+    },
+    label: {
+      color: '#b794f4',
+      text:
+`// ラベル付き break：ネストしたループを一度に抜ける
+outer: for (let i = 0; i < 3; i++) {
+  for (let j = 0; j < 3; j++) {
+    if (i === 1 && j === 1) break outer; // 外側のループも終了
+    console.log(i, j);
+  }
+}
+// → 0 0, 0 1, 0 2, 1 0
+
+// ラベル付き continue：外側のループの次の繰り返しへ
+outer: for (let i = 0; i < 3; i++) {
+  for (let j = 0; j < 3; j++) {
+    if (j === 1) continue outer; // 外側のループの次へ
+    console.log(i, j);
+  }
+}
+// → 0 0, 1 0, 2 0`
+    }
+  };
+
+  function showBreakContinue(key, card) {
+    document.querySelectorAll('.loop-type-card').forEach(c => c.classList.remove('active'));
+    const detail = document.getElementById('bc-detail');
+    if (detail.dataset.current === key && detail.style.display !== 'none') {
+      detail.style.display = 'none'; detail.dataset.current = ''; return;
+    }
+    card.classList.add('active');
+    detail.dataset.current = key;
+    detail.style.display = 'block';
+    const d = bcData[key];
+    detail.style.color = d.color;
+    detail.textContent = d.text;
+    detail.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }
+
+  /* ===== break / continue シミュレーター ===== */
+  function runBcDemo() {
+    const raw  = document.getElementById('bc-arr').value;
+    const type = document.getElementById('bc-type').value;
+    const cond = parseFloat(document.getElementById('bc-cond').value) || 5;
+    const out  = document.getElementById('bc-output');
+
+    const arr = raw.split(',').map(s => parseFloat(s.trim())).filter(n => !isNaN(n));
+    if (arr.length === 0) { out.textContent = '有効な数値を入力してください'; return; }
+
+    const processed = [];
+    const skipped   = [];
+    let stopped = false;
+
+    if (type === 'break') {
+      for (const n of arr) {
+        if (n === cond) { stopped = true; break; }
+        processed.push(n);
+      }
+      out.style.color = '#68d391';
+      out.textContent =
+        `// for (const n of arr) {\n//   if (n === ${cond}) break;\n//   console.log(n);\n// }\n\n` +
+        `入力配列：[${arr.join(', ')}]\n` +
+        `出力された値：[${processed.join(', ')}]\n` +
+        `${stopped ? `→ ${cond} が見つかったのでループを終了しました` : `→ ${cond} は配列に存在しないため最後まで実行されました`}`;
+    } else {
+      for (const n of arr) {
+        if (n === cond) { skipped.push(n); continue; }
+        processed.push(n);
+      }
+      out.style.color = '#90cdf4';
+      out.textContent =
+        `// for (const n of arr) {\n//   if (n === ${cond}) continue;\n//   console.log(n);\n// }\n\n` +
+        `入力配列：[${arr.join(', ')}]\n` +
+        `出力された値：[${processed.join(', ')}]\n` +
+        `スキップされた値：[${skipped.join(', ')}]（${cond} が ${skipped.length} 個スキップされました）`;
+    }
+  }
+
+  /* ===== 配列メソッドデモ ===== */
+  function runArrMethodDemo() {
+    const raw = document.getElementById('arr-method-data').value;
+    const sel = document.getElementById('arr-method-sel').value;
+    const out = document.getElementById('arr-method-output');
+    const nums = raw.split(',').map(s => parseFloat(s.trim())).filter(n => !isNaN(n));
+    if (nums.length === 0) { out.textContent = '有効な数値を入力してください'; return; }
+
+    let result, code, desc;
+    switch(sel) {
+      case 'map2':
+        result = nums.map(n => n * 2);
+        code = `nums.map(n => n * 2)`;
+        desc = `各要素を2倍`;
+        break;
+      case 'map-sq':
+        result = nums.map(n => n ** 2);
+        code = `nums.map(n => n ** 2)`;
+        desc = `各要素を2乗`;
+        break;
+      case 'filter-even':
+        result = nums.filter(n => n % 2 === 0);
+        code = `nums.filter(n => n % 2 === 0)`;
+        desc = `偶数のみ`;
+        break;
+      case 'filter-gt5':
+        result = nums.filter(n => n > 5);
+        code = `nums.filter(n => n > 5)`;
+        desc = `5より大きい値`;
+        break;
+      case 'reduce-sum':
+        result = nums.reduce((a, n) => a + n, 0);
+        code = `nums.reduce((acc, n) => acc + n, 0)`;
+        desc = `合計`;
+        break;
+      case 'reduce-max':
+        result = nums.reduce((m, n) => n > m ? n : m, nums[0]);
+        code = `nums.reduce((max, n) => n > max ? n : max, nums[0])`;
+        desc = `最大値`;
+        break;
+      case 'find-gt3':
+        result = nums.find(n => n > 3);
+        code = `nums.find(n => n > 3)`;
+        desc = `最初の3超え`;
+        break;
+      case 'some-even':
+        result = nums.some(n => n % 2 === 0);
+        code = `nums.some(n => n % 2 === 0)`;
+        desc = `偶数が存在するか`;
+        break;
+      case 'every-pos':
+        result = nums.every(n => n > 0);
+        code = `nums.every(n => n > 0)`;
+        desc = `全て正の数か`;
+        break;
+      case 'chain':
+        const step1 = nums.filter(n => n % 2 === 0);
+        const step2 = step1.map(n => n ** 2);
+        result = step2.reduce((a, n) => a + n, 0);
+        code = `nums.filter(偶数).map(2乗).reduce(合計)`;
+        desc = `チェーン処理`;
+        out.style.color = '#68d391';
+        out.textContent =
+          `// 入力：[${nums.join(', ')}]\n\n` +
+          `① filter(偶数)：[${step1.join(', ')}]\n` +
+          `② map(2乗)：[${step2.join(', ')}]\n` +
+          `③ reduce(合計)：${result}\n\n` +
+          `最終結果：${result}`;
+        return;
+    }
+
+    out.style.color = '#68d391';
+    out.textContent =
+      `// 入力：[${nums.join(', ')}]\n\n` +
+      `> ${code}\n` +
+      `  → ${Array.isArray(result) ? '[' + result.join(', ') + ']' : result}\n\n` +
+      `処理内容：${desc}`;
+  }
+
+  /* ===== JSコンソール ===== */
+  function runConsole(id) {
+    const input  = document.getElementById(`console-${id}-input`);
+    const output = document.getElementById(`console-${id}-output`);
+    const code   = input.value.trim();
+    if (!code) return;
+
+    const promptLine = document.createElement('div');
+    promptLine.className = 'log-prompt';
+    promptLine.textContent = '> ' + code;
+    output.appendChild(promptLine);
+
+    const origLog   = console.log;
+    const origWarn  = console.warn;
+    const origError = console.error;
+    const origInfo  = console.info;
+
+    function addLine(cls, ...args) {
+      const line = document.createElement('div');
+      line.className = cls;
+      line.textContent = args.map(a => {
+        if (typeof a === 'object' && a !== null) {
+          try { return JSON.stringify(a, null, 2); } catch(e) { return String(a); }
+        }
+        return String(a);
+      }).join(' ');
+      output.appendChild(line);
+    }
+
+    console.log   = (...a) => { addLine('log-line',  ...a); origLog(...a);   };
+    console.warn  = (...a) => { addLine('log-warn',  ...a); origWarn(...a);  };
+    console.error = (...a) => { addLine('log-error', ...a); origError(...a); };
+    console.info  = (...a) => { addLine('log-info',  ...a); origInfo(...a);  };
+
+    try {
+      const result = eval(code);
+      if (result !== undefined) {
+        addLine('log-result', '← ' + (
+          typeof result === 'object'
+            ? JSON.stringify(result)
+            : String(result)
+        ));
+      }
+    } catch(e) {
+      addLine('log-error', e.toString());
+    }
+
+    console.log   = origLog;
+    console.warn  = origWarn;
+    console.error = origError;
+    console.info  = origInfo;
+
+    input.value = '';
+    output.scrollTop = output.scrollHeight;
+  }
+
+  function clearConsole(id) {
+    document.getElementById(`console-${id}-output`).innerHTML =
+      '<div class="log-info">// クリアしました</div>';
+  }
+
+  document.querySelectorAll('.js-console-input').forEach(el => {
+    el.addEventListener('keydown', e => {
+      if (e.key === 'Enter') {
+        const id = el.id.replace('console-', '').replace('-input', '');
+        runConsole(id);
+      }
+    });
+  });
+
+  /* ===== 完了ボタン ===== */
+  function markComplete() {
+    const current = parseInt(localStorage.getItem('html5lv2_ch1') || '0', 10);
+    const newVal  = Math.min(100, current + 9);
+    localStorage.setItem('html5lv2_ch1', String(newVal));
+    document.getElementById('complete-msg').style.display = 'block';
+  }
+  if (parseInt(localStorage.getItem('html5lv2_ch1') || '0') >= 63) {
+    document.getElementById('complete-msg').style.display = 'block';
+  }
+</script>
+
+</body>
+</html>

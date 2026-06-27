@@ -1,0 +1,1779 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>1-6 条件分岐 | HTML5プロフェッショナル Level 2</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; }
+    body {
+      font-family: 'Segoe UI', 'Helvetica Neue', sans-serif;
+      max-width: 960px; margin: 40px auto; padding: 0 24px;
+      background: #f0f4f8; color: #2d3748; line-height: 1.8;
+    }
+    .breadcrumb {
+      font-size: 0.82em; color: #a0aec0; margin-bottom: 20px;
+      font-family: 'Consolas','Monaco',monospace;
+    }
+    .breadcrumb a { color: #2c7a7b; text-decoration: none; }
+    .breadcrumb a:hover { text-decoration: underline; }
+
+    .chapter-header {
+      background: linear-gradient(135deg, #1a365d, #2c7a7b);
+      border-radius: 12px; padding: 32px 32px 24px;
+      margin-bottom: 32px; color: #fff;
+      box-shadow: 0 4px 18px rgba(44,122,123,0.35);
+    }
+    .chapter-header .ch-num {
+      font-size: 0.8em; font-family: 'Consolas','Monaco',monospace;
+      opacity: 0.85; letter-spacing: 0.08em; margin-bottom: 6px;
+    }
+    .chapter-header h1 {
+      margin: 0 0 10px; font-size: 1.6em; color: #fff; border: none; padding: 0;
+    }
+    .chapter-header p { margin: 0; font-size: 0.92em; opacity: 0.88; }
+    .badge-row { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 14px; }
+    .badge {
+      background: rgba(255,255,255,0.18);
+      border: 1px solid rgba(255,255,255,0.35);
+      border-radius: 20px; padding: 3px 12px;
+      font-size: 0.76em; font-weight: bold;
+    }
+
+    .section-nav {
+      background: #fff; border: 1px solid #bee3f8;
+      border-radius: 10px; padding: 18px 22px;
+      margin-bottom: 32px; box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+    }
+    .section-nav h2 {
+      margin: 0 0 12px; font-size: 0.92em; color: #1a365d; border: none; padding: 0;
+    }
+    .section-nav ol { margin: 0; padding-left: 20px; font-size: 0.9em; }
+    .section-nav ol li { margin: 4px 0; }
+    .section-nav ol li a { color: #2c7a7b; text-decoration: none; }
+    .section-nav ol li a:hover { text-decoration: underline; }
+    .section-nav ol li.current a { color: #1a365d; font-weight: bold; }
+
+    h2 {
+      color: #1a365d; margin-top: 48px;
+      border-left: 5px solid #2c7a7b; padding-left: 12px;
+    }
+    h3 { color: #2c7a7b; margin-top: 28px; }
+
+    code {
+      background: #edf2f7; padding: 2px 6px;
+      border-radius: 4px; font-size: 0.93em;
+      font-family: 'Consolas','Monaco',monospace;
+    }
+    pre {
+      background: #1a202c; color: #e2e8f0;
+      padding: 18px 20px; border-radius: 8px;
+      overflow-x: auto; font-size: 0.88em;
+      line-height: 1.7; font-family: 'Consolas','Monaco',monospace;
+    }
+    pre .comment { color: #68d391; }
+    pre .kw      { color: #90cdf4; }
+    pre .str     { color: #fbd38d; }
+    pre .num     { color: #fc8181; }
+    pre .fn      { color: #b794f4; }
+    pre .op      { color: #f6ad55; }
+    pre .out     { color: #a0aec0; }
+    pre .err     { color: #fc8181; font-weight: bold; }
+    pre .hl      { color: #68d391; font-weight: bold; }
+
+    .pre-wrap { position: relative; margin: 14px 0; }
+    .copy-btn {
+      position: absolute; top: 8px; right: 8px;
+      background: #4a5568; color: #e2e8f0;
+      border: none; border-radius: 4px; padding: 4px 10px;
+      font-size: 0.75em; cursor: pointer;
+      font-family: 'Consolas','Monaco',monospace;
+      transition: background 0.2s; z-index: 1;
+    }
+    .copy-btn:hover { background: #2c7a7b; }
+
+    .note {
+      background: #fff; border: 1px dashed #81e6d9;
+      border-radius: 6px; padding: 14px 18px;
+      font-size: 0.93em; color: #4a5568; margin: 14px 0;
+    }
+    .note strong { color: #1a365d; }
+    .warn {
+      background: #fffaf0; border: 1px solid #f6ad55;
+      border-left: 5px solid #f6ad55; border-radius: 6px;
+      padding: 14px 18px; font-size: 0.93em; color: #744210; margin: 14px 0;
+    }
+    .good {
+      background: #f0fff4; border: 1px solid #68d391;
+      border-left: 5px solid #48bb78; border-radius: 6px;
+      padding: 14px 18px; font-size: 0.93em; color: #276749; margin: 14px 0;
+    }
+    .demo-box {
+      background: #fff; border: 1px solid #bee3f8;
+      border-radius: 8px; padding: 20px 24px;
+      margin: 12px 0 28px; box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+    }
+
+    /* ===== フローチャート ===== */
+    .flowchart {
+      display: flex; flex-direction: column;
+      align-items: center; gap: 0; margin: 20px auto;
+      max-width: 480px; font-family: 'Consolas','Monaco',monospace;
+      font-size: 0.85em;
+    }
+    .fc-box {
+      border-radius: 8px; padding: 10px 20px;
+      text-align: center; font-weight: bold;
+      min-width: 160px;
+    }
+    .fc-diamond {
+      width: 0; height: 0; position: relative;
+      margin: 0 auto;
+    }
+    .fc-diamond-inner {
+      background: #744210; border: 2px solid #f6ad55;
+      transform: rotate(45deg);
+      width: 100px; height: 100px;
+      display: flex; align-items: center; justify-content: center;
+      margin: 10px auto;
+    }
+    .fc-diamond-text {
+      transform: rotate(-45deg);
+      color: #fbd38d; font-size: 0.78em; font-weight: bold;
+      text-align: center; line-height: 1.4;
+    }
+    .fc-arrow {
+      color: #718096; font-size: 1.2em; text-align: center;
+      line-height: 1.2;
+    }
+    .fc-branch {
+      display: flex; gap: 40px; align-items: flex-start;
+      justify-content: center; margin: 4px 0;
+    }
+    .fc-branch-item {
+      display: flex; flex-direction: column;
+      align-items: center; gap: 4px;
+    }
+    .fc-label {
+      font-size: 0.75em; font-weight: bold; padding: 2px 8px;
+      border-radius: 10px;
+    }
+
+    /* ===== 比較演算子グリッド ===== */
+    .op-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+      gap: 10px; margin: 14px 0;
+    }
+    .op-card {
+      background: #1a202c; border-radius: 8px;
+      padding: 12px 14px; cursor: pointer;
+      border: 2px solid #2d3748;
+      transition: border-color 0.15s, transform 0.15s;
+      text-align: center; font-family: 'Consolas','Monaco',monospace;
+    }
+    .op-card:hover { border-color: #2c7a7b; transform: translateY(-2px); }
+    .op-card.active { border-color: #68d391; }
+    .op-sym  { font-size: 1.4em; font-weight: bold; color: #f6ad55; margin-bottom: 4px; }
+    .op-name { font-size: 0.78em; color: #a0aec0; }
+
+    /* ===== truthy/falsy テーブル ===== */
+    .tf-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px; margin: 14px 0;
+    }
+    .tf-card {
+      border-radius: 8px; padding: 16px 18px;
+    }
+    .tf-card h4 { margin: 0 0 10px; font-size: 0.95em; }
+    .tf-item {
+      display: flex; align-items: center; gap: 10px;
+      padding: 5px 0; border-bottom: 1px solid rgba(255,255,255,0.08);
+      font-family: 'Consolas','Monaco',monospace; font-size: 0.85em;
+    }
+    .tf-item:last-child { border-bottom: none; }
+    .tf-val  { flex: 1; }
+    .tf-bool { font-weight: bold; min-width: 50px; text-align: right; }
+
+    /* ===== switch ビジュアル ===== */
+    .switch-visual {
+      background: #1a202c; border-radius: 10px;
+      padding: 18px 20px; margin: 14px 0;
+      font-family: 'Consolas','Monaco',monospace; font-size: 0.85em;
+    }
+    .switch-input-row {
+      display: flex; gap: 10px; align-items: center;
+      margin-bottom: 14px; flex-wrap: wrap;
+    }
+    .switch-input {
+      background: #2d3748; border: 1px solid #4a5568;
+      border-radius: 6px; padding: 7px 12px;
+      color: #e2e8f0; font-family: 'Consolas','Monaco',monospace;
+      font-size: 0.9em; outline: none; flex: 1; min-width: 120px;
+    }
+    .switch-input:focus { border-color: #2c7a7b; }
+    .switch-btn {
+      background: #2c7a7b; color: #fff; border: none;
+      border-radius: 6px; padding: 8px 18px;
+      font-size: 0.88em; font-weight: bold; cursor: pointer;
+    }
+    .switch-btn:hover { background: #1a365d; }
+    .switch-cases { display: flex; flex-direction: column; gap: 6px; }
+    .switch-case {
+      border-radius: 6px; padding: 8px 14px;
+      border: 2px solid #2d3748; transition: all 0.3s;
+      display: flex; align-items: center; gap: 10px;
+    }
+    .switch-case.matched {
+      border-color: #68d391; background: #1a4731;
+    }
+    .switch-case.default-case { border-style: dashed; }
+    .switch-case-label { color: #90cdf4; min-width: 80px; }
+    .switch-case-val   { color: #fbd38d; flex: 1; }
+    .switch-case-mark  { font-size: 1.1em; }
+
+    /* ===== インタラクティブデモ ===== */
+    .interactive-demo {
+      background: #ebf8ff; border: 1px solid #bee3f8;
+      border-radius: 8px; padding: 16px 20px; margin: 14px 0;
+    }
+    .demo-label {
+      font-size: 0.85em; font-weight: bold;
+      color: #1a365d; margin-bottom: 10px;
+    }
+    .demo-input-row {
+      display: flex; gap: 10px; align-items: center;
+      flex-wrap: wrap; margin-bottom: 10px;
+    }
+    .demo-input {
+      border: 2px solid #bee3f8; border-radius: 6px;
+      padding: 7px 12px; font-size: 0.9em;
+      font-family: 'Consolas','Monaco',monospace;
+      color: #2d3748; background: #fff; flex: 1; min-width: 80px;
+    }
+    .demo-input:focus { border-color: #2c7a7b; outline: none; }
+    .demo-btn {
+      background: #2c7a7b; color: #fff; border: none;
+      border-radius: 6px; padding: 8px 18px;
+      font-size: 0.88em; font-weight: bold; cursor: pointer;
+      transition: background 0.2s; white-space: nowrap;
+    }
+    .demo-btn:hover { background: #1a365d; }
+    .demo-output {
+      background: #1a202c; color: #68d391;
+      border-radius: 6px; padding: 10px 14px;
+      font-family: 'Consolas','Monaco',monospace;
+      font-size: 0.85em; min-height: 40px;
+      white-space: pre-wrap; line-height: 1.7;
+    }
+
+    /* ===== タブ ===== */
+    .tab-wrap { margin: 14px 0; }
+    .tab-btns { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: -1px; }
+    .tab-btn {
+      padding: 8px 18px; border: 1px solid #bee3f8;
+      border-bottom: none; border-radius: 6px 6px 0 0;
+      background: #edf2f7; color: #2c7a7b;
+      font-size: 0.85em; font-weight: bold;
+      font-family: 'Consolas','Monaco',monospace;
+      cursor: pointer; transition: background 0.15s;
+    }
+    .tab-btn.active { background: #fff; border-bottom: 1px solid #fff; }
+    .tab-btn:hover:not(.active) { background: #e6fffa; }
+    .tab-content {
+      display: none; background: #fff;
+      border: 1px solid #bee3f8;
+      border-radius: 0 6px 6px 6px; padding: 18px 20px;
+    }
+    .tab-content.active { display: block; }
+
+    /* ===== テーブル ===== */
+    table.ref-table {
+      border-collapse: collapse; width: 100%;
+      background: #fff; border-radius: 8px;
+      overflow: hidden; box-shadow: 0 2px 6px rgba(0,0,0,0.07);
+      margin: 14px 0; font-size: 0.9em;
+    }
+    table.ref-table th, table.ref-table td {
+      border: 1px solid #bee3f8; padding: 10px 14px; text-align: left;
+    }
+    table.ref-table thead tr { background: #1a365d; color: #fff; }
+    table.ref-table tbody tr:nth-child(even) { background: #ebf8ff; }
+
+    /* ===== JSコンソール ===== */
+    .js-console {
+      background: #1a202c; border-radius: 10px;
+      overflow: hidden; margin: 16px 0;
+      box-shadow: 0 4px 14px rgba(0,0,0,0.25);
+    }
+    .js-console-bar {
+      background: #2d3748; padding: 8px 16px;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .js-console-bar .dot { width: 12px; height: 12px; border-radius: 50%; }
+    .dot-red    { background: #fc8181; }
+    .dot-yellow { background: #f6ad55; }
+    .dot-green  { background: #68d391; }
+    .js-console-bar span {
+      font-size: 0.78em; color: #a0aec0;
+      font-family: 'Consolas','Monaco',monospace; margin-left: 6px;
+    }
+    .js-console-output {
+      padding: 14px 16px; min-height: 80px;
+      font-family: 'Consolas','Monaco',monospace;
+      font-size: 0.85em; line-height: 1.8;
+      max-height: 280px; overflow-y: auto;
+    }
+    .log-line   { color: #e2e8f0; }
+    .log-info   { color: #90cdf4; }
+    .log-warn   { color: #f6ad55; }
+    .log-error  { color: #fc8181; }
+    .log-result { color: #68d391; }
+    .log-prompt { color: #a0aec0; }
+    .js-console-input-row {
+      display: flex; align-items: center;
+      border-top: 1px solid #2d3748; padding: 8px 12px; gap: 8px;
+    }
+    .js-console-input-row span {
+      color: #68d391; font-family: 'Consolas','Monaco',monospace;
+      font-size: 0.9em; flex-shrink: 0;
+    }
+    .js-console-input {
+      flex: 1; background: transparent; border: none; outline: none;
+      color: #e2e8f0; font-family: 'Consolas','Monaco',monospace;
+      font-size: 0.88em; caret-color: #68d391;
+    }
+    .js-console-run {
+      background: #2c7a7b; color: #fff; border: none;
+      border-radius: 4px; padding: 4px 12px;
+      font-size: 0.78em; font-weight: bold; cursor: pointer;
+      transition: background 0.2s;
+    }
+    .js-console-run:hover { background: #1a365d; }
+    .js-console-clear {
+      background: #4a5568; color: #e2e8f0; border: none;
+      border-radius: 4px; padding: 4px 10px;
+      font-size: 0.78em; cursor: pointer; transition: background 0.2s;
+    }
+    .js-console-clear:hover { background: #718096; }
+
+    /* ===== 演習問題 ===== */
+    .quiz-section {
+      background: #ebf8ff; border-left: 6px solid #4299e1;
+      border-radius: 0 8px 8px 0; padding: 24px 28px; margin: 48px 0 32px;
+    }
+    .quiz-section > h2 { margin-top: 0; color: #1a365d; border-left-color: #4299e1; }
+    .quiz-block {
+      background: #fff; border: 1px solid #bee3f8;
+      border-radius: 8px; padding: 18px 22px; margin-bottom: 22px;
+    }
+    .quiz-block h3 { margin-top: 0; color: #1a365d; }
+    .quiz-block input[type="text"],
+    .quiz-block select {
+      border: 2px solid #bee3f8; border-radius: 6px;
+      padding: 8px 12px; font-size: 0.95em;
+      width: 100%; max-width: 440px; margin: 6px 0;
+      outline: none; font-family: 'Consolas','Monaco',monospace;
+      transition: border-color 0.2s;
+    }
+    .quiz-block input[type="text"]:focus,
+    .quiz-block select:focus { border-color: #2c7a7b; }
+    .quiz-block label { display: block; margin: 8px 0 2px; font-weight: bold; color: #4a5568; }
+    .quiz-block label.checkbox-label {
+      display: flex; align-items: flex-start; gap: 8px;
+      font-weight: normal; cursor: pointer; margin: 6px 0;
+    }
+    .quiz-block label.checkbox-label input { margin-top: 3px; flex-shrink: 0; }
+    .btn {
+      display: inline-block; padding: 9px 20px;
+      border-radius: 6px; border: none; cursor: pointer;
+      font-size: 0.95em; font-weight: bold;
+      transition: opacity 0.2s; margin-top: 8px;
+    }
+    .btn:hover { opacity: 0.85; }
+    .btn-teal { background: #2c7a7b; color: #fff; }
+    .btn-done { background: #48bb78; color: #fff; }
+    .result-msg {
+      margin-top: 10px; padding: 10px 14px;
+      border-radius: 6px; font-weight: bold; display: none;
+    }
+    .result-msg.correct { background: #c6f6d5; color: #276749; display: block; }
+    .result-msg.wrong   { background: #fed7d7; color: #9b2335; display: block; }
+    .result-msg.info    { background: #bee3f8; color: #1a365d; display: block; }
+
+    .page-nav {
+      display: flex; justify-content: space-between;
+      align-items: center; margin-top: 48px;
+      padding-top: 20px; border-top: 2px solid #bee3f8;
+      gap: 12px; flex-wrap: wrap;
+    }
+    .page-nav a {
+      display: inline-block; padding: 10px 20px;
+      border-radius: 8px; text-decoration: none;
+      font-weight: bold; font-size: 0.9em; transition: opacity 0.2s;
+    }
+    .page-nav a:hover { opacity: 0.8; }
+    .page-nav .prev { background: #edf2f7; color: #4a5568; }
+    .page-nav .next { background: #2c7a7b; color: #fff; }
+    .page-nav .home { background: #fff; color: #2c7a7b; border: 2px solid #2c7a7b; }
+
+    .complete-section {
+      background: #f0fff4; border: 2px solid #48bb78;
+      border-radius: 10px; padding: 20px 24px;
+      margin-top: 40px; text-align: center;
+    }
+    .complete-section p { margin: 0 0 12px; color: #276749; font-weight: bold; }
+
+    footer {
+      margin-top: 48px; padding-top: 16px;
+      border-top: 2px solid #bee3f8;
+      font-size: 0.82em; color: #a0aec0; text-align: center;
+    }
+    footer a { color: #2c7a7b; text-decoration: none; }
+    footer a:hover { text-decoration: underline; }
+
+    @media (max-width: 600px) {
+      body { font-size: 0.84em; }
+      .chapter-header { padding: 20px 16px; }
+      .chapter-header h1 { font-size: 1.2em; }
+      .op-grid { grid-template-columns: repeat(3, 1fr); }
+      .tf-grid { grid-template-columns: 1fr; }
+      .quiz-section { padding: 16px 12px; }
+      .quiz-block { padding: 14px 12px; }
+      .page-nav { flex-direction: column; align-items: stretch; }
+      .page-nav a { text-align: center; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- パンくず -->
+<div class="breadcrumb">
+  <a href="../index.html">🏠 HTML5 Level 2</a> ›
+  Chapter 1：速習JavaScript入門 › 1-6 条件分岐
+</div>
+
+<!-- ヘッダー -->
+<div class="chapter-header">
+  <div class="ch-num">CHAPTER 01 › SECTION 06</div>
+  <h1>🔀 1-6 条件分岐</h1>
+  <p>if文・比較演算子・論理演算子・三項演算子・switch文・
+  JavaScriptのクセのある真偽値判定を、
+  インタラクティブなフローチャートとデモで体験しながら学びます。</p>
+  <div class="badge-row">
+    <span class="badge">if / else if / else</span>
+    <span class="badge">=== / !==</span>
+    <span class="badge">&amp;&amp; / || / !</span>
+    <span class="badge">三項演算子</span>
+    <span class="badge">switch / case</span>
+    <span class="badge">truthy / falsy</span>
+  </div>
+</div>
+
+<!-- セクションナビ -->
+<div class="section-nav">
+  <h2>📋 Chapter 1 のセクション</h2>
+  <ol>
+    <li><a href="01_variables.html">1-1 変数の宣言と値の代入</a></li>
+    <li><a href="02_operators.html">1-2 さまざまな演算</a></li>
+    <li><a href="03_types.html">1-3 型とオブジェクト</a></li>
+    <li><a href="04_functions.html">1-4 関数</a></li>
+    <li><a href="05_scope.html">1-5 スコープ</a></li>
+    <li class="current"><a href="06_conditions.html">1-6 条件分岐</a></li>
+    <li><a href="07_loops.html">1-7 繰り返しの処理</a></li>
+    <li><a href="08_classes.html">1-8 オブジェクトとクラス</a></li>
+    <li><a href="09_dom.html">1-9 HTMLの操作</a></li>
+    <li><a href="10_events.html">1-10 イベントと非同期処理</a></li>
+    <li><a href="11_html5.html">1-11 HTML5とJavaScript</a></li>
+  </ol>
+</div>
+
+
+<!-- ============================================================ -->
+<!-- PART 1: if 文 -->
+<!-- ============================================================ -->
+<h2 id="if">① if 文</h2>
+
+<div class="note">
+  <strong>重要ポイント：if 文は条件が true のときだけ処理を実行します。
+  else if・else を組み合わせて複数の条件を処理できます。</strong>
+</div>
+
+<div class="demo-box">
+  <h3>if 文のフローチャート</h3>
+  <div class="flowchart">
+    <div class="fc-box" style="background:#2b4c7e; color:#90cdf4; border:2px solid #4299e1;">
+      開始
+    </div>
+    <div class="fc-arrow">↓</div>
+    <div style="background:#744210; border:2px solid #f6ad55; border-radius:8px;
+         padding:10px 20px; color:#fbd38d; font-weight:bold;
+         font-family:'Consolas','Monaco',monospace; font-size:0.88em; text-align:center;">
+      条件式を評価
+    </div>
+    <div class="fc-arrow">↓</div>
+    <div class="fc-branch">
+      <div class="fc-branch-item">
+        <span class="fc-label" style="background:#276749; color:#fff;">true</span>
+        <div class="fc-arrow">↓</div>
+        <div class="fc-box" style="background:#276749; color:#9ae6b4; border:2px solid #48bb78; font-size:0.82em;">
+          if ブロックを実行
+        </div>
+      </div>
+      <div class="fc-branch-item">
+        <span class="fc-label" style="background:#9b2335; color:#fff;">false</span>
+        <div class="fc-arrow">↓</div>
+        <div class="fc-box" style="background:#553c9a; color:#d6bcfa; border:2px solid #9f7aea; font-size:0.82em;">
+          else ブロックを実行
+        </div>
+      </div>
+    </div>
+    <div class="fc-arrow" style="margin-top:8px;">↓</div>
+    <div class="fc-box" style="background:#4a5568; color:#e2e8f0; border:2px solid #718096;">
+      次の処理へ
+    </div>
+  </div>
+
+  <h3>🎮 if 文シミュレーター</h3>
+  <div class="interactive-demo">
+    <div class="demo-label">数値を入力して if / else if / else の分岐を確認しよう</div>
+    <div class="demo-input-row">
+      <input class="demo-input" id="if-score" type="number"
+             placeholder="点数（0〜100）" value="75" style="max-width:160px;">
+      <button class="demo-btn" onclick="runIfDemo()">▶ 判定</button>
+    </div>
+    <div class="demo-output" id="if-output">← 点数を入力して判定してみましょう</div>
+  </div>
+
+  <div class="pre-wrap">
+    <button class="copy-btn" onclick="copyPre(this)">copy</button>
+<pre>
+<span class="comment">// if / else if / else の基本</span>
+<span class="kw">let</span> score = <span class="num">75</span>;
+
+<span class="kw">if</span> (score <span class="op">&gt;=</span> <span class="num">90</span>) {
+  console.<span class="fn">log</span>(<span class="str">"優秀"</span>);
+} <span class="kw">else if</span> (score <span class="op">&gt;=</span> <span class="num">70</span>) {
+  console.<span class="fn">log</span>(<span class="str">"良好"</span>);   <span class="out">// → "良好"（75 &gt;= 70 が true）</span>
+} <span class="kw">else if</span> (score <span class="op">&gt;=</span> <span class="num">50</span>) {
+  console.<span class="fn">log</span>(<span class="str">"合格"</span>);
+} <span class="kw">else</span> {
+  console.<span class="fn">log</span>(<span class="str">"不合格"</span>);
+}
+
+<span class="comment">// 早期リターンパターン（ネストを減らす）</span>
+<span class="kw">function</span> <span class="fn">getGrade</span>(<span class="param">score</span>) {
+  <span class="kw">if</span> (<span class="param">score</span> <span class="op">&lt;</span> <span class="num">0</span> <span class="op">||</span> <span class="param">score</span> <span class="op">&gt;</span> <span class="num">100</span>) <span class="kw">return</span> <span class="str">"無効"</span>;
+  <span class="kw">if</span> (<span class="param">score</span> <span class="op">&gt;=</span> <span class="num">90</span>) <span class="kw">return</span> <span class="str">"A"</span>;
+  <span class="kw">if</span> (<span class="param">score</span> <span class="op">&gt;=</span> <span class="num">70</span>) <span class="kw">return</span> <span class="str">"B"</span>;
+  <span class="kw">if</span> (<span class="param">score</span> <span class="op">&gt;=</span> <span class="num">50</span>) <span class="kw">return</span> <span class="str">"C"</span>;
+  <span class="kw">return</span> <span class="str">"D"</span>;
+}
+console.<span class="fn">log</span>(<span class="fn">getGrade</span>(<span class="num">85</span>)); <span class="out">// → "B"</span>
+</pre>
+  </div>
+</div>
+
+
+<!-- ============================================================ -->
+<!-- PART 2: 比較演算子 -->
+<!-- ============================================================ -->
+<h2 id="comparison">② 比較演算子</h2>
+
+<div class="note">
+  <strong>重要ポイント：<code>===</code>（厳密等価）は型と値の両方を比較します。
+  <code>==</code>（緩い等価）は型変換を行うため予期しない結果になることがあります。
+  現代のJavaScriptでは <code>===</code> の使用を推奨します。</strong>
+</div>
+
+<div class="demo-box">
+  <h3>比較演算子カード（クリックで詳細）</h3>
+  <div class="op-grid">
+    <div class="op-card" onclick="showOpDetail('eq3',this)">
+      <div class="op-sym">===</div>
+      <div class="op-name">厳密等価</div>
+    </div>
+    <div class="op-card" onclick="showOpDetail('neq3',this)">
+      <div class="op-sym">!==</div>
+      <div class="op-name">厳密不等価</div>
+    </div>
+    <div class="op-card" onclick="showOpDetail('eq2',this)">
+      <div class="op-sym">==</div>
+      <div class="op-name">緩い等価</div>
+    </div>
+    <div class="op-card" onclick="showOpDetail('neq2',this)">
+      <div class="op-sym">!=</div>
+      <div class="op-name">緩い不等価</div>
+    </div>
+    <div class="op-card" onclick="showOpDetail('gt',this)">
+      <div class="op-sym">&gt;</div>
+      <div class="op-name">より大きい</div>
+    </div>
+    <div class="op-card" onclick="showOpDetail('gte',this)">
+      <div class="op-sym">&gt;=</div>
+      <div class="op-name">以上</div>
+    </div>
+    <div class="op-card" onclick="showOpDetail('lt',this)">
+      <div class="op-sym">&lt;</div>
+      <div class="op-name">より小さい</div>
+    </div>
+    <div class="op-card" onclick="showOpDetail('lte',this)">
+      <div class="op-sym">&lt;=</div>
+      <div class="op-name">以下</div>
+    </div>
+  </div>
+
+  <!-- 詳細パネル -->
+  <div id="op-detail" style="display:none; margin-top:12px;
+    background:#1a202c; border-radius:8px; padding:16px 20px;
+    font-family:'Consolas','Monaco',monospace; font-size:0.85em;
+    line-height:1.9; white-space:pre-wrap; color:#e2e8f0;">
+  </div>
+
+  <h3>🎮 比較演算子チェッカー</h3>
+  <div class="interactive-demo">
+    <div class="demo-label">2つの値と演算子を選んで比較結果を確認しよう</div>
+    <div class="demo-input-row">
+      <input class="demo-input" id="cmp-a" type="text" value="5" style="max-width:100px;">
+      <select class="demo-input" id="cmp-op" style="flex:0 0 auto; width:120px;">
+        <option value="===">===</option>
+        <option value="!==">!==</option>
+        <option value="==">==</option>
+        <option value="!=">!=</option>
+        <option value=">">&gt;</option>
+        <option value=">=">&gt;=</option>
+        <option value="<">&lt;</option>
+        <option value="<=">&lt;=</option>
+      </select>
+      <input class="demo-input" id="cmp-b" type="text" value='"5"' style="max-width:100px;">
+      <button class="demo-btn" onclick="runCmpDemo()">▶ 比較</button>
+    </div>
+    <div class="demo-output" id="cmp-output">← 値と演算子を選んで比較してみましょう</div>
+  </div>
+</div>
+
+
+<!-- ============================================================ -->
+<!-- PART 3: 論理演算子 -->
+<!-- ============================================================ -->
+<h2 id="logical">③ 論理演算子</h2>
+
+<div class="note">
+  <strong>重要ポイント：<code>&amp;&amp;</code>（AND）・<code>||</code>（OR）・<code>!</code>（NOT）の3種類があります。
+  短絡評価（ショートサーキット）の動作を理解することが重要です。</strong>
+</div>
+
+<div class="demo-box">
+  <div class="tab-wrap">
+    <div class="tab-btns">
+      <button class="tab-btn active" onclick="switchTab(this,'tab-and')">&amp;&amp;（AND）</button>
+      <button class="tab-btn"        onclick="switchTab(this,'tab-or')">||（OR）</button>
+      <button class="tab-btn"        onclick="switchTab(this,'tab-not')">!（NOT）</button>
+      <button class="tab-btn"        onclick="switchTab(this,'tab-short')">短絡評価</button>
+      <button class="tab-btn"        onclick="switchTab(this,'tab-nullish')">??（Nullish）</button>
+    </div>
+
+    <!-- AND -->
+    <div class="tab-content active" id="tab-and">
+      <h3 style="margin-top:0; color:#1a365d;">&amp;&amp;（AND）：両方 true のとき true</h3>
+      <div class="pre-wrap">
+        <button class="copy-btn" onclick="copyPre(this)">copy</button>
+<pre>
+<span class="comment">// && ：左辺と右辺が両方 true のとき true</span>
+console.<span class="fn">log</span>(<span class="kw">true</span>  <span class="op">&amp;&amp;</span> <span class="kw">true</span>);  <span class="out">// → true</span>
+console.<span class="fn">log</span>(<span class="kw">true</span>  <span class="op">&amp;&amp;</span> <span class="kw">false</span>); <span class="out">// → false</span>
+console.<span class="fn">log</span>(<span class="kw">false</span> <span class="op">&amp;&amp;</span> <span class="kw">true</span>);  <span class="out">// → false</span>
+console.<span class="fn">log</span>(<span class="kw">false</span> <span class="op">&amp;&amp;</span> <span class="kw">false</span>); <span class="out">// → false</span>
+
+<span class="comment">// 実用例：複数条件のチェック</span>
+<span class="kw">const</span> age     = <span class="num">20</span>;
+<span class="kw">const</span> hasCard = <span class="kw">true</span>;
+
+<span class="kw">if</span> (age <span class="op">&gt;=</span> <span class="num">18</span> <span class="op">&amp;&amp;</span> hasCard) {
+  console.<span class="fn">log</span>(<span class="str">"入場できます"</span>); <span class="out">// → "入場できます"</span>
+}
+
+<span class="comment">// && の短絡評価：左辺が false なら右辺を評価しない</span>
+<span class="kw">const</span> user = <span class="kw">null</span>;
+<span class="kw">const</span> name = user <span class="op">&amp;&amp;</span> user.name; <span class="comment">// user が null なので user.name は評価されない</span>
+console.<span class="fn">log</span>(name); <span class="out">// → null（エラーにならない）</span>
+</pre>
+      </div>
+    </div>
+
+    <!-- OR -->
+    <div class="tab-content" id="tab-or">
+      <h3 style="margin-top:0; color:#1a365d;">||（OR）：どちらか一方が true のとき true</h3>
+      <div class="pre-wrap">
+        <button class="copy-btn" onclick="copyPre(this)">copy</button>
+<pre>
+<span class="comment">// || ：どちらか一方が true のとき true</span>
+console.<span class="fn">log</span>(<span class="kw">true</span>  <span class="op">||</span> <span class="kw">true</span>);  <span class="out">// → true</span>
+console.<span class="fn">log</span>(<span class="kw">true</span>  <span class="op">||</span> <span class="kw">false</span>); <span class="out">// → true</span>
+console.<span class="fn">log</span>(<span class="kw">false</span> <span class="op">||</span> <span class="kw">true</span>);  <span class="out">// → true</span>
+console.<span class="fn">log</span>(<span class="kw">false</span> <span class="op">||</span> <span class="kw">false</span>); <span class="out">// → false</span>
+
+<span class="comment">// 実用例：デフォルト値の設定</span>
+<span class="kw">const</span> input = <span class="str">""</span>;
+<span class="kw">const</span> name  = input <span class="op">||</span> <span class="str">"ゲスト"</span>; <span class="comment">// input が falsy なら "ゲスト"</span>
+console.<span class="fn">log</span>(name); <span class="out">// → "ゲスト"</span>
+
+<span class="comment">// || の短絡評価：左辺が true なら右辺を評価しない</span>
+<span class="kw">const</span> val = <span class="num">5</span> <span class="op">||</span> <span class="num">10</span>;
+console.<span class="fn">log</span>(val); <span class="out">// → 5（左辺が truthy なので右辺は評価されない）</span>
+
+<span class="kw">const</span> val2 = <span class="num">0</span> <span class="op">||</span> <span class="num">10</span>;
+console.<span class="fn">log</span>(val2); <span class="out">// → 10（左辺が falsy なので右辺を返す）</span>
+</pre>
+      </div>
+    </div>
+
+    <!-- NOT -->
+    <div class="tab-content" id="tab-not">
+      <h3 style="margin-top:0; color:#1a365d;">!（NOT）：真偽値を反転する</h3>
+      <div class="pre-wrap">
+        <button class="copy-btn" onclick="copyPre(this)">copy</button>
+<pre>
+<span class="comment">// ! ：true → false、false → true</span>
+console.<span class="fn">log</span>(<span class="op">!</span><span class="kw">true</span>);   <span class="out">// → false</span>
+console.<span class="fn">log</span>(<span class="op">!</span><span class="kw">false</span>);  <span class="out">// → true</span>
+console.<span class="fn">log</span>(<span class="op">!</span><span class="num">0</span>);      <span class="out">// → true（0 は falsy）</span>
+console.<span class="fn">log</span>(<span class="op">!</span><span class="str">""</span>);     <span class="out">// → true（空文字は falsy）</span>
+console.<span class="fn">log</span>(<span class="op">!</span><span class="str">"hello"</span>);<span class="out">// → false（文字列は truthy）</span>
+console.<span class="fn">log</span>(<span class="op">!</span><span class="kw">null</span>);   <span class="out">// → true（null は falsy）</span>
+
+<span class="comment">// !! ：値を boolean に変換するテクニック</span>
+console.<span class="fn">log</span>(<span class="op">!!</span><span class="num">0</span>);      <span class="out">// → false</span>
+console.<span class="fn">log</span>(<span class="op">!!</span><span class="str">"hello"</span>);<span class="out">// → true</span>
+console.<span class="fn">log</span>(<span class="op">!!</span><span class="kw">null</span>);   <span class="out">// → false</span>
+console.<span class="fn">log</span>(<span class="op">!!</span>[]);     <span class="out">// → true（空配列は truthy！）</span>
+
+<span class="comment">// 実用例</span>
+<span class="kw">const</span> isLoggedIn = <span class="op">!</span>(user <span class="op">===</span> <span class="kw">null</span>);
+<span class="kw">const</span> isEmpty    = <span class="op">!</span>arr.<span class="prop">length</span>;
+</pre>
+      </div>
+    </div>
+
+    <!-- 短絡評価 -->
+    <div class="tab-content" id="tab-short">
+      <h3 style="margin-top:0; color:#1a365d;">短絡評価（ショートサーキット）</h3>
+      <div class="note">
+        <strong>短絡評価とは：</strong>論理演算子が結果を確定できた時点で、残りの評価を行わない仕組みです。
+        パフォーマンス向上だけでなく、エラー防止にも活用できます。
+      </div>
+      <div class="pre-wrap">
+        <button class="copy-btn" onclick="copyPre(this)">copy</button>
+<pre>
+<span class="comment">// && の短絡評価：左辺が falsy なら右辺を評価しない</span>
+<span class="kw">const</span> user = <span class="kw">null</span>;
+<span class="kw">const</span> name = user <span class="op">&amp;&amp;</span> user.name; <span class="comment">// user が null → user.name は評価されない</span>
+console.<span class="fn">log</span>(name); <span class="out">// → null（TypeError にならない）</span>
+
+<span class="comment">// オプショナルチェーン（?.）でも同様のことができる（ES2020〜）</span>
+<span class="kw">const</span> name2 = user?.name;
+console.<span class="fn">log</span>(name2); <span class="out">// → undefined</span>
+
+<span class="comment">// || の短絡評価：左辺が truthy なら右辺を評価しない</span>
+<span class="kw">const</span> config = <span class="kw">null</span>;
+<span class="kw">const</span> timeout = config <span class="op">||</span> <span class="num">3000</span>; <span class="comment">// config が null → 3000 を使う</span>
+console.<span class="fn">log</span>(timeout); <span class="out">// → 3000</span>
+
+<span class="comment">// 条件付きの関数呼び出し</span>
+<span class="kw">const</span> callback = <span class="kw">null</span>;
+callback <span class="op">&amp;&amp;</span> <span class="fn">callback</span>(); <span class="comment">// callback が null なので呼び出されない（エラーなし）</span>
+
+<span class="comment">// JSX風の条件付きレンダリング（Reactなどで頻出）</span>
+<span class="kw">const</span> isAdmin = <span class="kw">true</span>;
+<span class="kw">const</span> element = isAdmin <span class="op">&amp;&amp;</span> <span class="str">"管理者メニュー"</span>;
+console.<span class="fn">log</span>(element); <span class="out">// → "管理者メニュー"</span>
+</pre>
+      </div>
+    </div>
+
+    <!-- Nullish -->
+    <div class="tab-content" id="tab-nullish">
+      <h3 style="margin-top:0; color:#1a365d;">??（Nullish 合体演算子）ES2020〜</h3>
+      <div class="note">
+        <strong>|| との違い：</strong><code>||</code> はすべての falsy 値（0・""・false など）に反応しますが、
+        <code>??</code> は <code>null</code> と <code>undefined</code> のみに反応します。
+      </div>
+      <div class="pre-wrap">
+        <button class="copy-btn" onclick="copyPre(this)">copy</button>
+<pre>
+<span class="comment">// ?? ：null または undefined のときだけ右辺を返す</span>
+console.<span class="fn">log</span>(<span class="kw">null</span>      <span class="op">??</span> <span class="str">"デフォルト"</span>); <span class="out">// → "デフォルト"</span>
+console.<span class="fn">log</span>(<span class="kw">undefined</span> <span class="op">??</span> <span class="str">"デフォルト"</span>); <span class="out">// → "デフォルト"</span>
+console.<span class="fn">log</span>(<span class="num">0</span>         <span class="op">??</span> <span class="str">"デフォルト"</span>); <span class="out">// → 0（0 は null/undefined ではない）</span>
+console.<span class="fn">log</span>(<span class="str">""</span>        <span class="op">??</span> <span class="str">"デフォルト"</span>); <span class="out">// → ""（空文字も null/undefined ではない）</span>
+console.<span class="fn">log</span>(<span class="kw">false</span>     <span class="op">??</span> <span class="str">"デフォルト"</span>); <span class="out">// → false</span>
+
+<span class="comment">// || との比較</span>
+<span class="kw">const</span> count = <span class="num">0</span>;
+console.<span class="fn">log</span>(count <span class="op">||</span> <span class="num">10</span>);  <span class="out">// → 10（0 は falsy なので）← 意図しない場合がある</span>
+console.<span class="fn">log</span>(count <span class="op">??</span> <span class="num">10</span>);  <span class="out">// → 0（0 は null/undefined ではない）← 意図通り</span>
+
+<span class="comment">// ?.（オプショナルチェーン）との組み合わせ</span>
+<span class="kw">const</span> user = <span class="kw">null</span>;
+<span class="kw">const</span> city = user?.address?.city <span class="op">??</span> <span class="str">"不明"</span>;
+console.<span class="fn">log</span>(city); <span class="out">// → "不明"</span>
+</pre>
+      </div>
+      <div class="interactive-demo" style="margin-top:12px;">
+        <div class="demo-label">|| と ?? の違いを確認しよう</div>
+        <div class="demo-input-row">
+          <input class="demo-input" id="nullish-val"
+                 placeholder="値（例：0, null, false, &quot;&quot;）"
+                 type="text" value="0">
+          <button class="demo-btn" onclick="runNullishDemo()">▶ 比較</button>
+        </div>
+        <div class="demo-output" id="nullish-output">← 値を入力して || と ?? の違いを確認しましょう</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ============================================================ -->
+<!-- PART 4: 条件演算子（三項演算子） -->
+<!-- ============================================================ -->
+<h2 id="ternary">④ 条件演算子（三項演算子）</h2>
+
+<div class="note">
+  <strong>重要ポイント：<code>条件 ? 真の値 : 偽の値</code> という構文で、if 文を1行で書けます。
+  シンプルな条件分岐に適していますが、複雑な条件には if 文を使いましょう。</strong>
+</div>
+
+<div class="demo-box">
+  <div class="pre-wrap">
+    <button class="copy-btn" onclick="copyPre(this)">copy</button>
+<pre>
+<span class="comment">// 三項演算子の基本</span>
+<span class="comment">// 条件 ? 真のとき : 偽のとき</span>
+<span class="kw">const</span> age   = <span class="num">20</span>;
+<span class="kw">const</span> label = age <span class="op">&gt;=</span> <span class="num">18</span> <span class="op">?</span> <span class="str">"成人"</span> <span class="op">:</span> <span class="str">"未成年"</span>;
+console.<span class="fn">log</span>(label); <span class="out">// → "成人"</span>
+
+<span class="comment">// if 文と同等</span>
+<span class="kw">let</span> result;
+<span class="kw">if</span> (age <span class="op">&gt;=</span> <span class="num">18</span>) {
+  result = <span class="str">"成人"</span>;
+} <span class="kw">else</span> {
+  result = <span class="str">"未成年"</span>;
+}
+
+<span class="comment">// 変数への代入・テンプレートリテラルとの組み合わせ</span>
+<span class="kw">const</span> score = <span class="num">85</span>;
+console.<span class="fn">log</span>(<span class="str">`結果：<span class="op">${</span>score <span class="op">&gt;=</span> <span class="num">60</span> <span class="op">?</span> <span class="str">"合格"</span> <span class="op">:</span> <span class="str">"不合格"</span><span class="op">}</span>`</span>);
+<span class="out">// → "結果：合格"</span>
+
+<span class="comment">// ネストした三項演算子（可読性が下がるので注意）</span>
+<span class="kw">const</span> grade = score <span class="op">&gt;=</span> <span class="num">90</span> <span class="op">?</span> <span class="str">"A"</span>
+            <span class="op">:</span> score <span class="op">&gt;=</span> <span class="num">70</span> <span class="op">?</span> <span class="str">"B"</span>
+            <span class="op">:</span> score <span class="op">&gt;=</span> <span class="num">50</span> <span class="op">?</span> <span class="str">"C"</span>
+            <span class="op">:</span>               <span class="str">"D"</span>;
+console.<span class="fn">log</span>(grade); <span class="out">// → "B"</span>
+</pre>
+  </div>
+
+  <h3>🎮 三項演算子ビルダー</h3>
+  <div class="interactive-demo">
+    <div class="demo-label">条件・真の値・偽の値を入力して三項演算子を組み立てよう</div>
+    <div class="demo-input-row">
+      <input class="demo-input" id="tern-cond" placeholder="条件（例：age >= 18）" type="text" value="age >= 18">
+      <span style="color:#f6ad55; font-weight:bold; font-size:1.2em;">?</span>
+      <input class="demo-input" id="tern-true" placeholder="真の値" type="text" value='"成人"'>
+      <span style="color:#f6ad55; font-weight:bold; font-size:1.2em;">:</span>
+      <input class="demo-input" id="tern-false" placeholder="偽の値" type="text" value='"未成年"'>
+    </div>
+    <div class="demo-input-row">
+      <input class="demo-input" id="tern-var"
+             placeholder="変数（例：age = 20）" type="text" value="age = 20">
+      <button class="demo-btn" onclick="runTernaryDemo()">▶ 実行</button>
+    </div>
+    <div class="demo-output" id="ternary-output">← 条件と値を入力して実行してみましょう</div>
+  </div>
+</div>
+
+
+<!-- ============================================================ -->
+<!-- PART 5: switch 文 -->
+<!-- ============================================================ -->
+<h2 id="switch">⑤ switch 文</h2>
+
+<div class="note">
+  <strong>重要ポイント：switch 文は1つの値を複数の候補と比較するときに使います。
+  各 case の末尾に <code>break</code> を忘れると次の case に「落ちて」しまいます（フォールスルー）。</strong>
+</div>
+
+<div class="demo-box">
+  <h3>🎮 switch 文シミュレーター</h3>
+  <div class="switch-visual">
+    <div class="switch-input-row">
+      <input class="switch-input" id="switch-val"
+             placeholder="値を入力（例：monday, 1, red）" value="monday">
+      <button class="switch-btn" onclick="runSwitchDemo()">▶ 実行</button>
+    </div>
+    <div class="switch-cases" id="switch-cases">
+      <div class="switch-case" data-case="monday">
+        <span class="switch-case-label">case "monday":</span>
+        <span class="switch-case-val">console.log("月曜日")</span>
+        <span class="switch-case-mark"></span>
+      </div>
+      <div class="switch-case" data-case="tuesday">
+        <span class="switch-case-label">case "tuesday":</span>
+        <span class="switch-case-val">console.log("火曜日")</span>
+        <span class="switch-case-mark"></span>
+      </div>
+      <div class="switch-case" data-case="wednesday">
+        <span class="switch-case-label">case "wednesday":</span>
+        <span class="switch-case-val">console.log("水曜日")</span>
+        <span class="switch-case-mark"></span>
+      </div>
+      <div class="switch-case" data-case="saturday">
+        <span class="switch-case-label">case "saturday":</span>
+        <span class="switch-case-val">console.log("土曜日（休日）")</span>
+        <span class="switch-case-mark"></span>
+      </div>
+      <div class="switch-case" data-case="sunday">
+        <span class="switch-case-label">case "sunday":</span>
+        <span class="switch-case-val">console.log("日曜日（休日）")</span>
+        <span class="switch-case-mark"></span>
+      </div>
+      <div class="switch-case default-case" data-case="__default__">
+        <span class="switch-case-label" style="color:#a0aec0;">default:</span>
+        <span class="switch-case-val">console.log("平日")</span>
+        <span class="switch-case-mark"></span>
+      </div>
+    </div>
+    <div id="switch-result" style="margin-top:12px; padding:10px 14px;
+      background:#0d1117; border-radius:6px; color:#68d391;
+      font-size:0.85em; min-height:36px; line-height:1.8;"></div>
+  </div>
+
+  <div class="pre-wrap">
+    <button class="copy-btn" onclick="copyPre(this)">copy</button>
+<pre>
+<span class="comment">// switch 文の基本</span>
+<span class="kw">const</span> day = <span class="str">"monday"</span>;
+
+<span class="kw">switch</span> (day) {
+  <span class="kw">case</span> <span class="str">"monday"</span>:
+    console.<span class="fn">log</span>(<span class="str">"月曜日"</span>);
+    <span class="kw">break</span>; <span class="comment">// ← break を忘れると次の case に「落ちる」</span>
+  <span class="kw">case</span> <span class="str">"tuesday"</span>:
+    console.<span class="fn">log</span>(<span class="str">"火曜日"</span>);
+    <span class="kw">break</span>;
+  <span class="kw">case</span> <span class="str">"saturday"</span>:
+  <span class="kw">case</span> <span class="str">"sunday"</span>:
+    console.<span class="fn">log</span>(<span class="str">"休日"</span>); <span class="comment">// 複数の case をまとめる（フォールスルーの活用）</span>
+    <span class="kw">break</span>;
+  <span class="kw">default</span>:
+    console.<span class="fn">log</span>(<span class="str">"平日"</span>);
+}
+
+<span class="comment">// break を忘れた場合（フォールスルー）</span>
+<span class="kw">switch</span> (<span class="str">"a"</span>) {
+  <span class="kw">case</span> <span class="str">"a"</span>:
+    console.<span class="fn">log</span>(<span class="str">"A"</span>); <span class="comment">// ← break なし</span>
+  <span class="kw">case</span> <span class="str">"b"</span>:
+    console.<span class="fn">log</span>(<span class="str">"B"</span>); <span class="comment">// ← ここも実行される！</span>
+  <span class="kw">case</span> <span class="str">"c"</span>:
+    console.<span class="fn">log</span>(<span class="str">"C"</span>); <span class="comment">// ← ここも実行される！</span>
+    <span class="kw">break</span>;
+}
+<span class="out">// → "A", "B", "C" がすべて出力される</span>
+</pre>
+  </div>
+</div>
+
+
+<!-- ============================================================ -->
+<!-- PART 6: truthy / falsy -->
+<!-- ============================================================ -->
+<h2 id="truthy-falsy">⑥ JavaScriptにおけるクセのある真偽値判定</h2>
+
+<div class="note">
+  <strong>重要ポイント：JavaScriptでは boolean 以外の値も条件式で使えます。
+  false と同等に扱われる値を「falsy」、true と同等に扱われる値を「truthy」といいます。</strong><br>
+  特に <code>0</code>・<code>""</code>・<code>[]</code>・<code>{}</code> の扱いは試験頻出です。
+</div>
+
+<div class="demo-box">
+  <h3>falsy / truthy 一覧</h3>
+  <div class="tf-grid">
+    <div class="tf-card" style="background:#1a202c; border:2px solid #fc8181;">
+      <h4 style="color:#fc8181;">❌ falsy な値（6種類のみ）</h4>
+      <div class="tf-item">
+        <span class="tf-val" style="color:#fbd38d; font-family:'Consolas','Monaco',monospace;">false</span>
+        <span class="tf-bool" style="color:#fc8181;">false</span>
+      </div>
+      <div class="tf-item">
+        <span class="tf-val" style="color:#fc8181; font-family:'Consolas','Monaco',monospace;">0</span>
+        <span class="tf-bool" style="color:#fc8181;">false</span>
+      </div>
+      <div class="tf-item">
+        <span class="tf-val" style="color:#fc8181; font-family:'Consolas','Monaco',monospace;">-0</span>
+        <span class="tf-bool" style="color:#fc8181;">false</span>
+      </div>
+      <div class="tf-item">
+        <span class="tf-val" style="color:#fbd38d; font-family:'Consolas','Monaco',monospace;">""（空文字）</span>
+        <span class="tf-bool" style="color:#fc8181;">false</span>
+      </div>
+      <div class="tf-item">
+        <span class="tf-val" style="color:#90cdf4; font-family:'Consolas','Monaco',monospace;">null</span>
+        <span class="tf-bool" style="color:#fc8181;">false</span>
+      </div>
+      <div class="tf-item">
+        <span class="tf-val" style="color:#90cdf4; font-family:'Consolas','Monaco',monospace;">undefined</span>
+        <span class="tf-bool" style="color:#fc8181;">false</span>
+      </div>
+      <div class="tf-item">
+        <span class="tf-val" style="color:#fc8181; font-family:'Consolas','Monaco',monospace;">NaN</span>
+        <span class="tf-bool" style="color:#fc8181;">false</span>
+      </div>
+    </div>
+    <div class="tf-card" style="background:#1a202c; border:2px solid #68d391;">
+      <h4 style="color:#68d391;">✅ truthy な値（上記以外すべて）</h4>
+      <div class="tf-item">
+        <span class="tf-val" style="color:#fbd38d; font-family:'Consolas','Monaco',monospace;">true</span>
+        <span class="tf-bool" style="color:#68d391;">true</span>
+      </div>
+      <div class="tf-item">
+        <span class="tf-val" style="color:#fc8181; font-family:'Consolas','Monaco',monospace;">1（0以外の数値）</span>
+        <span class="tf-bool" style="color:#68d391;">true</span>
+      </div>
+      <div class="tf-item">
+        <span class="tf-val" style="color:#fbd38d; font-family:'Consolas','Monaco',monospace;">"hello"（空でない文字列）</span>
+        <span class="tf-bool" style="color:#68d391;">true</span>
+      </div>
+      <div class="tf-item">
+        <span class="tf-val" style="color:#fbd38d; font-family:'Consolas','Monaco',monospace;">"0"（文字列の "0"）⚠️</span>
+        <span class="tf-bool" style="color:#68d391;">true</span>
+      </div>
+      <div class="tf-item">
+        <span class="tf-val" style="color:#f6ad55; font-family:'Consolas','Monaco',monospace;">[]（空配列）⚠️</span>
+        <span class="tf-bool" style="color:#68d391;">true</span>
+      </div>
+      <div class="tf-item">
+        <span class="tf-val" style="color:#f6ad55; font-family:'Consolas','Monaco',monospace;">{}（空オブジェクト）⚠️</span>
+        <span class="tf-bool" style="color:#68d391;">true</span>
+      </div>
+      <div class="tf-item">
+        <span class="tf-val" style="color:#b794f4; font-family:'Consolas','Monaco',monospace;">function(){}</span>
+        <span class="tf-bool" style="color:#68d391;">true</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="warn">
+    ⚠️ <strong>試験頻出の落とし穴</strong><br>
+    ・<code>"0"</code>（文字列の "0"）は <strong>truthy</strong> です（数値の 0 は falsy）<br>
+    ・<code>[]</code>（空配列）は <strong>truthy</strong> です<br>
+    ・<code>{}</code>（空オブジェクト）は <strong>truthy</strong> です<br>
+    ・<code>-0</code> は <strong>falsy</strong> です
+  </div>
+
+  <h3>🎮 truthy / falsy チェッカー</h3>
+  <div class="interactive-demo">
+    <div class="demo-label">値を入力して truthy / falsy を確認しよう</div>
+    <div class="demo-input-row">
+      <input class="demo-input" id="tf-val"
+             placeholder='値（例：0, "", "0", [], null）' type="text">
+      <button class="demo-btn" onclick="runTfCheck()">▶ 判定</button>
+    </div>
+    <div class="demo-output" id="tf-output">← 値を入力して判定してみましょう</div>
+  </div>
+
+  <div class="pre-wrap">
+    <button class="copy-btn" onclick="copyPre(this)">copy</button>
+<pre>
+<span class="comment">// falsy な値の確認</span>
+<span class="kw">if</span> (<span class="num">0</span>)         console.<span class="fn">log</span>(<span class="str">"truthy"</span>); <span class="kw">else</span> console.<span class="fn">log</span>(<span class="str">"falsy"</span>); <span class="out">// → falsy</span>
+<span class="kw">if</span> (<span class="str">""</span>)        console.<span class="fn">log</span>(<span class="str">"truthy"</span>); <span class="kw">else</span> console.<span class="fn">log</span>(<span class="str">"falsy"</span>); <span class="out">// → falsy</span>
+<span class="kw">if</span> (<span class="kw">null</span>)      console.<span class="fn">log</span>(<span class="str">"truthy"</span>); <span class="kw">else</span> console.<span class="fn">log</span>(<span class="str">"falsy"</span>); <span class="out">// → falsy</span>
+<span class="kw">if</span> (<span class="kw">undefined</span>) console.<span class="fn">log</span>(<span class="str">"truthy"</span>); <span class="kw">else</span> console.<span class="fn">log</span>(<span class="str">"falsy"</span>); <span class="out">// → falsy</span>
+<span class="kw">if</span> (NaN)       console.<span class="fn">log</span>(<span class="str">"truthy"</span>); <span class="kw">else</span> console.<span class="fn">log</span>(<span class="str">"falsy"</span>); <span class="out">// → falsy</span>
+
+<span class="comment">// 注意！これらは truthy</span>
+<span class="kw">if</span> (<span class="str">"0"</span>)  console.<span class="fn">log</span>(<span class="str">"truthy"</span>); <span class="out">// → truthy（文字列の "0"）</span>
+<span class="kw">if</span> ([])   console.<span class="fn">log</span>(<span class="str">"truthy"</span>); <span class="out">// → truthy（空配列）</span>
+<span class="kw">if</span> ({})   console.<span class="fn">log</span>(<span class="str">"truthy"</span>); <span class="out">// → truthy（空オブジェクト）</span>
+
+<span class="comment">// == を使うと予期しない比較になる</span>
+console.<span class="fn">log</span>(<span class="num">0</span>  <span class="op">==</span> <span class="kw">false</span>);  <span class="out">// → true（型変換が起きる）</span>
+console.<span class="fn">log</span>(<span class="str">""</span> <span class="op">==</span> <span class="kw">false</span>);  <span class="out">// → true</span>
+console.<span class="fn">log</span>(<span class="str">""</span> <span class="op">==</span> <span class="num">0</span>);      <span class="out">// → true</span>
+console.<span class="fn">log</span>(<span class="kw">null</span> <span class="op">==</span> <span class="kw">undefined</span>); <span class="out">// → true</span>
+console.<span class="fn">log</span>(<span class="kw">null</span> <span class="op">===</span> <span class="kw">undefined</span>);<span class="out">// → false（=== は型も比較）</span>
+</pre>
+  </div>
+</div>
+
+
+<!-- ============================================================ -->
+<!-- まとめ -->
+<!-- ============================================================ -->
+<h2>📌 まとめ</h2>
+<div class="demo-box">
+  <table class="ref-table">
+    <thead><tr><th>構文 / 演算子</th><th>説明</th><th>ポイント</th></tr></thead>
+    <tbody>
+      <tr><td><code>if / else if / else</code></td>
+        <td>条件による分岐</td>
+        <td>早期リターンでネストを減らす</td></tr>
+      <tr><td><code>===</code> / <code>!==</code></td>
+        <td>厳密等価・不等価（型も比較）</td>
+        <td>現代のJSでは必ず === を使う</td></tr>
+      <tr><td><code>==</code> / <code>!=</code></td>
+        <td>緩い等価・不等価（型変換あり）</td>
+        <td>予期しない結果になりやすい</td></tr>
+      <tr><td><code>&amp;&amp;</code></td>
+        <td>AND：両方 true のとき true</td>
+        <td>左辺 falsy で短絡評価</td></tr>
+      <tr><td><code>||</code></td>
+        <td>OR：どちらか true のとき true</td>
+        <td>左辺 truthy で短絡評価・デフォルト値に活用</td></tr>
+      <tr><td><code>!</code></td>
+        <td>NOT：真偽値を反転</td>
+        <td>!! で boolean 変換</td></tr>
+      <tr><td><code>??</code></td>
+        <td>Nullish 合体：null/undefined のみ反応</td>
+        <td>0 や "" を有効な値として扱える</td></tr>
+      <tr><td><code>条件 ? 真 : 偽</code></td>
+        <td>三項演算子</td>
+        <td>シンプルな条件分岐を1行で</td></tr>
+      <tr><td><code>switch / case / break</code></td>
+        <td>多岐分岐</td>
+        <td>break を忘れるとフォールスルー</td></tr>
+    </tbody>
+  </table>
+</div>
+
+
+<!-- ============================================================ -->
+<!-- 演習問題 -->
+<!-- ============================================================ -->
+<div class="quiz-section">
+  <h2>🖊️ 演習問題</h2>
+
+  <!-- Q1 -->
+  <div class="quiz-block">
+    <h3>Q1. 穴埋め問題</h3>
+    <p>以下のコードの実行結果を答えてください。</p>
+    <label>① <code>console.log(0 == false);</code> の結果：</label>
+    <input type="text" id="q1a" placeholder="true または false">
+    <label>② <code>console.log(0 === false);</code> の結果：</label>
+    <input type="text" id="q1b" placeholder="true または false">
+    <label>③ <code>console.log([] ? "truthy" : "falsy");</code> の結果：</label>
+    <input type="text" id="q1c" placeholder="truthy または falsy">
+    <label>④ <code>console.log(null ?? "default");</code> の結果：</label>
+    <input type="text" id="q1d" placeholder="値を入力">
+    <br>
+    <button class="btn btn-teal" onclick="checkQ1()">答え合わせ</button>
+    <div class="result-msg" id="q1-result"></div>
+    <script>
+      function checkQ1() {
+        const a = document.getElementById('q1a').value.trim().toLowerCase();
+        const b = document.getElementById('q1b').value.trim().toLowerCase();
+        const c = document.getElementById('q1c').value.trim().toLowerCase();
+        const d = document.getElementById('q1d').value.trim().replace(/['"]/g,'');
+        const r = document.getElementById('q1-result');
+        const ca = a === 'true';
+        const cb = b === 'false';
+        const cc = c === 'truthy';
+        const cd = d === 'default';
+        const count = [ca,cb,cc,cd].filter(Boolean).length;
+        if (count === 4) {
+          r.className = 'result-msg correct';
+          r.textContent = '✅ 全問正解！完璧です！';
+        } else {
+          r.className = 'result-msg wrong';
+          r.innerHTML = `❌ ${count}/4 問正解。<br>` +
+            `① ${ca?'✅':'❌ true（== は型変換して比較）'}　` +
+            `② ${cb?'✅':'❌ false（=== は型も比較するので number !== boolean）'}　` +
+            `③ ${cc?'✅':'❌ truthy（空配列 [] は truthy！）'}　` +
+            `④ ${cd?'✅':'❌ "default"（null は ?? の左辺が null/undefined なので右辺を返す）'}`;
+        }
+      }
+    </script>
+  </div>
+
+  <!-- Q2 -->
+  <div class="quiz-block">
+    <h3>Q2. 選択問題</h3>
+    <p>以下のコードを実行した結果として正しいものはどれですか？</p>
+    <div class="pre-wrap" style="margin-bottom:12px;">
+<pre style="margin:0;">
+<span class="kw">const</span> x = <span class="num">0</span>;
+<span class="kw">const</span> result = x <span class="op">||</span> <span class="str">"デフォルト"</span>;
+console.<span class="fn">log</span>(result);
+</pre>
+    </div>
+    <select id="q2">
+      <option value="">-- 選択してください --</option>
+      <option value="a">0</option>
+      <option value="b">"デフォルト"</option>
+      <option value="c">true</option>
+      <option value="d">false</option>
+    </select>
+    <br>
+    <button class="btn btn-teal" onclick="checkQ2()">答え合わせ</button>
+    <div class="result-msg" id="q2-result"></div>
+    <script>
+      function checkQ2() {
+        const v = document.getElementById('q2').value;
+        const r = document.getElementById('q2-result');
+        if (v === 'b') {
+          r.className = 'result-msg correct';
+          r.innerHTML = '✅ 正解！<br><br>' +
+            '<code>0</code> は <strong>falsy</strong> な値なので、<code>||</code> の左辺が falsy のとき右辺を返します。<br>' +
+            'よって <code>result</code> は <strong>"デフォルト"</strong> になります。<br><br>' +
+            '⚠️ もし <code>x = 0</code> を有効な値として扱いたい場合は <code>??</code> を使いましょう：<br>' +
+            '<code>const result = x ?? "デフォルト"; // → 0</code>';
+        } else if (v === '') {
+          r.className = 'result-msg info';
+          r.textContent = '⚠️ 選択肢を選んでください。';
+        } else {
+          r.className = 'result-msg wrong';
+          r.innerHTML = '❌ 不正解。<br>' +
+            '<code>0</code> は falsy な値です。<code>||</code> は左辺が falsy のとき右辺を返します。';
+        }
+      }
+    </script>
+  </div>
+
+  <!-- Q3 -->
+  <div class="quiz-block">
+    <h3>Q3. 正誤チェックボックス問題</h3>
+    <p><strong>正しい記述</strong>をすべて選んでください。</p>
+    <label class="checkbox-label"><input type="checkbox" id="q3a">
+      ① <code>===</code> は型と値の両方を比較する</label>
+    <label class="checkbox-label"><input type="checkbox" id="q3b">
+      ② <code>"0"</code>（文字列の "0"）は falsy である</label>
+    <label class="checkbox-label"><input type="checkbox" id="q3c">
+      ③ switch 文で <code>break</code> を省略すると次の case に処理が続く</label>
+    <label class="checkbox-label"><input type="checkbox" id="q3d">
+      ④ <code>??</code> は <code>null</code> と <code>undefined</code> のみに反応する</label>
+    <label class="checkbox-label"><input type="checkbox" id="q3e">
+      ⑤ <code>[]</code>（空配列）は falsy である</label>
+    <label class="checkbox-label"><input type="checkbox" id="q3f">
+      ⑥ <code>&&</code> の左辺が falsy のとき右辺は評価されない</label>
+    <br>
+    <button class="btn btn-teal" onclick="checkQ3()">答え合わせ</button>
+    <div class="result-msg" id="q3-result"></div>
+    <script>
+      function checkQ3() {
+        const r = document.getElementById('q3-result');
+        const checks = {
+          a: document.getElementById('q3a').checked,
+          b: document.getElementById('q3b').checked,
+          c: document.getElementById('q3c').checked,
+          d: document.getElementById('q3d').checked,
+          e: document.getElementById('q3e').checked,
+          f: document.getElementById('q3f').checked,
+        };
+        // 正解：①③④⑥（a,c,d,f）
+        // ② "0" は truthy
+        // ⑤ [] は truthy
+        const correct = { a:true, b:false, c:true, d:true, e:false, f:true };
+        const allOk = Object.keys(correct).every(k => checks[k] === correct[k]);
+        if (allOk) {
+          r.className = 'result-msg correct';
+          r.innerHTML = '✅ 全問正解！完璧です！';
+        } else {
+          r.className = 'result-msg wrong';
+          r.innerHTML =
+            '❌ 不正解の項目があります。<br><br>' +
+            '<strong>正しい記述：</strong>①③④⑥<br><br>' +
+            '<strong>誤った記述：</strong><br>' +
+            '・② <code>"0"</code>（文字列の "0"）は <strong>truthy</strong> です。falsy なのは数値の <code>0</code> です。<br>' +
+            '・⑤ <code>[]</code>（空配列）は <strong>truthy</strong> です。オブジェクト型はすべて truthy です。';
+        }
+      }
+    </script>
+  </div>
+
+  <!-- Q4 コンソール実践 -->
+  <div class="quiz-block">
+    <h3>Q4. コンソール実践問題</h3>
+    <p>以下の仕様を満たす関数 <code>classify(n)</code> を実装してください。</p>
+    <ul style="font-size:0.92em; color:#4a5568; line-height:2;">
+      <li>引数 <code>n</code> が正の数 → <code>"正"</code> を返す</li>
+      <li>引数 <code>n</code> が負の数 → <code>"負"</code> を返す</li>
+      <li>引数 <code>n</code> が 0 → <code>"ゼロ"</code> を返す</li>
+      <li>引数 <code>n</code> が数値でない → <code>"無効"</code> を返す</li>
+    </ul>
+    <div class="js-console" id="console-q4">
+      <div class="js-console-bar">
+        <div class="dot dot-red"></div>
+        <div class="dot dot-yellow"></div>
+        <div class="dot dot-green"></div>
+        <span>Practice Console</span>
+      </div>
+      <div class="js-console-output" id="console-q4-output">
+        <div class="log-info">// classify(n) 関数を実装してみましょう</div>
+        <div class="log-info">// isNaN() で数値かどうかを判定できます</div>
+      </div>
+      <div class="js-console-input-row">
+        <span>&gt;</span>
+        <input class="js-console-input" id="console-q4-input"
+               placeholder="function classify(n) { if (isNaN(n)) return '無効'; ... }"
+               type="text">
+        <button class="js-console-clear" onclick="clearConsole('q4')">クリア</button>
+        <button class="js-console-run"   onclick="runConsole('q4')">▶ 実行</button>
+      </div>
+    </div>
+    <label style="margin-top:12px; display:block;">
+      <code>classify(-5)</code> の戻り値は？
+    </label>
+    <input type="text" id="q4-ans" placeholder="値を入力">
+    <br>
+    <button class="btn btn-teal" onclick="checkQ4()">答え合わせ</button>
+    <div class="result-msg" id="q4-result"></div>
+    <script>
+      function checkQ4() {
+        const v = document.getElementById('q4-ans').value.trim().replace(/['"]/g,'');
+        const r = document.getElementById('q4-result');
+        if (v === '負') {
+          r.className = 'result-msg correct';
+          r.innerHTML = '✅ 正解！<br><br>' +
+            '模範解答：<br>' +
+            '<code>function classify(n) {</code><br>' +
+            '<code>  if (isNaN(n)) return "無効";</code><br>' +
+            '<code>  if (n > 0)    return "正";</code><br>' +
+            '<code>  if (n < 0)    return "負";</code><br>' +
+            '<code>  return "ゼロ";</code><br>' +
+            '<code>}</code><br><br>' +
+            '<code>classify(5)    // → "正"</code><br>' +
+            '<code>classify(-5)   // → "負"</code><br>' +
+            '<code>classify(0)    // → "ゼロ"</code><br>' +
+            '<code>classify("abc")// → "無効"</code>';
+        } else if (v === '') {
+          r.className = 'result-msg info';
+          r.textContent = '⚠️ コンソールでコードを実行してから答えを入力してください。';
+        } else {
+          r.className = 'result-msg wrong';
+          r.innerHTML = '❌ 不正解。<br>' +
+            '<code>-5</code> は負の数なので <code>"負"</code> を返します。';
+        }
+      }
+    </script>
+  </div>
+
+</div><!-- /quiz-section -->
+
+
+<!-- 完了ボタン -->
+<div class="complete-section">
+  <p>🎉 「1-6 条件分岐」の学習が完了したら記録しましょう！</p>
+  <button class="btn btn-done" onclick="markComplete()">✅ このセクションを完了にする</button>
+  <div id="complete-msg" style="margin-top:10px; font-size:0.88em; color:#276749; display:none;">
+    進捗を保存しました！トップページの進捗バーに反映されます。
+  </div>
+</div>
+
+<!-- ページナビ -->
+<div class="page-nav">
+  <a class="prev" href="05_scope.html">← 1-5 スコープ</a>
+  <a class="home" href="../index.html">🏠 目次へ</a>
+  <a class="next" href="07_loops.html">次へ：1-7 繰り返しの処理 →</a>
+</div>
+
+<!-- フッター -->
+<footer>
+  <p>
+    HTML5プロフェッショナル Level 2 学習サイト ／
+    <a href="../index.html">🏠 目次</a> ／
+    <a href="../exam/index.html">📝 模擬試験</a> ／
+    <a href="https://github.com/MeshinoKiwamiOkome/html5lv2" target="_blank">GitHub</a>
+  </p>
+  <p style="margin-top:4px;">© MeshinoKiwamiOkome</p>
+</footer>
+
+
+<!-- ============================================================ -->
+<!-- JavaScript -->
+<!-- ============================================================ -->
+<script>
+  /* ===== コピーボタン ===== */
+  function copyPre(btn) {
+    const pre = btn.nextElementSibling;
+    navigator.clipboard.writeText(pre.innerText || pre.textContent).then(() => {
+      btn.textContent = 'copied!';
+      setTimeout(() => btn.textContent = 'copy', 1800);
+    });
+  }
+
+  /* ===== タブ ===== */
+  function switchTab(btn, id) {
+    btn.closest('.tab-wrap').querySelectorAll('.tab-btn')
+       .forEach(b => b.classList.remove('active'));
+    btn.closest('.tab-wrap').querySelectorAll('.tab-content')
+       .forEach(c => c.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById(id).classList.add('active');
+  }
+
+  /* ===== if 文シミュレーター ===== */
+  function runIfDemo() {
+    const score = parseFloat(document.getElementById('if-score').value);
+    const out   = document.getElementById('if-output');
+    if (isNaN(score)) {
+      out.style.color = '#fc8181';
+      out.textContent = '有効な数値を入力してください';
+      return;
+    }
+    let grade, color;
+    if      (score < 0 || score > 100) { grade = '無効な点数';  color = '#fc8181'; }
+    else if (score >= 90)              { grade = '優秀（A）';   color = '#68d391'; }
+    else if (score >= 70)              { grade = '良好（B）';   color = '#90cdf4'; }
+    else if (score >= 50)              { grade = '合格（C）';   color = '#f6ad55'; }
+    else                               { grade = '不合格（D）'; color = '#fc8181'; }
+
+    out.style.color = color;
+    out.textContent =
+      `// 点数: ${score}\n\n` +
+      `if (score >= 90)       → ${score >= 90      ? '✅ true → 優秀' : '❌ false'}\n` +
+      `else if (score >= 70)  → ${score >= 70 && score < 90 ? '✅ true → 良好' : '❌ false'}\n` +
+      `else if (score >= 50)  → ${score >= 50 && score < 70 ? '✅ true → 合格' : '❌ false'}\n` +
+      `else                   → ${score < 50 && score >= 0  ? '✅ 不合格' : '❌ 実行されない'}\n\n` +
+      `結果：${grade}`;
+  }
+
+  /* ===== 比較演算子詳細 ===== */
+  const opDetails = {
+    eq3: {
+      color: '#68d391',
+      text:
+`// === 厳密等価：型と値の両方が一致するとき true
+console.log(5   === 5);    // → true
+console.log(5   === "5");  // → false（型が違う）
+console.log(0   === false);// → false（型が違う）
+console.log(null === undefined); // → false
+
+// 現代のJSでは必ず === を使う！`
+    },
+    neq3: {
+      color: '#fc8181',
+      text:
+`// !== 厳密不等価：型または値が異なるとき true
+console.log(5   !== 5);    // → false（同じ）
+console.log(5   !== "5");  // → true（型が違う）
+console.log(0   !== false);// → true（型が違う）
+console.log(null !== undefined); // → true`
+    },
+    eq2: {
+      color: '#f6ad55',
+      text:
+`// == 緩い等価：型変換して比較（非推奨）
+console.log(5   == "5");   // → true（型変換）
+console.log(0   == false); // → true（型変換）
+console.log(""  == false); // → true（型変換）
+console.log(null == undefined); // → true（特別ルール）
+console.log([]  == false); // → true（型変換）
+
+// ⚠️ 予期しない結果になりやすいので === を使うこと！`
+    },
+    neq2: {
+      color: '#f6ad55',
+      text:
+`// != 緩い不等価：型変換して比較（非推奨）
+console.log(5   != "5");   // → false（型変換で等しくなる）
+console.log(0   != false); // → false（型変換で等しくなる）
+
+// ⚠️ !== を使うことを推奨`
+    },
+    gt: {
+      color: '#90cdf4',
+      text:
+`// > より大きい
+console.log(5 > 3);   // → true
+console.log(3 > 5);   // → false
+console.log(5 > 5);   // → false（等しい場合は false）
+
+// 文字列の比較（辞書順）
+console.log("b" > "a"); // → true
+console.log("B" > "a"); // → false（大文字 < 小文字）`
+    },
+    gte: {
+      color: '#90cdf4',
+      text:
+`// >= 以上（greater than or equal）
+console.log(5 >= 5);  // → true（等しい場合も true）
+console.log(5 >= 3);  // → true
+console.log(3 >= 5);  // → false
+
+// よく使う場面
+const score = 70;
+if (score >= 60) console.log("合格");`
+    },
+    lt: {
+      color: '#b794f4',
+      text:
+`// < より小さい
+console.log(3 < 5);   // → true
+console.log(5 < 3);   // → false
+console.log(5 < 5);   // → false（等しい場合は false）`
+    },
+    lte: {
+      color: '#b794f4',
+      text:
+`// <= 以下（less than or equal）
+console.log(5 <= 5);  // → true（等しい場合も true）
+console.log(3 <= 5);  // → true
+console.log(5 <= 3);  // → false
+
+// よく使う場面
+const age = 17;
+if (age <= 17) console.log("未成年");`
+    }
+  };
+
+  function showOpDetail(key, card) {
+    document.querySelectorAll('.op-card').forEach(c => c.classList.remove('active'));
+    const detail = document.getElementById('op-detail');
+    if (detail.dataset.current === key && detail.style.display !== 'none') {
+      detail.style.display = 'none'; detail.dataset.current = ''; return;
+    }
+    card.classList.add('active');
+    detail.dataset.current = key;
+    detail.style.display = 'block';
+    const d = opDetails[key];
+    detail.style.color = d.color;
+    detail.textContent = d.text;
+    detail.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }
+
+  /* ===== 比較演算子チェッカー ===== */
+  function runCmpDemo() {
+    const rawA = document.getElementById('cmp-a').value.trim();
+    const rawB = document.getElementById('cmp-b').value.trim();
+    const op   = document.getElementById('cmp-op').value;
+    const out  = document.getElementById('cmp-output');
+    let a, b, result;
+    try { a = eval(rawA); } catch(e) { a = rawA; }
+    try { b = eval(rawB); } catch(e) { b = rawB; }
+    try {
+      switch(op) {
+        case '===': result = a === b; break;
+        case '!==': result = a !== b; break;
+        case '==':  result = a == b;  break;
+        case '!=':  result = a != b;  break;
+        case '>':   result = a > b;   break;
+        case '>=':  result = a >= b;  break;
+        case '<':   result = a < b;   break;
+        case '<=':  result = a <= b;  break;
+      }
+    } catch(e) { out.textContent = `エラー: ${e.message}`; return; }
+
+    const typeA = typeof a;
+    const typeB = typeof b;
+    out.style.color = result ? '#68d391' : '#fc8181';
+    out.textContent =
+      `> ${rawA} ${op} ${rawB}\n  → ${result}\n\n` +
+      `左辺: ${JSON.stringify(a)} (${typeA})\n` +
+      `右辺: ${JSON.stringify(b)} (${typeB})\n` +
+      (op === '==' && typeA !== typeB
+        ? `\n⚠️ == は型変換して比較します。=== を使うと ${a === b} になります。`
+        : '') +
+      (op === '===' && typeA !== typeB
+        ? `\n💡 型が異なるため false です（${typeA} !== ${typeB}）`
+        : '');
+  }
+
+  /* ===== Nullish デモ ===== */
+  function runNullishDemo() {
+    const raw = document.getElementById('nullish-val').value.trim();
+    const out = document.getElementById('nullish-output');
+    let val;
+    try { val = eval(raw); } catch(e) { val = raw; }
+    const orResult      = val || 'デフォルト';
+    const nullishResult = val ?? 'デフォルト';
+    const isFalsy = !val && val !== 0;
+    const isNullish = val === null || val === undefined;
+
+    out.style.color = '#e2e8f0';
+    out.textContent =
+      `// 入力値: ${raw} (${typeof val})\n\n` +
+      `// || 演算子（falsy 全般に反応）\n` +
+      `> ${raw} || "デフォルト"\n` +
+      `  → ${JSON.stringify(orResult)}\n` +
+      `  ${isFalsy ? '⚠️ ' + raw + ' は falsy なのでデフォルト値が使われます' : '✅ ' + raw + ' は truthy なのでそのまま使われます'}\n\n` +
+      `// ?? 演算子（null/undefined のみに反応）\n` +
+      `> ${raw} ?? "デフォルト"\n` +
+      `  → ${JSON.stringify(nullishResult)}\n` +
+      `  ${isNullish ? '⚠️ ' + raw + ' は null/undefined なのでデフォルト値が使われます' : '✅ ' + raw + ' は null/undefined ではないのでそのまま使われます'}`;
+  }
+
+  /* ===== 三項演算子デモ ===== */
+  function runTernaryDemo() {
+    const cond  = document.getElementById('tern-cond').value.trim();
+    const tVal  = document.getElementById('tern-true').value.trim();
+    const fVal  = document.getElementById('tern-false').value.trim();
+    const varDef= document.getElementById('tern-var').value.trim();
+    const out   = document.getElementById('ternary-output');
+    try {
+      const result = eval(`(function(){ let ${varDef}; return (${cond}) ? ${tVal} : ${fVal}; })()`);
+      const condResult = eval(`(function(){ let ${varDef}; return !!(${cond}); })()`);
+      out.style.color = condResult ? '#68d391' : '#f6ad55';
+      out.textContent =
+        `// 変数の設定\nlet ${varDef};\n\n` +
+        `// 三項演算子\n> ${cond} ? ${tVal} : ${fVal}\n\n` +
+        `条件 (${cond}) → ${condResult}\n` +
+        `結果 → ${JSON.stringify(result)}\n\n` +
+        `// 同等の if 文\nif (${cond}) {\n  result = ${tVal};\n} else {\n  result = ${fVal};\n}`;
+    } catch(e) {
+      out.style.color = '#fc8181';
+      out.textContent = `エラー: ${e.message}`;
+    }
+  }
+
+  /* ===== switch デモ ===== */
+  const switchMap = {
+    monday:    '月曜日',
+    tuesday:   '火曜日',
+    wednesday: '水曜日',
+    thursday:  '木曜日',
+    friday:    '金曜日',
+    saturday:  '土曜日（休日）',
+    sunday:    '日曜日（休日）',
+  };
+
+  function runSwitchDemo() {
+    const val   = document.getElementById('switch-val').value.trim().toLowerCase();
+    const cases = document.querySelectorAll('.switch-case');
+    const res   = document.getElementById('switch-result');
+
+    cases.forEach(c => {
+      c.classList.remove('matched');
+      c.querySelector('.switch-case-mark').textContent = '';
+    });
+
+    let matched = false;
+    cases.forEach(c => {
+      const caseVal = c.dataset.case;
+      if (caseVal === val) {
+        c.classList.add('matched');
+        c.querySelector('.switch-case-mark').textContent = '← マッチ！';
+        matched = true;
+      } else if (caseVal === '__default__' && !matched) {
+        c.classList.add('matched');
+        c.querySelector('.switch-case-mark').textContent = '← default 実行';
+      }
+    });
+
+    const output = switchMap[val] || '平日（default）';
+    res.textContent = `> switch("${val}") の結果: "${output}"`;
+    res.style.color = matched ? '#68d391' : '#f6ad55';
+  }
+
+  /* ===== truthy/falsy チェッカー ===== */
+  function runTfCheck() {
+    const raw = document.getElementById('tf-val').value.trim();
+    const out = document.getElementById('tf-output');
+    if (!raw) return;
+    let val;
+    try { val = eval(raw); } catch(e) { val = raw; }
+    const isTruthy = !!val;
+    const type     = typeof val;
+    const special  = [];
+    if (raw === '"0"' || raw === "'0'") special.push('⚠️ 文字列の "0" は truthy です（数値の 0 は falsy）');
+    if (raw === '[]')  special.push('⚠️ 空配列 [] は truthy です');
+    if (raw === '{}')  special.push('⚠️ 空オブジェクト {} は truthy です');
+    if (raw === '-0')  special.push('⚠️ -0 は falsy です');
+
+    out.style.color = isTruthy ? '#68d391' : '#fc8181';
+    out.textContent =
+      `> if (${raw}) { ... }\n\n` +
+      `値: ${JSON.stringify(val)} (${type})\n` +
+      `判定: ${isTruthy ? '✅ truthy（条件が true として扱われる）' : '❌ falsy（条件が false として扱われる）'}\n` +
+      `Boolean(${raw}) → ${isTruthy}` +
+      (special.length ? '\n\n' + special.join('\n') : '');
+  }
+
+  /* ===== JSコンソール ===== */
+  function runConsole(id) {
+    const input  = document.getElementById(`console-${id}-input`);
+    const output = document.getElementById(`console-${id}-output`);
+    const code   = input.value.trim();
+    if (!code) return;
+
+    const promptLine = document.createElement('div');
+    promptLine.className = 'log-prompt';
+    promptLine.textContent = '> ' + code;
+    output.appendChild(promptLine);
+
+    const origLog   = console.log;
+    const origWarn  = console.warn;
+    const origError = console.error;
+    const origInfo  = console.info;
+
+    function addLine(cls, ...args) {
+      const line = document.createElement('div');
+      line.className = cls;
+      line.textContent = args.map(a => {
+        if (typeof a === 'object' && a !== null) {
+          try { return JSON.stringify(a, null, 2); } catch(e) { return String(a); }
+        }
+        return String(a);
+      }).join(' ');
+      output.appendChild(line);
+    }
+
+    console.log   = (...a) => { addLine('log-line',  ...a); origLog(...a);   };
+    console.warn  = (...a) => { addLine('log-warn',  ...a); origWarn(...a);  };
+    console.error = (...a) => { addLine('log-error', ...a); origError(...a); };
+    console.info  = (...a) => { addLine('log-info',  ...a); origInfo(...a);  };
+
+    try {
+      const result = eval(code);
+      if (result !== undefined) {
+        addLine('log-result', '← ' + (
+          typeof result === 'object'
+            ? JSON.stringify(result)
+            : String(result)
+        ));
+      }
+    } catch(e) {
+      addLine('log-error', e.toString());
+    }
+
+    console.log   = origLog;
+    console.warn  = origWarn;
+    console.error = origError;
+    console.info  = origInfo;
+
+    input.value = '';
+    output.scrollTop = output.scrollHeight;
+  }
+
+  function clearConsole(id) {
+    document.getElementById(`console-${id}-output`).innerHTML =
+      '<div class="log-info">// クリアしました</div>';
+  }
+
+  document.querySelectorAll('.js-console-input').forEach(el => {
+    el.addEventListener('keydown', e => {
+      if (e.key === 'Enter') {
+        const id = el.id.replace('console-', '').replace('-input', '');
+        runConsole(id);
+      }
+    });
+  });
+
+  /* ===== 完了ボタン ===== */
+  function markComplete() {
+    const current = parseInt(localStorage.getItem('html5lv2_ch1') || '0', 10);
+    const newVal  = Math.min(100, current + 9);
+    localStorage.setItem('html5lv2_ch1', String(newVal));
+    document.getElementById('complete-msg').style.display = 'block';
+  }
+  if (parseInt(localStorage.getItem('html5lv2_ch1') || '0') >= 54) {
+    document.getElementById('complete-msg').style.display = 'block';
+  }
+</script>
+
+</body>
+</html>
