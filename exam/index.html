@@ -1,0 +1,1761 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Web模擬試験 | HTML5プロフェッショナル Level 2 学習サイト</title>
+<style>
+  :root {
+    --teal-dark:   #1a365d;
+    --teal-mid:    #2c7a7b;
+    --teal-light:  #81e6d9;
+    --teal-bg:     #e6fffa;
+    --teal-border: #bee3f8;
+    --purple-dark: #553c9a;
+    --purple-light:#9f7aea;
+    --success:     #48bb78;
+    --success-dark:#276749;
+    --warning:     #ed8936;
+    --danger:      #fc8181;
+    --bg:          #f0f4f8;
+    --text:        #2d3748;
+    --muted:       #718096;
+    --dark-bg:     #1a202c;
+    --white:       #ffffff;
+    --border:      #e2e8f0;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Segoe UI', 'Helvetica Neue', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+  a { color: var(--teal-mid); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+
+  /* ヘッダー */
+  .site-header {
+    background: linear-gradient(135deg, #1a365d, #2c7a7b);
+    color: var(--white);
+    padding: 16px 24px;
+  }
+  .site-header .breadcrumb {
+    font-size: 13px;
+    opacity: 0.85;
+    margin-bottom: 6px;
+  }
+  .site-header .breadcrumb a { color: var(--teal-light); }
+  .site-header h1 { font-size: 22px; font-weight: 700; }
+  .site-header p  { font-size: 13px; opacity: 0.8; margin-top: 4px; }
+
+  /* メインコンテナ */
+  .container { max-width: 860px; margin: 0 auto; padding: 24px 16px; flex: 1; }
+
+  /* ── スタート画面 ── */
+  #screen-start {}
+  .info-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 12px;
+    margin: 20px 0;
+  }
+  .info-card {
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 14px 16px;
+    text-align: center;
+  }
+  .info-card .label { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: .5px; }
+  .info-card .value { font-size: 20px; font-weight: 700; color: var(--teal-dark); margin-top: 4px; }
+
+  .mode-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 14px;
+    margin: 20px 0;
+  }
+  .mode-card {
+    background: var(--white);
+    border: 2px solid var(--border);
+    border-radius: 12px;
+    padding: 18px 16px;
+    cursor: pointer;
+    transition: border-color .2s, box-shadow .2s, transform .1s;
+    position: relative;
+  }
+  .mode-card:hover { border-color: var(--teal-mid); box-shadow: 0 4px 12px rgba(44,122,123,.15); }
+  .mode-card.selected {
+    border-color: var(--teal-mid);
+    background: var(--teal-bg);
+    box-shadow: 0 4px 16px rgba(44,122,123,.25);
+  }
+  .mode-card .mode-icon { font-size: 28px; margin-bottom: 8px; }
+  .mode-card .mode-name { font-size: 15px; font-weight: 700; color: var(--teal-dark); }
+  .mode-card .mode-desc { font-size: 12px; color: var(--muted); margin-top: 4px; line-height: 1.5; }
+  .mode-card .mode-badge {
+    position: absolute; top: 10px; right: 10px;
+    font-size: 10px; background: var(--teal-mid); color: #fff;
+    border-radius: 4px; padding: 2px 6px;
+  }
+
+  #chapter-select-wrap {
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 16px 20px;
+    margin-bottom: 16px;
+    display: none;
+  }
+  #chapter-select-wrap label { font-size: 14px; font-weight: 600; display: block; margin-bottom: 8px; }
+  #chapter-select-wrap select {
+    width: 100%; padding: 8px 12px; border: 1px solid var(--border);
+    border-radius: 6px; font-size: 14px; color: var(--text);
+    background: var(--white);
+  }
+
+  .btn-start {
+    display: block; width: 100%; padding: 14px;
+    background: linear-gradient(135deg, #1a365d, #2c7a7b);
+    color: #fff; border: none; border-radius: 10px;
+    font-size: 16px; font-weight: 700; cursor: pointer;
+    transition: opacity .2s, transform .1s;
+    margin-top: 8px;
+  }
+  .btn-start:hover { opacity: .9; transform: translateY(-1px); }
+  .btn-start:disabled { opacity: .5; cursor: not-allowed; transform: none; }
+
+  .nav-links {
+    display: flex; gap: 16px; margin-top: 16px;
+    font-size: 14px; flex-wrap: wrap;
+  }
+  .nav-links a {
+    padding: 8px 14px; border: 1px solid var(--border);
+    border-radius: 6px; color: var(--teal-mid);
+    background: var(--white); transition: background .2s;
+  }
+  .nav-links a:hover { background: var(--teal-bg); text-decoration: none; }
+
+  /* ── 試験画面 ── */
+  #screen-exam { display: none; }
+
+  .exam-header {
+    background: linear-gradient(135deg, #1a365d, #2c7a7b);
+    color: #fff;
+    padding: 10px 16px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    position: sticky; top: 0; z-index: 100;
+  }
+  .exam-header .q-counter { font-size: 14px; font-weight: 700; flex: 1; min-width: 100px; }
+  .exam-header .btn-icon {
+    background: rgba(255,255,255,.15); border: 1px solid rgba(255,255,255,.3);
+    color: #fff; border-radius: 6px; padding: 6px 10px;
+    font-size: 13px; cursor: pointer; transition: background .2s;
+  }
+  .exam-header .btn-icon:hover { background: rgba(255,255,255,.25); }
+  .timer {
+    font-size: 18px; font-weight: 700; font-variant-numeric: tabular-nums;
+    padding: 4px 12px; border-radius: 6px; background: rgba(255,255,255,.15);
+    min-width: 80px; text-align: center;
+  }
+  .timer.warn  { background: var(--warning); color: #fff; }
+  .timer.danger { background: var(--danger); color: #fff; animation: blink 1s step-start infinite; }
+  @keyframes blink { 50% { opacity: .4; } }
+
+  .progress-bar-wrap { padding: 8px 16px; background: #fff; border-bottom: 1px solid var(--border); }
+  .progress-bar-track { height: 6px; background: var(--border); border-radius: 3px; overflow: hidden; }
+  .progress-bar-fill  { height: 100%; background: var(--teal-mid); border-radius: 3px; transition: width .3s; }
+  .progress-label { font-size: 11px; color: var(--muted); margin-top: 4px; }
+
+  /* 問題マップ */
+  #map-panel {
+    display: none;
+    background: var(--white);
+    border-bottom: 1px solid var(--border);
+    padding: 12px 16px;
+  }
+  #map-panel .map-title { font-size: 13px; font-weight: 700; margin-bottom: 8px; }
+  .map-grid { display: flex; flex-wrap: wrap; gap: 6px; }
+  .map-btn {
+    width: 32px; height: 32px; border-radius: 6px;
+    border: 1px solid var(--border); background: var(--white);
+    font-size: 11px; font-weight: 600; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: background .15s;
+  }
+  .map-btn.answered  { background: var(--teal-bg); border-color: var(--teal-mid); color: var(--teal-dark); }
+  .map-btn.flagged   { background: #fffbeb; border-color: var(--warning); color: var(--warning); }
+  .map-btn.current   { background: var(--teal-mid); border-color: var(--teal-dark); color: #fff; }
+  .map-legend { display: flex; gap: 12px; margin-top: 8px; flex-wrap: wrap; }
+  .map-legend span { font-size: 11px; color: var(--muted); display: flex; align-items: center; gap: 4px; }
+  .map-legend .dot {
+    width: 12px; height: 12px; border-radius: 3px; display: inline-block;
+  }
+
+  /* 問題カード */
+  .question-area { padding: 16px; }
+  .q-card {
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 16px;
+  }
+  .category-badge {
+    display: inline-block; font-size: 11px; font-weight: 700;
+    color: #fff; border-radius: 4px; padding: 3px 8px;
+    margin-bottom: 10px;
+  }
+  .q-text { font-size: 15px; line-height: 1.7; margin-bottom: 14px; }
+  .q-code {
+    background: var(--dark-bg); color: #e2e8f0;
+    border-radius: 8px; padding: 14px 16px;
+    font-family: 'Consolas', 'Monaco', monospace;
+    font-size: 13px; line-height: 1.6;
+    overflow-x: auto; margin-bottom: 14px;
+    white-space: pre;
+  }
+  .choices { display: flex; flex-direction: column; gap: 8px; }
+  .choice-btn {
+    display: flex; align-items: flex-start; gap: 10px;
+    padding: 12px 14px; border: 2px solid var(--border);
+    border-radius: 8px; background: var(--white);
+    cursor: pointer; text-align: left; font-size: 14px;
+    transition: border-color .15s, background .15s;
+    width: 100%;
+  }
+  .choice-btn:hover:not(:disabled) { border-color: var(--teal-mid); background: var(--teal-bg); }
+  .choice-btn .choice-label {
+    min-width: 24px; height: 24px; border-radius: 50%;
+    background: var(--border); color: var(--text);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 12px; font-weight: 700; flex-shrink: 0;
+  }
+  .choice-btn.selected { border-color: var(--teal-mid); background: var(--teal-bg); }
+  .choice-btn.selected .choice-label { background: var(--teal-mid); color: #fff; }
+  .choice-btn.correct  { border-color: var(--success); background: #f0fff4; }
+  .choice-btn.correct  .choice-label { background: var(--success); color: #fff; }
+  .choice-btn.wrong    { border-color: var(--danger); background: #fff5f5; }
+  .choice-btn.wrong    .choice-label { background: var(--danger); color: #fff; }
+  .choice-btn:disabled { cursor: default; }
+
+  .explanation {
+    margin-top: 14px; padding: 14px 16px;
+    background: #fffbeb; border-left: 4px solid var(--warning);
+    border-radius: 0 8px 8px 0; font-size: 13px; line-height: 1.7;
+    display: none;
+  }
+  .explanation.show { display: block; }
+  .explanation strong { color: var(--teal-dark); }
+
+  /* ナビゲーション */
+  .exam-nav {
+    display: flex; gap: 10px; padding: 0 16px 16px;
+    flex-wrap: wrap; align-items: center;
+  }
+  .btn-nav {
+    padding: 10px 18px; border-radius: 8px; border: 1px solid var(--border);
+    background: var(--white); color: var(--text); font-size: 14px;
+    cursor: pointer; transition: background .2s;
+  }
+  .btn-nav:hover { background: var(--teal-bg); border-color: var(--teal-mid); }
+  .btn-nav:disabled { opacity: .4; cursor: not-allowed; }
+  .btn-finish {
+    margin-left: auto; padding: 10px 20px;
+    background: linear-gradient(135deg, #c53030, #e53e3e);
+    color: #fff; border: none; border-radius: 8px;
+    font-size: 14px; font-weight: 700; cursor: pointer;
+    transition: opacity .2s;
+  }
+  .btn-finish:hover { opacity: .88; }
+
+  /* ── 結果画面 ── */
+  #screen-result { display: none; }
+
+  .result-hero {
+    text-align: center; padding: 28px 16px 20px;
+  }
+  .score-circle {
+    width: 140px; height: 140px; border-radius: 50%;
+    display: inline-flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    border: 8px solid var(--teal-mid);
+    margin-bottom: 12px;
+    position: relative;
+  }
+  .score-circle.pass  { border-color: var(--success); }
+  .score-circle.fail  { border-color: var(--danger); }
+  .score-circle .score-num { font-size: 36px; font-weight: 700; color: var(--teal-dark); }
+  .score-circle .score-denom { font-size: 14px; color: var(--muted); }
+  .verdict {
+    display: inline-block; font-size: 18px; font-weight: 700;
+    padding: 6px 20px; border-radius: 20px; margin-bottom: 8px;
+  }
+  .verdict.pass { background: #f0fff4; color: var(--success-dark); border: 2px solid var(--success); }
+  .verdict.fail { background: #fff5f5; color: #c53030; border: 2px solid var(--danger); }
+
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 12px; margin: 16px 0;
+  }
+  .stat-card {
+    background: var(--white); border: 1px solid var(--border);
+    border-radius: 10px; padding: 14px; text-align: center;
+  }
+  .stat-card .s-label { font-size: 11px; color: var(--muted); }
+  .stat-card .s-val   { font-size: 24px; font-weight: 700; color: var(--teal-dark); margin-top: 4px; }
+
+  /* カテゴリ別棒グラフ */
+  .bar-chart { background: var(--white); border: 1px solid var(--border); border-radius: 10px; padding: 16px; margin: 16px 0; }
+  .bar-chart h3 { font-size: 15px; margin-bottom: 14px; color: var(--teal-dark); }
+  .bar-row { margin-bottom: 12px; }
+  .bar-row .bar-label { font-size: 12px; color: var(--muted); margin-bottom: 4px; display: flex; justify-content: space-between; }
+  .bar-track { height: 18px; background: var(--border); border-radius: 4px; overflow: hidden; }
+  .bar-fill  { height: 100%; border-radius: 4px; transition: width .5s; display: flex; align-items: center; padding-left: 6px; font-size: 11px; color: #fff; font-weight: 700; }
+
+  /* 問題レビュー */
+  .review-section { margin: 16px 0; }
+  .review-section h3 { font-size: 15px; color: var(--teal-dark); margin-bottom: 12px; }
+  .review-item {
+    background: var(--white); border: 1px solid var(--border);
+    border-radius: 10px; padding: 14px; margin-bottom: 10px;
+  }
+  .review-item .r-meta { font-size: 11px; color: var(--muted); margin-bottom: 6px; }
+  .review-item .r-q    { font-size: 14px; font-weight: 600; margin-bottom: 8px; }
+  .review-item .r-ans  { font-size: 13px; margin-bottom: 4px; }
+  .review-item .r-exp  { font-size: 12px; color: var(--muted); line-height: 1.6; margin-top: 8px; padding-top: 8px; border-top: 1px solid var(--border); }
+  .tag-wrong   { display: inline-block; font-size: 10px; background: #fff5f5; color: #c53030; border: 1px solid var(--danger); border-radius: 4px; padding: 1px 6px; margin-right: 6px; }
+  .tag-skip    { display: inline-block; font-size: 10px; background: #fffbeb; color: #b7791f; border: 1px solid var(--warning); border-radius: 4px; padding: 1px 6px; margin-right: 6px; }
+
+  .action-btns { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 20px; padding-bottom: 8px; }
+  .btn-action {
+    padding: 11px 20px; border-radius: 8px; font-size: 14px; font-weight: 600;
+    cursor: pointer; border: none; transition: opacity .2s, transform .1s;
+  }
+  .btn-action:hover { opacity: .88; transform: translateY(-1px); }
+  .btn-action.primary { background: linear-gradient(135deg, #1a365d, #2c7a7b); color: #fff; }
+  .btn-action.secondary { background: var(--white); color: var(--teal-mid); border: 1px solid var(--teal-mid); }
+
+  /* フッター */
+  footer {
+    background: var(--dark-bg); color: rgba(255,255,255,.6);
+    text-align: center; padding: 16px;
+    font-size: 12px; line-height: 1.8;
+  }
+  footer a { color: var(--teal-light); }
+
+  /* レスポンシブ */
+  @media (max-width: 600px) {
+    .site-header h1 { font-size: 18px; }
+    .mode-grid { grid-template-columns: 1fr 1fr; }
+    .exam-header { padding: 8px 10px; gap: 6px; }
+    .timer { font-size: 15px; min-width: 64px; }
+    .q-card { padding: 14px; }
+    .q-text { font-size: 14px; }
+    .choice-btn { font-size: 13px; padding: 10px 12px; }
+    .score-circle { width: 110px; height: 110px; }
+    .score-circle .score-num { font-size: 28px; }
+    .action-btns { flex-direction: column; }
+    .btn-action { width: 100%; text-align: center; }
+    .btn-finish { margin-left: 0; width: 100%; }
+    .exam-nav { flex-direction: column; }
+    .btn-nav { width: 100%; text-align: center; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ヘッダー -->
+<header class="site-header">
+  <div class="breadcrumb">
+    <a href="../index.html">🏠 HTML5 Level 2</a> › 模擬試験
+  </div>
+  <h1>📝 Web模擬試験</h1>
+  <p>HTML5プロフェッショナル Level 2 試験対策</p>
+</header>
+
+<!-- ── スタート画面 ── -->
+<div id="screen-start">
+  <div class="container">
+    <div class="info-grid">
+      <div class="info-card">
+        <div class="label">問題数</div>
+        <div class="value">60問</div>
+      </div>
+      <div class="info-card">
+        <div class="label">制限時間</div>
+        <div class="value">90分</div>
+      </div>
+      <div class="info-card">
+        <div class="label">合格ライン</div>
+        <div class="value">65%</div>
+      </div>
+      <div class="info-card">
+        <div class="label">言語</div>
+        <div class="value">日本語</div>
+      </div>
+    </div>
+
+    <h2 style="font-size:15px;color:var(--teal-dark);margin-bottom:12px;">試験モードを選択してください</h2>
+    <div class="mode-grid">
+      <div class="mode-card" data-mode="real" onclick="selectMode('real')">
+        <div class="mode-icon">🎯</div>
+        <div class="mode-name">本番モード</div>
+        <div class="mode-desc">60問・90分<br>解答中は正誤非表示</div>
+        <span class="mode-badge">推奨</span>
+      </div>
+      <div class="mode-card" data-mode="practice" onclick="selectMode('practice')">
+        <div class="mode-icon">📚</div>
+        <div class="mode-name">練習モード</div>
+        <div class="mode-desc">60問・時間無制限<br>解答後すぐ解説表示</div>
+      </div>
+      <div class="mode-card" data-mode="weak" onclick="selectMode('weak')">
+        <div class="mode-icon">⚡</div>
+        <div class="mode-name">弱点集中モード</div>
+        <div class="mode-desc">誤答から30問・45分<br>苦手を重点強化</div>
+      </div>
+      <div class="mode-card" data-mode="chapter" onclick="selectMode('chapter')">
+        <div class="mode-icon">📖</div>
+        <div class="mode-name">章別モード</div>
+        <div class="mode-desc">20問・30分<br>章を選んで集中練習</div>
+      </div>
+    </div>
+
+    <div id="chapter-select-wrap">
+      <label for="chapter-select">章を選択：</label>
+      <select id="chapter-select">
+        <option value="1">Chapter 1: 速習JavaScript入門</option>
+        <option value="2">Chapter 2: JavaScriptの文法</option>
+        <option value="3">Chapter 3: WebブラウザのJavaScript API</option>
+        <option value="4">Chapter 4: さまざまなHTML関連API</option>
+      </select>
+    </div>
+
+    <button class="btn-start" id="btn-start" onclick="startExam()" disabled>試験を開始する</button>
+
+    <div class="nav-links">
+      <a href="../index.html">← 学習トップへ</a>
+      <a href="dashboard.html">📊 弱点分析ダッシュボード →</a>
+    </div>
+  </div>
+</div>
+
+<!-- ── 試験画面 ── -->
+<div id="screen-exam">
+  <div class="exam-header">
+    <span class="q-counter" id="q-counter">問題 1 / 60</span>
+    <button class="btn-icon" id="btn-flag" onclick="toggleFlag()">🚩 フラグ</button>
+    <button class="btn-icon" onclick="toggleMap()">📋 一覧</button>
+    <div class="timer" id="timer">90:00</div>
+  </div>
+
+  <div class="progress-bar-wrap">
+    <div class="progress-bar-track">
+      <div class="progress-bar-fill" id="progress-fill" style="width:0%"></div>
+    </div>
+    <div class="progress-label" id="progress-label">0 / 60 問解答済み</div>
+  </div>
+
+  <div id="map-panel">
+    <div class="map-title">問題一覧</div>
+    <div class="map-grid" id="map-grid"></div>
+    <div class="map-legend">
+      <span><span class="dot" style="background:var(--white);border:1px solid var(--border)"></span>未解答</span>
+      <span><span class="dot" style="background:var(--teal-bg);border:1px solid var(--teal-mid)"></span>解答済</span>
+      <span><span class="dot" style="background:#fffbeb;border:1px solid var(--warning)"></span>フラグ</span>
+      <span><span class="dot" style="background:var(--teal-mid)"></span>現在</span>
+    </div>
+  </div>
+
+  <div class="question-area">
+    <div class="q-card">
+      <span class="category-badge" id="q-badge"></span>
+      <div class="q-text" id="q-text"></div>
+      <pre class="q-code" id="q-code" style="display:none"></pre>
+      <div class="choices" id="choices"></div>
+      <div class="explanation" id="explanation"></div>
+    </div>
+  </div>
+
+  <div class="exam-nav">
+    <button class="btn-nav" id="btn-prev" onclick="prevQ()" disabled>← 前へ</button>
+    <button class="btn-nav" id="btn-next" onclick="nextQ()">次へ →</button>
+    <button class="btn-finish" onclick="confirmFinish()">試験を終了して採点</button>
+  </div>
+</div>
+
+<!-- ── 結果画面 ── -->
+<div id="screen-result">
+  <div class="container">
+    <div class="result-hero">
+      <div class="score-circle" id="score-circle">
+        <span class="score-num" id="score-num">0</span>
+        <span class="score-denom">/ 100点</span>
+      </div>
+      <br>
+      <span class="verdict" id="verdict"></span>
+      <p id="score-detail" style="font-size:13px;color:var(--muted);margin-top:8px;"></p>
+    </div>
+
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="s-label">正解数</div>
+        <div class="s-val" id="r-correct" style="color:var(--success)">0</div>
+      </div>
+      <div class="stat-card">
+        <div class="s-label">不正解数</div>
+        <div class="s-val" id="r-wrong" style="color:var(--danger)">0</div>
+      </div>
+      <div class="stat-card">
+        <div class="s-label">未解答数</div>
+        <div class="s-val" id="r-skip" style="color:var(--warning)">0</div>
+      </div>
+      <div class="stat-card">
+        <div class="s-label">所要時間</div>
+        <div class="s-val" id="r-time" style="font-size:18px;">0:00</div>
+      </div>
+    </div>
+
+    <div class="bar-chart">
+      <h3>カテゴリ別スコア</h3>
+      <div id="category-bars"></div>
+    </div>
+
+    <div class="review-section">
+      <h3>問題レビュー（不正解・未解答）</h3>
+      <div id="review-list"></div>
+    </div>
+
+    <div class="action-btns">
+      <button class="btn-action primary" onclick="retryExam()">🔄 もう一度挑戦</button>
+      <button class="btn-action secondary" onclick="location.href='dashboard.html'">📊 弱点分析を見る</button>
+      <button class="btn-action secondary" onclick="location.href='../index.html'">🏠 学習トップへ</button>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <p>
+    HTML5プロフェッショナル Level 2 学習サイト ／
+    <a href="index.html">📝 模擬試験</a> ／
+    <a href="dashboard.html">📊 弱点分析</a> ／
+    <a href="https://github.com/MeshinoKiwamiOkome/html5lv2" target="_blank">GitHub リポジトリ</a>
+  </p>
+  <p style="margin-top:4px;">© MeshinoKiwamiOkome</p>
+</footer>
+
+<script>
+/* ============================================================
+   問題データベース（全60問）
+   ============================================================ */
+const ALL_QUESTIONS = [
+  /* ===== Chapter 1: 速習JavaScript入門（12問） ===== */
+  {
+    chapter: 1, category: 'Chapter 1: 速習JavaScript入門', color: '#553c9a',
+    q: '次のコードを実行した結果として正しいものはどれか。',
+    code: `let x = 5;
+let y = '5';
+console.log(x == y);
+console.log(x === y);`,
+    choices: ['true / true', 'true / false', 'false / true', 'false / false'],
+    answer: 1,
+    explanation: '<strong>正解：true / false</strong><br>== は型変換を行う抽象等価比較のため、数値5と文字列\'5\'は等しいと判定されtrueになります。=== は型変換を行わない厳密等価比較のため、型が異なる（number と string）のでfalseになります。試験では == と === の違いを問う問題が頻出です。'
+  },
+  {
+    chapter: 1, category: 'Chapter 1: 速習JavaScript入門', color: '#553c9a',
+    q: 'var・let・const の説明として誤っているものはどれか。',
+    choices: [
+      'var はfunction スコープを持つ',
+      'let はブロックスコープを持つ',
+      'const で宣言した変数は再代入できない',
+      'const で宣言したオブジェクトのプロパティも変更できない'
+    ],
+    answer: 3,
+    explanation: '<strong>正解：const で宣言したオブジェクトのプロパティも変更できない（誤り）</strong><br>const は変数への再代入を禁止しますが、オブジェクトや配列の中身（プロパティ・要素）の変更は可能です。例えば const obj = {}; obj.name = \'test\'; は正常に動作します。完全に変更不可にするにはObject.freeze()を使います。'
+  },
+  {
+    chapter: 1, category: 'Chapter 1: 速習JavaScript入門', color: '#553c9a',
+    q: '次のコードの出力結果として正しいものはどれか。',
+    code: `const arr = [1, 2, 3, 4, 5];
+const result = arr.filter(n => n % 2 === 0).map(n => n * 10);
+console.log(result);`,
+    choices: ['[10, 20, 30, 40, 50]', '[20, 40]', '[2, 4]', '[1, 3, 5]'],
+    answer: 1,
+    explanation: '<strong>正解：[20, 40]</strong><br>まずfilter(n => n % 2 === 0)で偶数のみを抽出し[2, 4]を得ます。次にmap(n => n * 10)で各要素を10倍にして[20, 40]になります。filterとmapのメソッドチェーンはJavaScriptで非常によく使われるパターンです。'
+  },
+  {
+    chapter: 1, category: 'Chapter 1: 速習JavaScript入門', color: '#553c9a',
+    q: 'アロー関数に関する説明として正しいものはどれか。',
+    choices: [
+      'アロー関数はargumentsオブジェクトを持つ',
+      'アロー関数はnewキーワードでコンストラクタとして使用できる',
+      'アロー関数のthisは定義時の外側のスコープのthisを参照する',
+      'アロー関数はprototypeプロパティを持つ'
+    ],
+    answer: 2,
+    explanation: '<strong>正解：アロー関数のthisは定義時の外側のスコープのthisを参照する</strong><br>アロー関数は自身のthisを持たず、定義された時点の外側のスコープのthisを継承します（レキシカルthis）。また、アロー関数はargumentsオブジェクトを持たず、newでのインスタンス化もできず、prototypeプロパティも持ちません。'
+  },
+  {
+    chapter: 1, category: 'Chapter 1: 速習JavaScript入門', color: '#553c9a',
+    q: '次のコードを実行した際の出力として正しいものはどれか。',
+    code: `function outer() {
+  let count = 0;
+  return function inner() {
+    count++;
+    return count;
+  };
+}
+const fn = outer();
+console.log(fn());
+console.log(fn());
+console.log(fn());`,
+    choices: ['0 / 0 / 0', '1 / 1 / 1', '1 / 2 / 3', 'エラーが発生する'],
+    answer: 2,
+    explanation: '<strong>正解：1 / 2 / 3</strong><br>これはクロージャの典型例です。inner関数はouter関数のスコープにある変数countへの参照を保持し続けます。fn()を呼び出すたびにcountがインクリメントされ、1、2、3と出力されます。クロージャはJavaScriptの重要な概念で試験頻出です。'
+  },
+  {
+    chapter: 1, category: 'Chapter 1: 速習JavaScript入門', color: '#553c9a',
+    q: 'Promiseに関する説明として誤っているものはどれか。',
+    choices: [
+      'Promiseはpending・fulfilled・rejectedの3つの状態を持つ',
+      'Promise.all()はすべてのPromiseが解決されると解決される',
+      'Promiseのthenメソッドは同期的に実行される',
+      'Promise.race()は最初に解決または拒否されたPromiseの結果を返す'
+    ],
+    answer: 2,
+    explanation: '<strong>正解：Promiseのthenメソッドは同期的に実行される（誤り）</strong><br>Promiseのthenメソッドのコールバックは非同期的に実行されます。Promiseが解決済みであっても、thenのコールバックはマイクロタスクキューに追加され、現在の同期コードがすべて完了した後に実行されます。'
+  },
+  {
+    chapter: 1, category: 'Chapter 1: 速習JavaScript入門', color: '#553c9a',
+    q: '次のコードの出力として正しいものはどれか。',
+    code: `async function fetchData() {
+  return 42;
+}
+const result = fetchData();
+console.log(typeof result);`,
+    choices: ['number', 'string', 'object', 'undefined'],
+    answer: 2,
+    explanation: '<strong>正解：object</strong><br>async関数は常にPromiseを返します。return 42 と書いても、実際にはPromise.resolve(42)が返されます。typeof Promise は "object" なので、出力は "object" になります。Promiseの値を取得するにはawaitまたは.then()を使う必要があります。'
+  },
+  {
+    chapter: 1, category: 'Chapter 1: 速習JavaScript入門', color: '#553c9a',
+    q: 'DOMのquerySelectorAllメソッドの戻り値として正しいものはどれか。',
+    choices: [
+      'HTMLCollectionオブジェクト',
+      'NodeListオブジェクト',
+      '配列（Array）オブジェクト',
+      'Elementオブジェクト'
+    ],
+    answer: 1,
+    explanation: '<strong>正解：NodeListオブジェクト</strong><br>querySelectorAllはNodeListを返します。NodeListはArrayではないため、forEachは使えますが、map・filter等のArrayメソッドは直接使えません。Array.from()またはスプレッド構文[...nodeList]で配列に変換できます。getElementsByClassNameはHTMLCollectionを返します。'
+  },
+  {
+    chapter: 1, category: 'Chapter 1: 速習JavaScript入門', color: '#553c9a',
+    q: 'イベントリスナーの登録方法として最も推奨される方法はどれか。',
+    choices: [
+      'HTML属性にonclick="handler()"と記述する',
+      'element.onclick = handler と代入する',
+      'element.addEventListener("click", handler) を使用する',
+      'document.write("<script>handler()</script>") を使用する'
+    ],
+    answer: 2,
+    explanation: '<strong>正解：element.addEventListener("click", handler) を使用する</strong><br>addEventListenerは複数のリスナーを同一イベントに登録でき、removeEventListenerで削除も可能です。HTML属性やプロパティ代入は1つしか登録できず、後から上書きされる可能性があります。addEventListenerはキャプチャリングの制御も可能で最も柔軟です。'
+  },
+  {
+    chapter: 1, category: 'Chapter 1: 速習JavaScript入門', color: '#553c9a',
+    q: '次のコードの実行結果として正しいものはどれか。',
+    code: `class Animal {
+  constructor(name) {
+    this.name = name;
+  }
+  speak() {
+    return `${this.name} makes a sound.`;
+  }
+}
+class Dog extends Animal {
+  speak() {
+    return `${this.name} barks.`;
+  }
+}
+const d = new Dog('Rex');
+console.log(d.speak());`,
+    choices: ['Rex makes a sound.', 'Rex barks.', 'undefined barks.', 'エラーが発生する'],
+    answer: 1,
+    explanation: '<strong>正解：Rex barks.</strong><br>DogクラスはAnimalクラスを継承し、speakメソッドをオーバーライドしています。d.speak()を呼び出すとDogクラスのspeakメソッドが実行されます。constructorはAnimalから継承されているため、this.nameには\'Rex\'が設定されます。'
+  },
+  {
+    chapter: 1, category: 'Chapter 1: 速習JavaScript入門', color: '#553c9a',
+    q: '配列の操作に関する説明として正しいものはどれか。',
+    choices: [
+      'push()は配列の先頭に要素を追加する',
+      'pop()は配列の先頭から要素を取り出す',
+      'shift()は配列の先頭から要素を取り出す',
+      'unshift()は配列の末尾に要素を追加する'
+    ],
+    answer: 2,
+    explanation: '<strong>正解：shift()は配列の先頭から要素を取り出す</strong><br>配列メソッドの対応：push/pop は末尾への追加/削除、shift/unshift は先頭からの削除/追加です。push()は末尾追加、pop()は末尾削除、shift()は先頭削除、unshift()は先頭追加です。これらの違いは試験頻出です。'
+  },
+  {
+    chapter: 1, category: 'Chapter 1: 速習JavaScript入門', color: '#553c9a',
+    q: 'JavaScriptの型変換に関して、次のコードの出力として正しいものはどれか。',
+    code: `console.log(typeof null);
+console.log(typeof undefined);
+console.log(typeof NaN);`,
+    choices: [
+      '"null" / "undefined" / "NaN"',
+      '"object" / "undefined" / "number"',
+      '"null" / "undefined" / "number"',
+      '"object" / "undefined" / "NaN"'
+    ],
+    answer: 1,
+    explanation: '<strong>正解："object" / "undefined" / "number"</strong><br>typeof null は歴史的なバグにより "object" を返します（nullはオブジェクトではありません）。typeof undefined は "undefined"、typeof NaN は "number" を返します（NaNはNot a Numberですが型はnumberです）。これらはJavaScriptの有名な落とし穴です。'
+  },
+
+  /* ===== Chapter 2: JavaScriptの文法（14問） ===== */
+  {
+    chapter: 2, category: 'Chapter 2: JavaScriptの文法', color: '#2b6cb0',
+    q: 'ECMAScript 2015（ES6）で追加された機能として誤っているものはどれか。',
+    choices: [
+      'テンプレートリテラル',
+      'デストラクチャリング（分割代入）',
+      'async/await',
+      'アロー関数'
+    ],
+    answer: 2,
+    explanation: '<strong>正解：async/await（誤り）</strong><br>async/awaitはECMAScript 2017（ES8）で追加された機能です。ES6（ES2015）で追加された主な機能は、let/const、アロー関数、クラス、テンプレートリテラル、デストラクチャリング、デフォルト引数、残余引数、スプレッド構文、Promise、モジュール（import/export）などです。'
+  },
+  {
+    chapter: 2, category: 'Chapter 2: JavaScriptの文法', color: '#2b6cb0',
+    q: '次のコードの出力として正しいものはどれか。',
+    code: `'use strict';
+x = 10;
+console.log(x);`,
+    choices: ['10', 'undefined', 'ReferenceErrorが発生する', 'SyntaxErrorが発生する'],
+    answer: 2,
+    explanation: '<strong>正解：ReferenceErrorが発生する</strong><br>\'use strict\'（Strictモード）では、宣言されていない変数への代入はReferenceErrorになります。通常モードでは暗黙的にグローバル変数が作成されますが、Strictモードではこの動作が禁止されます。Strictモードはバグを早期発見するために推奨されます。'
+  },
+  {
+    chapter: 2, category: 'Chapter 2: JavaScriptの文法', color: '#2b6cb0',
+    q: '次のコードの出力として正しいものはどれか。',
+    code: `console.log(0.1 + 0.2 === 0.3);
+console.log(0.1 + 0.2);`,
+    choices: [
+      'true / 0.3',
+      'false / 0.30000000000000004',
+      'true / 0.30000000000000004',
+      'false / 0.3'
+    ],
+    answer: 1,
+    explanation: '<strong>正解：false / 0.30000000000000004</strong><br>JavaScriptはIEEE 754倍精度浮動小数点数を使用するため、0.1 + 0.2は正確に0.3にはなりません。実際は0.30000000000000004になります。浮動小数点数の比較にはNumber.EPSILON（約2.22e-16）を使った誤差許容比較が推奨されます。'
+  },
+  {
+    chapter: 2, category: 'Chapter 2: JavaScriptの文法', color: '#2b6cb0',
+    q: 'ビット演算子に関する説明として正しいものはどれか。',
+    choices: [
+      '& はビットOR演算を行う',
+      '| はビットAND演算を行う',
+      '^ はビットXOR演算を行う',
+      '~ はビット左シフト演算を行う'
+    ],
+    answer: 2,
+    explanation: '<strong>正解：^ はビットXOR演算を行う</strong><br>ビット演算子の対応：&（AND）、|（OR）、^（XOR）、~（NOT/ビット反転）、<<（左シフト）、>>（符号付き右シフト）、>>>（符号なし右シフト）です。XOR（排他的論理和）は両ビットが異なる場合に1になります。'
+  },
+  {
+    chapter: 2, category: 'Chapter 2: JavaScriptの文法', color: '#2b6cb0',
+    q: '次のコードの出力として正しいものはどれか。',
+    code: `function greet(name = 'World', greeting = 'Hello') {
+  return `${greeting}, ${name}!`;
+}
+console.log(greet());
+console.log(greet('Alice'));
+console.log(greet(undefined, 'Hi'));`,
+    choices: [
+      'Hello, World! / Hello, Alice! / Hi, World!',
+      'Hello, World! / Hello, Alice! / Hello, World!',
+      'undefined, undefined! / Hello, Alice! / Hi, World!',
+      'エラーが発生する'
+    ],
+    answer: 0,
+    explanation: '<strong>正解：Hello, World! / Hello, Alice! / Hi, World!</strong><br>デフォルト引数は引数が渡されないか、undefinedが渡された場合に使用されます。greet()はデフォルト値を使用、greet(\'Alice\')はnameに\'Alice\'、greet(undefined, \'Hi\')はnameにデフォルト\'World\'、greetingに\'Hi\'が使われます。'
+  },
+  {
+    chapter: 2, category: 'Chapter 2: JavaScriptの文法', color: '#2b6cb0',
+    q: '残余引数（Rest Parameters）に関する説明として正しいものはどれか。',
+    choices: [
+      '残余引数はargumentsオブジェクトと同じである',
+      '残余引数は関数の最初のパラメータとして使用できる',
+      '残余引数は実際の配列（Array）として扱われる',
+      '1つの関数に複数の残余引数を定義できる'
+    ],
+    answer: 2,
+    explanation: '<strong>正解：残余引数は実際の配列（Array）として扱われる</strong><br>残余引数（...args）は実際のArrayオブジェクトなので、map・filter等のArrayメソッドが直接使えます。一方、argumentsオブジェクトは配列ではなく配列風オブジェクトです。残余引数は必ず最後のパラメータとして定義し、1つの関数に1つだけ使用できます。'
+  },
+  {
+    chapter: 2, category: 'Chapter 2: JavaScriptの文法', color: '#2b6cb0',
+    q: '次のコードの出力として正しいものはどれか。',
+    code: `const obj = { a: 1, b: 2, c: 3 };
+const { a, ...rest } = obj;
+console.log(a);
+console.log(rest);`,
+    choices: [
+      '1 / { b: 2, c: 3 }',
+      '1 / [2, 3]',
+      '{ a: 1 } / { b: 2, c: 3 }',
+      'エラーが発生する'
+    ],
+    answer: 0,
+    explanation: '<strong>正解：1 / { b: 2, c: 3 }</strong><br>オブジェクトのデストラクチャリングでスプレッド構文を使うと、残りのプロパティを新しいオブジェクトとして取得できます。aには1が代入され、restには残りのプロパティ{ b: 2, c: 3 }が代入されます。これをオブジェクトの残余プロパティと呼びます。'
+  },
+  {
+    chapter: 2, category: 'Chapter 2: JavaScriptの文法', color: '#2b6cb0',
+    q: 'プロトタイプチェーンに関する説明として正しいものはどれか。',
+    choices: [
+      'Object.prototypeはプロトタイプチェーンの最上位にある',
+      'すべてのオブジェクトはnullをプロトタイプとして持つ',
+      'hasOwnPropertyはプロトタイプチェーンを辿ってプロパティを検索する',
+      'Object.create(null)で作成したオブジェクトはObjectのメソッドを持つ'
+    ],
+    answer: 0,
+    explanation: '<strong>正解：Object.prototypeはプロトタイプチェーンの最上位にある</strong><br>プロトタイプチェーンの最上位はObject.prototypeで、そのプロトタイプはnullです。hasOwnPropertyはプロトタイプチェーンを辿らず、オブジェクト自身のプロパティのみを確認します。Object.create(null)で作成したオブジェクトはプロトタイプがnullなのでObjectのメソッドを持ちません。'
+  },
+  {
+    chapter: 2, category: 'Chapter 2: JavaScriptの文法', color: '#2b6cb0',
+    q: '次のコードの出力として正しいものはどれか。',
+    code: `for (var i = 0; i < 3; i++) {
+  setTimeout(() => console.log(i), 0);
+}`,
+    choices: ['0 / 1 / 2', '1 / 2 / 3', '3 / 3 / 3', '0 / 0 / 0'],
+    answer: 2,
+    explanation: '<strong>正解：3 / 3 / 3</strong><br>varはブロックスコープを持たないため、ループ変数iはグローバル（または関数）スコープに1つだけ存在します。setTimeoutのコールバックが実行される時点ではループが完了しており、iは3になっています。letを使えば各イテレーションで別スコープが作られ、0/1/2が出力されます。'
+  },
+  {
+    chapter: 2, category: 'Chapter 2: JavaScriptの文法', color: '#2b6cb0',
+    q: 'Mathオブジェクトのメソッドに関する説明として正しいものはどれか。',
+    choices: [
+      'Math.round(4.5)は4を返す',
+      'Math.floor(-4.5)は-4を返す',
+      'Math.random()は0以上1未満の乱数を返す',
+      'Math.abs(-5)は-5を返す'
+    ],
+    answer: 2,
+    explanation: '<strong>正解：Math.random()は0以上1未満の乱数を返す</strong><br>Math.round(4.5)は5（四捨五入）、Math.floor(-4.5)は-5（切り捨て、負の方向）、Math.abs(-5)は5（絶対値）を返します。Math.random()は0以上1未満（0 <= x < 1）の浮動小数点数を返します。1は含まれません。'
+  },
+  {
+    chapter: 2, category: 'Chapter 2: JavaScriptの文法', color: '#2b6cb0',
+    q: '次のコードの出力として正しいものはどれか。',
+    code: `console.log(parseInt('10', 2));
+console.log(parseInt('FF', 16));
+console.log(parseInt('08'));`,
+    choices: [
+      '2 / 255 / 8',
+      '10 / 255 / 0',
+      '2 / 255 / 0',
+      '10 / FF / 8'
+    ],
+    answer: 0,
+    explanation: '<strong>正解：2 / 255 / 8</strong><br>parseInt(\'10\', 2)は2進数の\'10\'を10進数に変換して2を返します。parseInt(\'FF\', 16)は16進数の\'FF\'を10進数に変換して255を返します。parseInt(\'08\')は第2引数がない場合、現代のJavaScriptでは10進数として解釈し8を返します（古い実装では8進数として0を返す場合がありました）。'
+  },
+  {
+    chapter: 2, category: 'Chapter 2: JavaScriptの文法', color: '#2b6cb0',
+    q: 'クラスの継承に関する説明として正しいものはどれか。',
+    choices: [
+      'サブクラスのconstructorでsuperを呼ばなくてもthisが使える',
+      'superキーワードは親クラスのメソッドを呼び出すためにも使用できる',
+      'JavaScriptは多重継承をサポートしている',
+      'extendsキーワードはES5以前から使用できる'
+    ],
+    answer: 1,
+    explanation: '<strong>正解：superキーワードは親クラスのメソッドを呼び出すためにも使用できる</strong><br>super()はコンストラクタで親クラスのコンストラクタを呼び出し、super.method()は親クラスのメソッドを呼び出します。サブクラスのconstructorではsuper()を呼ぶ前にthisを使うとReferenceErrorになります。JavaScriptはMixinパターンで多重継承を模倣しますが、ネイティブな多重継承はサポートしていません。'
+  },
+  {
+    chapter: 2, category: 'Chapter 2: JavaScriptの文法', color: '#2b6cb0',
+    q: '次のコードの出力として正しいものはどれか。',
+    code: `const arr = [1, [2, [3, [4]]]];
+console.log(arr.flat());
+console.log(arr.flat(Infinity));`,
+    choices: [
+      '[1, 2, 3, 4] / [1, 2, 3, 4]',
+      '[1, 2, [3, [4]]] / [1, 2, 3, 4]',
+      '[1, [2, [3, [4]]]] / [1, 2, 3, 4]',
+      '[1, 2, [3, [4]]] / [1, 2, [3, [4]]]'
+    ],
+    answer: 1,
+    explanation: '<strong>正解：[1, 2, [3, [4]]] / [1, 2, 3, 4]</strong><br>Array.flat()はデフォルトで深さ1のネストを展開します。[1, [2, [3, [4]]]]をflat()すると[1, 2, [3, [4]]]になります。flat(Infinity)は全ての深さのネストを展開し[1, 2, 3, 4]になります。flat()はES2019（ES10）で追加されました。'
+  },
+  {
+    chapter: 2, category: 'Chapter 2: JavaScriptの文法', color: '#2b6cb0',
+    q: 'Symbolに関する説明として正しいものはどれか。',
+    choices: [
+      'Symbol()で作成した値は文字列に変換できる',
+      '同じ引数でSymbol()を呼び出すと同じSymbolが返される',
+      'Symbolはオブジェクトのプロパティキーとして使用できる',
+      'Symbol.for()とSymbol()は同じ動作をする'
+    ],
+    answer: 2,
+    explanation: '<strong>正解：Symbolはオブジェクトのプロパティキーとして使用できる</strong><br>Symbolはユニークで変更不可能なプリミティブ値で、オブジェクトのプロパティキーとして使用できます。Symbol()は毎回ユニークな値を返すため、同じ引数でも異なるSymbolになります。Symbol.for()はグローバルSymbolレジストリを使い、同じキーなら同じSymbolを返します。Symbolは直接文字列に変換するとTypeErrorになります。'
+  },
+
+  /* ===== Chapter 3: WebブラウザのJavaScript API（16問） ===== */
+  {
+    chapter: 3, category: 'Chapter 3: WebブラウザのJavaScript API', color: '#276749',
+    q: 'addEventListener の第3引数に関する説明として正しいものはどれか。',
+    choices: [
+      '第3引数にtrueを指定するとバブリングフェーズでイベントを処理する',
+      '第3引数にfalseを指定するとキャプチャリングフェーズでイベントを処理する',
+      '第3引数にtrueを指定するとキャプチャリングフェーズでイベントを処理する',
+      '第3引数は省略できない'
+    ],
+    answer: 2,
+    explanation: '<strong>正解：第3引数にtrueを指定するとキャプチャリングフェーズでイベントを処理する</strong><br>addEventListenerの第3引数はuseCapture（またはオプションオブジェクト）です。trueを指定するとキャプチャリングフェーズ（親から子へ）、falseまたは省略するとバブリングフェーズ（子から親へ）でイベントを処理します。'
+  },
+  {
+    chapter: 3, category: 'Chapter 3: WebブラウザのJavaScript API', color: '#276749',
+    q: 'イベントのバブリングを止める方法として正しいものはどれか。',
+    choices: [
+      'event.preventDefault()を呼び出す',
+      'event.stopPropagation()を呼び出す',
+      'event.stopImmediatePropagation()は使用できない',
+      'return falseを返すとすべてのブラウザで確実に止まる'
+    ],
+    answer: 1,
+    explanation: '<strong>正解：event.stopPropagation()を呼び出す</strong><br>stopPropagation()はイベントの伝播（バブリングまたはキャプチャリング）を止めます。preventDefault()はイベントのデフォルト動作（リンクの遷移、フォームの送信等）を止めますが、伝播は止めません。stopImmediatePropagation()は伝播を止め、かつ同じ要素の他のリスナーも実行しません。'
+  },
+  {
+    chapter: 3, category: 'Chapter 3: WebブラウザのJavaScript API', color: '#276749',
+    q: 'DOM要素の取得メソッドに関する説明として正しいものはどれか。',
+    choices: [
+      'getElementById はNodeListを返す',
+      'getElementsByClassName はHTMLCollectionを返す',
+      'querySelector はHTMLCollectionを返す',
+      'querySelectorAll はHTMLCollectionを返す'
+    ],
+    answer: 1,
+    explanation: '<strong>正解：getElementsByClassName はHTMLCollectionを返す</strong><br>各メソッドの戻り値：getElementById → Element（またはnull）、getElementsByClassName → HTMLCollection（ライブ）、getElementsByTagName → HTMLCollection（ライブ）、querySelector → Element（またはnull）、querySelectorAll → NodeList（静的）。HTMLCollectionはライブ（DOM変更が即時反映）、querySelectorAllのNodeListは静的です。'
+  },
+  {
+    chapter: 3, category: 'Chapter 3: WebブラウザのJavaScript API', color: '#276749',
+    q: '次のコードの説明として正しいものはどれか。',
+    code: `const parent = document.getElementById('parent');
+const child = document.createElement('div');
+child.textContent = 'Hello';
+parent.appendChild(child);`,
+    choices: [
+      'parentの前にchildを挿入する',
+      'parentの子要素の先頭にchildを追加する',
+      'parentの子要素の末尾にchildを追加する',
+      'parentをchildで置き換える'
+    ],
+    answer: 2,
+    explanation: '<strong>正解：parentの子要素の末尾にchildを追加する</strong><br>appendChildは指定した要素の子要素リストの末尾に新しいノードを追加します。先頭に追加するにはprepend()またはinsertBefore(child, parent.firstChild)を使います。特定位置への挿入にはinsertBefore()またはinsertAdjacentElement()が使えます。'
+  },
+  {
+    chapter: 3, category: 'Chapter 3: WebブラウザのJavaScript API', color: '#276749',
+    q: 'setTimeoutとsetIntervalに関する説明として正しいものはどれか。',
+    choices: [
+      'setTimeoutは指定した間隔で繰り返し実行される',
+      'setIntervalは指定した遅延後に1回だけ実行される',
+      'clearTimeout()でsetIntervalを停止できる',
+      'setTimeoutの遅延時間は最低遅延時間であり、正確な時間は保証されない'
+    ],
+    answer: 3,
+    explanation: '<strong>正解：setTimeoutの遅延時間は最低遅延時間であり、正確な時間は保証されない</strong><br>setTimeoutは指定した遅延後に1回実行、setIntervalは指定した間隔で繰り返し実行します。遅延時間はコールスタックが空になってから実行されるため、最低遅延時間です。clearTimeout()でsetTimeoutを、clearInterval()でsetIntervalを停止します。'
+  },
+  {
+    chapter: 3, category: 'Chapter 3: WebブラウザのJavaScript API', color: '#276749',
+    q: 'postMessageに関する説明として正しいものはどれか。',
+    choices: [
+      'postMessageは同一オリジン間でのみ使用できる',
+      '第2引数にはメッセージを受信するオリジンを指定する',
+      'messageイベントのdataプロパティには送信元のオリジンが含まれる',
+      'postMessageは同期的に実行される'
+    ],
+    answer: 1,
+    explanation: '<strong>正解：第2引数にはメッセージを受信するオリジンを指定する</strong><br>postMessage(message, targetOrigin)の第2引数targetOriginには受信先のオリジンを指定します。\'*\'を指定するとすべてのオリジンに送信されますが、セキュリティ上推奨されません。messageイベントのdataには送信されたデータ、originには送信元のオリジンが含まれます。postMessageは異なるオリジン間でも使用できます。'
+  },
+  {
+    chapter: 3, category: 'Chapter 3: WebブラウザのJavaScript API', color: '#276749',
+    q: 'History APIに関する説明として正しいものはどれか。',
+    choices: [
+      'pushStateはページをリロードせずにURLを変更できる',
+      'replaceStateは新しい履歴エントリを追加する',
+      'popstateイベントはpushStateを呼び出した際に発火する',
+      'history.go(0)は前のページに戻る'
+    ],
+    answer: 0,
+    explanation: '<strong>正解：pushStateはページをリロードせずにURLを変更できる</strong><br>pushState(state, title, url)はページをリロードせずにURLを変更し、新しい履歴エントリを追加します。replaceStateは現在の履歴エントリを置き換えます（新規追加しない）。popstateイベントはブラウザの戻る/進むボタン操作時に発火します。history.go(0)はページをリロードします。'
+  },
+  {
+    chapter: 3, category: 'Chapter 3: WebブラウザのJavaScript API', color: '#276749',
+    q: '次のコードの説明として正しいものはどれか。',
+    code: `document.querySelectorAll('.item').forEach(el => {
+  el.addEventListener('click', function(e) {
+    e.stopPropagation();
+    console.log(this.textContent);
+  });
+});`,
+    choices: [
+      'アロー関数を使っているのでthisはグローバルオブジェクトを指す',
+      'function式を使っているのでthisはクリックされた要素を指す',
+      'stopPropagationによりクリックイベントが発火しなくなる',
+      'querySelectorAllはHTMLCollectionを返すのでforEachは使えない'
+    ],
+    answer: 1,
+    explanation: '<strong>正解：function式を使っているのでthisはクリックされた要素を指す</strong><br>通常のfunction式では、イベントリスナー内のthisはイベントが発生した要素（currentTarget）を指します。アロー関数を使った場合はthisが外側のスコープを継承します。stopPropagationはバブリングを止めますが、イベント自体は発火します。querySelectorAllはNodeListを返しますが、NodeListにはforEachが使えます。'
+  },
+  {
+    chapter: 3, category: 'Chapter 3: WebブラウザのJavaScript API', color: '#276749',
+    q: 'Location APIに関する説明として正しいものはどれか。',
+    choices: [
+      'location.hrefを変更してもページは遷移しない',
+      'location.reloadはページをリロードする',
+      'location.hashを変更するとページがリロードされる',
+      'location.searchにはURLのパス部分が含まれる'
+    ],
+    answer: 1,
+    explanation: '<strong>正解：location.reloadはページをリロードする</strong><br>location.hrefを変更するとページが遷移します。location.hashを変更してもページはリロードされません（hashchangeイベントが発火します）。location.searchにはクエリ文字列（?以降）が含まれ、location.pathnameにはパス部分が含まれます。location.reload()でページをリロードできます。'
+  },
+  {
+    chapter: 3, category: 'Chapter 3: WebブラウザのJavaScript API', color: '#276749',
+    q: 'イベント委譲（Event Delegation）の説明として正しいものはどれか。',
+    choices: [
+      '各子要素に個別にイベントリスナーを登録する手法',
+      '親要素にリスナーを登録し、子要素のイベントをバブリングで処理する手法',
+      'イベントのキャプチャリングを無効にする手法',
+      'イベントの伝播を完全に止める手法'
+    ],
+    answer: 1,
+    explanation: '<strong>正解：親要素にリスナーを登録し、子要素のイベントをバブリングで処理する手法</strong><br>イベント委譲は、多数の子要素に個別にリスナーを登録する代わりに、親要素1つにリスナーを登録する手法です。バブリングを利用して子要素のイベントを親でキャッチします。event.targetで実際にクリックされた要素を特定します。動的に追加された要素にも対応でき、メモリ効率が良いです。'
+  },
+  {
+    chapter: 3, category: 'Chapter 3: WebブラウザのJavaScript API', color: '#276749',
+    q: 'DOM要素の属性操作に関する説明として正しいものはどれか。',
+    choices: [
+      'setAttribute("class", "foo")とclassName = "foo"は常に同じ結果になる',
+      'getAttribute("data-id")はdata-id属性の値を文字列で返す',
+      'removeAttributeは属性の値をnullに設定する',
+      'hasAttributeは属性の値を返す'
+    ],
+    answer: 1,
+    explanation: '<strong>正解：getAttribute("data-id")はdata-id属性の値を文字列で返す</strong><br>getAttributeは常に文字列を返します。setAttributeとclassNameは基本的に同じですが、setAttributeは任意の属性名を扱えます。removeAttributeは属性を完全に削除します（nullに設定するのではない）。hasAttributeは属性が存在するかをbooleanで返します。'
+  },
+  {
+    chapter: 3, category: 'Chapter 3: WebブラウザのJavaScript API', color: '#276749',
+    q: '次のコードの出力として正しいものはどれか。',
+    code: `const parent = document.createElement('div');
+const child1 = document.createElement('p');
+const child2 = document.createElement('span');
+parent.appendChild(child1);
+parent.appendChild(child2);
+console.log(parent.childNodes.length);
+console.log(parent.children.length);`,
+    choices: ['2 / 2', '3 / 2', '2 / 1', '0 / 0'],
+    answer: 0,
+    explanation: '<strong>正解：2 / 2</strong><br>childNodesはすべてのノード（テキストノード、コメントノード含む）を返し、childrenは要素ノードのみを返します。この場合、appendChildで追加した要素のみでテキストノードがないため、childNodes.lengthもchildren.lengthも2になります。実際のHTMLでは空白テキストノードが含まれることがあります。'
+  },
+  {
+    chapter: 3, category: 'Chapter 3: WebブラウザのJavaScript API', color: '#276749',
+    q: 'MutationObserverに関する説明として正しいものはどれか。',
+    choices: [
+      'MutationObserverはDOMの変更を同期的に通知する',
+      'observeメソッドの第2引数でどの変更を監視するか設定する',
+      'MutationObserverはIE11では使用できない',
+      'disconnectメソッドは一時的に監視を停止し、再開できる'
+    ],
+    answer: 1,
+    explanation: '<strong>正解：observeメソッドの第2引数でどの変更を監視するか設定する</strong><br>MutationObserverのobserve(target, options)の第2引数には、childList（子ノードの変更）、attributes（属性の変更）、subtree（サブツリーの変更）などを指定するオプションオブジェクトを渡します。MutationObserverは非同期（マイクロタスク）で通知します。disconnectは監視を完全に停止します。'
+  },
+  {
+    chapter: 3, category: 'Chapter 3: WebブラウザのJavaScript API', color: '#276749',
+    q: 'removeEventListenerに関する説明として正しいものはどれか。',
+    choices: [
+      '無名関数で登録したリスナーはremoveEventListenerで削除できる',
+      'removeEventListenerには登録時と同じ関数参照を渡す必要がある',
+      'removeEventListenerはすべての同名イベントリスナーを一括削除する',
+      '第3引数（useCapture）は省略してもよい'
+    ],
+    answer: 1,
+    explanation: '<strong>正解：removeEventListenerには登録時と同じ関数参照を渡す必要がある</strong><br>removeEventListenerで削除するには、addEventListenerで登録した時と同じ関数参照、イベント名、useCapture値を指定する必要があります。無名関数は参照を保持できないため削除できません。第3引数のuseCapture値も一致させる必要があります（デフォルトはfalse）。'
+  },
+  {
+    chapter: 3, category: 'Chapter 3: WebブラウザのJavaScript API', color: '#276749',
+    q: 'デバッグツールに関する説明として正しいものはどれか。',
+    choices: [
+      'console.log()はプログラムの実行を一時停止する',
+      'debuggerステートメントはDevToolsが開いている場合にブレークポイントとして機能する',
+      'console.error()はエラーをthrowする',
+      'console.table()は使用できるブラウザが限られている'
+    ],
+    answer: 1,
+    explanation: '<strong>正解：debuggerステートメントはDevToolsが開いている場合にブレークポイントとして機能する</strong><br>debuggerステートメントはDevToolsが開いている場合にその行で実行を一時停止します。console.log()は出力するだけで実行は止まりません。console.error()はエラースタイルで出力しますが例外はthrowしません。console.table()は主要なモダンブラウザすべてでサポートされています。'
+  },
+  {
+    chapter: 3, category: 'Chapter 3: WebブラウザのJavaScript API', color: '#276749',
+    q: '次のコードの説明として正しいものはどれか。',
+    code: `document.addEventListener('DOMContentLoaded', () => {
+  console.log('DOM ready');
+});
+window.addEventListener('load', () => {
+  console.log('All loaded');
+});`,
+    choices: [
+      '両方のイベントは同時に発火する',
+      'DOMContentLoadedはすべてのリソース読み込み完了後に発火する',
+      'DOMContentLoadedはHTMLの解析完了後、loadより先に発火する',
+      'loadイベントはHTMLの解析完了直後に発火する'
+    ],
+    answer: 2,
+    explanation: '<strong>正解：DOMContentLoadedはHTMLの解析完了後、loadより先に発火する</strong><br>DOMContentLoadedはHTMLの解析が完了しDOMが構築された時点で発火します（画像・スタイルシート等の読み込みを待ちません）。loadイベントはすべてのリソース（画像・スタイルシート等）の読み込みが完了した後に発火します。したがってDOMContentLoaded → load の順番で発火します。'
+  },
+
+  /* ===== Chapter 4: さまざまなHTML関連API（18問） ===== */
+  {
+    chapter: 4, category: 'Chapter 4: さまざまなHTML関連API', color: '#b7791f',
+    q: 'Canvas 2D APIに関する説明として正しいものはどれか。',
+    choices: [
+      'getContext("2d")はWebGLコンテキストを返す',
+      'fillRectは枠線のみを描画する',
+      'beginPathは新しいパスを開始する',
+      'strokeStyleはfill（塗りつぶし）の色を設定する'
+    ],
+    answer: 2,
+    explanation: '<strong>正解：beginPathは新しいパスを開始する</strong><br>getContext("2d")は2DレンダリングコンテキストCanvasRenderingContext2Dを返します（WebGLはgetContext("webgl")）。fillRectは塗りつぶした矩形を描画し、strokeRectが枠線のみです。strokeStyleはstroke（線）の色、fillStyleがfill（塗りつぶし）の色を設定します。'
+  },
+  {
+    chapter: 4, category: 'Chapter 4: さまざまなHTML関連API', color: '#b7791f',
+    q: '次のCanvasコードの説明として正しいものはどれか。',
+    code: `const canvas = document.getElementById('myCanvas');
+const ctx = canvas.getContext('2d');
+ctx.beginPath();
+ctx.arc(100, 100, 50, 0, Math.PI * 2);
+ctx.fillStyle = 'blue';
+ctx.fill();`,
+    choices: [
+      '中心(50, 50)、半径100の円を描画する',
+      '中心(100, 100)、半径50の青い塗りつぶし円を描画する',
+      '中心(100, 100)、半径50の青い枠線円を描画する',
+      '矩形を描画する'
+    ],
+    answer: 1,
+    explanation: '<strong>正解：中心(100, 100)、半径50の青い塗りつぶし円を描画する</strong><br>arc(x, y, radius, startAngle, endAngle)の引数は順に、中心X座標、中心Y座標、半径、開始角度（ラジアン）、終了角度です。Math.PI * 2は360度（完全な円）を意味します。fill()で塗りつぶし、stroke()で枠線を描画します。'
+  },
+  {
+    chapter: 4, category: 'Chapter 4: さまざまなHTML関連API', color: '#b7791f',
+    q: 'requestAnimationFrameに関する説明として正しいものはどれか。',
+    choices: [
+      'requestAnimationFrameは常に60fpsで実行される',
+      'cancelAnimationFrameでアニメーションを停止できる',
+      'requestAnimationFrameはsetTimeoutより遅い',
+      'バックグラウンドタブでも通常通り実行される'
+    ],
+    answer: 1,
+    explanation: '<strong>正解：cancelAnimationFrameでアニメーションを停止できる</strong><br>requestAnimationFrameはブラウザの描画タイミングに合わせてコールバックを実行します（通常60fps、ディスプレイのリフレッシュレートに依存）。setTimeoutより効率的でバッテリー消費が少ないです。バックグラウンドタブでは自動的に実行頻度が下がります。cancelAnimationFrame(id)で停止できます。'
+  },
+  {
+    chapter: 4, category: 'Chapter 4: さまざまなHTML関連API', color: '#b7791f',
+    q: 'Web Storageに関する説明として正しいものはどれか。',
+    choices: [
+      'localStorageはブラウザを閉じると削除される',
+      'sessionStorageは異なるタブ間でデータを共有できる',
+      'localStorageとsessionStorageはオリジン単位で分離されている',
+      'Web Storageにはオブジェクトをそのまま保存できる'
+    ],
+    answer: 2,
+    explanation: '<strong>正解：localStorageとsessionStorageはオリジン単位で分離されている</strong><br>localStorageはブラウザを閉じても保持されます。sessionStorageはタブ/ウィンドウ単位で管理され、異なるタブ間では共有されません。Web StorageはオリジンごとにデータがIsolateされます。保存できるのは文字列のみで、オブジェクトはJSON.stringify()で文字列化する必要があります。'
+  },
+  {
+    chapter: 4, category: 'Chapter 4: さまざまなHTML関連API', color: '#b7791f',
+    q: 'IndexedDBに関する説明として正しいものはどれか。',
+    choices: [
+      'IndexedDBはSQLを使用してデータを操作する',
+      'IndexedDBはすべての操作が非同期で行われる',
+      'IndexedDBはWebStorageより容量が少ない',
+      'IndexedDBはキーと値のペアのみを保存できる'
+    ],
+    answer: 1,
+    explanation: '<strong>正解：IndexedDBはすべての操作が非同期で行われる</strong><br>IndexedDBはNoSQLデータベースでSQLは使用しません。すべての操作（open、put、get等）は非同期で行われ、イベントまたはPromise（IDBRequest）で結果を受け取ります。WebStorageより大容量（通常数十MB〜数百MB）のデータを保存でき、オブジェクト、ファイル、Blobなど複雑なデータも保存できます。'
+  },
+  {
+    chapter: 4, category: 'Chapter 4: さまざまなHTML関連API', color: '#b7791f',
+    q: 'WebSocketのreadyStateプロパティの値として正しい組み合わせはどれか。',
+    choices: [
+      'CONNECTING=0, OPEN=1, CLOSING=2, CLOSED=3',
+      'CONNECTING=1, OPEN=2, CLOSING=3, CLOSED=4',
+      'OPEN=0, CONNECTING=1, CLOSING=2, CLOSED=3',
+      'CONNECTING=0, OPEN=1, CLOSED=2'
+    ],
+    answer: 0,
+    explanation: '<strong>正解：CONNECTING=0, OPEN=1, CLOSING=2, CLOSED=3</strong><br>WebSocketのreadyStateは4つの状態を持ちます：CONNECTING(0)=接続中、OPEN(1)=接続確立・通信可能、CLOSING(2)=クローズ処理中、CLOSED(3)=接続終了。データの送受信はOPEN状態でのみ可能です。'
+  },
+  {
+    chapter: 4, category: 'Chapter 4: さまざまなHTML関連API', color: '#b7791f',
+    q: 'XMLHttpRequestのreadyStateの値として正しいものはどれか。',
+    choices: [
+      'readyState=4はリクエストが完了し、レスポンスが利用可能な状態を示す',
+      'readyState=1はレスポンスの受信が完了した状態を示す',
+      'readyState=3はリクエストが初期化された状態を示す',
+      'readyState=0はリクエストが送信された状態を示す'
+    ],
+    answer: 0,
+    explanation: '<strong>正解：readyState=4はリクエストが完了し、レスポンスが利用可能な状態を示す</strong><br>XHRのreadyState：0(UNSENT)=初期化前、1(OPENED)=open()呼び出し済み、2(HEADERS_RECEIVED)=レスポンスヘッダー受信済み、3(LOADING)=レスポンス受信中、4(DONE)=完了。readyState===4 かつ status===200 でリクエスト成功を確認します。'
+  },
+  {
+    chapter: 4, category: 'Chapter 4: さまざまなHTML関連API', color: '#b7791f',
+    q: 'Fetch APIに関する説明として正しいものはどれか。',
+    choices: [
+      'fetch()はHTTPエラー（404、500等）でPromiseをrejectする',
+      'fetch()はネットワークエラーの場合にPromiseをrejectする',
+      'fetch()のデフォルトのメソッドはPOSTである',
+      'fetch()はXMLHttpRequestより古いAPIである'
+    ],
+    answer: 1,
+    explanation: '<strong>正解：fetch()はネットワークエラーの場合にPromiseをrejectする</strong><br>fetch()はネットワークエラー（接続失敗等）の場合のみPromiseをrejectします。HTTPエラー（404、500等）はrejectされず、response.okがfalseになります。デフォルトのメソッドはGETです。Fetch APIはXMLHttpRequestより新しく、よりモダンなAPIです。'
+  },
+  {
+    chapter: 4, category: 'Chapter 4: さまざまなHTML関連API', color: '#b7791f',
+    q: 'Server-Sent Events（SSE）に関する説明として正しいものはどれか。',
+    choices: [
+      'SSEはクライアントとサーバー間の双方向通信をサポートする',
+      'SSEはEventSourceオブジェクトを使用する',
+      'SSEはWebSocketより新しい技術である',
+      'SSEのデータ形式はJSONのみに限定される'
+    ],
+    answer: 1,
+    explanation: '<strong>正解：SSEはEventSourceオブジェクトを使用する</strong><br>Server-Sent Eventsは、EventSourceオブジェクトを使ってサーバーからクライアントへの一方向通信を実現します。WebSocketと異なり双方向通信はできません。データ形式はtext/event-streamで、テキストベースのカスタムフォーマットです（JSONに限定されません）。自動再接続機能を持ちます。'
+  },
+  {
+    chapter: 4, category: 'Chapter 4: さまざまなHTML関連API', color: '#b7791f',
+    q: 'Geolocation APIに関する説明として正しいものはどれか。',
+    choices: [
+      'getCurrentPositionは同期的に位置情報を返す',
+      'watchPositionは位置が変化するたびにコールバックを呼び出す',
+      'Geolocation APIはHTTPSでなくても使用できる',
+      'clearWatchはgetCurrentPositionを停止する'
+    ],
+    answer: 1,
+    explanation: '<strong>正解：watchPositionは位置が変化するたびにコールバックを呼び出す</strong><br>watchPositionは位置情報が変化するたびにコールバックを呼び出し続けます。getCurrentPositionは非同期で1回だけ位置情報を取得します。現代のブラウザではGeolocation APIはHTTPS環境でのみ動作します。clearWatch(watchId)でwatchPositionを停止します。'
+  },
+  {
+    chapter: 4, category: 'Chapter 4: さまざまなHTML関連API', color: '#b7791f',
+    q: 'Web Workersに関する説明として正しいものはどれか。',
+    choices: [
+      'Web WorkersはDOMに直接アクセスできる',
+      'Web Workersはメインスレッドと別スレッドでJavaScriptを実行する',
+      'Web WorkersはlocalStorageに直接アクセスできる',
+      'Web Workersはメインスレッドとメモリを共有する'
+    ],
+    answer: 1,
+    explanation: '<strong>正解：Web Workersはメインスレッドと別スレッドでJavaScriptを実行する</strong><br>Web WorkersはUIをブロックせずに重い処理を別スレッドで実行できます。WorkerはDOMにアクセスできません。localStorageにもアクセスできません（IndexedDBは可能）。メインスレッドとWorkerはpostMessageでメッセージをやり取りし、データはコピーされます（SharedArrayBufferを除く）。'
+  },
+  {
+    chapter: 4, category: 'Chapter 4: さまざまなHTML関連API', color: '#b7791f',
+    q: '同一オリジンポリシーに関する説明として正しいものはどれか。',
+    choices: [
+      'オリジンはプロトコルとホスト名のみで決まる',
+      'http://example.com と https://example.com は同一オリジンである',
+      'http://example.com:80 と http://example.com は同一オリジンである',
+      'http://example.com と http://sub.example.com は同一オリジンである'
+    ],
+    answer: 2,
+    explanation: '<strong>正解：http://example.com:80 と http://example.com は同一オリジンである</strong><br>オリジンはプロトコル・ホスト名・ポート番号の3つで決まります。http://example.com:80とhttp://example.comはHTTPのデフォルトポートが80なので同一オリジンです。httpとhttpsはプロトコルが異なるため別オリジン。サブドメインが異なれば別オリジンです。'
+  },
+  {
+    chapter: 4, category: 'Chapter 4: さまざまなHTML関連API', color: '#b7791f',
+    q: 'CORSのプリフライトリクエストに関する説明として正しいものはどれか。',
+    choices: [
+      'すべてのCORSリクエストでプリフライトが発生する',
+      'プリフライトリクエストはDELETEメソッドを使用する',
+      'プリフライトリクエストはOPTIONSメソッドを使用する',
+      'プリフライトはGETリクエストでも常に発生する'
+    ],
+    answer: 2,
+    explanation: '<strong>正解：プリフライトリクエストはOPTIONSメソッドを使用する</strong><br>プリフライトリクエストはHTTP OPTIONSメソッドを使用し、本リクエストが許可されているかサーバーに確認します。シンプルリクエスト（GET/POST/HEADで特定のヘッダーのみ）ではプリフライトは発生しません。カスタムヘッダーやPUT/DELETE等のメソッドを使う場合にプリフライトが発生します。'
+  },
+  {
+    chapter: 4, category: 'Chapter 4: さまざまなHTML関連API', color: '#b7791f',
+    q: 'performance.now()に関する説明として正しいものはどれか。',
+    choices: [
+      'performance.now()はUNIXエポックからのミリ秒を返す',
+      'performance.now()はページ読み込み開始からの経過時間をミリ秒で返す',
+      'performance.now()はDate.now()と同じ精度を持つ',
+      'performance.now()は整数値のみを返す'
+    ],
+    answer: 1,
+    explanation: '<strong>正解：performance.now()はページ読み込み開始からの経過時間をミリ秒で返す</strong><br>performance.now()はPerformance APIのメソッドで、ページ読み込み開始（performance.timeOrigin）からの経過時間を高精度（マイクロ秒レベル）の浮動小数点数で返します。Date.now()よりも高精度で、パフォーマンス計測に適しています。セキュリティ上の理由から精度が制限される場合があります。'
+  },
+  {
+    chapter: 4, category: 'Chapter 4: さまざまなHTML関連API', color: '#b7791f',
+    q: 'Page Visibility APIに関する説明として正しいものはどれか。',
+    choices: [
+      'document.hiddenはページが表示されているときtrueを返す',
+      'visibilitychangeイベントはタブの表示状態が変わったときに発火する',
+      'document.visibilityStateは"visible"と"hidden"の2値のみを返す',
+      'Page Visibility APIはモバイルブラウザでは使用できない'
+    ],
+    answer: 1,
+    explanation: '<strong>正解：visibilitychangeイベントはタブの表示状態が変わったときに発火する</strong><br>document.hiddenはページが非表示（タブが隠れている等）のときtrueを返します。document.visibilityStateは"visible"、"hidden"、"prerender"の値を返します。visibilitychangeイベントを使ってタブが非表示になったときにアニメーションを停止したり、動画を一時停止したりできます。'
+  },
+  {
+    chapter: 4, category: 'Chapter 4: さまざまなHTML関連API', color: '#b7791f',
+    q: 'File APIに関する説明として正しいものはどれか。',
+    choices: [
+      'FileReaderはファイルを同期的に読み込む',
+      'FileReader.readAsTextはファイルをBase64エンコードして読み込む',
+      'FileReader.readAsDataURLはファイルをData URLとして読み込む',
+      'FileオブジェクトはBlobを継承していない'
+    ],
+    answer: 2,
+    explanation: '<strong>正解：FileReader.readAsDataURLはファイルをData URLとして読み込む</strong><br>FileReaderはファイルを非同期で読み込みます。readAsText()はテキストとして、readAsArrayBuffer()はArrayBufferとして、readAsDataURL()はdata:URLとして読み込みます。FileオブジェクトはBlobを継承しており、Blobのすべてのメソッドが使えます。'
+  },
+  {
+    chapter: 4, category: 'Chapter 4: さまざまなHTML関連API', color: '#b7791f',
+    q: 'SVGに関する説明として正しいものはどれか。',
+    choices: [
+      'SVGはラスター画像形式である',
+      'SVGはDOMの一部としてJavaScriptで操作できる',
+      'SVGはCanvasと同様にピクセルベースで描画される',
+      'SVGはHTMLに埋め込むことができない'
+    ],
+    answer: 1,
+    explanation: '<strong>正解：SVGはDOMの一部としてJavaScriptで操作できる</strong><br>SVG（Scalable Vector Graphics）はXMLベースのベクター画像形式です。HTMLに直接埋め込むことができ、DOMの一部としてJavaScriptやCSSで操作できます。CanvasはJavaScriptで描画するピクセルベース（ラスター）ですが、SVGはベクターベースで拡大縮小しても品質が劣化しません。'
+  },
+  {
+    chapter: 4, category: 'Chapter 4: さまざまなHTML関連API', color: '#b7791f',
+    q: 'DeviceOrientation APIに関する説明として正しいものはどれか。',
+    choices: [
+      'deviceorientationイベントはデバイスの位置情報を提供する',
+      'alphaプロパティはZ軸周りの回転角度（0〜360度）を表す',
+      'DeviceOrientation APIはデスクトップブラウザでのみ使用できる',
+      'betaプロパティはZ軸周りの回転を表す'
+    ],
+    answer: 1,
+    explanation: '<strong>正解：alphaプロパティはZ軸周りの回転角度（0〜360度）を表す</strong><br>DeviceOrientationEventのプロパティ：alpha（Z軸周りの回転、0〜360度、コンパス方位）、beta（X軸周りの回転、-180〜180度、前後の傾き）、gamma（Y軸周りの回転、-90〜90度、左右の傾き）。主にモバイルデバイスで使用されますが、デスクトップでも対応している場合があります。'
+  }
+];
+
+/* ============================================================
+   アプリケーション状態
+   ============================================================ */
+let currentMode = null;
+let currentChapter = null;
+let examQuestions = [];
+let currentIndex = 0;
+let answers = [];
+let flags = [];
+let timerInterval = null;
+let timeLeft = 0;
+let startTime = null;
+let mapVisible = false;
+
+/* ============================================================
+   スタート画面
+   ============================================================ */
+function selectMode(mode) {
+  currentMode = mode;
+  document.querySelectorAll('.mode-card').forEach(c => c.classList.remove('selected'));
+  document.querySelector(`.mode-card[data-mode="${mode}"]`).classList.add('selected');
+  document.getElementById('chapter-select-wrap').style.display = mode === 'chapter' ? 'block' : 'none';
+  document.getElementById('btn-start').disabled = false;
+}
+
+function startExam() {
+  if (!currentMode) return;
+
+  let pool = [...ALL_QUESTIONS];
+
+  if (currentMode === 'chapter') {
+    currentChapter = parseInt(document.getElementById('chapter-select').value);
+    pool = ALL_QUESTIONS.filter(q => q.chapter === currentChapter);
+    examQuestions = shuffle(pool).slice(0, Math.min(20, pool.length));
+    timeLeft = 30 * 60;
+  } else if (currentMode === 'real') {
+    examQuestions = shuffle(pool).slice(0, 60);
+    timeLeft = 90 * 60;
+  } else if (currentMode === 'practice') {
+    examQuestions = shuffle(pool).slice(0, 60);
+    timeLeft = null;
+  } else if (currentMode === 'weak') {
+    const history = getExamHistory();
+    const weakIds = Object.keys(history).filter(id => {
+      const h = history[id];
+      return h.total > 0 && (h.correct / h.total) < 0.6;
+    });
+    if (weakIds.length < 5) {
+      examQuestions = shuffle(pool).slice(0, 30);
+    } else {
+      const weakPool = ALL_QUESTIONS.filter((_, i) => weakIds.includes(String(i)));
+      const fill = shuffle(pool.filter((_, i) => !weakIds.includes(String(i))));
+      examQuestions = shuffle([...weakPool, ...fill]).slice(0, 30);
+    }
+    timeLeft = 45 * 60;
+  }
+
+  answers = new Array(examQuestions.length).fill(null);
+  flags   = new Array(examQuestions.length).fill(false);
+  currentIndex = 0;
+  startTime = Date.now();
+
+  document.getElementById('screen-start').style.display = 'none';
+  document.getElementById('screen-exam').style.display  = 'block';
+  document.getElementById('screen-result').style.display = 'none';
+
+  buildMapGrid();
+  renderQuestion();
+  if (timeLeft !== null) startTimer();
+  else document.getElementById('timer').textContent = '∞';
+}
+
+function shuffle(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+/* ============================================================
+   タイマー
+   ============================================================ */
+function startTimer() {
+  updateTimerDisplay();
+  timerInterval = setInterval(() => {
+    timeLeft--;
+    updateTimerDisplay();
+    if (timeLeft <= 0) {
+      clearInterval(timerInterval);
+      finishExam();
+    }
+  }, 1000);
+}
+
+function updateTimerDisplay() {
+  const el = document.getElementById('timer');
+  const m = Math.floor(timeLeft / 60);
+  const s = timeLeft % 60;
+  el.textContent = `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+  el.className = 'timer';
+  if (timeLeft <= 300) el.classList.add('danger');
+  else if (timeLeft <= 600) el.classList.add('warn');
+}
+
+/* ============================================================
+   問題描画
+   ============================================================ */
+function renderQuestion() {
+  const q = examQuestions[currentIndex];
+  const total = examQuestions.length;
+
+  document.getElementById('q-counter').textContent = `問題 ${currentIndex + 1} / ${total}`;
+
+  const badge = document.getElementById('q-badge');
+  badge.textContent = q.category;
+  badge.style.background = q.color;
+
+  document.getElementById('q-text').textContent = q.q;
+
+  const codeEl = document.getElementById('q-code');
+  if (q.code) {
+    codeEl.textContent = q.code;
+    codeEl.style.display = 'block';
+  } else {
+    codeEl.style.display = 'none';
+  }
+
+  const choicesEl = document.getElementById('choices');
+  choicesEl.innerHTML = '';
+  const labels = ['A', 'B', 'C', 'D'];
+  q.choices.forEach((choice, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'choice-btn';
+    btn.innerHTML = `<span class="choice-label">${labels[i]}</span><span>${choice}</span>`;
+
+    if (currentMode === 'practice' && answers[currentIndex] !== null) {
+      btn.disabled = true;
+      if (i === q.answer) btn.classList.add('correct');
+      else if (i === answers[currentIndex]) btn.classList.add('wrong');
+    } else if (answers[currentIndex] === i) {
+      btn.classList.add('selected');
+    }
+
+    btn.addEventListener('click', () => selectAnswer(i));
+    choicesEl.appendChild(btn);
+  });
+
+  const expEl = document.getElementById('explanation');
+  if (currentMode === 'practice' && answers[currentIndex] !== null) {
+    expEl.innerHTML = q.explanation;
+    expEl.classList.add('show');
+  } else {
+    expEl.classList.remove('show');
+  }
+
+  document.getElementById('btn-prev').disabled = currentIndex === 0;
+  document.getElementById('btn-next').disabled = currentIndex === total - 1;
+  document.getElementById('btn-flag').textContent = flags[currentIndex] ? '🚩 フラグ解除' : '🚩 フラグ';
+
+  updateProgress();
+  updateMapGrid();
+}
+
+function selectAnswer(i) {
+  if (currentMode === 'practice' && answers[currentIndex] !== null) return;
+  answers[currentIndex] = i;
+
+  if (currentMode === 'practice') {
+    renderQuestion();
+  } else {
+    const btns = document.querySelectorAll('.choice-btn');
+    btns.forEach((b, idx) => {
+      b.classList.toggle('selected', idx === i);
+    });
+    updateProgress();
+    updateMapGrid();
+  }
+}
+
+function updateProgress() {
+  const answered = answers.filter(a => a !== null).length;
+  const total = examQuestions.length;
+  const pct = (answered / total) * 100;
+  document.getElementById('progress-fill').style.width = pct + '%';
+  document.getElementById('progress-label').textContent = `${answered} / ${total} 問解答済み`;
+}
+
+/* ============================================================
+   問題マップ
+   ============================================================ */
+function buildMapGrid() {
+  const grid = document.getElementById('map-grid');
+  grid.innerHTML = '';
+  examQuestions.forEach((_, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'map-btn';
+    btn.textContent = i + 1;
+    btn.addEventListener('click', () => {
+      currentIndex = i;
+      renderQuestion();
+      if (mapVisible) toggleMap();
+    });
+    grid.appendChild(btn);
+  });
+}
+
+function updateMapGrid() {
+  const btns = document.querySelectorAll('.map-btn');
+  btns.forEach((btn, i) => {
+    btn.className = 'map-btn';
+    if (i === currentIndex) btn.classList.add('current');
+    else if (flags[i]) btn.classList.add('flagged');
+    else if (answers[i] !== null) btn.classList.add('answered');
+  });
+}
+
+function toggleMap() {
+  mapVisible = !mapVisible;
+  document.getElementById('map-panel').style.display = mapVisible ? 'block' : 'none';
+  if (mapVisible) updateMapGrid();
+}
+
+function toggleFlag() {
+  flags[currentIndex] = !flags[currentIndex];
+  document.getElementById('btn-flag').textContent = flags[currentIndex] ? '🚩 フラグ解除' : '🚩 フラグ';
+  updateMapGrid();
+}
+
+/* ============================================================
+   ナビゲーション
+   ============================================================ */
+function prevQ() {
+  if (currentIndex > 0) { currentIndex--; renderQuestion(); }
+}
+function nextQ() {
+  if (currentIndex < examQuestions.length - 1) { currentIndex++; renderQuestion(); }
+}
+
+function confirmFinish() {
+  const unanswered = answers.filter(a => a === null).length;
+  const msg = unanswered > 0
+    ? `未解答の問題が ${unanswered} 問あります。試験を終了して採点しますか？`
+    : '試験を終了して採点しますか？';
+  if (confirm(msg)) finishExam();
+}
+
+/* ============================================================
+   採点・結果表示
+   ============================================================ */
+function finishExam() {
+  if (timerInterval) clearInterval(timerInterval);
+
+  const elapsed = Math.floor((Date.now() - startTime) / 1000);
+  let correct = 0;
+  const chapterStats = { 1: { correct: 0, total: 0 }, 2: { correct: 0, total: 0 }, 3: { correct: 0, total: 0 }, 4: { correct: 0, total: 0 } };
+
+  examQuestions.forEach((q, i) => {
+    const ch = q.chapter;
+    chapterStats[ch].total++;
+    if (answers[i] === q.answer) {
+      correct++;
+      chapterStats[ch].correct++;
+    }
+  });
+
+  const total = examQuestions.length;
+  const wrong = answers.filter((a, i) => a !== null && a !== examQuestions[i].answer).length;
+  const skipped = answers.filter(a => a === null).length;
+  const score = Math.round((correct / total) * 100);
+  const pass = score >= 65;
+
+  // LocalStorage 保存
+  saveExamHistory(chapterStats);
+  saveChapterScores(chapterStats);
+  localStorage.setItem('html5lv2_ch5', '100');
+
+  // 結果画面表示
+  document.getElementById('screen-exam').style.display = 'none';
+  document.getElementById('screen-result').style.display = 'block';
+
+  const circle = document.getElementById('score-circle');
+  circle.className = 'score-circle ' + (pass ? 'pass' : 'fail');
+  document.getElementById('score-num').textContent = score;
+
+  const verdict = document.getElementById('verdict');
+  verdict.textContent = pass ? '✅ 合格' : '❌ 不合格';
+  verdict.className = 'verdict ' + (pass ? 'pass' : 'fail');
+
+  document.getElementById('score-detail').textContent =
+    `${correct}問正解 / ${total}問中（合格ライン：65%）`;
+
+  document.getElementById('r-correct').textContent = correct;
+  document.getElementById('r-wrong').textContent   = wrong;
+  document.getElementById('r-skip').textContent    = skipped;
+
+  const em = Math.floor(elapsed / 60);
+  const es = elapsed % 60;
+  document.getElementById('r-time').textContent = `${em}:${String(es).padStart(2,'0')}`;
+
+  renderCategoryBars(chapterStats);
+  renderReview();
+}
+
+function renderCategoryBars(stats) {
+  const container = document.getElementById('category-bars');
+  container.innerHTML = '';
+  const cats = [
+    { ch: 1, name: 'Chapter 1: 速習JavaScript入門', color: '#553c9a' },
+    { ch: 2, name: 'Chapter 2: JavaScriptの文法',   color: '#2b6cb0' },
+    { ch: 3, name: 'Chapter 3: WebブラウザのJavaScript API', color: '#276749' },
+    { ch: 4, name: 'Chapter 4: さまざまなHTML関連API', color: '#b7791f' },
+  ];
+  cats.forEach(cat => {
+    const s = stats[cat.ch];
+    if (!s || s.total === 0) return;
+    const pct = Math.round((s.correct / s.total) * 100);
+    const color = pct >= 80 ? '#48bb78' : pct >= 65 ? '#ed8936' : '#fc8181';
+    const row = document.createElement('div');
+    row.className = 'bar-row';
+    row.innerHTML = `
+      <div class="bar-label">
+        <span>${cat.name}</span>
+        <span>${s.correct}/${s.total}問</span>
+      </div>
+      <div class="bar-track">
+        <div class="bar-fill" style="width:${pct}%;background:${color};">${pct}%</div>
+      </div>`;
+    container.appendChild(row);
+  });
+}
+
+function renderReview() {
+  const list = document.getElementById('review-list');
+  list.innerHTML = '';
+  const labels = ['A', 'B', 'C', 'D'];
+
+  examQuestions.forEach((q, i) => {
+    const ans = answers[i];
+    const isWrong = ans !== null && ans !== q.answer;
+    const isSkip  = ans === null;
+    if (!isWrong && !isSkip) return;
+
+    const item = document.createElement('div');
+    item.className = 'review-item';
+    item.innerHTML = `
+      <div class="r-meta">
+        ${isWrong ? '<span class="tag-wrong">不正解</span>' : '<span class="tag-skip">未解答</span>'}
+        <span style="color:var(--muted)">${q.category}</span>
+      </div>
+      <div class="r-q">Q${i+1}. ${q.q}</div>
+      ${q.code ? `<pre class="q-code" style="font-size:12px;margin-bottom:8px;">${escHtml(q.code)}</pre>` : ''}
+      <div class="r-ans" style="color:var(--success)">✅ 正解：${labels[q.answer]}. ${q.choices[q.answer]}</div>
+      ${isWrong ? `<div class="r-ans" style="color:var(--danger)">❌ あなたの解答：${labels[ans]}. ${q.choices[ans]}</div>` : ''}
+      <div class="r-exp">${q.explanation}</div>`;
+    list.appendChild(item);
+  });
+
+  if (list.children.length === 0) {
+    list.innerHTML = '<p style="color:var(--success);text-align:center;padding:16px;">🎉 全問正解です！</p>';
+  }
+}
+
+function escHtml(str) {
+  return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+/* ============================================================
+   LocalStorage 操作
+   ============================================================ */
+function getExamHistory() {
+  try {
+    return JSON.parse(localStorage.getItem('html5lv2_exam_history') || '{}');
+  } catch(e) { return {}; }
+}
+
+function saveExamHistory(chapterStats) {
+  const history = getExamHistory();
+  examQuestions.forEach((q, i) => {
+    const key = String(ALL_QUESTIONS.indexOf(q));
+    if (!history[key]) {
+      history[key] = { total: 0, correct: 0, wrong: 0, chapter: q.chapter, category: q.category };
+    }
+    history[key].total++;
+    if (answers[i] === q.answer) history[key].correct++;
+    else history[key].wrong++;
+  });
+  localStorage.setItem('html5lv2_exam_history', JSON.stringify(history));
+}
+
+function saveChapterScores(chapterStats) {
+  let stored = {};
+  try {
+    stored = JSON.parse(localStorage.getItem('html5lv2_chapter_scores') || '{}');
+  } catch(e) {}
+
+  [1, 2, 3, 4].forEach(ch => {
+    const key = `ch${ch}`;
+    if (!stored[key]) stored[key] = { correct: 0, total: 0 };
+    stored[key].correct += chapterStats[ch].correct;
+    stored[key].total   += chapterStats[ch].total;
+  });
+  localStorage.setItem('html5lv2_chapter_scores', JSON.stringify(stored));
+}
+
+/* ============================================================
+   再挑戦
+   ============================================================ */
+function retryExam() {
+  document.getElementById('screen-result').style.display = 'none';
+  document.getElementById('screen-start').style.display  = 'block';
+  currentMode = null;
+  document.querySelectorAll('.mode-card').forEach(c => c.classList.remove('selected'));
+  document.getElementById('btn-start').disabled = true;
+  document.getElementById('chapter-select-wrap').style.display = 'none';
+}
+</script>
+</body>
+</html>
