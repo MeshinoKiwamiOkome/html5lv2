@@ -1,0 +1,1065 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>2-6 オブジェクト | Chapter 2 | HTML5 Level 2 試験対策</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Segoe UI', 'Helvetica Neue', sans-serif;
+      max-width: 960px; margin: 40px auto; padding: 0 24px;
+      background: #f0f4f8; color: #2d3748; line-height: 1.8;
+    }
+    .breadcrumb { font-size: 0.85rem; color: #718096; margin-bottom: 24px; }
+    .breadcrumb a { color: #553c9a; text-decoration: none; }
+    .breadcrumb a:hover { text-decoration: underline; }
+    .breadcrumb span { margin: 0 6px; }
+
+    .chapter-header {
+      background: linear-gradient(135deg, #553c9a, #9f7aea);
+      border-radius: 16px; padding: 36px 36px 32px;
+      color: #fff; margin-bottom: 32px;
+      position: relative; overflow: hidden;
+    }
+    .chapter-header::before {
+      content: ''; position: absolute; top: -50px; right: -50px;
+      width: 200px; height: 200px;
+      background: rgba(255,255,255,0.07); border-radius: 50%;
+    }
+    .chapter-header h1 { font-size: 1.75rem; font-weight: 700; margin-bottom: 8px; position: relative; z-index: 1; }
+    .chapter-header p  { font-size: 0.95rem; opacity: 0.9; margin-bottom: 18px; position: relative; z-index: 1; }
+    .badge-row { display: flex; flex-wrap: wrap; gap: 8px; position: relative; z-index: 1; }
+    .badge {
+      background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.35);
+      border-radius: 20px; padding: 3px 13px; font-size: 0.78rem; font-weight: 600;
+    }
+
+    .section-nav {
+      background: #fff; border-radius: 12px; padding: 20px 24px;
+      margin-bottom: 32px; box-shadow: 0 2px 12px rgba(85,60,154,0.07);
+    }
+    .section-nav h3 { font-size: 0.85rem; color: #9f7aea; font-weight: 700; margin-bottom: 12px; letter-spacing: 0.06em; }
+    .section-nav ul { list-style: none; display: flex; flex-direction: column; gap: 4px; }
+    .section-nav ul li a {
+      font-size: 0.88rem; color: #553c9a; text-decoration: none;
+      padding: 4px 10px; border-radius: 6px; display: block; transition: background 0.15s;
+    }
+    .section-nav ul li a:hover { background: #f3e8ff; }
+    .section-nav ul li.current a { font-weight: 700; color: #44337a; background: #ede9fe; }
+
+    .content-card {
+      background: #fff; border-radius: 14px; padding: 32px 36px;
+      margin-bottom: 28px; box-shadow: 0 2px 12px rgba(85,60,154,0.07);
+    }
+    .content-card h2 {
+      font-size: 1.25rem; font-weight: 700; color: #553c9a;
+      margin-bottom: 18px; padding-bottom: 10px;
+      border-bottom: 2px solid #e9d8fd;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .content-card h3 { font-size: 1rem; font-weight: 700; color: #44337a; margin: 22px 0 10px; }
+    .content-card p  { font-size: 0.95rem; color: #4a5568; margin-bottom: 14px; }
+    .content-card ul, .content-card ol { padding-left: 1.4em; margin-bottom: 14px; font-size: 0.93rem; color: #4a5568; }
+    .content-card li { margin-bottom: 6px; }
+
+    .tbl-wrap { overflow-x: auto; margin: 16px 0; }
+    table { width: 100%; border-collapse: collapse; font-size: 0.88rem; }
+    th { background: linear-gradient(135deg, #553c9a, #9f7aea); color: #fff; padding: 10px 14px; text-align: left; font-weight: 600; }
+    td { padding: 9px 14px; border-bottom: 1px solid #e2e8f0; color: #4a5568; }
+    tr:hover td { background: #faf5ff; }
+    tr:last-child td { border-bottom: none; }
+
+    .code-block {
+      background: #1a202c; border-radius: 10px; padding: 20px 22px;
+      margin: 16px 0; position: relative; overflow-x: auto;
+    }
+    .code-block pre {
+      font-family: 'Consolas', 'Monaco', monospace;
+      font-size: 0.88rem; line-height: 1.7; color: #e2e8f0; white-space: pre;
+    }
+    .copy-btn {
+      position: absolute; top: 10px; right: 12px;
+      background: #4a5568; color: #e2e8f0; border: none; border-radius: 6px;
+      padding: 4px 12px; font-size: 0.75rem; cursor: pointer; transition: background 0.15s;
+    }
+    .copy-btn:hover { background: #9f7aea; }
+    .copy-btn.copied { background: #48bb78; color: #fff; }
+
+    .comment { color: #68d391; }
+    .kw      { color: #b794f4; }
+    .fn      { color: #f6ad55; }
+    .str     { color: #fbd38d; }
+    .num     { color: #90cdf4; }
+    .op      { color: #fc8181; }
+    .out     { color: #a0aec0; }
+
+    .info-box { border-radius: 10px; padding: 16px 20px; margin: 16px 0; font-size: 0.9rem; }
+    .info-box.tip   { background: #f0fff4; border-left: 4px solid #48bb78; color: #276749; }
+    .info-box.warn  { background: #fffbeb; border-left: 4px solid #f6ad55; color: #744210; }
+    .info-box.point { background: #faf5ff; border-left: 4px solid #9f7aea; color: #44337a; }
+
+    /* ── デモカード ── */
+    .demo-card {
+      background: #faf5ff; border: 2px solid #d6bcfa;
+      border-radius: 14px; padding: 28px 30px; margin-bottom: 28px;
+    }
+    .demo-card h3 {
+      font-size: 1rem; font-weight: 700; color: #553c9a;
+      margin-bottom: 6px; display: flex; align-items: center; gap: 8px;
+    }
+    .demo-desc { font-size: 0.88rem; color: #553c9a; margin-bottom: 18px; }
+
+    /* プロトタイプチェーンビジュアライザ */
+    .proto-chain {
+      display: flex; flex-direction: column; align-items: flex-start; gap: 0;
+    }
+    .proto-node {
+      background: #1a202c; border: 2px solid #553c9a; border-radius: 10px;
+      padding: 14px 18px; min-width: 280px; position: relative;
+      font-family: 'Consolas', monospace; font-size: 0.82rem; color: #e2e8f0;
+      transition: all 0.2s; cursor: pointer;
+    }
+    .proto-node:hover { border-color: #9f7aea; box-shadow: 0 0 12px rgba(159,122,234,0.3); }
+    .proto-node.highlight { border-color: #48bb78; box-shadow: 0 0 12px rgba(72,187,120,0.3); }
+    .proto-node .node-title {
+      font-family: 'Segoe UI', sans-serif; font-size: 0.78rem;
+      font-weight: 700; color: #9f7aea; margin-bottom: 6px;
+    }
+    .proto-node.highlight .node-title { color: #68d391; }
+    .proto-arrow {
+      width: 3px; height: 28px; background: #553c9a;
+      margin-left: 24px; position: relative;
+    }
+    .proto-arrow::after {
+      content: '▼'; position: absolute; bottom: -14px; left: -7px;
+      color: #553c9a; font-size: 0.9rem;
+    }
+    .proto-null {
+      margin-left: 0; padding: 8px 16px;
+      background: #2d3748; border-radius: 8px;
+      font-family: 'Consolas', monospace; font-size: 0.82rem;
+      color: #fc8181; font-weight: 700;
+    }
+    .proto-lookup {
+      background: #fff; border-radius: 8px; padding: 12px 16px;
+      font-size: 0.85rem; color: #4a5568; margin-top: 14px;
+      border-left: 3px solid #9f7aea;
+    }
+    .proto-tabs { display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap; }
+    .proto-tab {
+      padding: 6px 16px; border-radius: 8px; border: 2px solid #c4b5fd;
+      background: #fff; color: #553c9a; font-weight: 700; font-size: 0.83rem;
+      cursor: pointer; transition: all 0.15s;
+    }
+    .proto-tab.active { background: #553c9a; color: #fff; border-color: #553c9a; }
+    .proto-tab:hover:not(.active) { background: #ede9fe; }
+
+    /* クラス継承デモ */
+    .class-demo-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    @media(max-width:600px){ .class-demo-layout { grid-template-columns: 1fr; } }
+    .class-box {
+      background: #1a202c; border-radius: 10px; padding: 16px 18px;
+      font-family: 'Consolas', monospace; font-size: 0.8rem;
+      line-height: 1.8; color: #e2e8f0; border: 2px solid #4a5568;
+    }
+    .class-box.parent { border-color: #553c9a; }
+    .class-box.child  { border-color: #48bb78; }
+    .class-box h4 {
+      font-family: 'Segoe UI', sans-serif; font-size: 0.8rem;
+      font-weight: 700; margin-bottom: 8px;
+    }
+    .class-box.parent h4 { color: #9f7aea; }
+    .class-box.child  h4 { color: #68d391; }
+    .class-result {
+      background: #fff; border-radius: 8px; padding: 14px 16px;
+      font-size: 0.85rem; color: #4a5568; margin-top: 12px;
+    }
+    .class-result h4 { font-size: 0.85rem; font-weight: 700; color: #553c9a; margin-bottom: 8px; }
+    .result-row {
+      display: flex; gap: 10px; padding: 4px 0;
+      border-bottom: 1px dashed #e2e8f0; font-size: 0.83rem;
+    }
+    .result-row:last-child { border-bottom: none; }
+    .result-key   { color: #9f7aea; width: 160px; flex-shrink: 0; font-family: 'Consolas', monospace; }
+    .result-value { color: #2d3748; font-family: 'Consolas', monospace; }
+
+    /* Object メソッドプレイグラウンド */
+    .obj-method-tabs { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 14px; }
+    .obj-tab {
+      padding: 5px 14px; border-radius: 20px; border: 2px solid #c4b5fd;
+      background: #fff; color: #553c9a; font-size: 0.82rem; font-weight: 700;
+      cursor: pointer; transition: all 0.15s;
+    }
+    .obj-tab.active { background: #553c9a; color: #fff; border-color: #553c9a; }
+    .obj-tab:hover:not(.active) { background: #ede9fe; }
+    .obj-pg-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    @media(max-width:600px){ .obj-pg-layout { grid-template-columns: 1fr; } }
+    .obj-input-area {
+      background: #1a202c; border-radius: 10px; padding: 16px 18px;
+    }
+    .obj-input-area label {
+      display: block; font-size: 0.78rem; font-weight: 700;
+      color: #9f7aea; margin-bottom: 6px; font-family: 'Segoe UI', sans-serif;
+    }
+    .obj-textarea {
+      width: 100%; background: #2d3748; border: 1px solid #4a5568;
+      border-radius: 6px; color: #fbd38d; font-family: 'Consolas', monospace;
+      font-size: 0.83rem; padding: 8px 10px; resize: vertical; min-height: 80px;
+    }
+    .obj-textarea:focus { outline: none; border-color: #9f7aea; }
+    .run-btn {
+      margin-top: 10px; width: 100%; padding: 9px;
+      background: linear-gradient(135deg, #553c9a, #9f7aea);
+      color: #fff; border: none; border-radius: 8px;
+      font-size: 0.88rem; font-weight: 700; cursor: pointer; transition: opacity 0.15s;
+    }
+    .run-btn:hover { opacity: 0.88; }
+    .obj-output-area {
+      background: #1a202c; border-radius: 10px; padding: 16px 18px;
+    }
+    .obj-output-area label {
+      display: block; font-size: 0.78rem; font-weight: 700;
+      color: #68d391; margin-bottom: 6px; font-family: 'Segoe UI', sans-serif;
+    }
+    .obj-output {
+      font-family: 'Consolas', monospace; font-size: 0.83rem;
+      color: #e2e8f0; line-height: 1.8; min-height: 100px;
+    }
+    .obj-method-desc {
+      background: #fff; border-radius: 8px; padding: 12px 14px;
+      font-size: 0.85rem; color: #4a5568; margin-top: 12px;
+      border-left: 3px solid #9f7aea;
+    }
+
+    /* ── 演習問題 ── */
+    .quiz-section {
+      background: #fff; border-radius: 14px; padding: 32px 36px;
+      margin-bottom: 28px; box-shadow: 0 2px 12px rgba(85,60,154,0.07);
+    }
+    .quiz-section h2 {
+      font-size: 1.2rem; font-weight: 700; color: #553c9a;
+      margin-bottom: 24px; padding-bottom: 10px; border-bottom: 2px solid #e9d8fd;
+    }
+    .quiz-item { margin-bottom: 32px; padding-bottom: 28px; border-bottom: 1px dashed #e2e8f0; }
+    .quiz-item:last-child { border-bottom: none; margin-bottom: 0; }
+    .quiz-q {
+      font-size: 0.95rem; font-weight: 700; color: #2d3748;
+      margin-bottom: 14px; background: #faf5ff;
+      padding: 12px 16px; border-radius: 8px; border-left: 4px solid #9f7aea;
+    }
+    .quiz-q .q-num {
+      display: inline-block; background: #553c9a; color: #fff;
+      border-radius: 6px; padding: 1px 9px; font-size: 0.8rem; margin-right: 8px;
+    }
+    .blank-input {
+      border: 2px solid #c4b5fd; border-radius: 6px; padding: 4px 10px;
+      font-size: 0.9rem; font-family: 'Consolas', monospace;
+      color: #2d3748; background: #faf5ff; width: 140px; transition: border-color 0.15s;
+    }
+    .blank-input:focus { outline: none; border-color: #553c9a; }
+    .blank-input.correct { border-color: #48bb78; background: #f0fff4; }
+    .blank-input.wrong   { border-color: #fc8181; background: #fff5f5; }
+
+    .choices { display: flex; flex-direction: column; gap: 8px; }
+    .choice-btn {
+      padding: 10px 16px; border-radius: 8px; border: 2px solid #e2e8f0;
+      background: #fff; color: #2d3748; font-size: 0.9rem;
+      cursor: pointer; text-align: left; transition: all 0.15s;
+    }
+    .choice-btn:hover:not(:disabled) { border-color: #9f7aea; background: #faf5ff; }
+    .choice-btn.correct { border-color: #48bb78; background: #f0fff4; color: #276749; font-weight: 700; }
+    .choice-btn.wrong   { border-color: #fc8181; background: #fff5f5; color: #c53030; }
+
+    .checkbox-list { display: flex; flex-direction: column; gap: 8px; }
+    .cb-label {
+      display: flex; align-items: center; gap: 10px;
+      padding: 10px 14px; border-radius: 8px;
+      border: 2px solid #e2e8f0; background: #fff;
+      cursor: pointer; font-size: 0.9rem; transition: all 0.15s;
+    }
+    .cb-label:hover { border-color: #9f7aea; background: #faf5ff; }
+    .cb-label input[type="checkbox"] { width: 16px; height: 16px; accent-color: #553c9a; }
+    .cb-label.correct { border-color: #48bb78; background: #f0fff4; }
+    .cb-label.wrong   { border-color: #fc8181; background: #fff5f5; }
+
+    .code-fill {
+      background: #1a202c; border-radius: 10px; padding: 18px 20px;
+      font-family: 'Consolas', 'Monaco', monospace;
+      font-size: 0.88rem; line-height: 1.9; color: #e2e8f0; margin-bottom: 12px;
+    }
+    .fill-input {
+      background: #2d3748; border: 1px solid #9f7aea; border-radius: 4px;
+      color: #fbd38d; font-family: 'Consolas', monospace;
+      font-size: 0.88rem; padding: 1px 8px; width: 150px;
+    }
+    .fill-input:focus { outline: none; border-color: #b794f4; }
+    .fill-input.correct { border-color: #48bb78; background: #1c3a2a; color: #68d391; }
+    .fill-input.wrong   { border-color: #fc8181; background: #3a1c1c; color: #fc8181; }
+
+    .check-btn {
+      margin-top: 12px; padding: 9px 22px;
+      background: linear-gradient(135deg, #553c9a, #9f7aea);
+      color: #fff; border: none; border-radius: 8px;
+      font-size: 0.88rem; font-weight: 700; cursor: pointer; transition: opacity 0.15s;
+    }
+    .check-btn:hover { opacity: 0.88; }
+    .feedback { margin-top: 10px; padding: 10px 16px; border-radius: 8px; font-size: 0.88rem; display: none; }
+    .feedback.show { display: block; }
+    .feedback.ok { background: #f0fff4; color: #276749; border-left: 4px solid #48bb78; }
+    .feedback.ng { background: #fff5f5; color: #c53030; border-left: 4px solid #fc8181; }
+
+    .complete-area { text-align: center; padding: 32px 0 8px; }
+    .complete-btn {
+      padding: 14px 40px; background: linear-gradient(135deg, #553c9a, #9f7aea);
+      color: #fff; border: none; border-radius: 12px;
+      font-size: 1rem; font-weight: 700; cursor: pointer;
+      transition: opacity 0.15s, transform 0.15s;
+      box-shadow: 0 4px 16px rgba(85,60,154,0.3);
+    }
+    .complete-btn:hover { opacity: 0.9; transform: translateY(-2px); }
+    .complete-btn.done { background: linear-gradient(135deg, #38a169, #68d391); }
+    .complete-msg { margin-top: 12px; font-size: 0.9rem; color: #718096; }
+
+    .page-nav {
+      display: flex; justify-content: space-between; align-items: center;
+      gap: 12px; margin-top: 40px; flex-wrap: wrap;
+    }
+    .nav-btn {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 12px 22px; border-radius: 10px;
+      font-size: 0.9rem; font-weight: 600; text-decoration: none;
+      transition: background 0.18s, transform 0.18s;
+    }
+    .nav-btn.prev  { background: #e9d8fd; color: #553c9a; }
+    .nav-btn.prev:hover  { background: #d6bcfa; transform: translateX(-2px); }
+    .nav-btn.index { background: linear-gradient(135deg, #553c9a, #9f7aea); color: #fff; }
+    .nav-btn.index:hover { opacity: 0.9; }
+    .nav-btn.next  { background: #553c9a; color: #fff; }
+    .nav-btn.next:hover  { background: #44337a; transform: translateX(2px); }
+
+    footer {
+      text-align: center; font-size: 0.8rem; color: #a0aec0;
+      margin-top: 48px; padding-top: 24px; border-top: 1px solid #e2e8f0;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- パンくずナビ -->
+  <nav class="breadcrumb">
+    <a href="../index.html">🏠 HTML5 Level 2</a>
+    <span>›</span>
+    <a href="index.html">Chapter 2</a>
+    <span>›</span>
+    <strong>2-6 オブジェクト</strong>
+  </nav>
+
+  <!-- 章ヘッダー -->
+  <header class="chapter-header">
+    <h1>🧩 2-6 オブジェクト</h1>
+    <p>プロトタイプチェーン、class 構文（extends/super）、Object 静的メソッド、プライベートフィールドを完全マスターする。</p>
+    <div class="badge-row">
+      <span class="badge">🔗 prototype</span>
+      <span class="badge">🏛 class / extends</span>
+      <span class="badge">🔒 プライベートフィールド</span>
+      <span class="badge">🛠 Object メソッド</span>
+      <span class="badge">✏️ 演習4問</span>
+    </div>
+  </header>
+
+  <!-- セクションナビ -->
+  <nav class="section-nav">
+    <h3>📋 CHAPTER 2 セクション一覧</h3>
+    <ul>
+      <li><a href="01_js_ecma.html">2-1 JavaScriptとは</a></li>
+      <li><a href="02_variables.html">2-2 変数と型</a></li>
+      <li><a href="03_expressions.html">2-3 式と演算子</a></li>
+      <li><a href="04_control.html">2-4 制御文</a></li>
+      <li><a href="05_arrays.html">2-5 配列</a></li>
+      <li class="current"><a href="06_objects.html">2-6 オブジェクト</a></li>
+      <li><a href="07_functions.html">2-7 関数</a></li>
+      <li><a href="08_global.html">2-8 グローバルオブジェクトとCallオブジェクト</a></li>
+    </ul>
+  </nav>
+
+  <!-- ===== 1. オブジェクトの基本 ===== -->
+  <div class="content-card">
+    <h2>🧩 オブジェクトの基本</h2>
+
+    <div class="code-block">
+      <button class="copy-btn" onclick="copyCode(this)">copy</button>
+      <pre><span class="comment">// オブジェクトリテラル</span>
+<span class="kw">const</span> user <span class="op">=</span> {
+  name: <span class="str">'Alice'</span>,
+  age:  <span class="num">30</span>,
+  <span class="fn">greet</span>() {                       <span class="comment">// メソッド短縮記法（ES6）</span>
+    <span class="kw">return</span> <span class="str">`Hello, ${this.name}`</span>;
+  }
+};
+
+<span class="comment">// プロパティアクセス</span>
+<span class="fn">console</span>.<span class="fn">log</span>(user.name);          <span class="out">// "Alice"（ドット記法）</span>
+<span class="fn">console</span>.<span class="fn">log</span>(user[<span class="str">'age'</span>]);        <span class="out">// 30（ブラケット記法）</span>
+
+<span class="comment">// プロパティの追加・削除</span>
+user.email <span class="op">=</span> <span class="str">'alice@example.com'</span>; <span class="comment">// 追加</span>
+<span class="kw">delete</span> user.age;                    <span class="comment">// 削除</span>
+
+<span class="comment">// スプレッド構文・分割代入</span>
+<span class="kw">const</span> copy <span class="op">=</span> { ...user, role: <span class="str">'admin'</span> }; <span class="comment">// シャローコピー＋追加</span>
+<span class="kw">const</span> { name, email <span class="op">=</span> <span class="str">'none'</span> } <span class="op">=</span> user;    <span class="comment">// 分割代入（デフォルト値付き）</span>
+
+<span class="comment">// 計算プロパティ名（ES6）</span>
+<span class="kw">const</span> key <span class="op">=</span> <span class="str">'score'</span>;
+<span class="kw">const</span> obj <span class="op">=</span> { [key]: <span class="num">100</span> };       <span class="out">// { score: 100 }</span></pre>
+    </div>
+  </div>
+
+  <!-- ===== 2. Object 静的メソッド ===== -->
+  <div class="content-card">
+    <h2>🛠 Object 静的メソッド</h2>
+
+    <div class="tbl-wrap">
+      <table>
+        <thead><tr><th>メソッド</th><th>説明</th><th>戻り値</th></tr></thead>
+        <tbody>
+          <tr><td><code>Object.keys(obj)</code></td><td>列挙可能な自身のキー一覧</td><td>文字列の配列</td></tr>
+          <tr><td><code>Object.values(obj)</code></td><td>列挙可能な自身の値一覧</td><td>値の配列</td></tr>
+          <tr><td><code>Object.entries(obj)</code></td><td>列挙可能な自身の [key, value] ペア一覧</td><td>[key,val]の配列</td></tr>
+          <tr><td><code>Object.assign(target, ...src)</code></td><td>プロパティをコピー（シャロー）</td><td>target オブジェクト</td></tr>
+          <tr><td><code>Object.freeze(obj)</code></td><td>オブジェクトを凍結（変更不可）</td><td>凍結されたオブジェクト</td></tr>
+          <tr><td><code>Object.create(proto)</code></td><td>指定プロトタイプでオブジェクト生成</td><td>新しいオブジェクト</td></tr>
+          <tr><td><code>Object.defineProperty(obj, key, desc)</code></td><td>プロパティ記述子を定義</td><td>obj</td></tr>
+          <tr><td><code>Object.fromEntries(iter)</code></td><td>[key,val] の配列からオブジェクト生成</td><td>新しいオブジェクト</td></tr>
+          <tr><td><code>Object.hasOwn(obj, key)</code></td><td>自身のプロパティか確認（ES2022）</td><td>boolean</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="code-block">
+      <button class="copy-btn" onclick="copyCode(this)">copy</button>
+      <pre><span class="kw">const</span> obj <span class="op">=</span> { a: <span class="num">1</span>, b: <span class="num">2</span>, c: <span class="num">3</span> };
+
+<span class="fn">console</span>.<span class="fn">log</span>(Object.<span class="fn">keys</span>(obj));    <span class="out">// ["a", "b", "c"]</span>
+<span class="fn">console</span>.<span class="fn">log</span>(Object.<span class="fn">values</span>(obj));  <span class="out">// [1, 2, 3]</span>
+<span class="fn">console</span>.<span class="fn">log</span>(Object.<span class="fn">entries</span>(obj)); <span class="out">// [["a",1],["b",2],["c",3]]</span>
+
+<span class="comment">// Object.assign：シャローコピー</span>
+<span class="kw">const</span> merged <span class="op">=</span> Object.<span class="fn">assign</span>({}, obj, { d: <span class="num">4</span> });
+<span class="fn">console</span>.<span class="fn">log</span>(merged); <span class="out">// { a:1, b:2, c:3, d:4 }</span>
+
+<span class="comment">// Object.freeze：変更不可にする</span>
+<span class="kw">const</span> frozen <span class="op">=</span> Object.<span class="fn">freeze</span>({ x: <span class="num">1</span> });
+frozen.x <span class="op">=</span> <span class="num">99</span>; <span class="comment">// 無視される（strictモードではTypeError）</span>
+<span class="fn">console</span>.<span class="fn">log</span>(frozen.x); <span class="out">// 1（変更されない）</span>
+
+<span class="comment">// entries → fromEntries で変換</span>
+<span class="kw">const</span> doubled <span class="op">=</span> Object.<span class="fn">fromEntries</span>(
+  Object.<span class="fn">entries</span>(obj).<span class="fn">map</span>(([k, v]) <span class="op">=&gt;</span> [k, v <span class="op">*</span> <span class="num">2</span>])
+);
+<span class="fn">console</span>.<span class="fn">log</span>(doubled); <span class="out">// { a:2, b:4, c:6 }</span></pre>
+    </div>
+  </div>
+
+  <!-- ===== 3. プロトタイプ ===== -->
+  <div class="content-card">
+    <h2>🔗 prototype とプロトタイプチェーン</h2>
+
+    <p>
+      JavaScriptのすべてのオブジェクトは <strong>[[Prototype]]</strong>（内部スロット）を持ち、
+      プロパティを参照するとき自身に見つからなければプロトタイプチェーンを辿って探します。
+    </p>
+
+    <div class="code-block">
+      <button class="copy-btn" onclick="copyCode(this)">copy</button>
+      <pre><span class="comment">// コンストラクタ関数とprototype</span>
+<span class="kw">function</span> <span class="fn">Animal</span>(name) {
+  <span class="kw">this</span>.name <span class="op">=</span> name;
+}
+Animal.prototype.<span class="fn">speak</span> <span class="op">=</span> <span class="kw">function</span>() {
+  <span class="kw">return</span> <span class="str">`${this.name} speaks`</span>;
+};
+
+<span class="kw">const</span> dog <span class="op">=</span> <span class="kw">new</span> <span class="fn">Animal</span>(<span class="str">'Dog'</span>);
+<span class="fn">console</span>.<span class="fn">log</span>(dog.<span class="fn">speak</span>());         <span class="out">// "Dog speaks"</span>
+<span class="fn">console</span>.<span class="fn">log</span>(dog.<span class="fn">hasOwnProperty</span>(<span class="str">'name'</span>));  <span class="out">// true（自身のプロパティ）</span>
+<span class="fn">console</span>.<span class="fn">log</span>(dog.<span class="fn">hasOwnProperty</span>(<span class="str">'speak'</span>)); <span class="out">// false（prototypeのプロパティ）</span>
+
+<span class="comment">// プロトタイプチェーンの確認</span>
+<span class="fn">console</span>.<span class="fn">log</span>(Object.<span class="fn">getPrototypeOf</span>(dog) <span class="op">===</span> Animal.prototype); <span class="out">// true</span>
+<span class="fn">console</span>.<span class="fn">log</span>(dog <span class="kw">instanceof</span> Animal);  <span class="out">// true</span>
+<span class="fn">console</span>.<span class="fn">log</span>(dog <span class="kw">instanceof</span> Object);  <span class="out">// true（全てObjectを継承）</span></pre>
+    </div>
+  </div>
+
+  <!-- ===== 4. class 構文 ===== -->
+  <div class="content-card">
+    <h2>🏛 class 構文</h2>
+
+    <p>ES6 で導入された <code>class</code> 構文は、プロトタイプベースの継承を分かりやすく書くための<strong>糖衣構文</strong>です。</p>
+
+    <div class="code-block">
+      <button class="copy-btn" onclick="copyCode(this)">copy</button>
+      <pre><span class="kw">class</span> <span class="fn">Animal</span> {
+  <span class="comment">// プライベートフィールド（ES2022）</span>
+  #sound <span class="op">=</span> <span class="str">'...'</span>;
+
+  <span class="fn">constructor</span>(name, sound) {
+    <span class="kw">this</span>.name  <span class="op">=</span> name;
+    <span class="kw">this</span>.#sound <span class="op">=</span> sound;
+  }
+
+  <span class="comment">// インスタンスメソッド</span>
+  <span class="fn">speak</span>() {
+    <span class="kw">return</span> <span class="str">`${this.name}: ${this.#sound}`</span>;
+  }
+
+  <span class="comment">// getter / setter</span>
+  <span class="kw">get</span> <span class="fn">info</span>() {
+    <span class="kw">return</span> <span class="str">`[${this.name}]`</span>;
+  }
+  <span class="kw">set</span> <span class="fn">nickname</span>(val) {
+    <span class="kw">this</span>.name <span class="op">=</span> val;
+  }
+
+  <span class="comment">// static メソッド（インスタンスではなくクラスから呼ぶ）</span>
+  <span class="kw">static</span> <span class="fn">create</span>(name, sound) {
+    <span class="kw">return</span> <span class="kw">new</span> <span class="fn">Animal</span>(name, sound);
+  }
+}
+
+<span class="comment">// 継承</span>
+<span class="kw">class</span> <span class="fn">Dog</span> <span class="kw">extends</span> <span class="fn">Animal</span> {
+  <span class="fn">constructor</span>(name) {
+    <span class="kw">super</span>(name, <span class="str">'Woof'</span>); <span class="comment">// 親のconstructorを呼ぶ（必須）</span>
+    <span class="kw">this</span>.tricks <span class="op">=</span> [];
+  }
+
+  <span class="fn">learn</span>(trick) {
+    <span class="kw">this</span>.tricks.<span class="fn">push</span>(trick);
+  }
+
+  <span class="comment">// メソッドのオーバーライド</span>
+  <span class="fn">speak</span>() {
+    <span class="kw">return</span> <span class="kw">super</span>.<span class="fn">speak</span>() <span class="op">+</span> <span class="str">' 🐕'</span>; <span class="comment">// 親メソッドを呼ぶ</span>
+  }
+}
+
+<span class="kw">const</span> dog <span class="op">=</span> <span class="kw">new</span> <span class="fn">Dog</span>(<span class="str">'Rex'</span>);
+<span class="fn">console</span>.<span class="fn">log</span>(dog.<span class="fn">speak</span>());          <span class="out">// "Rex: Woof 🐕"</span>
+<span class="fn">console</span>.<span class="fn">log</span>(dog.info);              <span class="out">// "[Rex]"（getter）</span>
+<span class="fn">console</span>.<span class="fn">log</span>(dog <span class="kw">instanceof</span> Dog);    <span class="out">// true</span>
+<span class="fn">console</span>.<span class="fn">log</span>(dog <span class="kw">instanceof</span> Animal); <span class="out">// true（継承関係）</span>
+<span class="fn">console</span>.<span class="fn">log</span>(Animal.<span class="fn">create</span>(<span class="str">'Cat'</span>, <span class="str">'Meow'</span>).<span class="fn">speak</span>()); <span class="out">// "Cat: Meow"</span></pre>
+    </div>
+
+    <div class="tbl-wrap">
+      <table>
+        <thead><tr><th>構文</th><th>説明</th></tr></thead>
+        <tbody>
+          <tr><td><code>constructor()</code></td><td>インスタンス生成時に呼ばれる初期化メソッド</td></tr>
+          <tr><td><code>extends</code></td><td>クラスの継承</td></tr>
+          <tr><td><code>super()</code></td><td>親クラスのコンストラクタを呼ぶ（extends 時は必須）</td></tr>
+          <tr><td><code>super.method()</code></td><td>親クラスのメソッドを呼ぶ</td></tr>
+          <tr><td><code>static</code></td><td>クラスメソッド・プロパティ（インスタンスからは呼べない）</td></tr>
+          <tr><td><code>get / set</code></td><td>アクセサプロパティ（getter / setter）</td></tr>
+          <tr><td><code>#field</code></td><td>プライベートフィールド（クラス外からアクセス不可）</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="info-box warn">
+      <strong>⚠️ 試験ポイント：extends 使用時の super()</strong><br>
+      <code>extends</code> を使ったサブクラスの <code>constructor</code> 内では、
+      <code>this</code> を使う前に必ず <code>super()</code> を呼ぶ必要があります。
+      呼ばないと <code>ReferenceError</code> になります。
+    </div>
+  </div>
+
+  <!-- ===== デモ①：プロトタイプチェーンビジュアライザ ===== -->
+  <div class="demo-card">
+    <h3>🎮 デモ①：プロトタイプチェーン ビジュアライザ</h3>
+    <p class="demo-desc">タブを切り替えてオブジェクトのプロトタイプチェーンを視覚的に確認しましょう。ノードをクリックすると詳細が表示されます。</p>
+
+    <div class="proto-tabs">
+      <button class="proto-tab active" onclick="showProto('array', this)">配列 []</button>
+      <button class="proto-tab" onclick="showProto('func', this)">関数 function(){}</button>
+      <button class="proto-tab" onclick="showProto('class', this)">class Dog extends Animal</button>
+    </div>
+    <div id="protoChainDisplay"></div>
+  </div>
+
+  <!-- ===== デモ②：クラス継承デモ ===== -->
+  <div class="demo-card">
+    <h3>🎮 デモ②：クラス継承（extends / super）動作確認</h3>
+    <p class="demo-desc">Animal クラスと Dog クラスの継承関係を確認し、各プロパティ・メソッドがどのクラスに属するか見てみましょう。</p>
+
+    <div class="class-demo-layout">
+      <div>
+        <div class="class-box parent">
+          <h4>🐾 class Animal（親クラス）</h4>
+          <span class="kw">class</span> <span class="fn">Animal</span> {<br>
+          &nbsp;&nbsp;<span class="comment">// プライベートフィールド</span><br>
+          &nbsp;&nbsp;<span style="color:#fc8181;">#sound</span>;<br>
+          &nbsp;&nbsp;<span class="fn">constructor</span>(name, sound) {<br>
+          &nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">this</span>.name = name;<br>
+          &nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">this</span>.<span style="color:#fc8181;">#sound</span> = sound;<br>
+          &nbsp;&nbsp;}<br>
+          &nbsp;&nbsp;<span class="fn">speak</span>() { <span class="kw">return</span> <span class="str">`${this.name}: ${this.#sound}`</span>; }<br>
+          &nbsp;&nbsp;<span class="kw">get</span> <span class="fn">info</span>() { <span class="kw">return</span> <span class="str">`[${this.name}]`</span>; }<br>
+          &nbsp;&nbsp;<span class="kw">static</span> <span class="fn">create</span>(n,s) { <span class="kw">return new</span> <span class="fn">Animal</span>(n,s); }<br>
+          }
+        </div>
+        <div class="class-box child" style="margin-top:10px;">
+          <h4>🐕 class Dog extends Animal（子クラス）</h4>
+          <span class="kw">class</span> <span class="fn">Dog</span> <span class="kw">extends</span> <span class="fn">Animal</span> {<br>
+          &nbsp;&nbsp;<span class="fn">constructor</span>(name) {<br>
+          &nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">super</span>(name, <span class="str">'Woof'</span>);<br>
+          &nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">this</span>.tricks = [];<br>
+          &nbsp;&nbsp;}<br>
+          &nbsp;&nbsp;<span class="fn">learn</span>(trick) { <span class="kw">this</span>.tricks.push(trick); }<br>
+          &nbsp;&nbsp;<span class="fn">speak</span>() { <span class="kw">return super</span>.<span class="fn">speak</span>() + <span class="str">' 🐕'</span>; }<br>
+          }
+        </div>
+      </div>
+      <div>
+        <div class="class-result">
+          <h4>🔍 インスタンス確認</h4>
+          <div id="classInspect"></div>
+        </div>
+        <div style="margin-top:10px;">
+          <select id="classTarget" style="width:100%;padding:8px;border:2px solid #c4b5fd;border-radius:8px;font-size:0.88rem;color:#553c9a;font-weight:700;margin-bottom:8px;" onchange="runClassDemo()">
+            <option value="dog">const dog = new Dog('Rex')</option>
+            <option value="animal">const cat = new Animal('Cat','Meow')</option>
+          </select>
+          <button class="run-btn" onclick="runClassDemo()">▶ 確認する</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== デモ③：Object メソッドプレイグラウンド ===== -->
+  <div class="demo-card">
+    <h3>🎮 デモ③：Object メソッド プレイグラウンド</h3>
+    <p class="demo-desc">メソッドを選んでオブジェクトを入力すると結果を確認できます。</p>
+
+    <div class="obj-method-tabs" id="objMethodTabs"></div>
+    <div class="obj-pg-layout">
+      <div class="obj-input-area">
+        <label>対象オブジェクト</label>
+        <textarea class="obj-textarea" id="objInput">{ a: 1, b: 2, c: 3 }</textarea>
+        <label style="margin-top:10px;">第2引数（任意）</label>
+        <textarea class="obj-textarea" id="objArg2" rows="2">{ d: 4 }</textarea>
+        <button class="run-btn" onclick="runObjMethod()">▶ 実行</button>
+      </div>
+      <div class="obj-output-area">
+        <label>実行結果</label>
+        <div class="obj-output" id="objOutput">メソッドを選んで実行してください</div>
+      </div>
+    </div>
+    <div class="obj-method-desc" id="objMethodDesc"></div>
+  </div>
+
+  <!-- ===== 演習問題 ===== -->
+  <div class="quiz-section">
+    <h2>✏️ 演習問題</h2>
+
+    <!-- Q1：穴埋め -->
+    <div class="quiz-item">
+      <div class="quiz-q">
+        <span class="q-num">Q1</span>
+        プロトタイプチェーンについて空欄を埋めてください。（穴埋め）
+      </div>
+      <p style="font-size:0.92rem;color:#4a5568;margin-bottom:14px;">
+        JavaScriptのオブジェクトは自身にプロパティが見つからない場合、
+        <input class="blank-input" id="q1a" placeholder="？？？"> を辿って探す。
+        この仕組みを <input class="blank-input" id="q1b" placeholder="？？？"> という。
+        チェーンの終端は <input class="blank-input" id="q1c" placeholder="？？？"> である。
+        オブジェクト自身のプロパティかどうかは
+        <input class="blank-input" id="q1d" placeholder="？？？"> メソッドで確認できる。
+      </p>
+      <button class="check-btn" onclick="checkQ1()">判定する</button>
+      <div class="feedback" id="fb1"></div>
+    </div>
+
+    <!-- Q2：選択 -->
+    <div class="quiz-item">
+      <div class="quiz-q">
+        <span class="q-num">Q2</span>
+        class 構文について正しい説明はどれですか？（選択）
+      </div>
+      <div class="choices">
+        <button class="choice-btn" onclick="checkQ2(this,false)">
+          A. extends を使ったサブクラスでは super() を呼ばなくても this が使える
+        </button>
+        <button class="choice-btn" onclick="checkQ2(this,false)">
+          B. static メソッドはインスタンスから呼び出すことができる
+        </button>
+        <button class="choice-btn" onclick="checkQ2(this,true)">
+          C. class 構文はプロトタイプベースの継承を分かりやすく書くための糖衣構文である
+        </button>
+        <button class="choice-btn" onclick="checkQ2(this,false)">
+          D. プライベートフィールド（#）はサブクラスからアクセスできる
+        </button>
+      </div>
+      <div class="feedback" id="fb2"></div>
+    </div>
+
+    <!-- Q3：チェックボックス -->
+    <div class="quiz-item">
+      <div class="quiz-q">
+        <span class="q-num">Q3</span>
+        Object の静的メソッドについて<strong>正しい</strong>ものをすべて選んでください。（複数選択）
+      </div>
+      <div class="checkbox-list" id="q3-list">
+        <label class="cb-label"><input type="checkbox" value="a">
+          <code>Object.keys()</code> は列挙可能な自身のプロパティ名の配列を返す</label>
+        <label class="cb-label"><input type="checkbox" value="b">
+          <code>Object.freeze()</code> はネストしたオブジェクトも再帰的に凍結する</label>
+        <label class="cb-label"><input type="checkbox" value="c">
+          <code>Object.assign()</code> はシャローコピーを行う</label>
+        <label class="cb-label"><input type="checkbox" value="d">
+          <code>Object.entries()</code> は [key, value] の配列の配列を返す</label>
+        <label class="cb-label"><input type="checkbox" value="e">
+          <code>Object.fromEntries()</code> は <code>Object.entries()</code> の逆変換に使える</label>
+      </div>
+      <button class="check-btn" onclick="checkQ3()">判定する</button>
+      <div class="feedback" id="fb3"></div>
+    </div>
+
+    <!-- Q4：コード補完 -->
+    <div class="quiz-item">
+      <div class="quiz-q">
+        <span class="q-num">Q4</span>
+        Animal を継承した Cat クラスを完成させてください。（コード補完）
+      </div>
+      <div class="code-fill">
+<span class="kw">class</span> <span class="fn">Animal</span> {
+  <span class="fn">constructor</span>(name) { <span class="kw">this</span>.name <span class="op">=</span> name; }
+  <span class="fn">speak</span>() { <span class="kw">return</span> <span class="str">`${this.name} speaks`</span>; }
+}
+
+<span class="kw">class</span> <span class="fn">Cat</span> <input class="fill-input" id="q4a" placeholder="キーワード"> <span class="fn">Animal</span> {
+  <span class="fn">constructor</span>(name) {
+    <input class="fill-input" id="q4b" placeholder="呼び出し">(name);
+    <span class="kw">this</span>.lives <span class="op">=</span> <span class="num">9</span>;
+  }
+  <span class="fn">speak</span>() {
+    <span class="kw">return</span> <input class="fill-input" id="q4c" placeholder="親メソッド呼び出し"> <span class="op">+</span> <span class="str">' 🐱'</span>;
+  }
+}
+<span class="kw">const</span> cat <span class="op">=</span> <span class="kw">new</span> <span class="fn">Cat</span>(<span class="str">'Mimi'</span>);
+<span class="fn">console</span>.<span class="fn">log</span>(cat.<span class="fn">speak</span>()); <span class="out">// "Mimi speaks 🐱"</span>
+      </div>
+      <button class="check-btn" onclick="checkQ4()">判定する</button>
+      <div class="feedback" id="fb4"></div>
+    </div>
+
+  </div>
+
+  <!-- 完了ボタン -->
+  <div class="complete-area">
+    <button class="complete-btn" id="completeBtn" onclick="markComplete()">
+      ✅ セクション 2-6 を完了にする
+    </button>
+    <div class="complete-msg" id="completeMsg"></div>
+  </div>
+
+  <!-- ページナビ -->
+  <nav class="page-nav">
+    <a class="nav-btn prev" href="05_arrays.html">← 2-5 配列</a>
+    <a class="nav-btn index" href="index.html">📋 Chapter 2 目次</a>
+    <a class="nav-btn next" href="07_functions.html">2-7 関数 →</a>
+  </nav>
+
+  <footer>
+    <p>HTML5 Professional Level 2 試験対策サイト &copy; 2026</p>
+  </footer>
+
+  <script>
+    // ── コピーボタン ──
+    function copyCode(btn) {
+      const pre = btn.nextElementSibling;
+      navigator.clipboard.writeText(pre.innerText).then(() => {
+        btn.textContent = 'copied!';
+        btn.classList.add('copied');
+        setTimeout(() => { btn.textContent = 'copy'; btn.classList.remove('copied'); }, 2000);
+      });
+    }
+
+    // ── デモ①：プロトタイプチェーンビジュアライザ ──
+    const protoChains = {
+      array: {
+        nodes: [
+          { title: 'インスタンス: []', props: 'length: 0\n[0], [1], ... （要素）' },
+          { title: 'Array.prototype', props: 'push / pop / map / filter\nreduce / forEach / find ...' },
+          { title: 'Object.prototype', props: 'hasOwnProperty()\ntoString() / valueOf()\nisPrototypeOf()' },
+        ],
+        lookup: '配列 [] でメソッドを呼ぶと、まず自身を探し、次に Array.prototype、最後に Object.prototype を探します。'
+      },
+      func: {
+        nodes: [
+          { title: 'インスタンス: function(){}', props: 'name: ""\nlength: 0（引数の数）' },
+          { title: 'Function.prototype', props: 'call() / apply() / bind()\ntoString()' },
+          { title: 'Object.prototype', props: 'hasOwnProperty()\ntoString() / valueOf()' },
+        ],
+        lookup: '関数オブジェクトは Function.prototype を継承しているため call / apply / bind が使えます。'
+      },
+      class: {
+        nodes: [
+          { title: 'インスタンス: new Dog("Rex")', props: 'name: "Rex"\ntricks: []' },
+          { title: 'Dog.prototype', props: 'learn() / speak()（override）\nconstructor: Dog' },
+          { title: 'Animal.prototype', props: 'speak()\nget info\nconstructor: Animal' },
+          { title: 'Object.prototype', props: 'hasOwnProperty()\ntoString() / valueOf()' },
+        ],
+        lookup: 'Dog は Animal を extends しているため、Dog.prototype の [[Prototype]] は Animal.prototype になります。super.speak() は Animal.prototype.speak を呼びます。'
+      }
+    };
+
+    function showProto(key, btn) {
+      document.querySelectorAll('.proto-tab').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      const data = protoChains[key];
+      let html = '<div class="proto-chain">';
+      data.nodes.forEach((n, i) => {
+        html += `<div class="proto-node" onclick="this.classList.toggle('highlight')">
+          <div class="node-title">${n.title}</div>
+          <pre style="white-space:pre-wrap;font-size:0.78rem;color:#a0aec0;">${n.props}</pre>
+        </div>`;
+        if (i < data.nodes.length - 1) {
+          html += '<div class="proto-arrow"></div>';
+        }
+      });
+      html += '<div style="height:28px;width:3px;background:#553c9a;margin-left:24px;"></div>';
+      html += '<div class="proto-null">null（チェーンの終端）</div>';
+      html += '</div>';
+      html += `<div class="proto-lookup">💡 ${data.lookup}</div>`;
+      document.getElementById('protoChainDisplay').innerHTML = html;
+    }
+
+    // ── デモ②：クラス継承デモ ──
+    function runClassDemo() {
+      const target = document.getElementById('classTarget').value;
+      const box    = document.getElementById('classInspect');
+
+      const rows = [];
+      const row = (key, val, note) =>
+        `<div class="result-row">
+          <span class="result-key">${key}</span>
+          <span class="result-value">${val}</span>
+          ${note ? `<span style="color:#718096;font-size:0.78rem;margin-left:6px;">${note}</span>` : ''}
+        </div>`;
+
+      if (target === 'dog') {
+        rows.push(row('dog.name', '"Rex"', '自身のプロパティ'));
+        rows.push(row('dog.tricks', '[]', '自身のプロパティ'));
+        rows.push(row('dog.speak()', '"Rex: Woof 🐕"', 'Dog.prototype（override）'));
+        rows.push(row('dog.info', '"[Rex]"', 'Animal.prototype（getter）'));
+        rows.push(row('dog instanceof Dog', 'true', ''));
+        rows.push(row('dog instanceof Animal', 'true', '継承関係'));
+        rows.push(row('dog instanceof Object', 'true', '全オブジェクトの祖先'));
+        rows.push(row('Dog.create(...)', '❌ TypeError', 'staticはDogに継承されない'));
+        rows.push(row('Animal.create(...)', '✅ 使用可能', 'staticはクラス自身から呼ぶ'));
+      } else {
+        rows.push(row('cat.name', '"Cat"', '自身のプロパティ'));
+        rows.push(row('cat.speak()', '"Cat: Meow"', 'Animal.prototype'));
+        rows.push(row('cat.info', '"[Cat]"', 'Animal.prototype（getter）'));
+        rows.push(row('cat instanceof Animal', 'true', ''));
+        rows.push(row('cat instanceof Dog', 'false', '継承関係なし'));
+        rows.push(row('Animal.create("Bird","Tweet")', '✅ 使用可能', 'staticメソッド'));
+      }
+
+      box.innerHTML = rows.join('');
+    }
+
+    // ── デモ③：Object メソッドプレイグラウンド ──
+    const objMethods = [
+      {
+        name: 'keys', label: 'Object.keys()',
+        defaultObj: '{ a: 1, b: 2, c: 3 }',
+        desc: '<strong>Object.keys(obj)</strong>：列挙可能な自身のプロパティ名（キー）の配列を返します。',
+        run: (obj) => Object.keys(obj)
+      },
+      {
+        name: 'values', label: 'Object.values()',
+        defaultObj: '{ a: 1, b: 2, c: 3 }',
+        desc: '<strong>Object.values(obj)</strong>：列挙可能な自身のプロパティ値の配列を返します。',
+        run: (obj) => Object.values(obj)
+      },
+      {
+        name: 'entries', label: 'Object.entries()',
+        defaultObj: '{ a: 1, b: 2, c: 3 }',
+        desc: '<strong>Object.entries(obj)</strong>：[key, value] ペアの配列を返します。Map 変換や for...of と組み合わせて使います。',
+        run: (obj) => Object.entries(obj)
+      },
+      {
+        name: 'assign', label: 'Object.assign()',
+        defaultObj: '{ a: 1, b: 2 }',
+        defaultArg: '{ b: 99, c: 3 }',
+        desc: '<strong>Object.assign(target, source)</strong>：source のプロパティを target にコピーします。同名プロパティは上書きされます（シャローコピー）。',
+        run: (obj, arg2) => Object.assign({}, obj, arg2)
+      },
+      {
+        name: 'freeze', label: 'Object.freeze()',
+        defaultObj: '{ x: 1, y: 2 }',
+        desc: '<strong>Object.freeze(obj)</strong>：オブジェクトを凍結して変更不可にします。ネストしたオブジェクトは凍結されません（シャロー）。',
+        run: (obj) => {
+          const f = Object.freeze({...obj});
+          try { f[Object.keys(f)[0]] = 999; } catch(e) {}
+          return { frozen: f, isFrozen: Object.isFrozen(f) };
+        }
+      },
+      {
+        name: 'fromEntries', label: 'Object.fromEntries()',
+        defaultObj: '[["a", 1], ["b", 2], ["c", 3]]',
+        desc: '<strong>Object.fromEntries(iter)</strong>：[key, value] の配列からオブジェクトを生成します。Object.entries() の逆変換に使えます。',
+        run: (arr) => Object.fromEntries(arr)
+      },
+    ];
+
+    let currentObjMethod = objMethods[0];
+
+    function buildObjTabs() {
+      const container = document.getElementById('objMethodTabs');
+      container.innerHTML = objMethods.map((m, i) =>
+        `<button class="obj-tab ${i === 0 ? 'active' : ''}"
+          onclick="selectObjMethod('${m.name}', this)">${m.label}</button>`
+      ).join('');
+    }
+
+    function selectObjMethod(name, btn) {
+      document.querySelectorAll('.obj-tab').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      currentObjMethod = objMethods.find(m => m.name === name);
+      document.getElementById('objInput').value  = currentObjMethod.defaultObj;
+      document.getElementById('objArg2').value   = currentObjMethod.defaultArg || '{ d: 4 }';
+      document.getElementById('objMethodDesc').innerHTML = currentObjMethod.desc;
+      runObjMethod();
+    }
+
+    function runObjMethod() {
+      const objStr  = document.getElementById('objInput').value.trim();
+      const arg2Str = document.getElementById('objArg2').value.trim();
+      const out     = document.getElementById('objOutput');
+      try {
+        const obj  = Function('"use strict"; return (' + objStr + ')')();
+        const arg2 = arg2Str ? Function('"use strict"; return (' + arg2Str + ')')() : undefined;
+        const result = currentObjMethod.run(obj, arg2);
+        const disp = JSON.stringify(result, null, 2);
+        const color = Array.isArray(result) ? '#68d391'
+                    : typeof result === 'object' ? '#fbd38d'
+                    : '#90cdf4';
+        out.innerHTML = `<span style="color:${color};">${disp}</span>`;
+      } catch(e) {
+        out.innerHTML = `<span style="color:#fc8181;">エラー: ${e.message}</span>`;
+      }
+    }
+
+    // ── Q1 穴埋め ──
+    function checkQ1() {
+      const ans = [
+        { id: 'q1a', correct: ['プロトタイプ', 'prototype', '[[Prototype]]'] },
+        { id: 'q1b', correct: ['プロトタイプチェーン', 'prototype chain'] },
+        { id: 'q1c', correct: ['null'] },
+        { id: 'q1d', correct: ['hasOwnProperty', 'hasOwn'] },
+      ];
+      let allOk = true;
+      ans.forEach(a => {
+        const el  = document.getElementById(a.id);
+        const val = el.value.trim();
+        const ok  = a.correct.some(c => val.toLowerCase().includes(c.toLowerCase()));
+        el.classList.toggle('correct', ok);
+        el.classList.toggle('wrong', !ok);
+        if (!ok) allOk = false;
+      });
+      const fb = document.getElementById('fb1');
+      fb.className = 'feedback show ' + (allOk ? 'ok' : 'ng');
+      fb.innerHTML = allOk
+        ? '✅ 正解！ プロトタイプ → プロトタイプチェーン → null → hasOwnProperty です。'
+        : '❌ キーワード：①「プロトタイプ」②「プロトタイプチェーン」③「null」④「hasOwnProperty」';
+    }
+
+    // ── Q2 選択 ──
+    function checkQ2(btn, isCorrect) {
+      document.querySelectorAll('.choice-btn').forEach(b => b.disabled = true);
+      btn.classList.add(isCorrect ? 'correct' : 'wrong');
+      const fb = document.getElementById('fb2');
+      fb.className = 'feedback show ' + (isCorrect ? 'ok' : 'ng');
+      fb.innerHTML = isCorrect
+        ? '✅ 正解！ class 構文はプロトタイプベース継承の糖衣構文です。内部的には prototype を使っています。'
+        : '❌ 不正解。A: super()なしにthisを使うとReferenceError。B: staticはクラス自身から呼ぶ。D: プライベートフィールド(#)はサブクラスからもアクセス不可。';
+    }
+
+    // ── Q3 チェックボックス ──
+    function checkQ3() {
+      const correct = new Set(['a', 'c', 'd', 'e']);
+      const labels  = document.querySelectorAll('#q3-list .cb-label');
+      let ok = 0;
+      labels.forEach(label => {
+        const cb = label.querySelector('input');
+        cb.disabled = true;
+        const checked = cb.checked;
+        const should  = correct.has(cb.value);
+        if (checked && should)       { label.classList.add('correct'); ok++; }
+        else if (checked && !should)   label.classList.add('wrong');
+        else if (!checked && should)   label.classList.add('wrong');
+      });
+      const allOk = ok === correct.size &&
+        [...labels].filter(l => l.querySelector('input').checked).length === correct.size;
+      const fb = document.getElementById('fb3');
+      fb.className = 'feedback show ' + (allOk ? 'ok' : 'ng');
+      fb.innerHTML = allOk
+        ? '✅ 完璧！ 正解は a・c・d・e です。'
+        : '❌ 正解は a(keys→キー配列)・c(assign→シャロー)・d(entries→[key,val]配列)・e(fromEntries→逆変換)。<br>b: Object.freeze() は<strong>シャロー凍結</strong>のみで、ネストしたオブジェクトは凍結されません。';
+    }
+
+    // ── Q4 コード補完 ──
+    function checkQ4() {
+      const a = document.getElementById('q4a').value.trim();
+      const b = document.getElementById('q4b').value.trim();
+      const c = document.getElementById('q4c').value.trim();
+      const okA = a === 'extends';
+      const okB = b === 'super' || b === 'super()';
+      const okC = c === 'super.speak()';
+      [['q4a',okA],['q4b',okB],['q4c',okC]].forEach(([id,ok]) => {
+        document.getElementById(id).classList.toggle('correct', ok);
+        document.getElementById(id).classList.toggle('wrong', !ok);
+      });
+      const allOk = okA && okB && okC;
+      const fb = document.getElementById('fb4');
+      fb.className = 'feedback show ' + (allOk ? 'ok' : 'ng');
+      fb.innerHTML = allOk
+        ? '✅ 正解！ extends → super() → super.speak() の3つがポイントです。'
+        : '❌ 不正解。①<code>extends</code>（継承）②<code>super</code>（親のconstructor呼び出し）③<code>super.speak()</code>（親メソッド呼び出し）';
+    }
+
+    // ── 完了ボタン ──
+    function markComplete() {
+      localStorage.setItem('html5lv2_ch2_06', 'done');
+      const btn = document.getElementById('completeBtn');
+      btn.textContent = '🎉 完了済み！';
+      btn.classList.add('done');
+      btn.disabled = true;
+      document.getElementById('completeMsg').textContent = '進捗が保存されました。次のセクションへ進みましょう！';
+    }
+
+    // ── 初期化 ──
+    window.addEventListener('DOMContentLoaded', () => {
+      showProto('array', document.querySelector('.proto-tab.active'));
+      runClassDemo();
+      buildObjTabs();
+      document.getElementById('objMethodDesc').innerHTML = objMethods[0].desc;
+      runObjMethod();
+      if (localStorage.getItem('html5lv2_ch2_06') === 'done') {
+        const btn = document.getElementById('completeBtn');
+        btn.textContent = '🎉 完了済み！';
+        btn.classList.add('done');
+        btn.disabled = true;
+        document.getElementById('completeMsg').textContent = 'このセクションは完了済みです。';
+      }
+    });
+  </script>
+
+</body>
+</html>
