@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Chapter 3 WebブラウザにおけるJavaScript API | HTML5プロフェッショナル Level 2</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; }
+    body {
+      font-family: 'Segoe UI', 'Helvetica Neue', sans-serif;
+      max-width: 1000px; margin: 40px auto; padding: 0 24px;
+      background: #f0f4f8; color: #2d3748; line-height: 1.8;
+    }
+
+    /* ===== パンくず ===== */
+    .breadcrumb {
+      font-size: 0.82em; color: #a0aec0; margin-bottom: 20px;
+      font-family: 'Consolas','Monaco',monospace;
+    }
+    .breadcrumb a { color: #553c9a; text-decoration: none; }
+    .breadcrumb a:hover { text-decoration: underline; }
+
+    /* ===== ヘッダー ===== */
+    .chapter-header {
+      background: linear-gradient(135deg, #553c9a, #9f7aea);
+      border-radius: 14px; padding: 36px 36px 28px;
+      margin-bottom: 36px; color: #fff;
+      box-shadow: 0 6px 24px rgba(85,60,154,0.35);
+    }
+    .chapter-header .ch-num {
+      font-size: 0.8em; font-family: 'Consolas','Monaco',monospace;
+      opacity: 0.85; letter-spacing: 0.08em; margin-bottom: 6px;
+    }
+    .chapter-header h1 {
+      margin: 0 0 10px; font-size: 1.8em; color: #fff; border: none; padding: 0;
+    }
+    .chapter-header p { margin: 0; font-size: 0.95em; opacity: 0.9; }
+    .badge-row { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 16px; }
+    .badge {
+      background: rgba(255,255,255,0.18);
+      border: 1px solid rgba(255,255,255,0.35);
+      border-radius: 20px; padding: 4px 14px;
+      font-size: 0.76em; font-weight: bold;
+    }
+
+    /* ===== 全体進捗 ===== */
+    .overall-progress {
+      background: #fff; border-radius: 12px;
+      padding: 24px 28px; margin-bottom: 32px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.07);
+      border: 1px solid #e9d8fd;
+    }
+    .overall-progress h2 {
+      margin: 0 0 14px; font-size: 1em; color: #553c9a;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .progress-bar-wrap {
+      background: #e9d8fd; border-radius: 99px;
+      height: 14px; overflow: hidden; margin-bottom: 8px;
+    }
+    .progress-bar-fill {
+      height: 100%; border-radius: 99px;
+      background: linear-gradient(90deg, #553c9a, #9f7aea);
+      transition: width 0.6s ease;
+    }
+    .progress-label {
+      font-size: 0.88em; color: #6b46c1; font-weight: bold;
+    }
+
+    /* ===== カードグリッド ===== */
+    .section-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 20px; margin-bottom: 40px;
+    }
+    .section-card {
+      background: #fff; border-radius: 12px;
+      border: 2px solid #e9d8fd;
+      padding: 22px 22px 18px;
+      box-shadow: 0 2px 8px rgba(85,60,154,0.08);
+      transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
+      text-decoration: none; color: inherit;
+      display: flex; flex-direction: column;
+    }
+    .section-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 8px 24px rgba(85,60,154,0.18);
+      border-color: #9f7aea;
+    }
+    .section-card.done {
+      border-color: #9f7aea;
+      background: linear-gradient(135deg, #faf5ff, #fff);
+    }
+    .card-num {
+      font-size: 0.75em; font-family: 'Consolas','Monaco',monospace;
+      color: #9f7aea; font-weight: bold; margin-bottom: 6px;
+      letter-spacing: 0.06em;
+    }
+    .card-title {
+      font-size: 1.05em; font-weight: bold; color: #553c9a;
+      margin-bottom: 12px; line-height: 1.4;
+    }
+    .card-topics {
+      list-style: none; padding: 0; margin: 0 0 14px;
+      font-size: 0.82em; color: #4a5568; flex: 1;
+    }
+    .card-topics li {
+      padding: 3px 0; border-bottom: 1px dashed #e9d8fd;
+      display: flex; align-items: flex-start; gap: 6px;
+    }
+    .card-topics li::before { content: '▸'; color: #9f7aea; flex-shrink: 0; }
+    .card-progress-wrap {
+      background: #e9d8fd; border-radius: 99px;
+      height: 8px; overflow: hidden; margin-bottom: 6px;
+    }
+    .card-progress-fill {
+      height: 100%; border-radius: 99px;
+      background: linear-gradient(90deg, #553c9a, #9f7aea);
+      transition: width 0.5s ease;
+    }
+    .card-status {
+      font-size: 0.78em; color: #9f7aea; font-weight: bold;
+      display: flex; align-items: center; gap: 6px;
+    }
+    .card-status.done-status { color: #553c9a; }
+    .done-badge {
+      background: #553c9a; color: #fff;
+      border-radius: 20px; padding: 2px 10px;
+      font-size: 0.75em; font-weight: bold;
+    }
+
+    /* ===== チャプターナビ ===== */
+    .chapter-nav {
+      display: flex; justify-content: space-between;
+      align-items: center; gap: 16px;
+      background: #fff; border-radius: 12px;
+      padding: 20px 24px; margin-bottom: 32px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+      border: 1px solid #e9d8fd;
+    }
+    .chapter-nav a {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 10px 20px; border-radius: 8px;
+      text-decoration: none; font-weight: bold;
+      font-size: 0.9em; transition: all 0.2s;
+    }
+    .nav-prev { background: #edf2f7; color: #4a5568; }
+    .nav-prev:hover { background: #e2e8f0; }
+    .nav-home { background: #faf5ff; color: #553c9a; border: 2px solid #e9d8fd; }
+    .nav-home:hover { background: #e9d8fd; }
+    .nav-next { background: linear-gradient(135deg, #553c9a, #9f7aea); color: #fff; }
+    .nav-next:hover { opacity: 0.88; }
+
+    /* ===== 学習ガイド ===== */
+    .study-guide {
+      background: #fff; border-radius: 12px;
+      padding: 24px 28px; margin-bottom: 32px;
+      border: 1px solid #e9d8fd;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    }
+    .study-guide h2 {
+      margin: 0 0 16px; color: #553c9a; font-size: 1.05em;
+      border-left: 4px solid #9f7aea; padding-left: 12px;
+    }
+    .guide-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 12px;
+    }
+    .guide-item {
+      background: #faf5ff; border-radius: 8px;
+      padding: 14px 16px; border: 1px solid #e9d8fd;
+    }
+    .guide-item .guide-icon { font-size: 1.4em; margin-bottom: 6px; }
+    .guide-item .guide-label { font-size: 0.82em; font-weight: bold; color: #553c9a; }
+    .guide-item .guide-desc { font-size: 0.78em; color: #718096; margin-top: 4px; }
+
+    /* ===== フッター ===== */
+    footer {
+      margin-top: 48px; padding-top: 16px;
+      border-top: 2px solid #e9d8fd;
+      font-size: 0.82em; color: #a0aec0; text-align: center;
+    }
+    footer a { color: #553c9a; text-decoration: none; }
+    footer a:hover { text-decoration: underline; }
+
+    @media (max-width: 600px) {
+      body { font-size: 0.84em; padding: 0 12px; }
+      .chapter-header { padding: 20px 16px; }
+      .chapter-header h1 { font-size: 1.3em; }
+      .section-grid { grid-template-columns: 1fr; }
+      .chapter-nav { flex-direction: column; align-items: stretch; }
+      .chapter-nav a { justify-content: center; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- パンくず -->
+<div class="breadcrumb">
+  <a href="../index.html">🏠 HTML5 Level 2</a> ›
+  Chapter 3：WebブラウザにおけるJavaScript API
+</div>
+
+<!-- ヘッダー -->
+<div class="chapter-header">
+  <div class="ch-num">CHAPTER 03</div>
+  <h1>🌐 Chapter 3：WebブラウザにおけるJavaScript API</h1>
+  <p>イベント処理・DOM操作・ウィンドウオブジェクト・セレクタAPI・ブラウザ履歴・テスト/デバッグまで、
+  ブラウザ上でJavaScriptを使いこなすための核心的なAPIを体系的に学習します。</p>
+  <div class="badge-row">
+    <span class="badge">イベント伝播</span>
+    <span class="badge">DOM操作</span>
+    <span class="badge">window オブジェクト</span>
+    <span class="badge">セレクタAPI</span>
+    <span class="badge">History API</span>
+    <span class="badge">デバッグ技法</span>
+  </div>
+</div>
+
+<!-- 全体進捗 -->
+<div class="overall-progress">
+  <h2>📊 Chapter 3 学習進捗</h2>
+  <div class="progress-bar-wrap">
+    <div class="progress-bar-fill" id="overall-fill" style="width:0%"></div>
+  </div>
+  <div class="progress-label" id="overall-label">0 / 6 セクション完了</div>
+</div>
+
+<!-- セクションカードグリッド -->
+<div class="section-grid" id="section-grid">
+
+  <a class="section-card" href="01_events.html" id="card-01">
+    <div class="card-num">SECTION 3-1</div>
+    <div class="card-title">🎯 イベント</div>
+    <ul class="card-topics">
+      <li>イベントドリブンモデル</li>
+      <li>addEventListener / removeEventListener</li>
+      <li>イベントの伝播（バブリング・キャプチャリング）</li>
+      <li>stopPropagation / preventDefault</li>
+      <li>イベント委譲（Event Delegation）</li>
+      <li>CustomEvent と dispatchEvent</li>
+    </ul>
+    <div class="card-progress-wrap">
+      <div class="card-progress-fill" id="prog-01" style="width:0%"></div>
+    </div>
+    <div class="card-status" id="status-01">
+      <span>未学習</span>
+    </div>
+  </a>
+
+  <a class="section-card" href="02_dom.html" id="card-02">
+    <div class="card-num">SECTION 3-2</div>
+    <div class="card-title">🌳 ドキュメントオブジェクト／DOM</div>
+    <ul class="card-topics">
+      <li>DOMツリー構造の概念</li>
+      <li>要素の取得・生成・追加・削除</li>
+      <li>属性の操作（setAttribute / getAttribute）</li>
+      <li>innerHTML vs textContent と XSS</li>
+      <li>classList API</li>
+      <li>dataset カスタムデータ属性</li>
+    </ul>
+    <div class="card-progress-wrap">
+      <div class="card-progress-fill" id="prog-02" style="width:0%"></div>
+    </div>
+    <div class="card-status" id="status-02">
+      <span>未学習</span>
+    </div>
+  </a>
+
+  <a class="section-card" href="03_window.html" id="card-03">
+    <div class="card-num">SECTION 3-3</div>
+    <div class="card-title">🪟 ウィンドウオブジェクト</div>
+    <ul class="card-topics">
+      <li>window オブジェクトとグローバルスコープ</li>
+      <li>location / history / navigator / screen</li>
+      <li>setTimeout / setInterval / clearInterval</li>
+      <li>requestAnimationFrame との違い</li>
+      <li>postMessage によるクロスオリジン通信</li>
+      <li>alert / confirm / prompt</li>
+    </ul>
+    <div class="card-progress-wrap">
+      <div class="card-progress-fill" id="prog-03" style="width:0%"></div>
+    </div>
+    <div class="card-status" id="status-03">
+      <span>未学習</span>
+    </div>
+  </a>
+
+  <a class="section-card" href="04_selector.html" id="card-04">
+    <div class="card-num">SECTION 3-4</div>
+    <div class="card-title">🔍 セレクタAPI</div>
+    <ul class="card-topics">
+      <li>querySelector / querySelectorAll</li>
+      <li>getElementById / getElementsByClassName</li>
+      <li>NodeList vs HTMLCollection（静的 vs 動的）</li>
+      <li>closest() / matches() の活用</li>
+      <li>セレクタのパフォーマンス</li>
+    </ul>
+    <div class="card-progress-wrap">
+      <div class="card-progress-fill" id="prog-04" style="width:0%"></div>
+    </div>
+    <div class="card-status" id="status-04">
+      <span>未学習</span>
+    </div>
+  </a>
+
+  <a class="section-card" href="05_history.html" id="card-05">
+    <div class="card-num">SECTION 3-5</div>
+    <div class="card-title">📜 ブラウザ履歴とナビゲーション</div>
+    <ul class="card-topics">
+      <li>History API（pushState / replaceState）</li>
+      <li>popstate イベント</li>
+      <li>SPA での活用パターン</li>
+      <li>Location API（href / pathname / search / hash）</li>
+      <li>URL の構成要素</li>
+      <li>assign / replace / reload</li>
+    </ul>
+    <div class="card-progress-wrap">
+      <div class="card-progress-fill" id="prog-05" style="width:0%"></div>
+    </div>
+    <div class="card-status" id="status-05">
+      <span>未学習</span>
+    </div>
+  </a>
+
+  <a class="section-card" href="06_debug.html" id="card-06">
+    <div class="card-num">SECTION 3-6</div>
+    <div class="card-title">🐛 テスト・デバッグ</div>
+    <ul class="card-topics">
+      <li>開発者ツールの各パネル</li>
+      <li>console オブジェクトのメソッド群</li>
+      <li>ブレークポイントの種類と設定</li>
+      <li>debugger 文</li>
+      <li>performance.now() / console.time()</li>
+      <li>エラーの種類と try-catch</li>
+    </ul>
+    <div class="card-progress-wrap">
+      <div class="card-progress-fill" id="prog-06" style="width:0%"></div>
+    </div>
+    <div class="card-status" id="status-06">
+      <span>未学習</span>
+    </div>
+  </a>
+
+</div><!-- /section-grid -->
+
+<!-- 学習ガイド -->
+<div class="study-guide">
+  <h2>📖 Chapter 3 学習ガイド</h2>
+  <div class="guide-grid">
+    <div class="guide-item">
+      <div class="guide-icon">🎯</div>
+      <div class="guide-label">インタラクティブデモ</div>
+      <div class="guide-desc">各セクションに3個以上の動作するデモを収録。実際に操作して理解を深めましょう。</div>
+    </div>
+    <div class="guide-item">
+      <div class="guide-icon">✏️</div>
+      <div class="guide-label">演習問題</div>
+      <div class="guide-desc">各セクション4問以上。穴埋め・選択・チェックボックス・コード補完の4形式。</div>
+    </div>
+    <div class="guide-item">
+      <div class="guide-icon">💡</div>
+      <div class="guide-label">試験頻出ポイント</div>
+      <div class="guide-desc">試験に出やすい重要事項をポイントボックスで明示しています。</div>
+    </div>
+    <div class="guide-item">
+      <div class="guide-icon">⚠️</div>
+      <div class="guide-label">注意事項・落とし穴</div>
+      <div class="guide-desc">初学者が間違えやすいポイントを警告ボックスで解説します。</div>
+    </div>
+    <div class="guide-item">
+      <div class="guide-icon">📊</div>
+      <div class="guide-label">進捗管理</div>
+      <div class="guide-desc">各セクション完了ボタンで進捗を保存。このページで一覧確認できます。</div>
+    </div>
+    <div class="guide-item">
+      <div class="guide-icon">🔗</div>
+      <div class="guide-label">推奨学習順序</div>
+      <div class="guide-desc">3-1→3-2→3-3→3-4→3-5→3-6 の順に進めると体系的に理解できます。</div>
+    </div>
+  </div>
+</div>
+
+<!-- チャプターナビ -->
+<div class="chapter-nav">
+  <a class="nav-prev" href="../ch02/index.html">← Chapter 2：非同期処理</a>
+  <a class="nav-home" href="../index.html">🏠 サイトトップ</a>
+  <a class="nav-next" href="../ch04/index.html">Chapter 4 →</a>
+</div>
+
+<!-- フッター -->
+<footer>
+  <p>
+    HTML5プロフェッショナル Level 2 学習サイト ／
+    <a href="../index.html">🏠 サイトトップ</a> ／
+    <a href="https://github.com/MeshinoKiwamiOkome/html5lv2" target="_blank">GitHub</a>
+  </p>
+  <p style="margin-top:4px;">© MeshinoKiwamiOkome</p>
+</footer>
+
+<script>
+  // ===== localStorage から進捗を読み込み =====
+  const sections = ['01','02','03','04','05','06'];
+  let doneCount = 0;
+
+  sections.forEach(num => {
+    const isDone = localStorage.getItem(`html5lv2_ch3_${num}`) === 'done';
+    const card   = document.getElementById(`card-${num}`);
+    const prog   = document.getElementById(`prog-${num}`);
+    const status = document.getElementById(`status-${num}`);
+
+    if (isDone) {
+      doneCount++;
+      card.classList.add('done');
+      prog.style.width = '100%';
+      status.classList.add('done-status');
+      status.innerHTML = '<span class="done-badge">✅ 完了</span>';
+    } else {
+      prog.style.width = '0%';
+      status.innerHTML = '<span>未学習</span>';
+    }
+  });
+
+  // 全体進捗バー更新
+  const pct = Math.round((doneCount / 6) * 100);
+  document.getElementById('overall-fill').style.width = pct + '%';
+  document.getElementById('overall-label').textContent =
+    `${doneCount} / 6 セクション完了（${pct}%）`;
+</script>
+</body>
+</html>

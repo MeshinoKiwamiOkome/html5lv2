@@ -1,0 +1,1439 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>3-1 イベント | HTML5プロフェッショナル Level 2</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; }
+    body {
+      font-family: 'Segoe UI', 'Helvetica Neue', sans-serif;
+      max-width: 960px; margin: 40px auto; padding: 0 24px;
+      background: #f0f4f8; color: #2d3748; line-height: 1.8;
+    }
+
+    /* ===== パンくず ===== */
+    .breadcrumb {
+      font-size: 0.82em; color: #a0aec0; margin-bottom: 20px;
+      font-family: 'Consolas','Monaco',monospace;
+    }
+    .breadcrumb a { color: #553c9a; text-decoration: none; }
+    .breadcrumb a:hover { text-decoration: underline; }
+
+    /* ===== ヘッダー ===== */
+    .chapter-header {
+      background: linear-gradient(135deg, #553c9a, #9f7aea);
+      border-radius: 12px; padding: 32px 32px 24px;
+      margin-bottom: 32px; color: #fff;
+      box-shadow: 0 4px 18px rgba(85,60,154,0.35);
+    }
+    .chapter-header .ch-num {
+      font-size: 0.8em; font-family: 'Consolas','Monaco',monospace;
+      opacity: 0.85; letter-spacing: 0.08em; margin-bottom: 6px;
+    }
+    .chapter-header h1 { margin: 0 0 10px; font-size: 1.6em; color: #fff; border: none; padding: 0; }
+    .chapter-header p  { margin: 0; font-size: 0.92em; opacity: 0.88; }
+    .badge-row { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 14px; }
+    .badge {
+      background: rgba(255,255,255,0.18);
+      border: 1px solid rgba(255,255,255,0.35);
+      border-radius: 20px; padding: 3px 12px;
+      font-size: 0.76em; font-weight: bold;
+    }
+
+    /* ===== セクションナビ ===== */
+    .section-nav {
+      background: #fff; border: 1px solid #e9d8fd;
+      border-radius: 10px; padding: 18px 22px;
+      margin-bottom: 32px; box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+    }
+    .section-nav h2 { margin: 0 0 12px; font-size: 0.92em; color: #553c9a; border: none; padding: 0; }
+    .section-nav ol { margin: 0; padding-left: 20px; font-size: 0.9em; }
+    .section-nav ol li { margin: 4px 0; }
+    .section-nav ol li a { color: #553c9a; text-decoration: none; }
+    .section-nav ol li a:hover { text-decoration: underline; }
+    .section-nav ol li.current a { color: #553c9a; font-weight: bold; pointer-events: none; }
+    .section-nav ol li.current::marker { color: #9f7aea; }
+
+    /* ===== 見出し ===== */
+    h2 { color: #553c9a; margin-top: 48px; border-left: 5px solid #9f7aea; padding-left: 12px; font-size: 1.25em; }
+    h3 { color: #6b46c1; margin-top: 28px; font-size: 1.05em; }
+
+    /* ===== インラインコード ===== */
+    code {
+      background: #f3e8ff; padding: 2px 6px;
+      border-radius: 4px; font-size: 0.93em;
+      font-family: 'Consolas','Monaco',monospace; color: #553c9a;
+    }
+
+    /* ===== コードブロック ===== */
+    .code-block {
+      position: relative; margin: 14px 0;
+    }
+    .code-block pre {
+      background: #1a202c; color: #e2e8f0;
+      padding: 18px 20px; border-radius: 8px;
+      overflow-x: auto; font-size: 0.87em;
+      line-height: 1.75; font-family: 'Consolas','Monaco',monospace;
+      margin: 0;
+    }
+    .copy-btn {
+      position: absolute; top: 8px; right: 8px;
+      background: #4a5568; color: #e2e8f0;
+      border: none; border-radius: 4px;
+      padding: 4px 10px; font-size: 0.75em;
+      cursor: pointer; font-family: 'Consolas','Monaco',monospace;
+      transition: background 0.2s; z-index: 1;
+    }
+    .copy-btn:hover { background: #9f7aea; }
+
+    /* シンタックスカラー */
+    .kw  { color: #90cdf4; }
+    .fn  { color: #b794f4; }
+    .str { color: #fbd38d; }
+    .num { color: #fc8181; }
+    .cm  { color: #68d391; }
+    .op  { color: #f6ad55; }
+    .out { color: #a0aec0; }
+    .tag { color: #fc8181; }
+    .atr { color: #90cdf4; }
+
+    /* ===== info-box ===== */
+    .info-box {
+      border-radius: 8px; padding: 14px 18px;
+      font-size: 0.93em; margin: 16px 0; line-height: 1.7;
+    }
+    .info-box.tip {
+      background: #f0fff4; border: 1px solid #9ae6b4;
+      border-left: 5px solid #48bb78; color: #276749;
+    }
+    .info-box.warn {
+      background: #fffaf0; border: 1px solid #f6ad55;
+      border-left: 5px solid #ed8936; color: #744210;
+    }
+    .info-box.point {
+      background: #faf5ff; border: 1px solid #d6bcfa;
+      border-left: 5px solid #9f7aea; color: #553c9a;
+    }
+    .info-box strong { display: block; margin-bottom: 4px; }
+
+    /* ===== content-card ===== */
+    .content-card {
+      background: #fff; border-radius: 10px;
+      padding: 24px 28px; margin-bottom: 28px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+      border: 1px solid #e9d8fd;
+    }
+    .content-card h3 { margin-top: 0; }
+
+    /* ===== テーブル ===== */
+    .tbl-wrap { overflow-x: auto; margin: 14px 0; }
+    .tbl-wrap table {
+      border-collapse: collapse; width: 100%;
+      background: #fff; border-radius: 8px;
+      overflow: hidden; font-size: 0.88em;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+    }
+    .tbl-wrap th, .tbl-wrap td {
+      border: 1px solid #e9d8fd; padding: 10px 14px; text-align: left;
+    }
+    .tbl-wrap thead tr { background: #553c9a; color: #fff; }
+    .tbl-wrap tbody tr:nth-child(even) { background: #faf5ff; }
+
+    /* ===== demo-card ===== */
+    .demo-card {
+      background: #fff; border: 2px solid #e9d8fd;
+      border-radius: 12px; padding: 22px 24px;
+      margin: 20px 0 32px; box-shadow: 0 2px 10px rgba(85,60,154,0.08);
+    }
+    .demo-card h3 {
+      margin-top: 0; color: #553c9a;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .demo-desc {
+      font-size: 0.88em; color: #718096;
+      background: #faf5ff; border-radius: 6px;
+      padding: 10px 14px; margin-bottom: 16px;
+    }
+    .run-btn {
+      background: linear-gradient(135deg, #553c9a, #9f7aea);
+      color: #fff; border: none; border-radius: 8px;
+      padding: 9px 22px; font-size: 0.9em; font-weight: bold;
+      cursor: pointer; transition: opacity 0.2s; margin: 4px 4px 4px 0;
+    }
+    .run-btn:hover { opacity: 0.85; }
+    .run-btn.secondary {
+      background: #edf2f7; color: #4a5568;
+    }
+    .run-btn.secondary:hover { background: #e2e8f0; opacity: 1; }
+    .run-btn.danger {
+      background: linear-gradient(135deg, #c53030, #fc8181);
+    }
+
+    /* ===== イベント伝播デモ ===== */
+    .propagation-wrap {
+      display: flex; gap: 24px; flex-wrap: wrap; margin-top: 12px;
+    }
+    .prop-stage {
+      flex: 1; min-width: 220px;
+    }
+    .prop-box {
+      border: 3px solid #e9d8fd; border-radius: 10px;
+      padding: 14px; text-align: center; cursor: pointer;
+      transition: all 0.3s; font-weight: bold; font-size: 0.9em;
+      user-select: none; position: relative;
+    }
+    .prop-box.outer { background: #faf5ff; color: #553c9a; min-height: 140px; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; }
+    .prop-box.middle { background: #f3e8ff; color: #6b46c1; min-height: 100px; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; margin: 10px; }
+    .prop-box.inner { background: #e9d8fd; color: #44337a; padding: 10px 18px; margin: 8px; cursor: pointer; }
+    .prop-box.fired { background: #9f7aea !important; color: #fff !important; border-color: #553c9a !important; transform: scale(1.04); }
+    .prop-log {
+      background: #1a202c; border-radius: 8px;
+      padding: 12px 14px; font-family: 'Consolas','Monaco',monospace;
+      font-size: 0.82em; min-height: 80px; color: #e2e8f0;
+      line-height: 1.8; max-height: 160px; overflow-y: auto;
+    }
+    .prop-log .log-bubble { color: #f6ad55; }
+    .prop-log .log-capture { color: #90cdf4; }
+    .prop-log .log-stop { color: #fc8181; }
+
+    /* ===== 委譲デモ ===== */
+    .delegation-list {
+      list-style: none; padding: 0; margin: 12px 0;
+      border: 2px solid #e9d8fd; border-radius: 8px; overflow: hidden;
+    }
+    .delegation-list li {
+      padding: 10px 16px; border-bottom: 1px solid #e9d8fd;
+      cursor: pointer; transition: background 0.2s;
+      display: flex; justify-content: space-between; align-items: center;
+    }
+    .delegation-list li:last-child { border-bottom: none; }
+    .delegation-list li:hover { background: #faf5ff; }
+    .delegation-list li.clicked { background: #e9d8fd; color: #553c9a; font-weight: bold; }
+    .del-badge { background: #9f7aea; color: #fff; border-radius: 20px; padding: 2px 10px; font-size: 0.75em; }
+    .del-badge.new { background: #48bb78; }
+
+    /* ===== カスタムイベントデモ ===== */
+    .custom-step {
+      display: flex; gap: 8px; align-items: center;
+      margin: 8px 0; padding: 10px 14px;
+      border-radius: 8px; border: 2px solid #e9d8fd;
+      font-size: 0.88em; transition: all 0.3s;
+    }
+    .custom-step.active { border-color: #9f7aea; background: #faf5ff; }
+    .custom-step.done { border-color: #48bb78; background: #f0fff4; }
+    .step-num {
+      width: 28px; height: 28px; border-radius: 50%;
+      background: #e9d8fd; color: #553c9a;
+      display: flex; align-items: center; justify-content: center;
+      font-weight: bold; font-size: 0.85em; flex-shrink: 0;
+    }
+    .custom-step.active .step-num { background: #9f7aea; color: #fff; }
+    .custom-step.done .step-num { background: #48bb78; color: #fff; }
+    .step-desc { flex: 1; color: #4a5568; }
+    .custom-step.active .step-desc { color: #553c9a; font-weight: bold; }
+    .step-result { font-family: 'Consolas','Monaco',monospace; font-size: 0.82em; color: #9f7aea; }
+
+    /* ===== preventDefault デモ ===== */
+    .prevent-demo-area {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 12px;
+    }
+    .prevent-box {
+      border: 2px solid #e9d8fd; border-radius: 8px; padding: 16px;
+      text-align: center;
+    }
+    .prevent-box h4 { margin: 0 0 10px; font-size: 0.9em; color: #553c9a; }
+    .prevent-link {
+      display: inline-block; padding: 8px 16px;
+      background: #553c9a; color: #fff; border-radius: 6px;
+      text-decoration: none; font-size: 0.88em; margin: 6px 0;
+      cursor: pointer;
+    }
+    .prevent-form-input {
+      width: 100%; padding: 8px 10px; border: 2px solid #e9d8fd;
+      border-radius: 6px; font-size: 0.88em; margin: 6px 0;
+      outline: none; font-family: inherit;
+    }
+    .prevent-form-input:focus { border-color: #9f7aea; }
+    .prevent-log {
+      background: #1a202c; border-radius: 6px; padding: 8px 12px;
+      font-family: 'Consolas','Monaco',monospace; font-size: 0.8em;
+      color: #68d391; min-height: 40px; margin-top: 8px;
+      line-height: 1.6;
+    }
+
+    /* ===== 演習問題 ===== */
+    .quiz-section {
+      background: #faf5ff; border-left: 6px solid #9f7aea;
+      border-radius: 0 10px 10px 0; padding: 28px 28px;
+      margin: 48px 0 32px;
+    }
+    .quiz-section > h2 { margin-top: 0; border-left: none; padding-left: 0; }
+    .quiz-item {
+      background: #fff; border: 1px solid #e9d8fd;
+      border-radius: 10px; padding: 20px 24px; margin-bottom: 22px;
+    }
+    .quiz-q { font-weight: bold; color: #2d3748; margin-bottom: 12px; }
+    .q-num {
+      display: inline-block; background: #553c9a; color: #fff;
+      border-radius: 20px; padding: 2px 10px; font-size: 0.78em;
+      margin-right: 8px; font-weight: bold;
+    }
+    .blank-input, .fill-input {
+      border: 2px solid #e9d8fd; border-radius: 6px;
+      padding: 8px 12px; font-size: 0.93em;
+      font-family: 'Consolas','Monaco',monospace;
+      outline: none; transition: border-color 0.2s;
+      width: 100%; max-width: 400px; margin: 6px 0;
+    }
+    .blank-input:focus, .fill-input:focus { border-color: #9f7aea; }
+    .choice-btn {
+      display: block; width: 100%; text-align: left;
+      padding: 10px 16px; margin: 6px 0;
+      border: 2px solid #e9d8fd; border-radius: 8px;
+      background: #fff; cursor: pointer; font-size: 0.9em;
+      transition: all 0.2s; font-family: inherit;
+    }
+    .choice-btn:hover { border-color: #9f7aea; background: #faf5ff; }
+    .choice-btn.correct { border-color: #48bb78; background: #f0fff4; color: #276749; font-weight: bold; }
+    .choice-btn.wrong   { border-color: #fc8181; background: #fff5f5; color: #c53030; }
+    .cb-label {
+      display: flex; align-items: flex-start; gap: 10px;
+      padding: 8px 12px; margin: 4px 0; border-radius: 6px;
+      border: 2px solid #e9d8fd; cursor: pointer; font-size: 0.9em;
+      transition: all 0.2s;
+    }
+    .cb-label:hover { border-color: #9f7aea; background: #faf5ff; }
+    .cb-label input { margin-top: 3px; flex-shrink: 0; accent-color: #9f7aea; }
+    .cb-label.correct { border-color: #48bb78; background: #f0fff4; color: #276749; }
+    .cb-label.wrong   { border-color: #fc8181; background: #fff5f5; color: #c53030; }
+    .check-btn {
+      background: linear-gradient(135deg, #553c9a, #9f7aea);
+      color: #fff; border: none; border-radius: 8px;
+      padding: 9px 22px; font-size: 0.9em; font-weight: bold;
+      cursor: pointer; transition: opacity 0.2s; margin-top: 8px;
+    }
+    .check-btn:hover { opacity: 0.85; }
+    .feedback {
+      margin-top: 12px; padding: 12px 16px;
+      border-radius: 8px; font-size: 0.9em; display: none; line-height: 1.7;
+    }
+    .feedback.ok { background: #f0fff4; border: 1px solid #9ae6b4; color: #276749; display: block; }
+    .feedback.ng { background: #fff5f5; border: 1px solid #feb2b2; color: #c53030; display: block; }
+
+    /* コード補完 */
+    .code-fill {
+      background: #1a202c; border-radius: 8px;
+      padding: 16px 18px; font-family: 'Consolas','Monaco',monospace;
+      font-size: 0.87em; line-height: 1.9; margin: 12px 0;
+    }
+    .fill-input {
+      background: #2d3748; border: 2px solid #4a5568;
+      color: #fbd38d; padding: 3px 8px; width: auto;
+      min-width: 140px; display: inline-block;
+      vertical-align: middle; border-radius: 4px;
+    }
+    .fill-input:focus { border-color: #9f7aea; }
+
+    /* ===== 完了エリア ===== */
+    .complete-area {
+      background: #f0fff4; border: 2px solid #9ae6b4;
+      border-radius: 12px; padding: 24px;
+      margin-top: 40px; text-align: center;
+    }
+    .complete-area p { margin: 0 0 14px; color: #276749; font-weight: bold; font-size: 1.05em; }
+    .complete-btn {
+      background: linear-gradient(135deg, #38a169, #48bb78);
+      color: #fff; border: none; border-radius: 10px;
+      padding: 12px 32px; font-size: 1em; font-weight: bold;
+      cursor: pointer; transition: opacity 0.2s;
+    }
+    .complete-btn:hover { opacity: 0.85; }
+    .complete-btn.done { background: #a0aec0; cursor: default; }
+    .complete-msg {
+      margin-top: 10px; color: #276749; font-size: 0.9em; display: none;
+    }
+
+    /* ===== ページナビ ===== */
+    .page-nav {
+      display: flex; justify-content: space-between; align-items: center;
+      margin-top: 48px; padding-top: 20px;
+      border-top: 2px solid #e9d8fd; gap: 12px; flex-wrap: wrap;
+    }
+    .nav-btn {
+      display: inline-block; padding: 10px 22px;
+      border-radius: 8px; text-decoration: none;
+      font-weight: bold; font-size: 0.9em; transition: opacity 0.2s;
+    }
+    .nav-btn:hover { opacity: 0.8; }
+    .nav-btn.prev  { background: #edf2f7; color: #4a5568; }
+    .nav-btn.index { background: #faf5ff; color: #553c9a; border: 2px solid #e9d8fd; }
+    .nav-btn.next  { background: linear-gradient(135deg, #553c9a, #9f7aea); color: #fff; }
+
+    /* ===== フッター ===== */
+    footer {
+      margin-top: 48px; padding-top: 16px;
+      border-top: 2px solid #e9d8fd;
+      font-size: 0.82em; color: #a0aec0; text-align: center;
+    }
+    footer a { color: #553c9a; text-decoration: none; }
+    footer a:hover { text-decoration: underline; }
+
+    @media (max-width: 600px) {
+      body { font-size: 0.84em; padding: 0 12px; }
+      .chapter-header { padding: 20px 16px; }
+      .chapter-header h1 { font-size: 1.2em; }
+      .propagation-wrap { flex-direction: column; }
+      .prevent-demo-area { grid-template-columns: 1fr; }
+      .page-nav { flex-direction: column; align-items: stretch; }
+      .nav-btn { text-align: center; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- パンくず -->
+<div class="breadcrumb">
+  <a href="../index.html">🏠 HTML5 Level 2</a> ›
+  <a href="index.html">Chapter 3</a> ›
+  3-1 イベント
+</div>
+
+<!-- ヘッダー -->
+<div class="chapter-header">
+  <div class="ch-num">CHAPTER 03 › SECTION 01</div>
+  <h1>🎯 3-1 イベント</h1>
+  <p>ブラウザ上でのユーザー操作や状態変化を検知・処理するイベントシステムを学びます。
+  バブリング・キャプチャリングの伝播メカニズムから、イベント委譲・カスタムイベントまで体系的に理解しましょう。</p>
+  <div class="badge-row">
+    <span class="badge">addEventListener</span>
+    <span class="badge">イベント伝播</span>
+    <span class="badge">stopPropagation</span>
+    <span class="badge">preventDefault</span>
+    <span class="badge">イベント委譲</span>
+    <span class="badge">CustomEvent</span>
+  </div>
+</div>
+
+<!-- セクションナビ -->
+<div class="section-nav">
+  <h2>📋 Chapter 3 のセクション</h2>
+  <ol>
+    <li class="current"><a href="01_events.html">3-1 イベント</a></li>
+    <li><a href="02_dom.html">3-2 ドキュメントオブジェクト／DOM</a></li>
+    <li><a href="03_window.html">3-3 ウィンドウオブジェクト</a></li>
+    <li><a href="04_selector.html">3-4 セレクタAPI</a></li>
+    <li><a href="05_history.html">3-5 ブラウザ履歴とナビゲーション</a></li>
+    <li><a href="06_debug.html">3-6 テスト・デバッグ</a></li>
+  </ol>
+</div>
+
+
+<!-- ============================================================ -->
+<!-- 1. イベントドリブンモデル -->
+<!-- ============================================================ -->
+<h2 id="model">① イベントドリブンモデル</h2>
+
+<div class="content-card">
+  <h3>イベントドリブンとは何か</h3>
+  <p>
+    JavaScriptはブラウザ上で<strong>イベントドリブン（Event-Driven）</strong>モデルで動作します。
+    これは「何かが起きたとき（イベント発生時）に、あらかじめ登録した処理（ハンドラ）を実行する」という仕組みです。
+    プログラムが上から下へ順番に実行されるのではなく、<strong>ユーザーの操作や状態変化を待ち受けて反応する</strong>という点が特徴です。
+  </p>
+
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr><th>イベントの種類</th><th>主なイベント名</th><th>発生タイミング</th></tr></thead>
+      <tbody>
+        <tr><td>マウス</td><td><code>click</code> / <code>dblclick</code> / <code>mouseover</code> / <code>mouseout</code> / <code>mousemove</code></td><td>マウス操作時</td></tr>
+        <tr><td>キーボード</td><td><code>keydown</code> / <code>keyup</code> / <code>keypress</code></td><td>キー操作時</td></tr>
+        <tr><td>フォーム</td><td><code>submit</code> / <code>change</code> / <code>input</code> / <code>focus</code> / <code>blur</code></td><td>フォーム操作時</td></tr>
+        <tr><td>ドキュメント</td><td><code>DOMContentLoaded</code> / <code>load</code></td><td>DOM・リソース読み込み完了時</td></tr>
+        <tr><td>ウィンドウ</td><td><code>resize</code> / <code>scroll</code> / <code>beforeunload</code></td><td>ウィンドウ操作時</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="info-box point">
+    <strong>📌 試験頻出ポイント：addEventListener の第3引数</strong>
+    <code>addEventListener(type, listener, useCapture)</code> の第3引数は
+    <code>true</code> でキャプチャフェーズ、<code>false</code>（デフォルト）でバブリングフェーズでリスナーを登録します。
+    省略した場合は <code>false</code>（バブリング）になります。
+  </div>
+
+  <div class="code-block">
+    <button class="copy-btn" onclick="copyCode(this)">copy</button>
+    <pre><span class="cm">// イベントリスナの登録（基本形）</span>
+<span class="kw">const</span> btn = document.<span class="fn">getElementById</span>(<span class="str">'myBtn'</span>);
+
+<span class="cm">// ① addEventListener（推奨）</span>
+btn.<span class="fn">addEventListener</span>(<span class="str">'click'</span>, <span class="kw">function</span>(event) {
+  console.<span class="fn">log</span>(<span class="str">'クリックされました'</span>, event);
+});
+
+<span class="cm">// ② アロー関数でも書ける</span>
+btn.<span class="fn">addEventListener</span>(<span class="str">'click'</span>, (e) =&gt; {
+  console.<span class="fn">log</span>(<span class="str">'イベントタイプ:'</span>, e.type); <span class="out">// → 'click'</span>
+});
+
+<span class="cm">// ③ イベントリスナの削除（同じ関数参照が必要）</span>
+<span class="kw">function</span> <span class="fn">handleClick</span>(e) {
+  console.<span class="fn">log</span>(<span class="str">'クリック'</span>);
+}
+btn.<span class="fn">addEventListener</span>(<span class="str">'click'</span>, handleClick);
+btn.<span class="fn">removeEventListener</span>(<span class="str">'click'</span>, handleClick); <span class="cm">// 削除</span>
+
+<span class="cm">// ④ once オプション：1回だけ実行して自動削除</span>
+btn.<span class="fn">addEventListener</span>(<span class="str">'click'</span>, handler, { once: <span class="kw">true</span> });</pre>
+  </div>
+
+  <div class="info-box warn">
+    <strong>⚠️ removeEventListener の注意点</strong>
+    アロー関数や無名関数を直接渡すと削除できません。削除したい場合は必ず<strong>名前付き関数</strong>または変数に格納した関数参照を使ってください。
+    <br><code>btn.removeEventListener('click', () => {})</code> は削除されません（別の関数オブジェクトとして扱われるため）。
+  </div>
+</div>
+
+<div class="content-card">
+  <h3>イベントオブジェクトの主要プロパティ</h3>
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr><th>プロパティ</th><th>説明</th><th>例</th></tr></thead>
+      <tbody>
+        <tr><td><code>event.type</code></td><td>イベントの種類</td><td><code>'click'</code></td></tr>
+        <tr><td><code>event.target</code></td><td>イベントが発生した要素（クリックされた要素）</td><td>クリックされた <code>&lt;button&gt;</code></td></tr>
+        <tr><td><code>event.currentTarget</code></td><td>リスナーが登録されている要素</td><td>リスナーを持つ親要素</td></tr>
+        <tr><td><code>event.bubbles</code></td><td>バブリングするかどうか</td><td><code>true</code> / <code>false</code></td></tr>
+        <tr><td><code>event.cancelable</code></td><td>デフォルト動作をキャンセルできるか</td><td><code>true</code> / <code>false</code></td></tr>
+        <tr><td><code>event.timeStamp</code></td><td>イベント発生時刻（ms）</td><td><code>1234.56</code></td></tr>
+        <tr><td><code>event.key</code></td><td>押されたキー（KeyboardEvent）</td><td><code>'Enter'</code></td></tr>
+        <tr><td><code>event.clientX/Y</code></td><td>ビューポート基準のマウス座標</td><td><code>120, 340</code></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="info-box tip">
+    <strong>💡 target vs currentTarget の違い</strong>
+    <code>event.target</code> は「実際にクリックされた要素」、
+    <code>event.currentTarget</code> は「リスナーが登録された要素」です。
+    イベント委譲では親要素にリスナーを登録するため、この2つが異なる要素になります。
+  </div>
+</div>
+
+
+<!-- ============================================================ -->
+<!-- 2. イベントの伝播 -->
+<!-- ============================================================ -->
+<h2 id="propagation">② イベントの伝播（バブリング・キャプチャリング）</h2>
+
+<div class="content-card">
+  <p>
+    DOMイベントは3つのフェーズで伝播します。
+    <strong>①キャプチャフェーズ</strong>（window → 対象要素へ下降）、
+    <strong>②ターゲットフェーズ</strong>（対象要素で発火）、
+    <strong>③バブリングフェーズ</strong>（対象要素 → window へ上昇）です。
+    デフォルトでは<strong>バブリングフェーズ</strong>でリスナーが呼ばれます。
+  </p>
+
+  <div class="code-block">
+    <button class="copy-btn" onclick="copyCode(this)">copy</button>
+    <pre><span class="cm">// バブリング：子 → 親 → 祖先 の順に伝播（デフォルト）</span>
+document.<span class="fn">querySelector</span>(<span class="str">'.outer'</span>).<span class="fn">addEventListener</span>(<span class="str">'click'</span>, (e) =&gt; {
+  console.<span class="fn">log</span>(<span class="str">'outer（バブリング）'</span>);
+  <span class="cm">// e.stopPropagation() で伝播を止められる</span>
+});
+
+<span class="cm">// キャプチャリング：祖先 → 親 → 子 の順（第3引数 true）</span>
+document.<span class="fn">querySelector</span>(<span class="str">'.outer'</span>).<span class="fn">addEventListener</span>(<span class="str">'click'</span>, (e) =&gt; {
+  console.<span class="fn">log</span>(<span class="str">'outer（キャプチャ）'</span>);
+}, <span class="kw">true</span>); <span class="cm">// ← true でキャプチャフェーズ</span>
+
+<span class="cm">// stopPropagation：それ以上の伝播を止める</span>
+inner.<span class="fn">addEventListener</span>(<span class="str">'click'</span>, (e) =&gt; {
+  e.<span class="fn">stopPropagation</span>(); <span class="cm">// 親へのバブリングを止める</span>
+});
+
+<span class="cm">// stopImmediatePropagation：同一要素の残りのリスナーも止める</span>
+inner.<span class="fn">addEventListener</span>(<span class="str">'click'</span>, (e) =&gt; {
+  e.<span class="fn">stopImmediatePropagation</span>();
+});</pre>
+  </div>
+
+  <div class="info-box point">
+    <strong>📌 試験頻出：伝播の順序</strong>
+    クリック時の実行順序：<br>
+    <strong>キャプチャ（外→内）→ ターゲット → バブリング（内→外）</strong><br>
+    同一要素に両方登録した場合、キャプチャリスナーが先に実行されます。
+  </div>
+</div>
+
+<!-- ===== デモ1：伝播ビジュアライザ ===== -->
+<div class="demo-card">
+  <h3>🔬 デモ①：イベント伝播リアルタイムビジュアライザ</h3>
+  <div class="demo-desc">
+    内側のボックスをクリックして、バブリング・キャプチャリングの伝播順序を色付きで確認しましょう。
+    モードを切り替えて違いを体験できます。
+  </div>
+
+  <div style="margin-bottom:12px; display:flex; gap:8px; flex-wrap:wrap;">
+    <button class="run-btn" onclick="setPropMode('bubble')">🫧 バブリングモード</button>
+    <button class="run-btn" onclick="setPropMode('capture')">📡 キャプチャモード</button>
+    <button class="run-btn" onclick="setPropMode('stop')">🛑 stopPropagation</button>
+    <button class="run-btn secondary" onclick="resetProp()">リセット</button>
+  </div>
+
+  <div id="prop-mode-label" style="font-size:0.85em; color:#553c9a; font-weight:bold; margin-bottom:10px;">
+    現在のモード：バブリング（デフォルト）
+  </div>
+
+  <div class="propagation-wrap">
+    <div class="prop-stage">
+      <div class="prop-box outer" id="prop-outer" onclick="propClick(event,'outer')">
+        <span>🟣 OUTER（外側）</span>
+        <div class="prop-box middle" id="prop-middle" onclick="propClick(event,'middle')">
+          <span>🟤 MIDDLE（中間）</span>
+          <div class="prop-box inner" id="prop-inner" onclick="propClick(event,'inner')">
+            👆 ここをクリック（INNER）
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="prop-stage">
+      <div style="font-size:0.85em; font-weight:bold; color:#553c9a; margin-bottom:6px;">📋 実行ログ</div>
+      <div class="prop-log" id="prop-log">クリックすると伝播の様子がここに表示されます...</div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ============================================================ -->
+<!-- 3. preventDefault -->
+<!-- ============================================================ -->
+<h2 id="prevent">③ preventDefault() の使い方</h2>
+
+<div class="content-card">
+  <p>
+    <code>event.preventDefault()</code> はブラウザのデフォルト動作をキャンセルします。
+    例えば、リンクのページ遷移・フォームの送信・チェックボックスのチェック切り替えなどを
+    JavaScriptで制御したい場合に使います。
+    <strong>伝播は止めません</strong>（伝播を止めるのは <code>stopPropagation()</code>）。
+  </p>
+
+  <div class="code-block">
+    <button class="copy-btn" onclick="copyCode(this)">copy</button>
+    <pre><span class="cm">// リンクのデフォルト遷移をキャンセル</span>
+link.<span class="fn">addEventListener</span>(<span class="str">'click'</span>, (e) =&gt; {
+  e.<span class="fn">preventDefault</span>(); <span class="cm">// ページ遷移しない</span>
+  console.<span class="fn">log</span>(<span class="str">'リンクがクリックされましたが遷移しません'</span>);
+});
+
+<span class="cm">// フォーム送信をキャンセルしてバリデーション</span>
+form.<span class="fn">addEventListener</span>(<span class="str">'submit'</span>, (e) =&gt; {
+  e.<span class="fn">preventDefault</span>(); <span class="cm">// ページリロードを防ぐ</span>
+  <span class="cm">// 独自のバリデーション処理</span>
+  <span class="kw">if</span> (isValid()) form.<span class="fn">submit</span>();
+});
+
+<span class="cm">// 数字のみ入力を許可（それ以外のキーをキャンセル）</span>
+input.<span class="fn">addEventListener</span>(<span class="str">'keydown'</span>, (e) =&gt; {
+  <span class="kw">if</span> (!/[0-9]/.test(e.key) &amp;&amp; e.key !== <span class="str">'Backspace'</span>) {
+    e.<span class="fn">preventDefault</span>();
+  }
+});</pre>
+  </div>
+
+  <div class="info-box warn">
+    <strong>⚠️ passive イベントリスナと preventDefault</strong>
+    <code>addEventListener('touchstart', handler, { passive: true })</code> のように
+    <code>passive: true</code> を指定すると、そのリスナー内で <code>preventDefault()</code> を
+    呼んでも無効になります（スクロールパフォーマンス最適化のため）。
+  </div>
+</div>
+
+<!-- ===== デモ2：preventDefault 確認デモ ===== -->
+<div class="demo-card">
+  <h3>🚫 デモ②：preventDefault() 効果確認デモ</h3>
+  <div class="demo-desc">
+    左右のボックスを比較して、preventDefault() の有無による動作の違いを確認しましょう。
+  </div>
+
+  <div class="prevent-demo-area">
+    <div class="prevent-box">
+      <h4>❌ preventDefault なし（デフォルト動作）</h4>
+      <a class="prevent-link" id="link-normal" href="#prevent">リンク（#prevent へ移動）</a>
+      <br>
+      <input class="prevent-form-input" type="text" id="input-normal" placeholder="全キー入力可">
+      <div class="prevent-log" id="log-normal">操作してみてください</div>
+    </div>
+    <div class="prevent-box">
+      <h4>✅ preventDefault あり（動作キャンセル）</h4>
+      <a class="prevent-link" id="link-prevent" href="#prevent">リンク（遷移キャンセル）</a>
+      <br>
+      <input class="prevent-form-input" type="text" id="input-prevent" placeholder="数字のみ入力可">
+      <div class="prevent-log" id="log-prevent">操作してみてください</div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ============================================================ -->
+<!-- 4. イベント委譲 -->
+<!-- ============================================================ -->
+<h2 id="delegation">④ イベント委譲（Event Delegation）</h2>
+
+<div class="content-card">
+  <p>
+    イベント委譲とは、<strong>子要素ひとつひとつにリスナーを登録するのではなく、
+    親要素にまとめてリスナーを登録する</strong>テクニックです。
+    バブリングを利用して、動的に追加された要素にも対応できます。
+  </p>
+
+  <div class="code-block">
+    <button class="copy-btn" onclick="copyCode(this)">copy</button>
+    <pre><span class="cm">// ❌ 非効率：各 li にリスナーを登録</span>
+document.<span class="fn">querySelectorAll</span>(<span class="str">'li'</span>).<span class="fn">forEach</span>(li =&gt; {
+  li.<span class="fn">addEventListener</span>(<span class="str">'click'</span>, handler); <span class="cm">// 要素数分のリスナーが生成される</span>
+});
+
+<span class="cm">// ✅ 効率的：親 ul にリスナーを1つだけ登録（イベント委譲）</span>
+<span class="kw">const</span> ul = document.<span class="fn">querySelector</span>(<span class="str">'ul'</span>);
+ul.<span class="fn">addEventListener</span>(<span class="str">'click'</span>, (e) =&gt; {
+  <span class="cm">// クリックされた要素が li かどうかを確認</span>
+  <span class="kw">if</span> (e.target.<span class="fn">matches</span>(<span class="str">'li'</span>)) {
+    console.<span class="fn">log</span>(<span class="str">'クリックされた li:'</span>, e.target.textContent);
+  }
+});
+
+<span class="cm">// 動的に追加した要素にも自動で反応する！</span>
+<span class="kw">const</span> newLi = document.<span class="fn">createElement</span>(<span class="str">'li'</span>);
+newLi.textContent = <span class="str">'新しいアイテム'</span>;
+ul.<span class="fn">appendChild</span>(newLi); <span class="cm">// 追加後もクリックで反応する</span></pre>
+  </div>
+
+  <div class="info-box point">
+    <strong>📌 イベント委譲のメリット</strong>
+    ① メモリ効率が良い（リスナー数が少ない）<br>
+    ② 動的に追加した要素にも自動対応<br>
+    ③ コードがシンプルになる<br>
+    <strong>注意：</strong><code>stopPropagation()</code> が子要素で呼ばれると委譲が機能しなくなります。
+  </div>
+</div>
+
+<!-- ===== デモ3：イベント委譲デモ ===== -->
+<div class="demo-card">
+  <h3>🎪 デモ③：イベント委譲デモ</h3>
+  <div class="demo-desc">
+    「アイテムを追加」ボタンで動的にリストアイテムを追加してみましょう。
+    親要素に1つのリスナーだけで、新しく追加したアイテムにもクリックが反応します。
+  </div>
+
+  <div style="display:flex; gap:8px; flex-wrap:wrap; margin-bottom:12px;">
+    <button class="run-btn" onclick="addDelegationItem()">➕ アイテムを追加</button>
+    <button class="run-btn secondary" onclick="resetDelegation()">リセット</button>
+  </div>
+
+  <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px; flex-wrap:wrap;">
+    <div>
+      <div style="font-size:0.85em; font-weight:bold; color:#553c9a; margin-bottom:6px;">
+        📋 リスト（親要素にリスナー1つ）
+      </div>
+      <ul class="delegation-list" id="delegation-list">
+        <li data-id="1">🍎 アイテム 1（最初から存在）<span class="del-badge">既存</span></li>
+        <li data-id="2">🍊 アイテム 2（最初から存在）<span class="del-badge">既存</span></li>
+        <li data-id="3">🍋 アイテム 3（最初から存在）<span class="del-badge">既存</span></li>
+      </ul>
+    </div>
+    <div>
+      <div style="font-size:0.85em; font-weight:bold; color:#553c9a; margin-bottom:6px;">
+        📋 クリックログ
+      </div>
+      <div class="prop-log" id="delegation-log" style="min-height:120px;">
+        アイテムをクリックしてみましょう...
+      </div>
+    </div>
+  </div>
+  <div style="margin-top:10px; font-size:0.82em; color:#718096;">
+    ※ 登録されているリスナー数：<strong id="listener-count">1個</strong>（親要素のみ）
+  </div>
+</div>
+
+
+<!-- ============================================================ -->
+<!-- 5. カスタムイベント -->
+<!-- ============================================================ -->
+<h2 id="custom">⑤ カスタムイベントの作成と発火</h2>
+
+<div class="content-card">
+  <p>
+    <code>CustomEvent</code> コンストラクタを使うと、独自のイベントを作成できます。
+    <code>dispatchEvent()</code> で発火し、通常の <code>addEventListener()</code> で受信できます。
+    コンポーネント間の疎結合な通信に役立ちます。
+  </p>
+
+  <div class="code-block">
+    <button class="copy-btn" onclick="copyCode(this)">copy</button>
+    <pre><span class="cm">// ① カスタムイベントの作成</span>
+<span class="kw">const</span> myEvent = <span class="kw">new</span> <span class="fn">CustomEvent</span>(<span class="str">'myCustomEvent'</span>, {
+  detail: { message: <span class="str">'こんにちは'</span>, value: <span class="num">42</span> }, <span class="cm">// 任意のデータを渡せる</span>
+  bubbles: <span class="kw">true</span>,    <span class="cm">// バブリングするか</span>
+  cancelable: <span class="kw">true</span>  <span class="cm">// preventDefault() できるか</span>
+});
+
+<span class="cm">// ② リスナーを登録（受信側）</span>
+document.<span class="fn">addEventListener</span>(<span class="str">'myCustomEvent'</span>, (e) =&gt; {
+  console.<span class="fn">log</span>(<span class="str">'受信！'</span>, e.detail.message); <span class="out">// → '受信！こんにちは'</span>
+  console.<span class="fn">log</span>(<span class="str">'値:'</span>, e.detail.value);       <span class="out">// → '値: 42'</span>
+});
+
+<span class="cm">// ③ イベントを発火（送信側）</span>
+document.<span class="fn">dispatchEvent</span>(myEvent);
+
+<span class="cm">// 特定の要素から発火することもできる</span>
+<span class="kw">const</span> btn = document.<span class="fn">getElementById</span>(<span class="str">'myBtn'</span>);
+btn.<span class="fn">dispatchEvent</span>(<span class="kw">new</span> <span class="fn">CustomEvent</span>(<span class="str">'activate'</span>, {
+  detail: { source: <span class="str">'button'</span> },
+  bubbles: <span class="kw">true</span>
+}));</pre>
+  </div>
+
+  <div class="info-box tip">
+    <strong>💡 CustomEvent の活用シーン</strong>
+    ・コンポーネント間の通信（親子関係のない要素同士）<br>
+    ・ライブラリやプラグインのフック機能<br>
+    ・状態変化の通知（ショッピングカートに商品が追加されたなど）
+  </div>
+</div>
+
+<!-- ===== デモ4：カスタムイベントステップ実行 ===== -->
+<div class="demo-card">
+  <h3>⚡ デモ④：カスタムイベント ステップ実行デモ</h3>
+  <div class="demo-desc">
+    「次のステップ」ボタンを押して、CustomEvent の作成→登録→発火→受信の流れをステップごとに体験しましょう。
+  </div>
+
+  <div id="custom-steps">
+    <div class="custom-step" id="cstep-1">
+      <div class="step-num">1</div>
+      <div class="step-desc">CustomEvent を作成する（new CustomEvent('orderPlaced', { detail: {...} })）</div>
+      <div class="step-result" id="cstep-1-result"></div>
+    </div>
+    <div class="custom-step" id="cstep-2">
+      <div class="step-num">2</div>
+      <div class="step-desc">addEventListener でリスナーを登録する（受信の準備）</div>
+      <div class="step-result" id="cstep-2-result"></div>
+    </div>
+    <div class="custom-step" id="cstep-3">
+      <div class="step-num">3</div>
+      <div class="step-desc">dispatchEvent でイベントを発火する</div>
+      <div class="step-result" id="cstep-3-result"></div>
+    </div>
+    <div class="custom-step" id="cstep-4">
+      <div class="step-num">4</div>
+      <div class="step-desc">リスナーが呼ばれ、event.detail のデータを受信する</div>
+      <div class="step-result" id="cstep-4-result"></div>
+    </div>
+  </div>
+
+  <div style="margin-top:14px; display:flex; gap:8px;">
+    <button class="run-btn" onclick="nextCustomStep()">▶ 次のステップ</button>
+    <button class="run-btn secondary" onclick="resetCustomSteps()">リセット</button>
+  </div>
+
+  <div style="margin-top:12px; background:#1a202c; border-radius:8px; padding:12px 16px;
+    font-family:'Consolas','Monaco',monospace; font-size:0.82em; line-height:1.8;"
+    id="custom-console">
+    <span style="color:#a0aec0;">// ステップを進めるとここにログが表示されます</span>
+  </div>
+</div>
+
+
+<!-- ============================================================ -->
+<!-- 演習問題 -->
+<!-- ============================================================ -->
+<div class="quiz-section">
+  <h2>🖊️ 演習問題</h2>
+
+  <!-- Q1：穴埋め -->
+  <div class="quiz-item">
+    <div class="quiz-q">
+      <span class="q-num">Q1</span> 穴埋め問題
+    </div>
+    <p>以下の説明に当てはまる正しい答えを入力してください。</p>
+
+    <p>① <code>addEventListener</code> の第3引数に <code>true</code> を指定すると、
+    <input class="blank-input" id="q1-a" placeholder="フェーズ名を入力" style="width:180px;">
+    フェーズでリスナーが登録される。</p>
+
+    <p>② イベントの親要素への伝播を止めるメソッドは
+    <input class="blank-input" id="q1-b" placeholder="メソッド名を入力" style="width:220px;">
+    である。</p>
+
+    <p>③ ブラウザのデフォルト動作をキャンセルするメソッドは
+    <input class="blank-input" id="q1-c" placeholder="メソッド名を入力" style="width:220px;">
+    である。</p>
+
+    <p>④ カスタムイベントを発火させるメソッドは
+    <input class="blank-input" id="q1-d" placeholder="メソッド名を入力" style="width:220px;">
+    である。</p>
+
+    <button class="check-btn" onclick="checkQ1()">答え合わせ</button>
+    <div class="feedback" id="q1-fb"></div>
+  </div>
+
+  <!-- Q2：選択 -->
+  <div class="quiz-item">
+    <div class="quiz-q">
+      <span class="q-num">Q2</span> 選択問題
+    </div>
+    <p>以下のコードを実行して <code>.inner</code> をクリックしたとき、コンソールに出力される順序として正しいものはどれですか？</p>
+
+    <div class="code-block" style="margin-bottom:14px;">
+      <pre style="background:#1a202c; color:#e2e8f0; padding:14px 16px; border-radius:8px; font-size:0.85em; font-family:'Consolas','Monaco',monospace; margin:0;"><span class="kw">const</span> outer = document.<span class="fn">querySelector</span>(<span class="str">'.outer'</span>);
+<span class="kw">const</span> inner = document.<span class="fn">querySelector</span>(<span class="str">'.inner'</span>);
+
+outer.<span class="fn">addEventListener</span>(<span class="str">'click'</span>, () =&gt; console.<span class="fn">log</span>(<span class="str">'A'</span>), <span class="kw">true</span>);  <span class="cm">// キャプチャ</span>
+outer.<span class="fn">addEventListener</span>(<span class="str">'click'</span>, () =&gt; console.<span class="fn">log</span>(<span class="str">'B'</span>));          <span class="cm">// バブリング</span>
+inner.<span class="fn">addEventListener</span>(<span class="str">'click'</span>, () =&gt; console.<span class="fn">log</span>(<span class="str">'C'</span>));          <span class="cm">// ターゲット</span></pre>
+    </div>
+
+    <button class="choice-btn" onclick="checkQ2(this,'wrong')">① B → C → A</button>
+    <button class="choice-btn" onclick="checkQ2(this,'correct')">② A → C → B</button>
+    <button class="choice-btn" onclick="checkQ2(this,'wrong')">③ C → A → B</button>
+    <button class="choice-btn" onclick="checkQ2(this,'wrong')">④ A → B → C</button>
+    <div class="feedback" id="q2-fb"></div>
+  </div>
+
+  <!-- Q3：チェックボックス -->
+  <div class="quiz-item">
+    <div class="quiz-q">
+      <span class="q-num">Q3</span> 複数選択問題
+    </div>
+    <p><strong>イベント委譲（Event Delegation）</strong>に関して正しい記述をすべて選んでください。</p>
+
+    <label class="cb-label"><input type="checkbox" id="q3-a"> 子要素ではなく親要素にリスナーを登録する手法である</label>
+    <label class="cb-label"><input type="checkbox" id="q3-b"> キャプチャリングフェーズを利用して実現する</label>
+    <label class="cb-label"><input type="checkbox" id="q3-c"> 動的に追加した要素にも自動的にイベントが適用される</label>
+    <label class="cb-label"><input type="checkbox" id="q3-d"> event.target でクリックされた実際の子要素を取得できる</label>
+    <label class="cb-label"><input type="checkbox" id="q3-e"> 子要素で stopPropagation() を呼ぶと委譲が機能しなくなる</label>
+    <label class="cb-label"><input type="checkbox" id="q3-f"> 各子要素にリスナーを登録するよりメモリ効率が悪い</label>
+
+    <button class="check-btn" onclick="checkQ3()">答え合わせ</button>
+    <div class="feedback" id="q3-fb"></div>
+  </div>
+
+  <!-- Q4：コード補完 -->
+  <div class="quiz-item">
+    <div class="quiz-q">
+      <span class="q-num">Q4</span> コード補完問題
+    </div>
+    <p>以下のコードの空欄を埋めて、カスタムイベントを正しく実装してください。</p>
+
+    <div class="code-fill">
+      <span style="color:#a0aec0;">// カスタムイベントの作成・登録・発火</span><br>
+      <span class="kw" style="color:#90cdf4;">const</span> evt = <span class="kw" style="color:#90cdf4;">new</span>
+      <input class="fill-input" id="q4-a" placeholder="コンストラクタ名" style="width:150px;">(<span class="str" style="color:#fbd38d;">'dataLoaded'</span>, {<br>
+      &nbsp;&nbsp;<span style="color:#90cdf4;">detail</span>: { count: <span style="color:#fc8181;">10</span> },<br>
+      &nbsp;&nbsp;<input class="fill-input" id="q4-b" placeholder="プロパティ名" style="width:120px;">: <span class="kw" style="color:#90cdf4;">true</span><br>
+      });<br><br>
+      <span style="color:#a0aec0;">// リスナーを登録</span><br>
+      document.<span style="color:#b794f4;">addEventListener</span>(<span class="str" style="color:#fbd38d;">'dataLoaded'</span>, (e) =&gt; {<br>
+      &nbsp;&nbsp;console.<span style="color:#b794f4;">log</span>(e.<input class="fill-input" id="q4-c" placeholder="プロパティ名" style="width:100px;">.count); <span style="color:#a0aec0;">// → 10</span><br>
+      });<br><br>
+      <span style="color:#a0aec0;">// イベントを発火</span><br>
+      document.<input class="fill-input" id="q4-d" placeholder="メソッド名" style="width:160px;">(evt);
+    </div>
+
+    <button class="check-btn" onclick="checkQ4()">答え合わせ</button>
+    <div class="feedback" id="q4-fb"></div>
+  </div>
+
+</div><!-- /quiz-section -->
+
+
+<!-- 完了ボタン -->
+<div class="complete-area">
+  <p>🎉 「3-1 イベント」の学習が完了したら記録しましょう！</p>
+  <button class="complete-btn" id="complete-btn" onclick="markComplete()">
+    ✅ このセクションを完了にする
+  </button>
+  <div class="complete-msg" id="complete-msg">
+    進捗を保存しました！Chapter 3 目次ページの進捗バーに反映されます。
+  </div>
+</div>
+
+<!-- ページナビ -->
+<div class="page-nav">
+  <span class="nav-btn prev" style="opacity:0.4; cursor:default;">← 前のセクション</span>
+  <a class="nav-btn index" href="index.html">📋 Chapter 3 目次</a>
+  <a class="nav-btn next" href="02_dom.html">次へ：3-2 DOM →</a>
+</div>
+
+<!-- フッター -->
+<footer>
+  <p>
+    HTML5プロフェッショナル Level 2 学習サイト ／
+    <a href="../index.html">🏠 サイトトップ</a> ／
+    <a href="index.html">Chapter 3 目次</a> ／
+    <a href="https://github.com/MeshinoKiwamiOkome/html5lv2" target="_blank">GitHub</a>
+  </p>
+  <p style="margin-top:4px;">© MeshinoKiwamiOkome</p>
+</footer>
+
+
+<!-- ============================================================ -->
+<!-- JavaScript -->
+<!-- ============================================================ -->
+<script>
+/* ===== コピーボタン ===== */
+function copyCode(btn) {
+  const pre = btn.nextElementSibling;
+  navigator.clipboard.writeText(pre.innerText || pre.textContent).then(() => {
+    btn.textContent = 'copied!';
+    setTimeout(() => btn.textContent = 'copy', 1800);
+  });
+}
+
+/* ============================================================
+   デモ①：イベント伝播ビジュアライザ
+============================================================ */
+let propMode = 'bubble';
+let propStep = 0;
+
+function setPropMode(mode) {
+  propMode = mode;
+  const labels = {
+    bubble:  'バブリング（デフォルト）',
+    capture: 'キャプチャリング（第3引数 true）',
+    stop:    'stopPropagation（INNER でバブリング停止）'
+  };
+  document.getElementById('prop-mode-label').textContent = '現在のモード：' + labels[mode];
+  resetProp();
+}
+
+function resetProp() {
+  ['outer','middle','inner'].forEach(id => {
+    document.getElementById('prop-' + id).classList.remove('fired');
+  });
+  document.getElementById('prop-log').innerHTML =
+    '<span style="color:#a0aec0;">クリックすると伝播の様子がここに表示されます...</span>';
+}
+
+function propClick(e, source) {
+  e.stopPropagation(); // デモ用：ネイティブ伝播は止めてJSで制御
+
+  const log = document.getElementById('prop-log');
+  log.innerHTML = '';
+
+  const boxes = {
+    outer:  document.getElementById('prop-outer'),
+    middle: document.getElementById('prop-middle'),
+    inner:  document.getElementById('prop-inner')
+  };
+
+  function addLog(text, cls) {
+    const d = document.createElement('div');
+    d.className = cls || '';
+    d.textContent = text;
+    log.appendChild(d);
+  }
+
+  function highlight(id, delay) {
+    setTimeout(() => {
+      boxes[id].classList.add('fired');
+    }, delay);
+    setTimeout(() => {
+      boxes[id].classList.remove('fired');
+    }, delay + 500);
+  }
+
+  if (propMode === 'bubble') {
+    addLog('▼ キャプチャフェーズ（リスナーなし）', 'log-capture');
+    addLog('● ターゲット: ' + source.toUpperCase(), '');
+    addLog('▲ バブリング開始', 'log-bubble');
+
+    const order = source === 'inner'
+      ? ['inner','middle','outer']
+      : source === 'middle'
+      ? ['middle','outer']
+      : ['outer'];
+
+    order.forEach((id, i) => {
+      highlight(id, i * 400);
+      setTimeout(() => {
+        addLog('  → ' + id.toUpperCase() + ' のバブリングリスナー実行', 'log-bubble');
+      }, i * 400 + 50);
+    });
+
+  } else if (propMode === 'capture') {
+    addLog('▼ キャプチャフェーズ開始', 'log-capture');
+
+    const order = source === 'inner'
+      ? ['outer','middle','inner']
+      : source === 'middle'
+      ? ['outer','middle']
+      : ['outer'];
+
+    order.forEach((id, i) => {
+      highlight(id, i * 400);
+      setTimeout(() => {
+        addLog('  → ' + id.toUpperCase() + ' のキャプチャリスナー実行', 'log-capture');
+      }, i * 400 + 50);
+    });
+    setTimeout(() => {
+      addLog('▲ バブリングフェーズ（リスナーなし）', 'log-bubble');
+    }, order.length * 400 + 100);
+
+  } else if (propMode === 'stop') {
+    addLog('▼ キャプチャフェーズ（リスナーなし）', 'log-capture');
+    addLog('● INNER クリック', '');
+    highlight('inner', 0);
+    setTimeout(() => {
+      addLog('  → INNER のリスナー実行', '');
+      addLog('  → stopPropagation() 呼び出し！', 'log-stop');
+      addLog('▲ バブリング停止（MIDDLE・OUTER には届かない）', 'log-stop');
+    }, 100);
+  }
+}
+
+/* ============================================================
+   デモ②：preventDefault 確認デモ
+============================================================ */
+// リンク（通常）
+document.getElementById('link-normal').addEventListener('click', (e) => {
+  document.getElementById('log-normal').textContent =
+    'クリック！href="#prevent" へ移動します（デフォルト動作）';
+});
+
+// リンク（preventDefault）
+document.getElementById('link-prevent').addEventListener('click', (e) => {
+  e.preventDefault();
+  document.getElementById('log-prevent').textContent =
+    'preventDefault() → ページ遷移をキャンセルしました！';
+});
+
+// 入力（通常）
+document.getElementById('input-normal').addEventListener('keydown', (e) => {
+  document.getElementById('log-normal').textContent =
+    'キー入力：' + e.key + '（全キー許可）';
+});
+
+// 入力（数字のみ）
+document.getElementById('input-prevent').addEventListener('keydown', (e) => {
+  const allowed = /^[0-9]$/.test(e.key) ||
+    ['Backspace','Delete','ArrowLeft','ArrowRight','Tab'].includes(e.key);
+  if (!allowed) {
+    e.preventDefault();
+    document.getElementById('log-prevent').textContent =
+      '「' + e.key + '」は数字以外のため preventDefault() でブロックしました';
+  } else {
+    document.getElementById('log-prevent').textContent =
+      '「' + e.key + '」は数字なので入力を許可しました';
+  }
+});
+
+/* ============================================================
+   デモ③：イベント委譲デモ
+============================================================ */
+let delegationItemCount = 3;
+const emojis = ['🍇','🍓','🥝','🍑','🍒','🥭','🍍','🥥','🍌','🍉'];
+
+const delegationList = document.getElementById('delegation-list');
+const delegationLog  = document.getElementById('delegation-log');
+
+// 親要素に1つだけリスナーを登録
+delegationList.addEventListener('click', (e) => {
+  const li = e.target.closest('li');
+  if (!li) return;
+
+  // 前のハイライトを消す
+  delegationList.querySelectorAll('li').forEach(el => el.classList.remove('clicked'));
+  li.classList.add('clicked');
+
+  const isNew = li.querySelector('.del-badge.new') !== null;
+  const now = new Date().toLocaleTimeString();
+  delegationLog.innerHTML =
+    `<span style="color:#68d391;">[${now}]</span> クリック検知！\n` +
+    `  target: ${li.textContent.replace(/既存|新規/g,'').trim()}\n` +
+    `  data-id: ${li.dataset.id}\n` +
+    `  種別: ${isNew ? '🆕 動的追加アイテム' : '📦 既存アイテム'}\n` +
+    `  ※ 親要素のリスナー1つで検知`;
+});
+
+function addDelegationItem() {
+  delegationItemCount++;
+  const li = document.createElement('li');
+  li.dataset.id = delegationItemCount;
+  const emoji = emojis[(delegationItemCount - 1) % emojis.length];
+  li.innerHTML = `${emoji} アイテム ${delegationItemCount}（動的追加）<span class="del-badge new">新規</span>`;
+  delegationList.appendChild(li);
+  delegationLog.innerHTML =
+    `<span style="color:#9f7aea;">アイテム ${delegationItemCount} を追加しました。</span>\n` +
+    `新しいアイテムをクリックしてみてください！\n` +
+    `（リスナーは追加していません。親要素の1つで対応できます）`;
+}
+
+function resetDelegation() {
+  delegationItemCount = 3;
+  delegationList.innerHTML = `
+    <li data-id="1">🍎 アイテム 1（最初から存在）<span class="del-badge">既存</span></li>
+    <li data-id="2">🍊 アイテム 2（最初から存在）<span class="del-badge">既存</span></li>
+    <li data-id="3">🍋 アイテム 3（最初から存在）<span class="del-badge">既存</span></li>
+  `;
+  delegationLog.textContent = 'リセットしました。アイテムをクリックしてみましょう...';
+}
+
+/* ============================================================
+   デモ④：カスタムイベント ステップ実行
+============================================================ */
+let customStepCurrent = 0;
+let customEventObj = null;
+let customListenerRegistered = false;
+let customReceivedData = null;
+
+const customStepData = [
+  {
+    action: () => {
+      customEventObj = new CustomEvent('orderPlaced', {
+        detail: { item: 'りんご', price: 150, quantity: 3 },
+        bubbles: true,
+        cancelable: true
+      });
+      return `✅ CustomEvent 作成完了\nイベント名: "orderPlaced"\ndetail: { item:"りんご", price:150, quantity:3 }\nbubbles: true`;
+    },
+    color: '#90cdf4'
+  },
+  {
+    action: () => {
+      if (!customListenerRegistered) {
+        document.addEventListener('orderPlaced', (e) => {
+          customReceivedData = e.detail;
+          const r = document.getElementById('cstep-4-result');
+          r.textContent = `受信！ item:${e.detail.item}, 合計:${e.detail.price * e.detail.quantity}円`;
+          document.getElementById('cstep-4').classList.add('done');
+          document.getElementById('cstep-4').classList.remove('active');
+          const d = document.getElementById('cstep-4').querySelector('.step-num');
+          d.textContent = '✓';
+          addCustomLog(`<span style="color:#68d391;">// リスナー呼び出し！</span>`);
+          addCustomLog(`<span style="color:#fbd38d;">e.detail.item</span> → <span style="color:#68d391;">"${e.detail.item}"</span>`);
+          addCustomLog(`<span style="color:#fbd38d;">e.detail.price * e.detail.quantity</span> → <span style="color:#68d391;">${e.detail.price * e.detail.quantity}円</span>`);
+        }, { once: true });
+        customListenerRegistered = true;
+      }
+      return `✅ addEventListener 登録完了\n"orderPlaced" イベントを待機中...`;
+    },
+    color: '#b794f4'
+  },
+  {
+    action: () => {
+      if (!customEventObj) {
+        return '⚠️ 先にステップ1を実行してください';
+      }
+      addCustomLog(`<span style="color:#f6ad55;">document.dispatchEvent(evt)</span> 実行中...`);
+      document.dispatchEvent(customEventObj);
+      return `✅ dispatchEvent 実行！\nイベントが発火されました`;
+    },
+    color: '#f6ad55'
+  }
+];
+
+function addCustomLog(html) {
+  const c = document.getElementById('custom-console');
+  const d = document.createElement('div');
+  d.innerHTML = html;
+  c.appendChild(d);
+}
+
+function nextCustomStep() {
+  if (customStepCurrent >= 3) return;
+
+  // 現在のステップをアクティブに
+  const stepEl = document.getElementById('cstep-' + (customStepCurrent + 1));
+  stepEl.classList.add('active');
+
+  const result = customStepData[customStepCurrent].action();
+  const resultEl = document.getElementById('cstep-' + (customStepCurrent + 1) + '-result');
+  resultEl.textContent = '';
+
+  // ステップ完了
+  setTimeout(() => {
+    stepEl.classList.remove('active');
+    stepEl.classList.add('done');
+    stepEl.querySelector('.step-num').textContent = '✓';
+    resultEl.textContent = result.split('\n')[0];
+    addCustomLog(`<span style="color:${customStepData[customStepCurrent].color};">${result.replace(/\n/g, '<br>')}</span>`);
+  }, 300);
+
+  customStepCurrent++;
+}
+
+function resetCustomSteps() {
+  customStepCurrent = 0;
+  customEventObj = null;
+  customListenerRegistered = false;
+  customReceivedData = null;
+
+  for (let i = 1; i <= 4; i++) {
+    const el = document.getElementById('cstep-' + i);
+    el.classList.remove('active','done');
+    el.querySelector('.step-num').textContent = i;
+    document.getElementById('cstep-' + i + '-result').textContent = '';
+  }
+  document.getElementById('custom-console').innerHTML =
+    '<span style="color:#a0aec0;">// ステップを進めるとここにログが表示されます</span>';
+}
+
+/* ============================================================
+   演習問題
+============================================================ */
+// Q1：穴埋め
+function checkQ1() {
+  const a = document.getElementById('q1-a').value.trim();
+  const b = document.getElementById('q1-b').value.trim();
+  const c = document.getElementById('q1-c').value.trim();
+  const d = document.getElementById('q1-d').value.trim();
+  const fb = document.getElementById('q1-fb');
+
+  const ca = /キャプチャ/i.test(a) || /capture/i.test(a);
+  const cb = /stopPropagation/i.test(b);
+  const cc = /preventDefault/i.test(c);
+  const cd = /dispatchEvent/i.test(d);
+  const score = [ca,cb,cc,cd].filter(Boolean).length;
+
+  if (score === 4) {
+    fb.className = 'feedback ok';
+    fb.innerHTML = '✅ 全問正解！完璧です！<br>' +
+      '①キャプチャ ②stopPropagation() ③preventDefault() ④dispatchEvent() — すべて正確に理解できています。';
+  } else {
+    fb.className = 'feedback ng';
+    fb.innerHTML = `❌ ${score}/4 問正解。<br><br>` +
+      `① ${ca ? '✅' : '❌ 正解：<strong>キャプチャ</strong>（第3引数 true でキャプチャフェーズ登録）'}<br>` +
+      `② ${cb ? '✅' : '❌ 正解：<strong>stopPropagation()</strong>（親要素への伝播を止める）'}<br>` +
+      `③ ${cc ? '✅' : '❌ 正解：<strong>preventDefault()</strong>（ブラウザのデフォルト動作をキャンセル）'}<br>` +
+      `④ ${cd ? '✅' : '❌ 正解：<strong>dispatchEvent()</strong>（イベントを発火させる）'}`;
+  }
+}
+
+// Q2：選択
+function checkQ2(btn, result) {
+  document.querySelectorAll('#q2-fb').forEach(el => el.className = 'feedback');
+  document.querySelectorAll('.quiz-item:nth-child(2) .choice-btn').forEach(b => {
+    b.classList.remove('correct','wrong');
+    b.disabled = true;
+  });
+  const fb = document.getElementById('q2-fb');
+
+  if (result === 'correct') {
+    btn.classList.add('correct');
+    fb.className = 'feedback ok';
+    fb.innerHTML = '✅ 正解！<br><br>' +
+      '<strong>伝播の順序：A（キャプチャ）→ C（ターゲット）→ B（バブリング）</strong><br><br>' +
+      '・<code>outer</code> の <strong>キャプチャリスナー</strong>（第3引数 true）が最初に実行 → <strong>A</strong><br>' +
+      '・<code>inner</code> の <strong>ターゲットフェーズ</strong>リスナーが実行 → <strong>C</strong><br>' +
+      '・<code>outer</code> の <strong>バブリングリスナー</strong>（デフォルト）が最後に実行 → <strong>B</strong><br><br>' +
+      '伝播順序：<strong>キャプチャ（外→内）→ ターゲット → バブリング（内→外）</strong>';
+  } else {
+    btn.classList.add('wrong');
+    fb.className = 'feedback ng';
+    fb.innerHTML = '❌ 不正解。<br><br>' +
+      '正解は <strong>② A → C → B</strong> です。<br>' +
+      'キャプチャリスナー（true）は外→内の順で先に実行、' +
+      'バブリングリスナーは内→外の順で後に実行されます。';
+  }
+}
+
+// Q3：チェックボックス
+function checkQ3() {
+  const answers = {
+    a: document.getElementById('q3-a').checked,
+    b: document.getElementById('q3-b').checked,
+    c: document.getElementById('q3-c').checked,
+    d: document.getElementById('q3-d').checked,
+    e: document.getElementById('q3-e').checked,
+    f: document.getElementById('q3-f').checked,
+  };
+  // 正解：a, c, d, e（b:バブリングを利用、f:効率が良い）
+  const correct = { a:true, b:false, c:true, d:true, e:true, f:false };
+  const labels = document.querySelectorAll('.quiz-item:nth-child(3) .cb-label');
+
+  let allOk = true;
+  Object.keys(correct).forEach((k, i) => {
+    if (answers[k] === correct[k]) {
+      labels[i].classList.add('correct');
+    } else {
+      labels[i].classList.add('wrong');
+      allOk = false;
+    }
+  });
+
+  const fb = document.getElementById('q3-fb');
+  if (allOk) {
+    fb.className = 'feedback ok';
+    fb.innerHTML = '✅ 全問正解！<br>イベント委譲の仕組みを正確に理解できています。';
+  } else {
+    fb.className = 'feedback ng';
+    fb.innerHTML = '❌ 不正解の項目があります。<br><br>' +
+      '<strong>正しい記述：①③④⑤</strong><br><br>' +
+      '・② <strong>誤り</strong>：イベント委譲は<strong>バブリングフェーズ</strong>を利用します（キャプチャではない）<br>' +
+      '・⑥ <strong>誤り</strong>：各子要素にリスナーを登録するより<strong>メモリ効率が良い</strong>のがメリットです';
+  }
+}
+
+// Q4：コード補完
+function checkQ4() {
+  const a = document.getElementById('q4-a').value.trim();
+  const b = document.getElementById('q4-b').value.trim();
+  const c = document.getElementById('q4-c').value.trim();
+  const d = document.getElementById('q4-d').value.trim();
+  const fb = document.getElementById('q4-fb');
+
+  const ca = /CustomEvent/i.test(a);
+  const cb = /bubbles/i.test(b);
+  const cc = /detail/i.test(c);
+  const cd = /dispatchEvent/i.test(d);
+  const score = [ca,cb,cc,cd].filter(Boolean).length;
+
+  if (score === 4) {
+    fb.className = 'feedback ok';
+    fb.innerHTML = '✅ 全問正解！<br><br>' +
+      '<strong>解答：</strong><br>' +
+      '① <code>CustomEvent</code>（カスタムイベントのコンストラクタ）<br>' +
+      '② <code>bubbles</code>（バブリングを有効にするオプション）<br>' +
+      '③ <code>detail</code>（カスタムデータが格納されるプロパティ）<br>' +
+      '④ <code>dispatchEvent</code>（イベントを発火するメソッド）';
+  } else {
+    fb.className = 'feedback ng';
+    fb.innerHTML = `❌ ${score}/4 問正解。<br><br>` +
+      `① ${ca ? '✅' : '❌ 正解：<strong>CustomEvent</strong>'}<br>` +
+      `② ${cb ? '✅' : '❌ 正解：<strong>bubbles</strong>（バブリング設定）'}<br>` +
+      `③ ${cc ? '✅' : '❌ 正解：<strong>detail</strong>（カスタムデータへのアクセス）'}<br>` +
+      `④ ${cd ? '✅' : '❌ 正解：<strong>dispatchEvent</strong>（イベント発火）'}`;
+  }
+}
+
+/* ===== 完了ボタン ===== */
+function markComplete() {
+  localStorage.setItem('html5lv2_ch3_01', 'done');
+  const btn = document.getElementById('complete-btn');
+  const msg = document.getElementById('complete-msg');
+  btn.classList.add('done');
+  btn.textContent = '✅ 完了済み';
+  btn.disabled = true;
+  msg.style.display = 'block';
+}
+
+// ページ読み込み時に完了状態を確認
+window.addEventListener('DOMContentLoaded', () => {
+  if (localStorage.getItem('html5lv2_ch3_01') === 'done') {
+    const btn = document.getElementById('complete-btn');
+    const msg = document.getElementById('complete-msg');
+    btn.classList.add('done');
+    btn.textContent = '✅ 完了済み';
+    btn.disabled = true;
+    msg.style.display = 'block';
+  }
+});
+</script>
+
+</body>
+</html>
