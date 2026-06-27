@@ -3,443 +3,1262 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-  <title>HTML5プロフェッショナル Level 2 学習サイト</title>
+  <title>1-1 変数の宣言と値の代入 | HTML5プロフェッショナル Level 2</title>
   <style>
     *, *::before, *::after { box-sizing: border-box; }
     body {
       font-family: 'Segoe UI', 'Helvetica Neue', sans-serif;
-      max-width: 960px;
-      margin: 40px auto;
-      padding: 0 24px;
-      background: #f0f4f8;
-      color: #2d3748;
-      line-height: 1.8;
+      max-width: 960px; margin: 40px auto; padding: 0 24px;
+      background: #f0f4f8; color: #2d3748; line-height: 1.8;
     }
+    .breadcrumb {
+      font-size: 0.82em; color: #a0aec0; margin-bottom: 20px;
+      font-family: 'Consolas','Monaco',monospace;
+    }
+    .breadcrumb a { color: #2c7a7b; text-decoration: none; }
+    .breadcrumb a:hover { text-decoration: underline; }
 
-    /* ============ ヘッダー ============ */
-    .site-header {
+    /* ヘッダー */
+    .chapter-header {
       background: linear-gradient(135deg, #1a365d, #2c7a7b);
-      border-radius: 12px;
-      padding: 36px 32px 28px;
-      margin-bottom: 28px;
-      color: #fff;
-      box-shadow: 0 4px 18px rgba(44,122,123,0.3);
+      border-radius: 12px; padding: 32px 32px 24px;
+      margin-bottom: 32px; color: #fff;
+      box-shadow: 0 4px 18px rgba(44,122,123,0.35);
     }
-    .site-header h1 {
-      margin: 0 0 8px;
-      font-size: 1.9em;
-      letter-spacing: 0.03em;
-      border: none;
-      padding: 0;
-      color: #fff;
+    .chapter-header .ch-num {
+      font-size: 0.8em; font-family: 'Consolas','Monaco',monospace;
+      opacity: 0.85; letter-spacing: 0.08em; margin-bottom: 6px;
     }
-    .site-header p {
-      margin: 0;
-      font-size: 0.95em;
-      opacity: 0.88;
-    }
-    .badge-row {
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
-      margin-top: 16px;
-    }
+    .chapter-header h1 { margin: 0 0 10px; font-size: 1.6em; color: #fff; border: none; padding: 0; }
+    .chapter-header p  { margin: 0; font-size: 0.92em; opacity: 0.88; }
+    .badge-row { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 14px; }
     .badge {
       background: rgba(255,255,255,0.18);
       border: 1px solid rgba(255,255,255,0.35);
-      border-radius: 20px;
-      padding: 4px 14px;
-      font-size: 0.78em;
-      font-weight: bold;
-      letter-spacing: 0.04em;
+      border-radius: 20px; padding: 3px 12px;
+      font-size: 0.76em; font-weight: bold;
     }
 
-    /* ============ クイックアクセスバー ============ */
-    .quick-access {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 14px;
-      margin-bottom: 28px;
+    /* セクションナビ */
+    .section-nav {
+      background: #fff; border: 1px solid #bee3f8;
+      border-radius: 10px; padding: 18px 22px;
+      margin-bottom: 32px; box-shadow: 0 2px 6px rgba(0,0,0,0.05);
     }
-    .qa-card {
-      display: flex;
-      align-items: center;
-      gap: 14px;
-      background: #fff;
-      border: 2px solid #bee3f8;
-      border-radius: 12px;
-      padding: 18px 20px;
-      text-decoration: none;
-      color: inherit;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
-      transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
-    }
-    .qa-card:hover {
-      transform: translateY(-3px);
-      box-shadow: 0 6px 20px rgba(44,122,123,0.2);
-      border-color: #2c7a7b;
-    }
-    .qa-card.exam-card { border-color: #bee3f8; }
-    .qa-card.exam-card:hover { border-color: #3182ce; box-shadow: 0 6px 20px rgba(49,130,206,0.2); }
-    .qa-card.dash-card { border-color: #c6f6d5; }
-    .qa-card.dash-card:hover { border-color: #38a169; box-shadow: 0 6px 20px rgba(56,161,105,0.2); }
-    .qa-icon { font-size: 2.2em; flex-shrink: 0; line-height: 1; }
-    .qa-title { font-size: 1.0em; font-weight: bold; color: #1a202c; margin-bottom: 3px; }
-    .qa-desc  { font-size: 0.78em; color: #718096; line-height: 1.5; }
-    .qa-badge {
-      display: inline-block; font-size: 0.70em; font-weight: bold;
-      padding: 2px 8px; border-radius: 10px; margin-top: 4px;
-    }
-    .qa-badge.blue  { background: #ebf8ff; color: #2c5282; }
-    .qa-badge.green { background: #f0fff4; color: #276749; }
+    .section-nav h2 { margin: 0 0 12px; font-size: 0.92em; color: #1a365d; border: none; padding: 0; }
+    .section-nav ol { margin: 0; padding-left: 20px; font-size: 0.9em; }
+    .section-nav ol li { margin: 4px 0; }
+    .section-nav ol li a { color: #2c7a7b; text-decoration: none; }
+    .section-nav ol li a:hover { text-decoration: underline; }
+    .section-nav ol li.current a { color: #1a365d; font-weight: bold; }
 
-    /* ============ 進捗バー ============ */
-    .progress-section {
-      background: #fff;
-      border: 1px solid #bee3f8;
-      border-radius: 10px;
-      padding: 20px 24px;
-      margin-bottom: 28px;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.06);
-    }
-    .progress-section h2 {
-      margin: 0 0 14px; font-size: 1em;
-      color: #1a365d; border: none; padding: 0;
-    }
-    .progress-bar-wrap {
-      background: #edf2f7; border-radius: 8px;
-      height: 18px; overflow: hidden; margin-bottom: 8px;
-    }
-    .progress-bar {
-      height: 100%;
-      background: linear-gradient(90deg, #2c7a7b, #1a365d);
-      border-radius: 8px;
-      transition: width 0.6s ease;
-    }
-    .progress-label { font-size: 0.82em; color: #718096; text-align: right; }
-    .progress-label span { color: #1a365d; font-weight: bold; }
+    /* 見出し */
+    h2 { color: #1a365d; margin-top: 48px; border-left: 5px solid #2c7a7b; padding-left: 12px; }
+    h3 { color: #2c7a7b; margin-top: 28px; }
 
-    /* ============ 章カード ============ */
-    h2.section-title {
-      color: #1a202c;
-      border-bottom: 4px solid #2c7a7b;
-      padding-bottom: 8px;
-      margin-top: 36px;
-      font-size: 1.1em;
-    }
-    .chapter-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-      gap: 16px;
-      margin-top: 16px;
-    }
-    .chapter-card {
-      background: #fff;
-      border: 1px solid #bee3f8;
-      border-radius: 10px;
-      padding: 20px 22px;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.06);
-      transition: transform 0.18s ease, box-shadow 0.18s ease;
-      text-decoration: none;
-      color: inherit;
-      display: block;
-    }
-    .chapter-card:hover {
-      transform: translateY(-3px);
-      box-shadow: 0 6px 18px rgba(44,122,123,0.18);
-      border-color: #2c7a7b;
-    }
-    .chapter-card .chapter-num {
-      font-size: 0.75em; font-weight: bold;
-      color: #2c7a7b;
-      font-family: 'Consolas','Monaco',monospace;
-      margin-bottom: 4px; letter-spacing: 0.06em;
-    }
-    .chapter-card .chapter-title {
-      font-size: 1.02em; font-weight: bold;
-      color: #2d3748; margin-bottom: 10px;
-    }
-    .chapter-card .topic-list {
-      list-style: none; padding: 0; margin: 0;
-      font-size: 0.82em; color: #718096;
-    }
-    .chapter-card .topic-list li {
-      padding: 2px 0 2px 14px; position: relative;
-    }
-    .chapter-card .topic-list li::before {
-      content: '›'; position: absolute; left: 0;
-      color: #2c7a7b; font-weight: bold;
-    }
-    .chapter-card .card-footer {
-      display: flex; align-items: center;
-      justify-content: space-between;
-      margin-top: 14px; padding-top: 10px;
-      border-top: 1px solid #e6fffa;
-    }
-    .chapter-card .card-progress {
-      font-size: 0.75em; color: #2c7a7b;
+    /* コード */
+    code {
+      background: #edf2f7; padding: 2px 6px;
+      border-radius: 4px; font-size: 0.93em;
       font-family: 'Consolas','Monaco',monospace;
     }
-    .chapter-card .card-bar-wrap {
-      flex: 1; margin: 0 10px;
-      background: #edf2f7; border-radius: 4px;
-      height: 6px; overflow: hidden;
+    pre {
+      background: #1a202c; color: #e2e8f0;
+      padding: 18px 20px; border-radius: 8px;
+      overflow-x: auto; font-size: 0.88em;
+      line-height: 1.7; font-family: 'Consolas','Monaco',monospace;
     }
-    .chapter-card .card-bar {
-      height: 100%;
-      background: linear-gradient(90deg, #2c7a7b, #1a365d);
-      border-radius: 4px; transition: width 0.5s ease;
-    }
-    .chapter-card .card-check {
-      font-size: 0.75em; color: #718096;
-      font-family: 'Consolas','Monaco',monospace;
-    }
+    pre .comment { color: #68d391; }
+    pre .kw      { color: #90cdf4; }
+    pre .str     { color: #fbd38d; }
+    pre .num     { color: #fc8181; }
+    pre .fn      { color: #b794f4; }
+    pre .out     { color: #a0aec0; }
 
-    /* ============ note ============ */
+    /* コピーボタン */
+    .pre-wrap { position: relative; margin: 14px 0; }
+    .copy-btn {
+      position: absolute; top: 8px; right: 8px;
+      background: #4a5568; color: #e2e8f0;
+      border: none; border-radius: 4px;
+      padding: 4px 10px; font-size: 0.75em;
+      cursor: pointer; font-family: 'Consolas','Monaco',monospace;
+      transition: background 0.2s; z-index: 1;
+    }
+    .copy-btn:hover { background: #2c7a7b; }
+
+    /* ボックス */
     .note {
       background: #fff; border: 1px dashed #81e6d9;
       border-radius: 6px; padding: 14px 18px;
-      font-size: 0.93em; color: #4a5568; margin-bottom: 14px;
+      font-size: 0.93em; color: #4a5568; margin: 14px 0;
     }
     .note strong { color: #1a365d; }
+    .warn {
+      background: #fffaf0; border: 1px solid #f6ad55;
+      border-left: 5px solid #f6ad55; border-radius: 6px;
+      padding: 14px 18px; font-size: 0.93em; color: #744210; margin: 14px 0;
+    }
+    .good {
+      background: #f0fff4; border: 1px solid #68d391;
+      border-left: 5px solid #48bb78; border-radius: 6px;
+      padding: 14px 18px; font-size: 0.93em; color: #276749; margin: 14px 0;
+    }
+    .demo-box {
+      background: #fff; border: 1px solid #bee3f8;
+      border-radius: 8px; padding: 20px 24px;
+      margin: 12px 0 28px; box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+    }
 
-    /* ============ ボタン ============ */
+    /* ============ JSコンソール ============ */
+    .js-console {
+      background: #1a202c; border-radius: 10px;
+      overflow: hidden; margin: 16px 0;
+      box-shadow: 0 4px 14px rgba(0,0,0,0.25);
+    }
+    .js-console-bar {
+      background: #2d3748; padding: 8px 16px;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .js-console-bar .dot {
+      width: 12px; height: 12px; border-radius: 50%;
+    }
+    .dot-red    { background: #fc8181; }
+    .dot-yellow { background: #f6ad55; }
+    .dot-green  { background: #68d391; }
+    .js-console-bar span {
+      font-size: 0.78em; color: #a0aec0;
+      font-family: 'Consolas','Monaco',monospace;
+      margin-left: 6px;
+    }
+    .js-console-output {
+      padding: 14px 16px; min-height: 80px;
+      font-family: 'Consolas','Monaco',monospace;
+      font-size: 0.85em; line-height: 1.8;
+      max-height: 260px; overflow-y: auto;
+    }
+    .js-console-output .log-line   { color: #e2e8f0; }
+    .js-console-output .log-info   { color: #90cdf4; }
+    .js-console-output .log-warn   { color: #f6ad55; }
+    .js-console-output .log-error  { color: #fc8181; }
+    .js-console-output .log-result { color: #68d391; }
+    .js-console-output .log-prompt { color: #a0aec0; }
+    .js-console-input-row {
+      display: flex; align-items: center;
+      border-top: 1px solid #2d3748; padding: 8px 12px; gap: 8px;
+    }
+    .js-console-input-row span {
+      color: #68d391; font-family: 'Consolas','Monaco',monospace;
+      font-size: 0.9em; flex-shrink: 0;
+    }
+    .js-console-input {
+      flex: 1; background: transparent; border: none; outline: none;
+      color: #e2e8f0; font-family: 'Consolas','Monaco',monospace;
+      font-size: 0.88em; caret-color: #68d391;
+    }
+    .js-console-run {
+      background: #2c7a7b; color: #fff; border: none;
+      border-radius: 4px; padding: 4px 12px;
+      font-size: 0.78em; font-weight: bold; cursor: pointer;
+      font-family: 'Consolas','Monaco',monospace;
+      transition: background 0.2s;
+    }
+    .js-console-run:hover { background: #1a365d; }
+    .js-console-clear {
+      background: #4a5568; color: #e2e8f0; border: none;
+      border-radius: 4px; padding: 4px 10px;
+      font-size: 0.78em; cursor: pointer;
+      font-family: 'Consolas','Monaco',monospace;
+      transition: background 0.2s;
+    }
+    .js-console-clear:hover { background: #718096; }
+
+    /* ステップデモ */
+    .step-demo {
+      background: #fff; border: 1px solid #bee3f8;
+      border-radius: 8px; padding: 20px 24px; margin: 14px 0;
+    }
+    .step-btns { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 14px; }
+    .step-btn {
+      padding: 7px 16px; border-radius: 6px;
+      border: 2px solid #bee3f8; background: #fff;
+      color: #2c7a7b; font-size: 0.85em; font-weight: bold;
+      cursor: pointer; transition: all 0.15s;
+      font-family: 'Consolas','Monaco',monospace;
+    }
+    .step-btn:hover  { background: #ebf8ff; border-color: #2c7a7b; }
+    .step-btn.active { background: #2c7a7b; color: #fff; border-color: #2c7a7b; }
+    .step-content { display: none; }
+    .step-content.active { display: block; }
+
+    /* 変数ビジュアライザ */
+    .var-visualizer {
+      background: #1a202c; border-radius: 8px;
+      padding: 16px 20px; margin: 14px 0;
+      font-family: 'Consolas','Monaco',monospace; font-size: 0.85em;
+    }
+    .var-row {
+      display: flex; align-items: center; gap: 12px;
+      margin-bottom: 10px; flex-wrap: wrap;
+    }
+    .var-name {
+      color: #90cdf4; font-weight: bold; min-width: 100px;
+    }
+    .var-arrow { color: #a0aec0; }
+    .var-box {
+      background: #2d3748; border: 2px solid #4a5568;
+      border-radius: 6px; padding: 6px 14px;
+      color: #fbd38d; min-width: 80px; text-align: center;
+      transition: all 0.3s ease;
+    }
+    .var-box.updated {
+      border-color: #68d391; color: #68d391;
+      animation: flash 0.5s ease;
+    }
+    @keyframes flash {
+      0%   { background: #276749; }
+      100% { background: #2d3748; }
+    }
+    .var-type {
+      font-size: 0.78em; color: #a0aec0;
+      background: #2d3748; border-radius: 4px;
+      padding: 2px 8px;
+    }
+
+    /* インタラクティブデモ */
+    .interactive-demo {
+      background: #ebf8ff; border: 1px solid #bee3f8;
+      border-radius: 8px; padding: 16px 20px; margin: 14px 0;
+    }
+    .demo-label {
+      font-size: 0.85em; font-weight: bold;
+      color: #1a365d; margin-bottom: 10px;
+    }
+    .demo-input-row {
+      display: flex; gap: 10px; align-items: center;
+      flex-wrap: wrap; margin-bottom: 10px;
+    }
+    .demo-input {
+      border: 2px solid #bee3f8; border-radius: 6px;
+      padding: 7px 12px; font-size: 0.9em;
+      font-family: 'Consolas','Monaco',monospace;
+      color: #2d3748; background: #fff; flex: 1; min-width: 120px;
+    }
+    .demo-input:focus { border-color: #2c7a7b; outline: none; }
+    .demo-btn {
+      background: #2c7a7b; color: #fff; border: none;
+      border-radius: 6px; padding: 8px 18px;
+      font-size: 0.88em; font-weight: bold; cursor: pointer;
+      transition: background 0.2s;
+    }
+    .demo-btn:hover { background: #1a365d; }
+    .demo-output {
+      background: #1a202c; color: #68d391;
+      border-radius: 6px; padding: 10px 14px;
+      font-family: 'Consolas','Monaco',monospace;
+      font-size: 0.85em; min-height: 40px;
+      white-space: pre-wrap; line-height: 1.7;
+    }
+
+    /* タブ */
+    .tab-wrap { margin: 14px 0; }
+    .tab-btns { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: -1px; }
+    .tab-btn {
+      padding: 8px 18px; border: 1px solid #bee3f8;
+      border-bottom: none; border-radius: 6px 6px 0 0;
+      background: #edf2f7; color: #2c7a7b;
+      font-size: 0.85em; font-weight: bold;
+      font-family: 'Consolas','Monaco',monospace;
+      cursor: pointer; transition: background 0.15s;
+    }
+    .tab-btn.active { background: #fff; border-bottom: 1px solid #fff; }
+    .tab-btn:hover:not(.active) { background: #e6fffa; }
+    .tab-content {
+      display: none; background: #fff;
+      border: 1px solid #bee3f8;
+      border-radius: 0 6px 6px 6px; padding: 18px 20px;
+    }
+    .tab-content.active { display: block; }
+
+    /* テーブル */
+    table.ref-table {
+      border-collapse: collapse; width: 100%;
+      background: #fff; border-radius: 8px;
+      overflow: hidden; box-shadow: 0 2px 6px rgba(0,0,0,0.07);
+      margin: 14px 0; font-size: 0.9em;
+    }
+    table.ref-table th, table.ref-table td {
+      border: 1px solid #bee3f8; padding: 10px 14px; text-align: left;
+    }
+    table.ref-table thead tr { background: #1a365d; color: #fff; }
+    table.ref-table tbody tr:nth-child(even) { background: #ebf8ff; }
+
+    /* 演習問題 */
+    .quiz-section {
+      background: #ebf8ff; border-left: 6px solid #4299e1;
+      border-radius: 0 8px 8px 0; padding: 24px 28px; margin: 48px 0 32px;
+    }
+    .quiz-section > h2 { margin-top: 0; color: #1a365d; border-left-color: #4299e1; }
+    .quiz-block {
+      background: #fff; border: 1px solid #bee3f8;
+      border-radius: 8px; padding: 18px 22px; margin-bottom: 22px;
+    }
+    .quiz-block h3 { margin-top: 0; color: #1a365d; }
+    .quiz-block input[type="text"],
+    .quiz-block select {
+      border: 2px solid #bee3f8; border-radius: 6px;
+      padding: 8px 12px; font-size: 0.95em;
+      width: 100%; max-width: 440px; margin: 6px 0;
+      outline: none; font-family: 'Consolas','Monaco',monospace;
+      transition: border-color 0.2s;
+    }
+    .quiz-block input[type="text"]:focus,
+    .quiz-block select:focus { border-color: #2c7a7b; }
+    .quiz-block label { display: block; margin: 8px 0 2px; font-weight: bold; color: #4a5568; }
+    .quiz-block label.checkbox-label {
+      display: flex; align-items: flex-start; gap: 8px;
+      font-weight: normal; cursor: pointer; margin: 6px 0;
+    }
+    .quiz-block label.checkbox-label input { margin-top: 3px; flex-shrink: 0; }
     .btn {
       display: inline-block; padding: 9px 20px;
       border-radius: 6px; border: none; cursor: pointer;
-      font-size: 0.92em; font-weight: bold; transition: opacity 0.2s;
+      font-size: 0.95em; font-weight: bold;
+      transition: opacity 0.2s; margin-top: 8px;
     }
-    .btn:hover { opacity: 0.82; }
-    .btn-teal    { background: #2c7a7b; color: #fff; }
-    .btn-outline { background: #fff; color: #2c7a7b; border: 2px solid #2c7a7b; }
+    .btn:hover { opacity: 0.85; }
+    .btn-teal { background: #2c7a7b; color: #fff; }
+    .btn-done { background: #48bb78; color: #fff; }
+    .result-msg {
+      margin-top: 10px; padding: 10px 14px;
+      border-radius: 6px; font-weight: bold; display: none;
+    }
+    .result-msg.correct { background: #c6f6d5; color: #276749; display: block; }
+    .result-msg.wrong   { background: #fed7d7; color: #9b2335; display: block; }
+    .result-msg.info    { background: #bee3f8; color: #1a365d; display: block; }
 
-    /* ============ フッター ============ */
+    /* ページナビ */
+    .page-nav {
+      display: flex; justify-content: space-between;
+      align-items: center; margin-top: 48px;
+      padding-top: 20px; border-top: 2px solid #bee3f8;
+      gap: 12px; flex-wrap: wrap;
+    }
+    .page-nav a {
+      display: inline-block; padding: 10px 20px;
+      border-radius: 8px; text-decoration: none;
+      font-weight: bold; font-size: 0.9em; transition: opacity 0.2s;
+    }
+    .page-nav a:hover { opacity: 0.8; }
+    .page-nav .prev { background: #edf2f7; color: #4a5568; }
+    .page-nav .next { background: #2c7a7b; color: #fff; }
+    .page-nav .home { background: #fff; color: #2c7a7b; border: 2px solid #2c7a7b; }
+
+    /* 完了ボタン */
+    .complete-section {
+      background: #f0fff4; border: 2px solid #48bb78;
+      border-radius: 10px; padding: 20px 24px;
+      margin-top: 40px; text-align: center;
+    }
+    .complete-section p { margin: 0 0 12px; color: #276749; font-weight: bold; }
+
+    /* フッター */
     footer {
-      margin-top: 56px; padding-top: 20px;
+      margin-top: 48px; padding-top: 16px;
       border-top: 2px solid #bee3f8;
       font-size: 0.82em; color: #a0aec0; text-align: center;
     }
     footer a { color: #2c7a7b; text-decoration: none; }
     footer a:hover { text-decoration: underline; }
 
-    /* ============ レスポンシブ ============ */
     @media (max-width: 600px) {
-      body { font-size: 0.88em; }
-      .site-header { padding: 24px 18px 20px; }
-      .site-header h1 { font-size: 1.4em; }
-      .quick-access { grid-template-columns: 1fr; }
-      .chapter-grid { grid-template-columns: 1fr; }
-    }
-    @media (min-width: 601px) and (max-width: 768px) {
-      body { font-size: 0.93em; }
+      body { font-size: 0.84em; }
+      .chapter-header { padding: 20px 16px; }
+      .chapter-header h1 { font-size: 1.2em; }
+      .demo-box { padding: 14px 12px; }
+      .quiz-section { padding: 16px 12px; }
+      .quiz-block { padding: 14px 12px; }
+      .page-nav { flex-direction: column; align-items: stretch; }
+      .page-nav a { text-align: center; }
     }
   </style>
 </head>
 <body>
 
-<!-- ============ ヘッダー ============ -->
-<header class="site-header">
-  <h1>🌐 HTML5プロフェッショナル Level 2 学習サイト</h1>
-  <p>HTML5プロフェッショナル認定試験 Level 2 の学習コンテンツです。<br>
-  インタラクティブなデモと演習問題で、試験合格を目指しましょう。</p>
+<!-- パンくず -->
+<div class="breadcrumb">
+  <a href="../index.html">🏠 HTML5 Level 2</a> ›
+  Chapter 1：速習JavaScript入門 › 1-1 変数の宣言と値の代入
+</div>
+
+<!-- ヘッダー -->
+<div class="chapter-header">
+  <div class="ch-num">CHAPTER 01 › SECTION 01</div>
+  <h1>⚡ 1-1 変数の宣言と値の代入</h1>
+  <p>JavaScriptの基本中の基本。変数の宣言・代入・console.log() の使い方を
+  ブラウザ上で動くコンソールで体験しながら学びます。</p>
   <div class="badge-row">
-    <span class="badge">HTML5 Level 2</span>
-    <span class="badge">JavaScript</span>
-    <span class="badge">全5章</span>
-    <span class="badge">インタラクティブデモ付き</span>
-    <span class="badge">演習問題付き</span>
-    <span class="badge">GitHub Pages</span>
-  </div>
-</header>
-
-<!-- ============ クイックアクセス ============ -->
-<div class="quick-access">
-  <a class="qa-card exam-card" href="exam/index.html">
-    <div class="qa-icon">📝</div>
-    <div class="qa-body">
-      <div class="qa-title">模擬試験モード</div>
-      <div class="qa-desc">本番形式で実力を確認<br>60問・90分・4つのモード</div>
-      <span class="qa-badge blue">本番 / 練習 / 弱点集中 / 章別</span>
-    </div>
-  </a>
-  <a class="qa-card dash-card" href="exam/dashboard.html">
-    <div class="qa-icon">📊</div>
-    <div class="qa-body">
-      <div class="qa-title">弱点分析ダッシュボード</div>
-      <div class="qa-desc">試験結果を章別に分析<br>レーダーチャートで弱点を把握</div>
-      <span class="qa-badge green">正答率 / レーダーチャート / 推奨学習</span>
-    </div>
-  </a>
-</div>
-
-<!-- ============ 全体進捗 ============ -->
-<div class="progress-section">
-  <h2>📊 学習進捗</h2>
-  <div class="progress-bar-wrap">
-    <div class="progress-bar" id="total-bar" style="width:0%"></div>
-  </div>
-  <div class="progress-label">
-    全体進捗：<span id="total-label">0 / 5</span> 章完了
-  </div>
-  <div style="margin-top:12px; display:flex; gap:10px; flex-wrap:wrap;">
-    <button class="btn btn-outline" onclick="resetProgress()">🔄 進捗をリセット</button>
+    <span class="badge">let</span>
+    <span class="badge">const</span>
+    <span class="badge">var</span>
+    <span class="badge">console.log()</span>
+    <span class="badge">代入演算子</span>
   </div>
 </div>
 
-<!-- ============ 使い方 ============ -->
+<!-- セクションナビ -->
+<div class="section-nav">
+  <h2>📋 Chapter 1 のセクション</h2>
+  <ol>
+    <li class="current"><a href="01_variables.html">1-1 変数の宣言と値の代入</a></li>
+    <li><a href="02_operators.html">1-2 さまざまな演算</a></li>
+    <li><a href="03_types.html">1-3 型とオブジェクト</a></li>
+    <li><a href="04_functions.html">1-4 関数</a></li>
+    <li><a href="05_scope.html">1-5 スコープ</a></li>
+    <li><a href="06_conditions.html">1-6 条件分岐</a></li>
+    <li><a href="07_loops.html">1-7 繰り返しの処理</a></li>
+    <li><a href="08_classes.html">1-8 オブジェクトとクラス</a></li>
+    <li><a href="09_dom.html">1-9 HTMLの操作</a></li>
+    <li><a href="10_events.html">1-10 イベントと非同期処理</a></li>
+    <li><a href="11_html5.html">1-11 HTML5とJavaScript</a></li>
+  </ol>
+</div>
+
+
+<!-- ============================================================ -->
+<!-- PART 1: console.log() でログを表示する -->
+<!-- ============================================================ -->
+<h2 id="console">① console.log() でログを表示する</h2>
+
 <div class="note">
-  <strong>📌 このサイトの使い方</strong><br>
-  各章のカードをクリックすると学習ページへ移動します。
-  学習ページ内の「この章を完了にする」ボタンを押すと進捗が記録されます（ブラウザの LocalStorage に保存）。<br>
-  学習後は <a href="exam/index.html" style="color:#1a365d; font-weight:bold;">📝 模擬試験</a> で実力を確認し、
-  <a href="exam/dashboard.html" style="color:#276749; font-weight:bold;">📊 弱点分析</a> で苦手分野を把握しましょう。
+  <strong>重要ポイント：console.log() はJavaScriptの実行結果をコンソールに出力する関数です。</strong><br>
+  開発中のデバッグや動作確認に欠かせないツールです。
+  ブラウザの開発者ツール（F12）の「Console」タブで確認できます。
 </div>
 
-<!-- ============ 章一覧 ============ -->
-<h2 class="section-title">📚 章一覧</h2>
-<div class="chapter-grid">
+<div class="demo-box">
+  <h3>🖥️ ブラウザ内JSコンソール（実際に入力して試せます！）</h3>
+  <p style="font-size:0.88em; color:#718096; margin-bottom:8px;">
+    下のコンソールにJavaScriptコードを入力して <strong>Enter</strong> または <strong>▶ 実行</strong> を押してください。
+  </p>
 
-  <!-- Chapter 1 -->
-  <a class="chapter-card" href="ch01/01_variables.html" id="card-1">
-    <div class="chapter-num">CHAPTER 01</div>
-    <div class="chapter-title">⚡ 速習JavaScript入門</div>
-    <ul class="topic-list">
-      <li>変数の宣言と値の代入</li>
-      <li>さまざまな演算</li>
-      <li>型とオブジェクト</li>
-      <li>関数・スコープ・条件分岐</li>
-      <li>繰り返し・クラス・DOM・イベント</li>
-    </ul>
-    <div class="card-footer">
-      <span class="card-progress" id="prog-1">0%</span>
-      <div class="card-bar-wrap"><div class="card-bar" id="bar-1" style="width:0%"></div></div>
-      <span class="card-check" id="check-1">未着手</span>
+  <div class="js-console" id="console-main">
+    <div class="js-console-bar">
+      <div class="dot dot-red"></div>
+      <div class="dot dot-yellow"></div>
+      <div class="dot dot-green"></div>
+      <span>JavaScript Console</span>
     </div>
-  </a>
-
-  <!-- Chapter 2 -->
-  <a class="chapter-card" href="ch02/01_about.html" id="card-2">
-    <div class="chapter-num">CHAPTER 02</div>
-    <div class="chapter-title">📖 JavaScriptの文法</div>
-    <ul class="topic-list">
-      <li>JavaScriptとECMAScript</li>
-      <li>変数・型・スコープ</li>
-      <li>式・演算子・制御文</li>
-      <li>配列・オブジェクト・関数</li>
-      <li>グローバルオブジェクト・クロージャ</li>
-    </ul>
-    <div class="card-footer">
-      <span class="card-progress" id="prog-2">0%</span>
-      <div class="card-bar-wrap"><div class="card-bar" id="bar-2" style="width:0%"></div></div>
-      <span class="card-check" id="check-2">未着手</span>
+    <div class="js-console-output" id="console-main-output">
+      <div class="log-info">// ようこそ！JavaScriptコンソールへ</div>
+      <div class="log-info">// コードを入力してEnterを押してみましょう</div>
     </div>
-  </a>
-
-  <!-- Chapter 3 -->
-  <a class="chapter-card" href="ch03/01_events.html" id="card-3">
-    <div class="chapter-num">CHAPTER 03</div>
-    <div class="chapter-title">🌍 WebブラウザのJavaScript API</div>
-    <ul class="topic-list">
-      <li>イベントドリブンモデル</li>
-      <li>DOM操作（取得・生成・削除）</li>
-      <li>ウィンドウオブジェクト・タイマー</li>
-      <li>セレクタAPI・History API</li>
-      <li>テスト・デバッグ</li>
-    </ul>
-    <div class="card-footer">
-      <span class="card-progress" id="prog-3">0%</span>
-      <div class="card-bar-wrap"><div class="card-bar" id="bar-3" style="width:0%"></div></div>
-      <span class="card-check" id="check-3">未着手</span>
+    <div class="js-console-input-row">
+      <span>&gt;</span>
+      <input class="js-console-input" id="console-main-input"
+             placeholder='console.log("Hello, World!")' type="text">
+      <button class="js-console-clear" onclick="clearConsole('main')">クリア</button>
+      <button class="js-console-run"   onclick="runConsole('main')">▶ 実行</button>
     </div>
-  </a>
+  </div>
 
-  <!-- Chapter 4 -->
-  <a class="chapter-card" href="ch04/01_graphics.html" id="card-4">
-    <div class="chapter-num">CHAPTER 04</div>
-    <div class="chapter-title">🔧 さまざまなHTML関連API</div>
-    <ul class="topic-list">
-      <li>Canvas・SVG・アニメーション</li>
-      <li>audio / video 要素のAPI</li>
-      <li>Web Storage・IndexedDB・File API</li>
-      <li>WebSocket・XHR・非同期処理</li>
-      <li>Geolocation・Web Workers・CORS</li>
-    </ul>
-    <div class="card-footer">
-      <span class="card-progress" id="prog-4">0%</span>
-      <div class="card-bar-wrap"><div class="card-bar" id="bar-4" style="width:0%"></div></div>
-      <span class="card-check" id="check-4">未着手</span>
+  <h3>console のメソッド一覧</h3>
+  <table class="ref-table">
+    <thead><tr><th>メソッド</th><th>説明</th><th>出力色</th></tr></thead>
+    <tbody>
+      <tr><td><code>console.log(値)</code></td><td>通常のログ出力（最もよく使う）</td><td>白</td></tr>
+      <tr><td><code>console.info(値)</code></td><td>情報メッセージ</td><td>青</td></tr>
+      <tr><td><code>console.warn(値)</code></td><td>警告メッセージ</td><td>黄</td></tr>
+      <tr><td><code>console.error(値)</code></td><td>エラーメッセージ</td><td>赤</td></tr>
+      <tr><td><code>console.table(配列)</code></td><td>表形式で出力</td><td>白</td></tr>
+      <tr><td><code>console.dir(オブジェクト)</code></td><td>オブジェクトの詳細を出力</td><td>白</td></tr>
+    </tbody>
+  </table>
+
+  <div class="interactive-demo">
+    <div class="demo-label">💡 console のメソッドを試してみよう</div>
+    <div class="demo-input-row">
+      <select class="demo-input" id="console-method-sel" style="flex:0 0 auto; width:180px;">
+        <option value='console.log("ログメッセージ")'>console.log</option>
+        <option value='console.info("情報メッセージ")'>console.info</option>
+        <option value='console.warn("警告メッセージ")'>console.warn</option>
+        <option value='console.error("エラーメッセージ")'>console.error</option>
+        <option value='console.table([{name:"Alice",age:25},{name:"Bob",age:30}])'>console.table</option>
+      </select>
+      <button class="demo-btn" onclick="runConsoleMethod()">▶ 実行してコンソールで確認</button>
     </div>
-  </a>
+    <div class="demo-output" id="console-method-output">← 選択して実行してみましょう</div>
+  </div>
+</div>
 
-  <!-- Chapter 5 -->
-  <a class="chapter-card" href="exam/index.html" id="card-5">
-    <div class="chapter-num">CHAPTER 05</div>
-    <div class="chapter-title">📝 Web模擬試験</div>
-    <ul class="topic-list">
-      <li>本番モード（60問・90分）</li>
-      <li>練習モード（解説付き）</li>
-      <li>弱点集中モード</li>
-      <li>章別モード</li>
-    </ul>
-    <div class="card-footer">
-      <span class="card-progress" id="prog-5">0%</span>
-      <div class="card-bar-wrap"><div class="card-bar" id="bar-5" style="width:0%"></div></div>
-      <span class="card-check" id="check-5">未着手</span>
+
+<!-- ============================================================ -->
+<!-- PART 2: 宣言と変数 -->
+<!-- ============================================================ -->
+<h2 id="declare">② 宣言と変数</h2>
+
+<div class="note">
+  <strong>重要ポイント：変数とはデータを入れておく「箱」です。<code>let</code> キーワードで宣言します。</strong><br>
+  宣言した変数には <code>=</code>（代入演算子）で値を入れることができます。
+</div>
+
+<div class="demo-box">
+  <h3>変数の宣言と代入のイメージ</h3>
+
+  <!-- ビジュアライザ -->
+  <div class="var-visualizer" id="var-viz">
+    <div style="color:#a0aec0; font-size:0.82em; margin-bottom:12px;">// メモリのイメージ</div>
+    <div class="var-row" id="vrow-name" style="display:none;">
+      <span class="var-name">name</span>
+      <span class="var-arrow">→</span>
+      <div class="var-box" id="vbox-name">（未定義）</div>
+      <span class="var-type" id="vtype-name">undefined</span>
     </div>
-  </a>
+    <div class="var-row" id="vrow-age" style="display:none;">
+      <span class="var-name">age</span>
+      <span class="var-arrow">→</span>
+      <div class="var-box" id="vbox-age">（未定義）</div>
+      <span class="var-type" id="vtype-age">undefined</span>
+    </div>
+    <div class="var-row" id="vrow-city" style="display:none;">
+      <span class="var-name">city</span>
+      <span class="var-arrow">→</span>
+      <div class="var-box" id="vbox-city">（未定義）</div>
+      <span class="var-type" id="vtype-city">undefined</span>
+    </div>
+    <div style="color:#68d391; font-size:0.82em; margin-top:8px;" id="var-viz-msg">
+      ▼ 下のステップボタンを押して変数の変化を見てみましょう
+    </div>
+  </div>
 
-</div><!-- /chapter-grid -->
+  <!-- ステップデモ -->
+  <div class="step-demo">
+    <div class="step-btns">
+      <button class="step-btn active" onclick="varStep(0,this)">① 宣言のみ</button>
+      <button class="step-btn"        onclick="varStep(1,this)">② 値を代入</button>
+      <button class="step-btn"        onclick="varStep(2,this)">③ 値を変更</button>
+      <button class="step-btn"        onclick="varStep(3,this)">④ 複数の変数</button>
+    </div>
 
-<!-- ============ フッター ============ -->
+    <div class="step-content active" id="vstep-0">
+      <div class="pre-wrap">
+        <button class="copy-btn" onclick="copyPre(this)">copy</button>
+<pre>
+<span class="comment">// let キーワードで変数を宣言する</span>
+<span class="kw">let</span> name;
+
+<span class="comment">// 値を代入していない変数は undefined になる</span>
+console.<span class="fn">log</span>(name); <span class="out">// → undefined</span>
+</pre>
+      </div>
+      <div class="good">✅ <code>let 変数名;</code> で変数を宣言できます。値を代入する前は <code>undefined</code> です。</div>
+    </div>
+
+    <div class="step-content" id="vstep-1">
+      <div class="pre-wrap">
+        <button class="copy-btn" onclick="copyPre(this)">copy</button>
+<pre>
+<span class="comment">// 宣言と同時に値を代入する</span>
+<span class="kw">let</span> name = <span class="str">"Alice"</span>;
+
+console.<span class="fn">log</span>(name); <span class="out">// → Alice</span>
+</pre>
+      </div>
+      <div class="good">✅ <code>let 変数名 = 値;</code> で宣言と代入を同時に行えます。</div>
+    </div>
+
+    <div class="step-content" id="vstep-2">
+      <div class="pre-wrap">
+        <button class="copy-btn" onclick="copyPre(this)">copy</button>
+<pre>
+<span class="kw">let</span> name = <span class="str">"Alice"</span>;
+console.<span class="fn">log</span>(name); <span class="out">// → Alice</span>
+
+<span class="comment">// 値を上書きできる（let は再代入可能）</span>
+name = <span class="str">"Bob"</span>;
+console.<span class="fn">log</span>(name); <span class="out">// → Bob</span>
+</pre>
+      </div>
+      <div class="good">✅ <code>let</code> で宣言した変数は後から値を変更できます。</div>
+    </div>
+
+    <div class="step-content" id="vstep-3">
+      <div class="pre-wrap">
+        <button class="copy-btn" onclick="copyPre(this)">copy</button>
+<pre>
+<span class="comment">// 複数の変数を宣言する</span>
+<span class="kw">let</span> name = <span class="str">"Alice"</span>;
+<span class="kw">let</span> age  = <span class="num">25</span>;
+<span class="kw">let</span> city = <span class="str">"Tokyo"</span>;
+
+console.<span class="fn">log</span>(name); <span class="out">// → Alice</span>
+console.<span class="fn">log</span>(age);  <span class="out">// → 25</span>
+console.<span class="fn">log</span>(city); <span class="out">// → Tokyo</span>
+</pre>
+      </div>
+      <div class="good">✅ 変数はいくつでも宣言できます。用途に合った名前をつけましょう。</div>
+    </div>
+  </div>
+
+  <h3>インタラクティブ：変数に値を入れてみよう</h3>
+  <div class="interactive-demo">
+    <div class="demo-label">変数 <code>name</code> と <code>age</code> に値を入れて console.log() で確認</div>
+    <div class="demo-input-row">
+      <input class="demo-input" id="var-name-input" placeholder='name の値（例：Alice）' type="text">
+      <input class="demo-input" id="var-age-input"  placeholder='age の値（例：25）' type="text">
+      <button class="demo-btn" onclick="runVarDemo()">▶ 実行</button>
+    </div>
+    <div class="demo-output" id="var-demo-output">← 値を入力して実行してみましょう</div>
+  </div>
+</div>
+
+
+<!-- ============================================================ -->
+<!-- PART 3: let 以外の変数の宣言方法 -->
+<!-- ============================================================ -->
+<h2 id="declare-types">③ let 以外の変数の宣言方法</h2>
+
+<div class="note">
+  <strong>重要ポイント：JavaScriptには <code>let</code> 以外に <code>const</code> と <code>var</code> があります。</strong><br>
+  現代のJavaScriptでは <code>let</code> と <code>const</code> を使うのが推奨です。
+</div>
+
+<div class="demo-box">
+  <h3>3つの宣言方法の比較（タブで切り替え）</h3>
+  <div class="tab-wrap">
+    <div class="tab-btns">
+      <button class="tab-btn active" onclick="switchTab(this,'tab-let')">let</button>
+      <button class="tab-btn"        onclick="switchTab(this,'tab-const')">const</button>
+      <button class="tab-btn"        onclick="switchTab(this,'tab-var')">var</button>
+      <button class="tab-btn"        onclick="switchTab(this,'tab-compare')">比較表</button>
+    </div>
+
+    <!-- let -->
+    <div class="tab-content active" id="tab-let">
+      <h3 style="margin-top:0; color:#1a365d;">let — 再代入可能な変数</h3>
+      <div class="pre-wrap">
+        <button class="copy-btn" onclick="copyPre(this)">copy</button>
+<pre>
+<span class="kw">let</span> count = <span class="num">0</span>;
+count = <span class="num">1</span>;      <span class="comment">// OK：再代入できる</span>
+count = <span class="num">2</span>;      <span class="comment">// OK：何度でも変更できる</span>
+
+<span class="comment">// ブロックスコープ（{ } の中でのみ有効）</span>
+{
+  <span class="kw">let</span> x = <span class="num">10</span>;
+  console.<span class="fn">log</span>(x); <span class="out">// → 10</span>
+}
+console.<span class="fn">log</span>(x); <span class="out">// → ReferenceError（ブロック外では使えない）</span>
+
+<span class="comment">// 同じスコープで再宣言はできない</span>
+<span class="kw">let</span> name = <span class="str">"Alice"</span>;
+<span class="kw">let</span> name = <span class="str">"Bob"</span>;   <span class="out">// → SyntaxError</span>
+</pre>
+      </div>
+      <div class="good">✅ <strong>let の特徴：</strong>再代入OK・ブロックスコープ・再宣言NG<br>
+      ループカウンタや後から変わる値に使います。</div>
+    </div>
+
+    <!-- const -->
+    <div class="tab-content" id="tab-const">
+      <h3 style="margin-top:0; color:#1a365d;">const — 再代入不可の定数</h3>
+      <div class="pre-wrap">
+        <button class="copy-btn" onclick="copyPre(this)">copy</button>
+<pre>
+<span class="kw">const</span> PI = <span class="num">3.14159</span>;
+PI = <span class="num">3</span>;  <span class="out">// → TypeError：再代入できない！</span>
+
+<span class="comment">// 宣言と同時に代入が必須</span>
+<span class="kw">const</span> name;  <span class="out">// → SyntaxError：初期値が必要</span>
+
+<span class="comment">// ただし、オブジェクト・配列の中身は変更できる</span>
+<span class="kw">const</span> user = { name: <span class="str">"Alice"</span>, age: <span class="num">25</span> };
+user.name = <span class="str">"Bob"</span>;   <span class="comment">// OK：プロパティの変更はできる</span>
+user = {};             <span class="out">// → TypeError：変数自体への再代入はNG</span>
+
+<span class="comment">// ブロックスコープ（let と同じ）</span>
+{
+  <span class="kw">const</span> x = <span class="num">10</span>;
+}
+console.<span class="fn">log</span>(x); <span class="out">// → ReferenceError</span>
+</pre>
+      </div>
+      <div class="good">✅ <strong>const の特徴：</strong>再代入NG・ブロックスコープ・宣言時に初期値必須<br>
+      変わらない値（定数・設定値・関数など）に使います。<strong>基本的に const を使い、必要な時だけ let を使う</strong>のが現代のベストプラクティスです。</div>
+    </div>
+
+    <!-- var -->
+    <div class="tab-content" id="tab-var">
+      <h3 style="margin-top:0; color:#1a365d;">var — 旧来の宣言方法（非推奨）</h3>
+      <div class="pre-wrap">
+        <button class="copy-btn" onclick="copyPre(this)">copy</button>
+<pre>
+<span class="comment">// var は関数スコープ（ブロックスコープではない）</span>
+{
+  <span class="kw">var</span> x = <span class="num">10</span>;
+}
+console.<span class="fn">log</span>(x); <span class="out">// → 10（ブロック外でも使える！）</span>
+
+<span class="comment">// 再宣言できてしまう（バグの原因になりやすい）</span>
+<span class="kw">var</span> name = <span class="str">"Alice"</span>;
+<span class="kw">var</span> name = <span class="str">"Bob"</span>;   <span class="comment">// エラーにならない（危険）</span>
+
+<span class="comment">// 巻き上げ（ホイスティング）が起きる</span>
+console.<span class="fn">log</span>(y); <span class="out">// → undefined（エラーにならない！）</span>
+<span class="kw">var</span> y = <span class="num">5</span>;
+<span class="comment">// ↑ 宣言が先頭に「巻き上げ」られるため</span>
+</pre>
+      </div>
+      <div class="warn">⚠️ <strong>var は現代のJavaScriptでは非推奨です。</strong><br>
+      関数スコープ・再宣言可能・ホイスティングなどの特性がバグを生みやすいため、
+      <strong>新しいコードでは let / const を使いましょう。</strong><br>
+      ただし試験では var の動作を問われることがあるため、動作の理解は必要です。</div>
+    </div>
+
+    <!-- 比較表 -->
+    <div class="tab-content" id="tab-compare">
+      <h3 style="margin-top:0; color:#1a365d;">let / const / var の比較</h3>
+      <table class="ref-table">
+        <thead>
+          <tr><th>項目</th><th>let</th><th>const</th><th>var</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>再代入</td><td>✅ できる</td><td>❌ できない</td><td>✅ できる</td></tr>
+          <tr><td>再宣言</td><td>❌ できない</td><td>❌ できない</td><td>✅ できる</td></tr>
+          <tr><td>スコープ</td><td>ブロック</td><td>ブロック</td><td>関数</td></tr>
+          <tr><td>ホイスティング</td><td>あり（TDZ）</td><td>あり（TDZ）</td><td>あり（undefined）</td></tr>
+          <tr><td>グローバル汚染</td><td>なし</td><td>なし</td><td>あり（window.変数）</td></tr>
+          <tr><td>推奨度</td><td>⭐⭐⭐</td><td>⭐⭐⭐⭐（最推奨）</td><td>❌ 非推奨</td></tr>
+        </tbody>
+      </table>
+      <div class="note">
+        <strong>💡 TDZ（Temporal Dead Zone）とは？</strong><br>
+        let / const は宣言前にアクセスすると <code>ReferenceError</code> になります。
+        これを「一時的なデッドゾーン」と呼びます。
+        var のように <code>undefined</code> にはなりません。
+      </div>
+    </div>
+  </div>
+
+  <h3>🎮 const vs let を体験してみよう</h3>
+  <div class="interactive-demo">
+    <div class="demo-label">宣言の種類を選んで再代入を試してみましょう</div>
+    <div class="demo-input-row">
+      <select class="demo-input" id="decl-type" style="flex:0 0 auto; width:120px;">
+        <option value="let">let</option>
+        <option value="const">const</option>
+        <option value="var">var</option>
+      </select>
+      <input class="demo-input" id="decl-val1" placeholder="最初の値（例：10）" type="text" value="10">
+      <input class="demo-input" id="decl-val2" placeholder="変更後の値（例：20）" type="text" value="20">
+      <button class="demo-btn" onclick="runDeclDemo()">▶ 実行</button>
+    </div>
+    <div class="demo-output" id="decl-demo-output">← 宣言の種類と値を選んで実行してみましょう</div>
+  </div>
+</div>
+
+
+<!-- ============================================================ -->
+<!-- まとめ -->
+<!-- ============================================================ -->
+<h2>📌 まとめ</h2>
+<div class="demo-box">
+  <table class="ref-table">
+    <thead><tr><th>キーワード</th><th>用途</th><th>ポイント</th></tr></thead>
+    <tbody>
+      <tr>
+        <td><code>console.log(値)</code></td>
+        <td>デバッグ・動作確認</td>
+        <td>開発者ツールのConsoleタブで確認</td>
+      </tr>
+      <tr>
+        <td><code>let 変数名 = 値;</code></td>
+        <td>再代入が必要な変数</td>
+        <td>ブロックスコープ・再宣言NG</td>
+      </tr>
+      <tr>
+        <td><code>const 変数名 = 値;</code></td>
+        <td>変わらない値・定数</td>
+        <td>再代入NG・宣言時に初期値必須</td>
+      </tr>
+      <tr>
+        <td><code>var 変数名 = 値;</code></td>
+        <td>旧来のコード（非推奨）</td>
+        <td>関数スコープ・再宣言OK・ホイスティング</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+
+<!-- ============================================================ -->
+<!-- 演習問題 -->
+<!-- ============================================================ -->
+<div class="quiz-section">
+  <h2>🖊️ 演習問題</h2>
+
+  <!-- Q1 -->
+  <div class="quiz-block">
+    <h3>Q1. 穴埋め問題</h3>
+    <p>以下の説明に合うキーワードまたはコードを入力してください。</p>
+    <label>① 再代入可能でブロックスコープを持つ変数の宣言キーワード：</label>
+    <input type="text" id="q1a" placeholder="キーワード">
+    <label>② 再代入不可の定数を宣言するキーワード：</label>
+    <input type="text" id="q1b" placeholder="キーワード">
+    <label>③ 変数 <code>score</code> に数値 <code>100</code> を代入する正しいコード：</label>
+    <input type="text" id="q1c" placeholder="コードを入力">
+    <label>④ コンソールに "Hello" と出力するコード：</label>
+    <input type="text" id="q1d" placeholder="コードを入力">
+    <br>
+    <button class="btn btn-teal" onclick="checkQ1()">答え合わせ</button>
+    <div class="result-msg" id="q1-result"></div>
+    <script>
+      function checkQ1() {
+        const a = document.getElementById('q1a').value.trim().toLowerCase();
+        const b = document.getElementById('q1b').value.trim().toLowerCase();
+        const c = document.getElementById('q1c').value.trim().replace(/\s/g,'');
+        const d = document.getElementById('q1d').value.trim().replace(/\s/g,'');
+        const r = document.getElementById('q1-result');
+        const ca = a === 'let';
+        const cb = b === 'const';
+        const cc = c === 'letscore=100;' || c === 'constscore=100;' || c === 'score=100;';
+        const cd = d === 'console.log("Hello")' || d === "console.log('Hello')" ||
+                   d === 'console.log("Hello");' || d === "console.log('Hello');";
+        const count = [ca,cb,cc,cd].filter(Boolean).length;
+        if (count === 4) {
+          r.className = 'result-msg correct';
+          r.textContent = '✅ 全問正解！完璧です！';
+        } else {
+          r.className = 'result-msg wrong';
+          r.innerHTML = `❌ ${count}/4 問正解。<br>` +
+            `① ${ca?'✅':'❌ let'}　` +
+            `② ${cb?'✅':'❌ const'}　` +
+            `③ ${cc?'✅':'❌ let score = 100; または const score = 100;'}　` +
+            `④ ${cd?'✅':'❌ console.log("Hello")'}`;
+        }
+      }
+    </script>
+  </div>
+
+  <!-- Q2 -->
+  <div class="quiz-block">
+    <h3>Q2. 選択問題</h3>
+    <p>以下のコードを実行した結果として正しいものはどれですか？</p>
+    <div class="pre-wrap" style="margin-bottom:12px;">
+<pre style="margin:0;">
+<span class="kw">const</span> x = <span class="num">10</span>;
+x = <span class="num">20</span>;
+console.<span class="fn">log</span>(x);
+</pre>
+    </div>
+    <select id="q2">
+      <option value="">-- 選択してください --</option>
+      <option value="a">20 が出力される</option>
+      <option value="b">10 が出力される</option>
+      <option value="c">TypeError が発生する</option>
+      <option value="d">undefined が出力される</option>
+    </select>
+    <br>
+    <button class="btn btn-teal" onclick="checkQ2()">答え合わせ</button>
+    <div class="result-msg" id="q2-result"></div>
+    <script>
+      function checkQ2() {
+        const v = document.getElementById('q2').value;
+        const r = document.getElementById('q2-result');
+        if (v === 'c') {
+          r.className = 'result-msg correct';
+          r.innerHTML = '✅ 正解！<br><br>' +
+            '<code>const</code> で宣言した変数への再代入は <strong>TypeError</strong> になります。<br>' +
+            '「Assignment to constant variable.」というエラーメッセージが表示されます。<br>' +
+            'console.log() には到達しません。';
+        } else if (v === '') {
+          r.className = 'result-msg info';
+          r.textContent = '⚠️ 選択肢を選んでください。';
+        } else {
+          r.className = 'result-msg wrong';
+          r.innerHTML = '❌ 不正解。<br>' +
+            '<code>const</code> は再代入不可です。<code>x = 20</code> の時点で <strong>TypeError</strong> が発生します。';
+        }
+      }
+    </script>
+  </div>
+
+  <!-- Q3 -->
+  <div class="quiz-block">
+    <h3>Q3. 正誤チェックボックス問題</h3>
+    <p><strong>正しい記述</strong>をすべて選んでください。</p>
+    <label class="checkbox-label"><input type="checkbox" id="q3a">
+      ① <code>let</code> で宣言した変数は同じスコープ内で再宣言できない</label>
+    <label class="checkbox-label"><input type="checkbox" id="q3b">
+      ② <code>const</code> で宣言したオブジェクトのプロパティは変更できない</label>
+    <label class="checkbox-label"><input type="checkbox" id="q3c">
+      ③ <code>var</code> はブロックスコープを持つ</label>
+    <label class="checkbox-label"><input type="checkbox" id="q3d">
+      ④ <code>const</code> は宣言と同時に初期値を代入する必要がある</label>
+    <label class="checkbox-label"><input type="checkbox" id="q3e">
+      ⑤ <code>var</code> で宣言した変数は宣言前にアクセスすると <code>undefined</code> になる</label>
+    <label class="checkbox-label"><input type="checkbox" id="q3f">
+      ⑥ 現代のJavaScriptでは <code>var</code> より <code>let</code> / <code>const</code> が推奨される</label>
+    <br>
+    <button class="btn btn-teal" onclick="checkQ3()">答え合わせ</button>
+    <div class="result-msg" id="q3-result"></div>
+    <script>
+      function checkQ3() {
+        const r = document.getElementById('q3-result');
+        const checks = {
+          a: document.getElementById('q3a').checked,
+          b: document.getElementById('q3b').checked,
+          c: document.getElementById('q3c').checked,
+          d: document.getElementById('q3d').checked,
+          e: document.getElementById('q3e').checked,
+          f: document.getElementById('q3f').checked,
+        };
+        // 正解：①④⑤⑥（a,d,e,f）
+        // ② constのオブジェクトのプロパティは変更できる
+        // ③ varは関数スコープ（ブロックスコープではない）
+        const correct = { a:true, b:false, c:false, d:true, e:true, f:true };
+        const allOk = Object.keys(correct).every(k => checks[k] === correct[k]);
+        if (allOk) {
+          r.className = 'result-msg correct';
+          r.innerHTML = '✅ 全問正解！完璧です！';
+        } else {
+          r.className = 'result-msg wrong';
+          r.innerHTML =
+            '❌ 不正解の項目があります。<br><br>' +
+            '<strong>正しい記述：</strong>①④⑤⑥<br><br>' +
+            '<strong>誤った記述：</strong><br>' +
+            '・② <code>const</code> のオブジェクトの<strong>プロパティは変更できます</strong>。' +
+            '再代入（変数自体の上書き）ができないだけです。<br>' +
+            '・③ <code>var</code> は<strong>関数スコープ</strong>です。ブロックスコープではありません。';
+        }
+      }
+    </script>
+  </div>
+
+  <!-- Q4 コンソール実践 -->
+  <div class="quiz-block">
+    <h3>Q4. コンソール実践問題</h3>
+    <p>以下のコードを下のコンソールに入力して、実行結果を確認してください。</p>
+    <div class="pre-wrap">
+<pre style="margin:0;">
+<span class="kw">let</span> a = <span class="num">5</span>;
+<span class="kw">let</span> b = <span class="num">3</span>;
+<span class="kw">let</span> result = a + b;
+console.<span class="fn">log</span>(result);
+</pre>
+    </div>
+    <p style="margin-top:10px;">上のコードを実行した結果は何ですか？</p>
+    <input type="text" id="q4" placeholder="数値を入力">
+    <br>
+    <button class="btn btn-teal" onclick="checkQ4()">答え合わせ</button>
+    <div class="result-msg" id="q4-result"></div>
+    <script>
+      function checkQ4() {
+        const v = document.getElementById('q4').value.trim();
+        const r = document.getElementById('q4-result');
+        if (v === '8') {
+          r.className = 'result-msg correct';
+          r.innerHTML = '✅ 正解！<br>a(5) + b(3) = <strong>8</strong> が出力されます。<br>' +
+            '下のコンソールで実際に確認してみましょう！';
+        } else {
+          r.className = 'result-msg wrong';
+          r.innerHTML = '❌ 不正解。5 + 3 = ? を計算してみましょう。<br>' +
+            '下のコンソールでコードを実行して確認できます！';
+        }
+      }
+    </script>
+
+    <!-- 練習用コンソール -->
+    <div style="margin-top:16px;">
+      <div style="font-size:0.85em; font-weight:bold; color:#1a365d; margin-bottom:6px;">
+        ▼ 練習用コンソール（自由に試してください）
+      </div>
+      <div class="js-console" id="console-quiz">
+        <div class="js-console-bar">
+          <div class="dot dot-red"></div>
+          <div class="dot dot-yellow"></div>
+          <div class="dot dot-green"></div>
+          <span>Practice Console</span>
+        </div>
+        <div class="js-console-output" id="console-quiz-output">
+          <div class="log-info">// ここでコードを試してみましょう</div>
+        </div>
+        <div class="js-console-input-row">
+          <span>&gt;</span>
+          <input class="js-console-input" id="console-quiz-input"
+                 placeholder="let a = 5; let b = 3; console.log(a + b);" type="text">
+          <button class="js-console-clear" onclick="clearConsole('quiz')">クリア</button>
+          <button class="js-console-run"   onclick="runConsole('quiz')">▶ 実行</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /quiz-section -->
+
+
+<!-- 完了ボタン -->
+<div class="complete-section">
+  <p>🎉 「1-1 変数の宣言と値の代入」の学習が完了したら記録しましょう！</p>
+  <button class="btn btn-done" onclick="markComplete()">✅ このセクションを完了にする</button>
+  <div id="complete-msg" style="margin-top:10px; font-size:0.88em; color:#276749; display:none;">
+    進捗を保存しました！トップページの進捗バーに反映されます。
+  </div>
+</div>
+
+<!-- ページナビ -->
+<div class="page-nav">
+  <span class="prev" style="background:#edf2f7; color:#a0aec0; padding:10px 20px; border-radius:8px; font-size:0.9em;">
+    ← （Chapter 1 の最初のページです）
+  </span>
+  <a class="home" href="../index.html">🏠 目次へ</a>
+  <a class="next" href="02_operators.html">次へ：1-2 さまざまな演算 →</a>
+</div>
+
+<!-- フッター -->
 <footer>
   <p>
     HTML5プロフェッショナル Level 2 学習サイト ／
-    <a href="exam/index.html">📝 模擬試験</a> ／
-    <a href="exam/dashboard.html">📊 弱点分析</a> ／
-    <a href="https://github.com/MeshinoKiwamiOkome/html5lv2" target="_blank">GitHub リポジトリ</a>
+    <a href="../index.html">🏠 目次</a> ／
+    <a href="../exam/index.html">📝 模擬試験</a> ／
+    <a href="https://github.com/MeshinoKiwamiOkome/html5lv2" target="_blank">GitHub</a>
   </p>
   <p style="margin-top:4px;">© MeshinoKiwamiOkome</p>
 </footer>
 
+
+<!-- ============================================================ -->
+<!-- JavaScript -->
+<!-- ============================================================ -->
 <script>
-  const TOTAL = 5;
+  /* ===== コピーボタン ===== */
+  function copyPre(btn) {
+    const pre = btn.nextElementSibling;
+    navigator.clipboard.writeText(pre.innerText || pre.textContent).then(() => {
+      btn.textContent = 'copied!';
+      setTimeout(() => btn.textContent = 'copy', 1800);
+    });
+  }
 
-  function loadProgress() {
-    let completed = 0;
-    for (let i = 1; i <= TOTAL; i++) {
-      const val = parseInt(localStorage.getItem(`html5lv2_ch${i}`) || '0', 10);
-      const pct = Math.min(100, Math.max(0, val));
+  /* ===== タブ切り替え ===== */
+  function switchTab(btn, id) {
+    btn.closest('.tab-wrap').querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    btn.closest('.tab-wrap').querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById(id).classList.add('active');
+  }
 
-      document.getElementById(`bar-${i}`).style.width = pct + '%';
-      document.getElementById(`prog-${i}`).textContent = pct + '%';
+  /* ===== ステップデモ ===== */
+  const varStepData = [
+    { name:'（未定義）', nameType:'undefined', age:'（未定義）', ageType:'undefined', city:'（未定義）', cityType:'undefined',
+      showName:true, showAge:false, showCity:false,
+      msg:'let name; → name は undefined（値が入っていない状態）' },
+    { name:'"Alice"', nameType:'string', age:'（未定義）', ageType:'undefined', city:'（未定義）', cityType:'undefined',
+      showName:true, showAge:false, showCity:false,
+      msg:'name = "Alice" → name に文字列 "Alice" が代入されました' },
+    { name:'"Bob"', nameType:'string', age:'（未定義）', ageType:'undefined', city:'（未定義）', cityType:'undefined',
+      showName:true, showAge:false, showCity:false,
+      msg:'name = "Bob" → name の値が "Alice" から "Bob" に変更されました' },
+    { name:'"Alice"', nameType:'string', age:'25', ageType:'number', city:'"Tokyo"', cityType:'string',
+      showName:true, showAge:true, showCity:true,
+      msg:'複数の変数：name="Alice", age=25, city="Tokyo" がそれぞれ独立して管理されます' },
+  ];
 
-      const checkEl = document.getElementById(`check-${i}`);
-      if (pct === 100) {
-        checkEl.textContent = '✅ 完了';
-        checkEl.style.color = '#276749';
-        completed++;
-      } else if (pct > 0) {
-        checkEl.textContent = '学習中';
-        checkEl.style.color = '#c05621';
-      } else {
-        checkEl.textContent = '未着手';
-        checkEl.style.color = '#718096';
+  function varStep(idx, btn) {
+    document.querySelectorAll('.step-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.step-content').forEach(c => c.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById(`vstep-${idx}`).classList.add('active');
+
+    const d = varStepData[idx];
+    const rows = ['name','age','city'];
+    rows.forEach(key => {
+      const row  = document.getElementById(`vrow-${key}`);
+      const box  = document.getElementById(`vbox-${key}`);
+      const type = document.getElementById(`vtype-${key}`);
+      row.style.display = d[`show${key.charAt(0).toUpperCase()+key.slice(1)}`] ? 'flex' : 'none';
+      const newVal = d[key];
+      if (box.textContent !== newVal) {
+        box.textContent = newVal;
+        box.classList.add('updated');
+        setTimeout(() => box.classList.remove('updated'), 600);
       }
+      type.textContent = d[`${key}Type`];
+    });
+    document.getElementById('var-viz-msg').textContent = '▶ ' + d.msg;
+  }
+  varStep(0, document.querySelector('.step-btn'));
+
+  /* ===== JSコンソール ===== */
+  function runConsole(id) {
+    const input  = document.getElementById(`console-${id}-input`);
+    const output = document.getElementById(`console-${id}-output`);
+    const code   = input.value.trim();
+    if (!code) return;
+
+    // 入力行を表示
+    const promptLine = document.createElement('div');
+    promptLine.className = 'log-prompt';
+    promptLine.textContent = '> ' + code;
+    output.appendChild(promptLine);
+
+    // console.log をキャプチャ
+    const origLog   = console.log;
+    const origWarn  = console.warn;
+    const origError = console.error;
+    const origInfo  = console.info;
+
+    function addLine(cls, ...args) {
+      const line = document.createElement('div');
+      line.className = cls;
+      line.textContent = args.map(a => {
+        if (typeof a === 'object' && a !== null) {
+          try { return JSON.stringify(a, null, 2); } catch(e) { return String(a); }
+        }
+        return String(a);
+      }).join(' ');
+      output.appendChild(line);
     }
-    const totalPct = Math.round((completed / TOTAL) * 100);
-    document.getElementById('total-bar').style.width = totalPct + '%';
-    document.getElementById('total-label').textContent = `${completed} / ${TOTAL}`;
+
+    console.log   = (...a) => { addLine('log-line',   ...a); origLog(...a);   };
+    console.warn  = (...a) => { addLine('log-warn',   ...a); origWarn(...a);  };
+    console.error = (...a) => { addLine('log-error',  ...a); origError(...a); };
+    console.info  = (...a) => { addLine('log-info',   ...a); origInfo(...a);  };
+
+    try {
+      const result = eval(code);
+      if (result !== undefined) {
+        addLine('log-result', '← ' + (typeof result === 'object' ?
+          JSON.stringify(result) : String(result)));
+      }
+    } catch(e) {
+      addLine('log-error', e.toString());
+    }
+
+    console.log   = origLog;
+    console.warn  = origWarn;
+    console.error = origError;
+    console.info  = origInfo;
+
+    input.value = '';
+    output.scrollTop = output.scrollHeight;
   }
 
-  function resetProgress() {
-    if (!confirm('学習進捗をすべてリセットしますか？')) return;
-    for (let i = 1; i <= TOTAL; i++) {
-      localStorage.removeItem(`html5lv2_ch${i}`);
-    }
-    loadProgress();
+  function clearConsole(id) {
+    document.getElementById(`console-${id}-output`).innerHTML =
+      '<div class="log-info">// クリアしました</div>';
   }
 
-  loadProgress();
+  // Enterキーで実行
+  document.querySelectorAll('.js-console-input').forEach(el => {
+    el.addEventListener('keydown', e => {
+      if (e.key === 'Enter') {
+        const id = el.id.replace('console-','').replace('-input','');
+        runConsole(id);
+      }
+    });
+  });
+
+  /* ===== console メソッドデモ ===== */
+  function runConsoleMethod() {
+    const code = document.getElementById('console-method-sel').value;
+    const out  = document.getElementById('console-method-output');
+    try {
+      // console.table は特別処理
+      if (code.includes('console.table')) {
+        const data = [{ name:'Alice', age:25 }, { name:'Bob', age:30 }];
+        out.textContent =
+          '┌─────────┬──────┬─────┐\n' +
+          '│ (index) │ name │ age │\n' +
+          '├─────────┼──────┼─────┤\n' +
+          '│    0    │Alice │  25 │\n' +
+          '│    1    │ Bob  │  30 │\n' +
+          '└─────────┴──────┴─────┘\n' +
+          '※ 実際のブラウザコンソール(F12)でも確認してみましょう';
+        out.style.color = '#e2e8f0';
+      } else {
+        const match = code.match(/\("(.+?)"\)/);
+        const msg   = match ? match[1] : '';
+        if (code.startsWith('console.warn'))  { out.style.color = '#f6ad55'; out.textContent = '⚠ ' + msg; }
+        else if (code.startsWith('console.error')) { out.style.color = '#fc8181'; out.textContent = '✖ ' + msg; }
+        else if (code.startsWith('console.info'))  { out.style.color = '#90cdf4'; out.textContent = 'ℹ ' + msg; }
+        else { out.style.color = '#e2e8f0'; out.textContent = msg; }
+      }
+    } catch(e) {
+      out.textContent = e.toString();
+      out.style.color = '#fc8181';
+    }
+  }
+
+  /* ===== 変数デモ ===== */
+  function runVarDemo() {
+    const name = document.getElementById('var-name-input').value || '（未入力）';
+    const age  = document.getElementById('var-age-input').value  || '（未入力）';
+    const out  = document.getElementById('var-demo-output');
+    out.style.color = '#68d391';
+    out.textContent =
+      `> let name = "${name}";\n` +
+      `> let age  = ${isNaN(age) ? '"' + age + '"' : age};\n` +
+      `> console.log(name);\n` +
+      `  ${name}\n` +
+      `> console.log(age);\n` +
+      `  ${age}\n` +
+      `> console.log("私の名前は" + name + "、年齢は" + age + "歳です。");\n` +
+      `  私の名前は${name}、年齢は${age}歳です。`;
+  }
+
+  /* ===== 宣言タイプデモ ===== */
+  function runDeclDemo() {
+    const type = document.getElementById('decl-type').value;
+    const val1 = document.getElementById('decl-val1').value || '10';
+    const val2 = document.getElementById('decl-val2').value || '20';
+    const out  = document.getElementById('decl-demo-output');
+
+    if (type === 'const') {
+      out.style.color = '#fc8181';
+      out.textContent =
+        `> const x = ${val1};\n` +
+        `  → x に ${val1} を代入\n` +
+        `> x = ${val2};\n` +
+        `  TypeError: Assignment to constant variable.\n` +
+        `  ↑ const は再代入できません！`;
+    } else if (type === 'let') {
+      out.style.color = '#68d391';
+      out.textContent =
+        `> let x = ${val1};\n` +
+        `  → x に ${val1} を代入\n` +
+        `> console.log(x);\n` +
+        `  ${val1}\n` +
+        `> x = ${val2};\n` +
+        `  → x を ${val2} に変更\n` +
+        `> console.log(x);\n` +
+        `  ${val2}\n` +
+        `  ✅ let は再代入できます！`;
+    } else {
+      out.style.color = '#f6ad55';
+      out.textContent =
+        `> var x = ${val1};\n` +
+        `  → x に ${val1} を代入\n` +
+        `> console.log(x);\n` +
+        `  ${val1}\n` +
+        `> var x = ${val2};  // 再宣言もできる（危険）\n` +
+        `> console.log(x);\n` +
+        `  ${val2}\n` +
+        `  ⚠ var は再宣言・再代入ともに可能（非推奨）`;
+    }
+  }
+
+  /* ===== 完了ボタン ===== */
+  function markComplete() {
+    // ch1 の進捗を 9% 加算（11セクション中1つ完了）
+    const current = parseInt(localStorage.getItem('html5lv2_ch1') || '0', 10);
+    const newVal  = Math.min(100, current + 9);
+    localStorage.setItem('html5lv2_ch1', String(newVal));
+    document.getElementById('complete-msg').style.display = 'block';
+  }
+  if (parseInt(localStorage.getItem('html5lv2_ch1') || '0') >= 9) {
+    document.getElementById('complete-msg').style.display = 'block';
+  }
 </script>
 
 </body>
