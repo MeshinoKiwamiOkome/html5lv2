@@ -1,0 +1,1599 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>4-5 デバイスアクセス | HTML5 Level 2 学習サイト</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --purple-dark:  #553c9a;
+      --purple-light: #9f7aea;
+      --purple-bg:    #faf5ff;
+      --purple-border:#e9d8fd;
+      --success-bg:   #f0fff4;
+      --success:      #48bb78;
+      --success-dark: #276749;
+      --warning-bg:   #fffaf0;
+      --warning:      #ed8936;
+      --warning-dark: #744210;
+      --danger-bg:    #fff5f5;
+      --danger:       #fc8181;
+      --danger-dark:  #c53030;
+      --info-bg:      #ebf8ff;
+      --info:         #4299e1;
+      --info-dark:    #2b6cb0;
+      --bg:           #f0f4f8;
+      --text:         #2d3748;
+      --muted:        #718096;
+      --dark-bg:      #1a202c;
+      --white:        #ffffff;
+      --border:       #e2e8f0;
+    }
+    body { font-family:'Segoe UI','Hiragino Sans','Meiryo',sans-serif; background:var(--bg); color:var(--text); line-height:1.7; }
+    a { color:var(--purple-dark); text-decoration:none; }
+    a:hover { text-decoration:underline; }
+
+    .breadcrumb { background:var(--white); border-bottom:1px solid var(--border); padding:10px 24px; font-size:0.85rem; color:var(--muted); }
+    .breadcrumb a { color:var(--purple-dark); }
+
+    .chapter-header { background:linear-gradient(135deg,var(--purple-dark) 0%,var(--purple-light) 100%); color:var(--white); padding:48px 24px 40px; text-align:center; position:relative; overflow:hidden; }
+    .chapter-header::before { content:''; position:absolute; top:-60px; right:-60px; width:220px; height:220px; background:rgba(255,255,255,0.06); border-radius:50%; }
+    .chapter-header::after  { content:''; position:absolute; bottom:-80px; left:-40px; width:280px; height:280px; background:rgba(255,255,255,0.04); border-radius:50%; }
+    .chapter-header .sec-label { font-size:0.85rem; letter-spacing:0.15em; opacity:0.8; margin-bottom:8px; }
+    .chapter-header h1 { font-size:clamp(1.5rem,4vw,2.2rem); font-weight:800; margin-bottom:12px; position:relative; z-index:1; }
+    .chapter-header p  { font-size:0.97rem; opacity:0.88; max-width:580px; margin:0 auto; position:relative; z-index:1; }
+
+    .section-nav { background:var(--white); border-bottom:1px solid var(--border); padding:12px 20px; overflow-x:auto; white-space:nowrap; }
+    .section-nav a { display:inline-block; padding:5px 12px; margin-right:6px; border-radius:20px; font-size:0.82rem; color:var(--muted); border:1px solid var(--border); transition:all 0.2s; }
+    .section-nav a:hover { background:var(--purple-bg); border-color:var(--purple-light); color:var(--purple-dark); text-decoration:none; }
+    .section-nav a.active { background:var(--purple-dark); color:var(--white); border-color:var(--purple-dark); }
+
+    .main { max-width:960px; margin:0 auto; padding:40px 20px 60px; }
+
+    .sec-heading { font-size:1.4rem; font-weight:800; color:var(--purple-dark); border-left:5px solid var(--purple-light); padding-left:14px; margin:48px 0 20px; }
+    .sec-heading:first-of-type { margin-top:0; }
+    .sub-heading { font-size:1.1rem; font-weight:700; color:var(--text); margin:28px 0 12px; display:flex; align-items:center; gap:8px; }
+    .sub-heading::before { content:''; display:inline-block; width:4px; height:18px; background:var(--purple-light); border-radius:2px; }
+
+    .info-box { border-radius:8px; padding:16px 20px; margin:20px 0; font-size:0.9rem; line-height:1.7; }
+    .info-box.point { background:var(--purple-bg); border:1px solid var(--purple-border); border-left:4px solid var(--purple-dark); }
+    .info-box.point strong { color:var(--purple-dark); }
+    .info-box.warn  { background:var(--warning-bg); border:1px solid #fbd38d; border-left:4px solid var(--warning); }
+    .info-box.warn  strong { color:var(--warning-dark); }
+    .info-box.tip   { background:var(--success-bg); border:1px solid #c6f6d5; border-left:4px solid var(--success); }
+    .info-box.tip   strong { color:var(--success-dark); }
+    .info-box p { margin-top:6px; }
+    .info-box ul { margin:8px 0 0 18px; }
+    .info-box li { margin-bottom:4px; }
+
+    .tbl-wrap { overflow-x:auto; margin:20px 0; border-radius:8px; border:1px solid var(--border); }
+    table { width:100%; border-collapse:collapse; font-size:0.88rem; }
+    th { background:var(--purple-dark); color:var(--white); padding:10px 14px; text-align:left; font-weight:600; }
+    td { padding:9px 14px; border-bottom:1px solid var(--border); vertical-align:top; }
+    tr:last-child td { border-bottom:none; }
+    tr:nth-child(even) td { background:#f7f8fa; }
+    code { background:#edf2f7; color:var(--purple-dark); padding:1px 6px; border-radius:4px; font-size:0.85em; font-family:'Consolas','Monaco',monospace; }
+
+    .code-block { position:relative; background:var(--dark-bg); border-radius:10px; margin:20px 0; overflow:hidden; }
+    .code-block-header { background:#2d3748; padding:8px 16px; font-size:0.78rem; color:#a0aec0; display:flex; justify-content:space-between; align-items:center; }
+    .copy-btn { background:transparent; border:1px solid #4a5568; color:#a0aec0; padding:3px 10px; border-radius:4px; font-size:0.75rem; cursor:pointer; transition:all 0.2s; }
+    .copy-btn:hover { background:#4a5568; color:var(--white); }
+    .copy-btn.copied { background:var(--success-dark); border-color:var(--success-dark); color:var(--white); }
+    .code-block pre { padding:20px; overflow-x:auto; font-size:0.85rem; line-height:1.7; color:#e2e8f0; font-family:'Consolas','Monaco','Courier New',monospace; }
+    .kw  { color:#90cdf4; }
+    .fn  { color:#b794f4; }
+    .str { color:#fbd38d; }
+    .num { color:#fc8181; }
+    .cm  { color:#68d391; }
+    .op  { color:#f6ad55; }
+    .out { color:#a0aec0; }
+    .tag { color:#fc8181; }
+    .atr { color:#90cdf4; }
+    .val { color:#fbd38d; }
+
+    .demo-box { background:var(--white); border:2px solid var(--purple-border); border-radius:12px; padding:24px; margin:24px 0; }
+    .demo-box h3 { font-size:1rem; font-weight:700; color:var(--purple-dark); margin-bottom:16px; display:flex; align-items:center; gap:8px; }
+    .demo-box h3 .demo-num { background:var(--purple-dark); color:var(--white); border-radius:50%; width:24px; height:24px; display:inline-flex; align-items:center; justify-content:center; font-size:0.75rem; flex-shrink:0; }
+
+    .btn { padding:8px 16px; border:none; border-radius:7px; font-size:0.88rem; font-weight:600; cursor:pointer; transition:all 0.2s; }
+    .btn:disabled { opacity:0.45; cursor:not-allowed; }
+    .btn-primary { background:var(--purple-dark); color:var(--white); }
+    .btn-primary:hover:not(:disabled) { background:var(--purple-light); }
+    .btn-success { background:var(--success-dark); color:var(--white); }
+    .btn-success:hover:not(:disabled) { background:var(--success); }
+    .btn-danger  { background:var(--danger-dark); color:var(--white); }
+    .btn-danger:hover:not(:disabled)  { background:var(--danger); }
+    .btn-info    { background:var(--info-dark); color:var(--white); }
+    .btn-info:hover:not(:disabled)    { background:var(--info); }
+    .btn-warn    { background:var(--warning-dark); color:var(--white); }
+    .btn-warn:hover:not(:disabled)    { background:var(--warning); }
+    .btn-outline { background:transparent; border:2px solid var(--purple-dark); color:var(--purple-dark); }
+    .btn-outline:hover:not(:disabled) { background:var(--purple-bg); }
+    .btn-sm { padding:5px 12px; font-size:0.82rem; }
+
+    .ctrl-row { display:flex; flex-wrap:wrap; gap:10px; align-items:center; margin-bottom:12px; }
+    label { font-size:0.85rem; color:var(--muted); }
+    input[type=range] { width:110px; accent-color:var(--purple-dark); }
+    select { padding:6px 10px; border:1px solid var(--border); border-radius:6px; font-size:0.85rem; color:var(--text); background:var(--white); }
+
+    .console { background:var(--dark-bg); border-radius:8px; padding:14px 16px; font-family:'Consolas','Monaco',monospace; font-size:0.82rem; color:#e2e8f0; min-height:80px; max-height:240px; overflow-y:auto; margin-top:12px; }
+    .console .log-line { margin-bottom:4px; }
+    .console .log-line.ok   { color:#68d391; }
+    .console .log-line.err  { color:#fc8181; }
+    .console .log-line.info { color:#90cdf4; }
+    .console .log-line.warn { color:#f6ad55; }
+
+    /* 座標カード */
+    .coord-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(180px,1fr)); gap:10px; margin:12px 0; }
+    .coord-card { background:#f7f8fa; border:1px solid var(--border); border-radius:8px; padding:12px 14px; }
+    .coord-card .cc-label { font-size:0.75rem; font-weight:700; color:var(--muted); text-transform:uppercase; letter-spacing:0.08em; margin-bottom:4px; }
+    .coord-card .cc-val   { font-size:1.1rem; font-weight:800; color:var(--purple-dark); font-family:monospace; }
+    .coord-card .cc-unit  { font-size:0.75rem; color:var(--muted); margin-left:4px; }
+    .coord-card.highlight { border-color:var(--purple-light); background:var(--purple-bg); }
+
+    /* エラーコードバッジ */
+    .error-code-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin:14px 0; }
+    .error-code-card { border-radius:8px; padding:14px; text-align:center; border:2px solid var(--border); background:#f7f8fa; transition:all 0.3s; cursor:pointer; }
+    .error-code-card:hover { border-color:var(--purple-light); background:var(--purple-bg); }
+    .error-code-card.active { border-color:var(--danger); background:var(--danger-bg); }
+    .error-code-card .ec-num  { font-size:1.6rem; font-weight:800; color:var(--danger-dark); }
+    .error-code-card .ec-name { font-size:0.78rem; font-weight:700; color:var(--text); margin:4px 0; }
+    .error-code-card .ec-desc { font-size:0.75rem; color:var(--muted); line-height:1.5; }
+
+    /* マップキャンバス */
+    .map-wrap { position:relative; border-radius:10px; overflow:hidden; border:2px solid var(--border); }
+    .map-wrap canvas { display:block; width:100%; }
+
+    /* デバイス3Dビジュアライザ */
+    .device-3d-wrap { display:flex; gap:20px; align-items:flex-start; flex-wrap:wrap; }
+    .device-3d-scene { flex:0 0 200px; height:200px; display:flex; align-items:center; justify-content:center; background:var(--dark-bg); border-radius:10px; overflow:hidden; perspective:400px; }
+    .device-3d-phone { width:80px; height:140px; background:linear-gradient(135deg,#2d3748,#4a5568); border-radius:12px; border:3px solid #718096; position:relative; transform-style:preserve-3d; transition:transform 0.1s ease; box-shadow:0 0 20px rgba(159,122,234,0.3); }
+    .device-3d-phone::before { content:''; position:absolute; top:8px; left:50%; transform:translateX(-50%); width:30px; height:4px; background:#4a5568; border-radius:2px; }
+    .device-3d-phone::after  { content:''; position:absolute; bottom:10px; left:50%; transform:translateX(-50%); width:24px; height:24px; background:#4a5568; border-radius:50%; }
+    .device-3d-screen { position:absolute; top:20px; left:6px; right:6px; bottom:42px; background:linear-gradient(135deg,#1a202c,#2d3748); border-radius:6px; display:flex; align-items:center; justify-content:center; font-size:0.6rem; color:#9f7aea; text-align:center; line-height:1.4; }
+    .device-3d-controls { flex:1; min-width:200px; }
+    .orient-row { display:flex; align-items:center; gap:10px; margin-bottom:12px; }
+    .orient-label { font-size:0.82rem; font-weight:700; color:var(--purple-dark); width:60px; flex-shrink:0; font-family:monospace; }
+    .orient-bar-wrap { flex:1; height:12px; background:#e2e8f0; border-radius:6px; overflow:hidden; position:relative; }
+    .orient-bar { height:100%; border-radius:6px; transition:width 0.1s, background 0.1s; }
+    .orient-val { font-size:0.85rem; font-weight:700; color:var(--text); width:55px; text-align:right; font-family:monospace; flex-shrink:0; }
+    .orient-range { width:100%; accent-color:var(--purple-dark); }
+
+    /* モーショングラフ */
+    .motion-graph-wrap { background:var(--dark-bg); border-radius:8px; overflow:hidden; }
+    .motion-graph-wrap canvas { display:block; width:100%; }
+    .motion-legend { display:flex; gap:16px; padding:8px 14px; background:#2d3748; }
+    .motion-legend-item { display:flex; align-items:center; gap:6px; font-size:0.78rem; color:#a0aec0; }
+    .motion-legend-dot { width:10px; height:10px; border-radius:50%; flex-shrink:0; }
+
+    /* 演習問題 */
+    .quiz-section { background:var(--white); border:2px solid var(--purple-border); border-radius:14px; padding:28px; margin:48px 0 32px; }
+    .quiz-section h2 { font-size:1.2rem; font-weight:800; color:var(--purple-dark); margin-bottom:6px; }
+    .quiz-section .quiz-desc { font-size:0.88rem; color:var(--muted); margin-bottom:24px; }
+    .quiz-item { background:var(--bg); border-radius:10px; padding:20px; margin-bottom:16px; }
+    .quiz-item .q-num  { font-size:0.78rem; font-weight:700; color:var(--purple-light); letter-spacing:0.1em; margin-bottom:6px; }
+    .quiz-item .q-text { font-size:0.95rem; font-weight:600; color:var(--text); margin-bottom:14px; line-height:1.6; }
+    .quiz-item .q-code { background:var(--dark-bg); border-radius:6px; padding:12px 16px; font-family:'Consolas','Monaco',monospace; font-size:0.83rem; color:#e2e8f0; margin-bottom:14px; line-height:1.6; }
+    .options { display:flex; flex-direction:column; gap:8px; }
+    .option-btn { background:var(--white); border:2px solid var(--border); border-radius:8px; padding:10px 16px; font-size:0.88rem; text-align:left; cursor:pointer; transition:all 0.2s; color:var(--text); }
+    .option-btn:hover:not(:disabled) { border-color:var(--purple-light); background:var(--purple-bg); }
+    .option-btn.correct  { border-color:var(--success); background:var(--success-bg); color:var(--success-dark); font-weight:600; }
+    .option-btn.wrong    { border-color:var(--danger);  background:var(--danger-bg);  color:var(--danger-dark); }
+    .option-btn:disabled { cursor:default; }
+    .option-btn.selected { border-color:var(--purple-light); background:var(--purple-bg); }
+    .explanation { display:none; margin-top:12px; padding:12px 16px; background:var(--purple-bg); border:1px solid var(--purple-border); border-radius:8px; font-size:0.87rem; color:var(--text); line-height:1.7; }
+    .explanation.show { display:block; }
+    .explanation strong { color:var(--purple-dark); }
+    .fill-input { width:100%; padding:8px 12px; border:2px solid var(--border); border-radius:7px; font-size:0.9rem; font-family:'Consolas','Monaco',monospace; margin-bottom:8px; }
+    .fill-input:focus { outline:none; border-color:var(--purple-light); }
+
+    .complete-area { text-align:center; margin:40px 0 20px; }
+    .complete-btn { background:linear-gradient(135deg,var(--purple-dark),var(--purple-light)); color:var(--white); border:none; border-radius:12px; padding:16px 40px; font-size:1rem; font-weight:700; cursor:pointer; transition:all 0.3s; box-shadow:0 4px 15px rgba(85,60,154,0.3); }
+    .complete-btn:hover { transform:translateY(-2px); box-shadow:0 6px 20px rgba(85,60,154,0.4); }
+    .complete-btn.done { background:linear-gradient(135deg,var(--success-dark),var(--success)); box-shadow:0 4px 15px rgba(72,187,120,0.3); }
+
+    .page-nav { display:flex; justify-content:space-between; align-items:center; gap:16px; flex-wrap:wrap; margin-top:40px; padding-top:24px; border-top:2px solid var(--border); }
+    .page-nav-btn { display:inline-flex; align-items:center; gap:8px; background:var(--white); border:2px solid var(--purple-border); color:var(--purple-dark); border-radius:10px; padding:12px 20px; font-size:0.9rem; font-weight:600; transition:all 0.2s; }
+    .page-nav-btn:hover { background:var(--purple-bg); border-color:var(--purple-light); text-decoration:none; }
+
+    footer { background:var(--dark-bg); color:#a0aec0; text-align:center; padding:28px 20px; font-size:0.85rem; margin-top:60px; }
+    footer a { color:var(--purple-light); }
+
+    @media(max-width:640px){
+      .main { padding:24px 14px 48px; }
+      .error-code-grid { grid-template-columns:1fr; }
+      .device-3d-wrap { flex-direction:column; }
+      .device-3d-scene { flex:none; width:100%; }
+      .coord-grid { grid-template-columns:1fr 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- パンくずナビ -->
+<div class="breadcrumb">
+  <a href="../index.html">🏠 HTML5 Level 2</a> ›
+  <a href="index.html">Chapter 4</a> ›
+  4-5 デバイスアクセス
+</div>
+
+<!-- チャプターヘッダー -->
+<div class="chapter-header">
+  <div class="sec-label">CHAPTER 4 — SECTION 5</div>
+  <h1>📍 デバイスアクセス</h1>
+  <p>Geolocation API・DeviceOrientation・DeviceMotion イベントを使ったデバイスのセンサーへのアクセスを学びます。</p>
+</div>
+
+<!-- セクションナビ -->
+<div class="section-nav">
+  <a href="01_graphics.html">4-1 グラフィックス</a>
+  <a href="02_media.html">4-2 メディア</a>
+  <a href="03_storage.html">4-3 ストレージ</a>
+  <a href="04_communication.html">4-4 通信</a>
+  <a href="05_device.html" class="active">4-5 デバイス</a>
+  <a href="06_performance.html">4-6 パフォーマンス</a>
+  <a href="07_security.html">4-7 セキュリティ</a>
+</div>
+
+<main class="main">
+
+  <!-- ========== 1. Geolocation API ========== -->
+  <h2 class="sec-heading">1. Geolocation API</h2>
+
+  <p>Geolocation API はデバイスの位置情報（緯度・経度・高度など）を取得します。<code>navigator.geolocation</code> オブジェクトを通じてアクセスし、ユーザーの許可が必要です。</p>
+
+  <div class="code-block">
+    <div class="code-block-header">
+      <span>Geolocation API の基本</span>
+      <button class="copy-btn" onclick="copyCode(this)">copy</button>
+    </div>
+    <pre><span class="cm">// Geolocation API のサポート確認</span>
+<span class="kw">if</span> (<span class="str">'geolocation'</span> <span class="kw">in</span> navigator) {
+  console.<span class="fn">log</span>(<span class="str">'Geolocation API 利用可能'</span>);
+}
+
+<span class="cm">// ── 1回だけ位置を取得 ──</span>
+navigator.geolocation.<span class="fn">getCurrentPosition</span>(
+  <span class="cm">// 成功コールバック</span>
+  (position) <span class="op">=></span> {
+    <span class="kw">const</span> coords <span class="op">=</span> position.coords;
+    console.<span class="fn">log</span>(coords.latitude);         <span class="cm">// 緯度（-90〜90）</span>
+    console.<span class="fn">log</span>(coords.longitude);        <span class="cm">// 経度（-180〜180）</span>
+    console.<span class="fn">log</span>(coords.altitude);         <span class="cm">// 高度（m）null の場合あり</span>
+    console.<span class="fn">log</span>(coords.accuracy);         <span class="cm">// 水平精度（m）</span>
+    console.<span class="fn">log</span>(coords.altitudeAccuracy);  <span class="cm">// 高度精度（m）null の場合あり</span>
+    console.<span class="fn">log</span>(coords.heading);          <span class="cm">// 方位角（0〜360）null の場合あり</span>
+    console.<span class="fn">log</span>(coords.speed);            <span class="cm">// 速度（m/s）null の場合あり</span>
+    console.<span class="fn">log</span>(position.timestamp);      <span class="cm">// 取得時刻（Unix ms）</span>
+  },
+  <span class="cm">// エラーコールバック</span>
+  (error) <span class="op">=></span> {
+    <span class="kw">switch</span> (error.code) {
+      <span class="kw">case</span> <span class="num">1</span>: console.<span class="fn">log</span>(<span class="str">'PERMISSION_DENIED — ユーザーが拒否'</span>);    <span class="kw">break</span>;
+      <span class="kw">case</span> <span class="num">2</span>: console.<span class="fn">log</span>(<span class="str">'POSITION_UNAVAILABLE — 位置情報取得不可'</span>); <span class="kw">break</span>;
+      <span class="kw">case</span> <span class="num">3</span>: console.<span class="fn">log</span>(<span class="str">'TIMEOUT — タイムアウト'</span>);                 <span class="kw">break</span>;
+    }
+  },
+  <span class="cm">// オプション</span>
+  {
+    enableHighAccuracy: <span class="kw">true</span>,  <span class="cm">// GPS 等の高精度センサーを使用（バッテリー消費増）</span>
+    timeout:            <span class="num">5000</span>,  <span class="cm">// タイムアウト時間（ms）</span>
+    maximumAge:         <span class="num">0</span>      <span class="cm">// キャッシュ許容時間（0=常に新規取得）</span>
+  }
+);
+
+<span class="cm">// ── 継続的に位置を監視 ──</span>
+<span class="kw">const</span> watchId <span class="op">=</span> navigator.geolocation.<span class="fn">watchPosition</span>(
+  (position) <span class="op">=></span> {
+    console.<span class="fn">log</span>(<span class="str">'位置更新:'</span>, position.coords.latitude, position.coords.longitude);
+  },
+  (error) <span class="op">=></span> console.<span class="fn">log</span>(<span class="str">'エラー:'</span>, error.code),
+  { enableHighAccuracy: <span class="kw">true</span>, timeout: <span class="num">10000</span>, maximumAge: <span class="num">1000</span> }
+);
+
+<span class="cm">// 監視を停止</span>
+navigator.geolocation.<span class="fn">clearWatch</span>(watchId); <span class="cm">// watchId を渡す</span></pre>
+  </div>
+
+  <div class="tbl-wrap">
+    <table>
+      <tr><th>プロパティ</th><th>型</th><th>説明</th><th>null の可能性</th></tr>
+      <tr><td><code>coords.latitude</code></td><td>number</td><td>緯度（度）-90〜90</td><td>なし</td></tr>
+      <tr><td><code>coords.longitude</code></td><td>number</td><td>経度（度）-180〜180</td><td>なし</td></tr>
+      <tr><td><code>coords.accuracy</code></td><td>number</td><td>水平精度（メートル）</td><td>なし</td></tr>
+      <tr><td><code>coords.altitude</code></td><td>number</td><td>高度（メートル）</td><td>あり</td></tr>
+      <tr><td><code>coords.altitudeAccuracy</code></td><td>number</td><td>高度精度（メートル）</td><td>あり</td></tr>
+      <tr><td><code>coords.heading</code></td><td>number</td><td>方位角（度）0=北、90=東</td><td>あり</td></tr>
+      <tr><td><code>coords.speed</code></td><td>number</td><td>速度（m/s）</td><td>あり</td></tr>
+      <tr><td><code>position.timestamp</code></td><td>number</td><td>取得時刻（Unix ミリ秒）</td><td>なし</td></tr>
+    </table>
+  </div>
+
+  <div class="info-box point">
+    <strong>📌 試験頻出：Geolocation API のポイント</strong>
+    <ul>
+      <li>エラーコード: <strong>1</strong>=PERMISSION_DENIED / <strong>2</strong>=POSITION_UNAVAILABLE / <strong>3</strong>=TIMEOUT</li>
+      <li><code>watchPosition()</code> の戻り値は <strong>watchId</strong>（数値）。<code>clearWatch(watchId)</code> で監視停止</li>
+      <li><code>enableHighAccuracy: true</code> にすると GPS 等を使い精度が上がるが、バッテリー消費が増える</li>
+      <li><code>maximumAge</code> はキャッシュされた位置情報の許容時間（ms）。0 は常に新規取得</li>
+      <li>HTTPS または localhost でのみ動作（セキュリティ要件）</li>
+    </ul>
+  </div>
+
+  <!-- ===== DEMO 1: Geolocation シミュレーター ===== -->
+  <div class="demo-box">
+    <h3><span class="demo-num">1</span> Geolocation API シミュレーター</h3>
+    <p style="font-size:0.85rem;color:var(--muted);margin-bottom:14px;">実際の位置情報 API の動作をシミュレートします。オプションを変えて動作の違いを確認できます。</p>
+
+    <div class="ctrl-row">
+      <label>シナリオ:
+        <select id="geoScenario">
+          <option value="success_high">成功（高精度）</option>
+          <option value="success_low">成功（低精度）</option>
+          <option value="error_1">エラー: PERMISSION_DENIED (1)</option>
+          <option value="error_2">エラー: POSITION_UNAVAILABLE (2)</option>
+          <option value="error_3">エラー: TIMEOUT (3)</option>
+        </select>
+      </label>
+      <label>
+        <input type="checkbox" id="geoHighAccuracy" checked> enableHighAccuracy
+      </label>
+      <label>timeout:
+        <select id="geoTimeout">
+          <option value="3000">3000ms</option>
+          <option value="5000" selected>5000ms</option>
+          <option value="10000">10000ms</option>
+        </select>
+      </label>
+    </div>
+    <div class="ctrl-row">
+      <button class="btn btn-primary btn-sm" onclick="geoGetCurrent()">getCurrentPosition()</button>
+      <button class="btn btn-success btn-sm" id="geoWatchBtn" onclick="geoStartWatch()">watchPosition() 開始</button>
+      <button class="btn btn-danger btn-sm"  id="geoClearBtn" onclick="geoStopWatch()" disabled>clearWatch()</button>
+      <button class="btn btn-outline btn-sm" onclick="geoSimulateMove()">移動シミュレート</button>
+    </div>
+
+    <div class="coord-grid" id="coordGrid">
+      <div class="coord-card highlight">
+        <div class="cc-label">latitude</div>
+        <div class="cc-val" id="ccLat">—</div>
+      </div>
+      <div class="coord-card highlight">
+        <div class="cc-label">longitude</div>
+        <div class="cc-val" id="ccLng">—</div>
+      </div>
+      <div class="coord-card">
+        <div class="cc-label">accuracy</div>
+        <div class="cc-val" id="ccAcc">—<span class="cc-unit">m</span></div>
+      </div>
+      <div class="coord-card">
+        <div class="cc-label">altitude</div>
+        <div class="cc-val" id="ccAlt">—<span class="cc-unit">m</span></div>
+      </div>
+      <div class="coord-card">
+        <div class="cc-label">speed</div>
+        <div class="cc-val" id="ccSpd">—<span class="cc-unit">m/s</span></div>
+      </div>
+      <div class="coord-card">
+        <div class="cc-label">timestamp</div>
+        <div class="cc-val" id="ccTs" style="font-size:0.75rem;">—</div>
+      </div>
+    </div>
+    <div class="console" id="geoConsole"><div class="log-line info">▶ ボタンを押して位置情報取得をシミュレートしてください</div></div>
+  </div>
+
+  <!-- ===== DEMO 2: エラーコード詳細 ===== -->
+  <div class="demo-box">
+    <h3><span class="demo-num">2</span> Geolocation エラーコード詳細デモ</h3>
+    <p style="font-size:0.85rem;color:var(--muted);margin-bottom:14px;">各エラーコードをクリックすると、発生状況・対処法・コード例を確認できます。</p>
+
+    <div class="error-code-grid">
+      <div class="error-code-card" id="errCard1" onclick="showGeoError(1)">
+        <div class="ec-num">1</div>
+        <div class="ec-name">PERMISSION_DENIED</div>
+        <div class="ec-desc">ユーザーが位置情報の使用を拒否した</div>
+      </div>
+      <div class="error-code-card" id="errCard2" onclick="showGeoError(2)">
+        <div class="ec-num">2</div>
+        <div class="ec-name">POSITION_UNAVAILABLE</div>
+        <div class="ec-desc">位置情報の取得に失敗した（電波なし等）</div>
+      </div>
+      <div class="error-code-card" id="errCard3" onclick="showGeoError(3)">
+        <div class="ec-num">3</div>
+        <div class="ec-name">TIMEOUT</div>
+        <div class="ec-desc">timeout オプションで指定した時間内に取得できなかった</div>
+      </div>
+    </div>
+    <div class="console" id="errConsole"><div class="log-line info">▶ エラーコードをクリックして詳細を確認してください</div></div>
+  </div>
+
+  <!-- ===== DEMO 3: 簡易マップ ===== -->
+  <div class="demo-box">
+    <h3><span class="demo-num">3</span> 位置情報マップビジュアライザー</h3>
+    <p style="font-size:0.85rem;color:var(--muted);margin-bottom:14px;">取得した座標を Canvas マップにプロットします。「移動シミュレート」で軌跡を描画できます。</p>
+
+    <div class="ctrl-row">
+      <button class="btn btn-primary btn-sm" onclick="mapPlotCurrent()">現在地をプロット</button>
+      <button class="btn btn-success btn-sm" onclick="mapSimulateRoute()">ルートシミュレート</button>
+      <button class="btn btn-outline btn-sm" onclick="mapClear()">マップクリア</button>
+      <label>ズーム:
+        <input type="range" id="mapZoom" min="1" max="5" value="3" oninput="mapRedraw()">
+        <span id="mapZoomVal">3</span>
+      </label>
+    </div>
+
+    <div class="map-wrap">
+      <canvas id="mapCanvas" width="700" height="320"></canvas>
+    </div>
+    <div class="console" id="mapConsole" style="min-height:50px;"><div class="log-line info">▶ 「現在地をプロット」または「ルートシミュレート」をクリックしてください</div></div>
+  </div>
+
+  <!-- ========== 2. DeviceOrientation ========== -->
+  <h2 class="sec-heading">2. DeviceOrientation イベント</h2>
+
+  <p>DeviceOrientation イベントはデバイスの物理的な向き（傾き）をリアルタイムで通知します。<code>alpha</code>・<code>beta</code>・<code>gamma</code> の3軸で表現されます。</p>
+
+  <div class="code-block">
+    <div class="code-block-header">
+      <span>DeviceOrientation イベントの使い方</span>
+      <button class="copy-btn" onclick="copyCode(this)">copy</button>
+    </div>
+    <pre><span class="cm">// DeviceOrientation イベントの登録</span>
+window.<span class="fn">addEventListener</span>(<span class="str">'deviceorientation'</span>, (event) <span class="op">=></span> {
+  <span class="cm">// alpha: Z軸周りの回転（コンパス方位）0〜360°</span>
+  <span class="cm">//   0 = 北、90 = 西、180 = 南、270 = 東</span>
+  console.<span class="fn">log</span>(<span class="str">'alpha:'</span>, event.alpha);
+
+  <span class="cm">// beta: X軸周りの回転（前後の傾き）-180〜180°</span>
+  <span class="cm">//   0 = 水平、90 = 画面が上向き、-90 = 画面が下向き</span>
+  console.<span class="fn">log</span>(<span class="str">'beta:'</span>,  event.beta);
+
+  <span class="cm">// gamma: Y軸周りの回転（左右の傾き）-90〜90°</span>
+  <span class="cm">//   0 = 垂直、90 = 右に傾く、-90 = 左に傾く</span>
+  console.<span class="fn">log</span>(<span class="str">'gamma:'</span>, event.gamma);
+
+  <span class="cm">// absolute: 地球の座標系に対する絶対値かどうか</span>
+  console.<span class="fn">log</span>(<span class="str">'absolute:'</span>, event.absolute);
+}, <span class="kw">true</span>);
+
+<span class="cm">// iOS 13+ では許可が必要</span>
+<span class="kw">if</span> (<span class="kw">typeof</span> DeviceOrientationEvent.requestPermission <span class="op">===</span> <span class="str">'function'</span>) {
+  DeviceOrientationEvent.<span class="fn">requestPermission</span>()
+    .<span class="fn">then</span>(state <span class="op">=></span> {
+      <span class="kw">if</span> (state <span class="op">===</span> <span class="str">'granted'</span>) {
+        window.<span class="fn">addEventListener</span>(<span class="str">'deviceorientation'</span>, handler);
+      }
+    });
+}
+
+<span class="cm">// CSS transform で傾きを可視化</span>
+<span class="kw">function</span> <span class="fn">handleOrientation</span>(e) {
+  <span class="kw">const</span> el <span class="op">=</span> document.<span class="fn">getElementById</span>(<span class="str">'device'</span>);
+  el.style.transform <span class="op">=</span>
+    <span class="str">`rotateZ(${</span>e.alpha<span class="str">}deg) `</span> <span class="op">+</span>
+    <span class="str">`rotateX(${</span>e.beta<span class="str">}deg) `</span>  <span class="op">+</span>
+    <span class="str">`rotateY(${</span>e.gamma<span class="str">}deg)`</span>;
+}</pre>
+  </div>
+
+  <div class="tbl-wrap">
+    <table>
+      <tr><th>プロパティ</th><th>軸</th><th>範囲</th><th>説明</th></tr>
+      <tr><td><code>alpha</code></td><td>Z軸（垂直軸）</td><td>0〜360°</td><td>コンパス方位。0=北、90=西、180=南、270=東</td></tr>
+      <tr><td><code>beta</code></td><td>X軸（横軸）</td><td>-180〜180°</td><td>前後の傾き。0=水平、90=画面が上向き</td></tr>
+      <tr><td><code>gamma</code></td><td>Y軸（縦軸）</td><td>-90〜90°</td><td>左右の傾き。正=右傾き、負=左傾き</td></tr>
+      <tr><td><code>absolute</code></td><td>—</td><td>boolean</td><td>地球の座標系に対する絶対値かどうか</td></tr>
+    </table>
+  </div>
+
+  <div class="info-box point">
+    <strong>📌 試験頻出：alpha・beta・gamma の意味</strong>
+    <ul>
+      <li><strong>alpha</strong>（Z軸）: デバイスを水平に置いたときのコンパス方位。0〜360°</li>
+      <li><strong>beta</strong>（X軸）: 前後の傾き。スマホを立てた状態が 90°（または -90°）</li>
+      <li><strong>gamma</strong>（Y軸）: 左右の傾き。-90〜90° の範囲</li>
+      <li>iOS 13 以降は <code>DeviceOrientationEvent.requestPermission()</code> でユーザー許可が必要</li>
+    </ul>
+  </div>
+
+  <!-- ===== DEMO 4: DeviceOrientation デモ ===== -->
+  <div class="demo-box">
+    <h3><span class="demo-num">4</span> DeviceOrientation インタラクティブデモ</h3>
+    <p style="font-size:0.85rem;color:var(--muted);margin-bottom:14px;">スライダーで alpha・beta・gamma を変更すると、3D デバイスモデルがリアルタイムで回転します。実機では「センサー開始」で実際のセンサー値を使用します。</p>
+
+    <div class="device-3d-wrap">
+      <div class="device-3d-scene">
+        <div class="device-3d-phone" id="device3d">
+          <div class="device-3d-screen" id="device3dScreen">
+            α<br>β<br>γ
+          </div>
+        </div>
+      </div>
+      <div class="device-3d-controls">
+        <div class="orient-row">
+          <span class="orient-label">alpha α</span>
+          <div class="orient-bar-wrap">
+            <div class="orient-bar" id="barAlpha" style="width:0%;background:#9f7aea;"></div>
+          </div>
+          <span class="orient-val" id="valAlpha">0°</span>
+        </div>
+        <input type="range" class="orient-range" id="sliderAlpha" min="0" max="360" value="0" oninput="updateOrientation()">
+
+        <div class="orient-row" style="margin-top:10px;">
+          <span class="orient-label">beta β</span>
+          <div class="orient-bar-wrap">
+            <div class="orient-bar" id="barBeta" style="width:50%;background:#68d391;"></div>
+          </div>
+          <span class="orient-val" id="valBeta">0°</span>
+        </div>
+        <input type="range" class="orient-range" id="sliderBeta" min="-180" max="180" value="0" oninput="updateOrientation()">
+
+        <div class="orient-row" style="margin-top:10px;">
+          <span class="orient-label">gamma γ</span>
+          <div class="orient-bar-wrap">
+            <div class="orient-bar" id="barGamma" style="width:50%;background:#f6ad55;"></div>
+          </div>
+          <span class="orient-val" id="valGamma">0°</span>
+        </div>
+        <input type="range" class="orient-range" id="sliderGamma" min="-90" max="90" value="0" oninput="updateOrientation()">
+
+        <div class="ctrl-row" style="margin-top:14px;">
+          <button class="btn btn-primary btn-sm" onclick="startOrientSensor()">📱 センサー開始</button>
+          <button class="btn btn-outline btn-sm" onclick="stopOrientSensor()">停止</button>
+          <button class="btn btn-warn btn-sm"    onclick="resetOrientation()">リセット</button>
+          <button class="btn btn-info btn-sm"    onclick="animateOrientation()">アニメーション</button>
+        </div>
+      </div>
+    </div>
+    <div class="console" id="orientConsole" style="min-height:50px;"><div class="log-line info">▶ スライダーを動かすか「センサー開始」をクリックしてください</div></div>
+  </div>
+
+  <!-- ========== 3. DeviceMotion ========== -->
+  <h2 class="sec-heading">3. DeviceMotion イベント</h2>
+
+  <div class="code-block">
+    <div class="code-block-header">
+      <span>DeviceMotion イベントの使い方</span>
+      <button class="copy-btn" onclick="copyCode(this)">copy</button>
+    </div>
+    <pre><span class="cm">// DeviceMotion イベントの登録</span>
+window.<span class="fn">addEventListener</span>(<span class="str">'devicemotion'</span>, (event) <span class="op">=></span> {
+
+  <span class="cm">// ── 加速度（重力を除く）──</span>
+  <span class="kw">const</span> acc <span class="op">=</span> event.acceleration;
+  <span class="kw">if</span> (acc) {
+    console.<span class="fn">log</span>(<span class="str">'x:'</span>, acc.x); <span class="cm">// 左右（右が正）m/s²</span>
+    console.<span class="fn">log</span>(<span class="str">'y:'</span>, acc.y); <span class="cm">// 前後（前が正）m/s²</span>
+    console.<span class="fn">log</span>(<span class="str">'z:'</span>, acc.z); <span class="cm">// 上下（上が正）m/s²</span>
+  }
+
+  <span class="cm">// ── 加速度（重力を含む）──</span>
+  <span class="kw">const</span> accG <span class="op">=</span> event.accelerationIncludingGravity;
+  <span class="kw">if</span> (accG) {
+    <span class="cm">// 静止時: z ≈ -9.8（重力加速度）</span>
+    console.<span class="fn">log</span>(<span class="str">'z(重力込み):'</span>, accG.z);
+  }
+
+  <span class="cm">// ── 回転レート ──</span>
+  <span class="kw">const</span> rot <span class="op">=</span> event.rotationRate;
+  <span class="kw">if</span> (rot) {
+    console.<span class="fn">log</span>(<span class="str">'alpha:'</span>, rot.alpha); <span class="cm">// Z軸周りの回転速度（°/s）</span>
+    console.<span class="fn">log</span>(<span class="str">'beta:'</span>,  rot.beta);  <span class="cm">// X軸周りの回転速度（°/s）</span>
+    console.<span class="fn">log</span>(<span class="str">'gamma:'</span>, rot.gamma); <span class="cm">// Y軸周りの回転速度（°/s）</span>
+  }
+
+  <span class="cm">// ── イベント間隔 ──</span>
+  console.<span class="fn">log</span>(<span class="str">'interval:'</span>, event.interval); <span class="cm">// ms（通常 16〜50ms）</span>
+});
+
+<span class="cm">// ── シェイク検出の例 ──</span>
+<span class="kw">let</span> lastShake <span class="op">=</span> <span class="num">0</span>;
+window.<span class="fn">addEventListener</span>(<span class="str">'devicemotion'</span>, (e) <span class="op">=></span> {
+  <span class="kw">const</span> acc <span class="op">=</span> e.accelerationIncludingGravity;
+  <span class="kw">if</span> (!acc) <span class="kw">return</span>;
+  <span class="kw">const</span> total <span class="op">=</span> Math.<span class="fn">abs</span>(acc.x) <span class="op">+</span> Math.<span class="fn">abs</span>(acc.y) <span class="op">+</span> Math.<span class="fn">abs</span>(acc.z);
+  <span class="kw">if</span> (total <span class="op">></span> <span class="num">30</span>) {  <span class="cm">// 閾値</span>
+    <span class="kw">const</span> now <span class="op">=</span> Date.<span class="fn">now</span>();
+    <span class="kw">if</span> (now <span class="op">-</span> lastShake <span class="op">></span> <span class="num">1000</span>) {
+      console.<span class="fn">log</span>(<span class="str">'シェイク検出!'</span>);
+      lastShake <span class="op">=</span> now;
+    }
+  }
+});</pre>
+  </div>
+
+  <div class="info-box tip">
+    <strong>💡 DeviceOrientation と DeviceMotion の違い</strong>
+    <ul>
+      <li><strong>DeviceOrientation</strong>: デバイスの<em>向き（角度）</em>を提供。alpha/beta/gamma（度）</li>
+      <li><strong>DeviceMotion</strong>: デバイスの<em>動き（加速度・回転速度）</em>を提供。m/s² や °/s</li>
+      <li>DeviceOrientation は「今どの向きか」、DeviceMotion は「どれだけ速く動いているか」</li>
+    </ul>
+  </div>
+
+  <!-- ===== DEMO 5: DeviceMotion グラフ ===== -->
+  <div class="demo-box">
+    <h3><span class="demo-num">5</span> DeviceMotion リアルタイムグラフ</h3>
+    <p style="font-size:0.85rem;color:var(--muted);margin-bottom:14px;">加速度センサーの値をリアルタイムグラフで表示します。実機では実際のセンサー値を使用します。</p>
+
+    <div class="ctrl-row">
+      <button class="btn btn-success btn-sm" id="motionStartBtn" onclick="startMotion()">▶ センサー開始 / シミュレート</button>
+      <button class="btn btn-danger btn-sm"  id="motionStopBtn"  onclick="stopMotion()" disabled>⏹ 停止</button>
+      <button class="btn btn-outline btn-sm" onclick="resetMotionGraph()">グラフリセット</button>
+      <label>シミュレーション:
+        <select id="motionPattern">
+          <option value="idle">静止</option>
+          <option value="walk">歩行</option>
+          <option value="shake">シェイク</option>
+          <option value="spin">回転</option>
+        </select>
+      </label>
+    </div>
+
+    <div class="motion-graph-wrap">
+      <canvas id="motionCanvas" width="700" height="200"></canvas>
+      <div class="motion-legend">
+        <div class="motion-legend-item">
+          <div class="motion-legend-dot" style="background:#fc8181;"></div>
+          <span>X軸（左右）</span>
+        </div>
+        <div class="motion-legend-item">
+          <div class="motion-legend-dot" style="background:#68d391;"></div>
+          <span>Y軸（前後）</span>
+        </div>
+        <div class="motion-legend-item">
+          <div class="motion-legend-dot" style="background:#90cdf4;"></div>
+          <span>Z軸（上下）</span>
+        </div>
+        <div class="motion-legend-item">
+          <div class="motion-legend-dot" style="background:#f6ad55;"></div>
+          <span>合成加速度</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="coord-grid" style="margin-top:12px;">
+      <div class="coord-card">
+        <div class="cc-label">acceleration.x</div>
+        <div class="cc-val" id="motX">0.00<span class="cc-unit">m/s²</span></div>
+      </div>
+      <div class="coord-card">
+        <div class="cc-label">acceleration.y</div>
+        <div class="cc-val" id="motY">0.00<span class="cc-unit">m/s²</span></div>
+      </div>
+      <div class="coord-card">
+        <div class="cc-label">acceleration.z</div>
+        <div class="cc-val" id="motZ">0.00<span class="cc-unit">m/s²</span></div>
+      </div>
+      <div class="coord-card highlight">
+        <div class="cc-label">合成加速度</div>
+        <div class="cc-val" id="motTotal">0.00<span class="cc-unit">m/s²</span></div>
+      </div>
+    </div>
+    <div class="console" id="motionConsole" style="min-height:50px;"><div class="log-line info">▶ 「センサー開始」をクリックしてください</div></div>
+  </div>
+
+  <!-- ========== 演習問題 ========== -->
+  <div class="quiz-section">
+    <h2>🧩 演習問題</h2>
+    <p class="quiz-desc">4-5 デバイスアクセスの理解を確認しましょう。</p>
+
+    <!-- Q1 -->
+    <div class="quiz-item" id="q1">
+      <div class="q-num">QUESTION 1 / 6</div>
+      <div class="q-text">Geolocation API でユーザーが位置情報の使用を拒否したとき、エラーコールバックに渡される <code>error.code</code> の値はどれですか？</div>
+      <div class="options">
+        <button class="option-btn" onclick="checkQ(this,'q1','A')">A. 1（PERMISSION_DENIED）</button>
+        <button class="option-btn" onclick="checkQ(this,'q1','A')">B. 2（POSITION_UNAVAILABLE）</button>
+        <button class="option-btn" onclick="checkQ(this,'q1','A')">C. 3（TIMEOUT）</button>
+        <button class="option-btn" onclick="checkQ(this,'q1','A')">D. 0（UNKNOWN_ERROR）</button>
+      </div>
+      <div class="explanation" id="exp_q1">
+        <strong>✅ 正解：A（1 = PERMISSION_DENIED）</strong><br>
+        Geolocation API のエラーコードは3種類です：<br>
+        • <strong>1</strong>: PERMISSION_DENIED — ユーザーが位置情報の使用を拒否した<br>
+        • <strong>2</strong>: POSITION_UNAVAILABLE — ネットワーク障害・GPS 信号なしなどで位置情報を取得できない<br>
+        • <strong>3</strong>: TIMEOUT — <code>timeout</code> オプションで指定した時間内に取得できなかった<br>
+        0（UNKNOWN_ERROR）は仕様上存在しません。
+      </div>
+    </div>
+
+    <!-- Q2 -->
+    <div class="quiz-item" id="q2">
+      <div class="q-num">QUESTION 2 / 6</div>
+      <div class="q-text"><code>watchPosition()</code> の戻り値として正しいものはどれですか？</div>
+      <div class="options">
+        <button class="option-btn" onclick="checkQ(this,'q2','B')">A. Promise オブジェクト</button>
+        <button class="option-btn" onclick="checkQ(this,'q2','B')">B. 監視 ID（数値）</button>
+        <button class="option-btn" onclick="checkQ(this,'q2','B')">C. GeolocationPosition オブジェクト</button>
+        <button class="option-btn" onclick="checkQ(this,'q2','B')">D. EventListener オブジェクト</button>
+      </div>
+      <div class="explanation" id="exp_q2">
+        <strong>✅ 正解：B（監視 ID = 数値）</strong><br>
+        <code>watchPosition()</code> は<strong>数値の watchId</strong> を返します。この ID を <code>clearWatch(watchId)</code> に渡すことで監視を停止できます。<br>
+        <code>getCurrentPosition()</code> は戻り値なし（undefined）です。<br>
+        位置情報は成功コールバックの引数として渡される GeolocationPosition オブジェクトで取得します。
+      </div>
+    </div>
+
+    <!-- Q3 -->
+    <div class="quiz-item" id="q3">
+      <div class="q-num">QUESTION 3 / 6</div>
+      <div class="q-text">DeviceOrientation イベントの <code>gamma</code> プロパティが表す動きはどれですか？</div>
+      <div class="options">
+        <button class="option-btn" onclick="checkQ(this,'q3','C')">A. Z軸周りの回転（コンパス方位）</button>
+        <button class="option-btn" onclick="checkQ(this,'q3','C')">B. X軸周りの回転（前後の傾き）</button>
+        <button class="option-btn" onclick="checkQ(this,'q3','C')">C. Y軸周りの回転（左右の傾き）</button>
+        <button class="option-btn" onclick="checkQ(this,'q3','C')">D. 加速度（m/s²）</button>
+      </div>
+      <div class="explanation" id="exp_q3">
+        <strong>✅ 正解：C（Y軸周りの回転 = 左右の傾き）</strong><br>
+        DeviceOrientation の3軸：<br>
+        • <strong>alpha</strong>（Z軸）: コンパス方位。0〜360°。0=北<br>
+        • <strong>beta</strong>（X軸）: 前後の傾き。-180〜180°<br>
+        • <strong>gamma</strong>（Y軸）: <strong>左右の傾き</strong>。-90〜90°。正=右傾き<br>
+        加速度は DeviceMotion イベントの <code>acceleration</code> プロパティで取得します。
+      </div>
+    </div>
+
+    <!-- Q4 -->
+    <div class="quiz-item" id="q4">
+      <div class="q-num">QUESTION 4 / 6</div>
+      <div class="q-text">Geolocation API の <code>enableHighAccuracy: true</code> オプションについて正しい説明はどれですか？</div>
+      <div class="options">
+        <button class="option-btn" onclick="checkQ(this,'q4','B')">A. 常に GPS を使用し、必ず高精度の位置情報が得られる</button>
+        <button class="option-btn" onclick="checkQ(this,'q4','B')">B. GPS 等の高精度センサーの使用を要求するが、バッテリー消費が増える</button>
+        <button class="option-btn" onclick="checkQ(this,'q4','B')">C. 位置情報の取得速度が速くなる</button>
+        <button class="option-btn" onclick="checkQ(this,'q4','B')">D. このオプションを設定しないと位置情報が取得できない</button>
+      </div>
+      <div class="explanation" id="exp_q4">
+        <strong>✅ 正解：B</strong><br>
+        <code>enableHighAccuracy: true</code> は GPS などの高精度センサーの使用を<em>要求</em>しますが：<br>
+        • デバイスが GPS をサポートしていない場合は効果がない<br>
+        • バッテリー消費が増加し、取得に時間がかかる場合がある<br>
+        • 必ずしも高精度が保証されるわけではない<br>
+        <code>false</code>（デフォルト）の場合は Wi-Fi・IP アドレスなど低精度だが高速な方法を使います。
+      </div>
+    </div>
+
+    <!-- Q5 複数選択 -->
+    <div class="quiz-item" id="q5">
+      <div class="q-num">QUESTION 5 / 6（複数選択）</div>
+      <div class="q-text">Geolocation API の <code>getCurrentPosition()</code> の第3引数（オプション）に指定できるプロパティをすべて選んでください。</div>
+      <div style="font-size:0.82rem;color:var(--muted);margin-bottom:10px;">※ 正しいものをすべてクリックして「確認」を押してください</div>
+      <div class="options" id="q5options">
+        <button class="option-btn" onclick="toggleMulti(this)" data-correct="true">A. enableHighAccuracy</button>
+        <button class="option-btn" onclick="toggleMulti(this)" data-correct="true">B. timeout</button>
+        <button class="option-btn" onclick="toggleMulti(this)" data-correct="false">C. accuracy</button>
+        <button class="option-btn" onclick="toggleMulti(this)" data-correct="true">D. maximumAge</button>
+        <button class="option-btn" onclick="toggleMulti(this)" data-correct="false">E. interval</button>
+      </div>
+      <button class="btn btn-primary btn-sm" style="margin-top:10px;" onclick="checkQ5Multi()">確認</button>
+      <div class="explanation" id="exp_q5">
+        <strong>✅ 正解：A・B・D</strong><br>
+        PositionOptions オブジェクトに指定できるプロパティは3つです：<br>
+        <strong>A ○</strong> <code>enableHighAccuracy</code>: 高精度センサーを使用するか（boolean）<br>
+        <strong>B ○</strong> <code>timeout</code>: タイムアウト時間（ms）。超過すると TIMEOUT エラー<br>
+        <strong>C ✗</strong> <code>accuracy</code>: そのようなオプションは存在しない<br>
+        <strong>D ○</strong> <code>maximumAge</code>: キャッシュされた位置情報の許容時間（ms）。0=常に新規取得<br>
+        <strong>E ✗</strong> <code>interval</code>: そのようなオプションは存在しない（watchPosition の更新間隔はブラウザ依存）
+      </div>
+    </div>
+
+    <!-- Q6 穴埋め -->
+    <div class="quiz-item" id="q6">
+      <div class="q-num">QUESTION 6 / 6（穴埋め）</div>
+      <div class="q-text">以下のコードの空欄を埋めてください。位置監視を開始し、後で停止します。</div>
+      <div class="q-code">// 位置監視を開始（戻り値を保存）
+const watchId = navigator.geolocation.[___A___](
+  (pos) => console.log(pos.coords.latitude),
+  (err) => console.log(err.code),
+  { enableHighAccuracy: true }
+);
+
+// 監視を停止
+navigator.geolocation.[___B___](watchId);</div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:8px;">
+        <div style="flex:1;min-width:180px;">
+          <label style="font-size:0.82rem;color:var(--muted);">A の答え（メソッド名）：</label>
+          <input type="text" class="fill-input" id="q6a" placeholder="メソッド名">
+        </div>
+        <div style="flex:1;min-width:180px;">
+          <label style="font-size:0.82rem;color:var(--muted);">B の答え（メソッド名）：</label>
+          <input type="text" class="fill-input" id="q6b" placeholder="メソッド名">
+        </div>
+      </div>
+      <button class="btn btn-primary btn-sm" onclick="checkQ6()">答え合わせ</button>
+      <div class="explanation" id="exp_q6"></div>
+    </div>
+
+  </div><!-- /quiz-section -->
+
+  <!-- 完了ボタン -->
+  <div class="complete-area">
+    <button class="complete-btn" id="completeBtn" onclick="markComplete()">
+      ✅ このセクションを完了にする
+    </button>
+  </div>
+
+  <!-- ページナビ -->
+  <div class="page-nav">
+    <a href="04_communication.html" class="page-nav-btn">← 4-4 通信</a>
+    <div style="font-size:0.85rem;color:var(--muted);text-align:center;">
+      <a href="index.html">📚 Chapter 4 目次</a>
+    </div>
+    <a href="06_performance.html" class="page-nav-btn">4-6 パフォーマンス →</a>
+  </div>
+
+</main>
+
+<footer>
+  <p>© MeshinoKiwamiOkome |
+    <a href="https://github.com/MeshinoKiwamiOkome/html5lv2" target="_blank" rel="noopener">GitHub リポジトリ</a>
+  </p>
+  <p style="margin-top:6px;font-size:0.8rem;opacity:0.7;">HTML5 Professional Level 2 学習サイト</p>
+</footer>
+
+<script>
+// ===================================================
+// ユーティリティ
+// ===================================================
+function copyCode(btn) {
+  const pre = btn.closest('.code-block').querySelector('pre');
+  navigator.clipboard.writeText(pre.innerText).then(() => {
+    btn.textContent = 'copied!'; btn.classList.add('copied');
+    setTimeout(() => { btn.textContent = 'copy'; btn.classList.remove('copied'); }, 2000);
+  });
+}
+function log(id, msg, type='') {
+  const c = document.getElementById(id);
+  if (!c) return;
+  const d = document.createElement('div');
+  d.className = 'log-line ' + type;
+  d.textContent = msg;
+  c.appendChild(d);
+  c.scrollTop = c.scrollHeight;
+}
+function clearLog(id) {
+  const c = document.getElementById(id);
+  if (c) c.innerHTML = '';
+}
+
+// ===================================================
+// DEMO 1 & 2: Geolocation シミュレーター
+// ===================================================
+let geoWatchId    = null;
+let geoWatchTimer = null;
+let geoWatchCount = 0;
+
+// 東京周辺の模擬座標
+const GEO_BASE = { lat: 35.6812, lng: 139.7671 };
+
+function makePosition(highAccuracy) {
+  const acc = highAccuracy ? (5 + Math.random() * 15) : (50 + Math.random() * 200);
+  return {
+    coords: {
+      latitude:         GEO_BASE.lat + (Math.random() - 0.5) * 0.002,
+      longitude:        GEO_BASE.lng + (Math.random() - 0.5) * 0.002,
+      accuracy:         acc,
+      altitude:         10 + Math.random() * 40,
+      altitudeAccuracy: highAccuracy ? 5 : null,
+      heading:          Math.random() * 360,
+      speed:            Math.random() * 2
+    },
+    timestamp: Date.now()
+  };
+}
+
+function updateCoordCards(pos) {
+  const c = pos.coords;
+  document.getElementById('ccLat').innerHTML = c.latitude.toFixed(6);
+  document.getElementById('ccLng').innerHTML = c.longitude.toFixed(6);
+  document.getElementById('ccAcc').innerHTML = c.accuracy.toFixed(1) + '<span class="cc-unit">m</span>';
+  document.getElementById('ccAlt').innerHTML = c.altitude ? c.altitude.toFixed(1) + '<span class="cc-unit">m</span>' : 'null';
+  document.getElementById('ccSpd').innerHTML = c.speed ? c.speed.toFixed(2) + '<span class="cc-unit">m/s</span>' : 'null';
+  document.getElementById('ccTs').innerHTML  = new Date(pos.timestamp).toLocaleTimeString();
+}
+
+function geoGetCurrent() {
+  const scenario     = document.getElementById('geoScenario').value;
+  const highAccuracy = document.getElementById('geoHighAccuracy').checked;
+  const timeout      = parseInt(document.getElementById('geoTimeout').value);
+  clearLog('geoConsole');
+  log('geoConsole', 'navigator.geolocation.getCurrentPosition(success, error, options)', 'info');
+  log('geoConsole', `options: { enableHighAccuracy:${highAccuracy}, timeout:${timeout}, maximumAge:0 }`, 'info');
+  log('geoConsole', '位置情報を取得中...', 'warn');
+
+  const delay = scenario.startsWith('error_3') ? Math.min(timeout + 100, 2000) : 800 + Math.random() * 600;
+
+  setTimeout(() => {
+    if (scenario === 'success_high' || scenario === 'success_low') {
+      const pos = makePosition(scenario === 'success_high');
+      updateCoordCards(pos);
+      log('geoConsole', '✅ 成功コールバック呼び出し', 'ok');
+      log('geoConsole', `  latitude:  ${pos.coords.latitude.toFixed(6)}°`, 'ok');
+      log('geoConsole', `  longitude: ${pos.coords.longitude.toFixed(6)}°`, 'ok');
+      log('geoConsole', `  accuracy:  ${pos.coords.accuracy.toFixed(1)} m`, 'ok');
+      log('geoConsole', `  altitude:  ${pos.coords.altitude.toFixed(1)} m`, 'ok');
+      log('geoConsole', `  timestamp: ${new Date(pos.timestamp).toLocaleTimeString()}`, 'info');
+      mapPlotPoint(pos.coords.latitude, pos.coords.longitude, '#9f7aea');
+    } else {
+      const code = parseInt(scenario.split('_')[1]);
+      const names = { 1:'PERMISSION_DENIED', 2:'POSITION_UNAVAILABLE', 3:'TIMEOUT' };
+      const msgs  = {
+        1: 'ユーザーが位置情報の使用を拒否しました',
+        2: '位置情報を取得できませんでした（電波なし等）',
+        3: `タイムアウト（${timeout}ms 以内に取得できませんでした）`
+      };
+      log('geoConsole', `❌ エラーコールバック呼び出し`, 'err');
+      log('geoConsole', `  error.code:    ${code} (${names[code]})`, 'err');
+      log('geoConsole', `  error.message: "${msgs[code]}"`, 'err');
+    }
+  }, delay);
+}
+
+function geoStartWatch() {
+  if (geoWatchTimer) return;
+  geoWatchCount = 0;
+  geoWatchId    = Math.floor(Math.random() * 1000) + 1;
+  document.getElementById('geoWatchBtn').disabled = true;
+  document.getElementById('geoClearBtn').disabled = false;
+  clearLog('geoConsole');
+  log('geoConsole', `const watchId = navigator.geolocation.watchPosition(...)`, 'info');
+  log('geoConsole', `watchId = ${geoWatchId}`, 'ok');
+  log('geoConsole', '位置監視を開始しました（2秒ごとに更新）', 'ok');
+
+  const highAccuracy = document.getElementById('geoHighAccuracy').checked;
+  geoWatchTimer = setInterval(() => {
+    geoWatchCount++;
+    const pos = makePosition(highAccuracy);
+    updateCoordCards(pos);
+    log('geoConsole', `[更新 #${geoWatchCount}] lat:${pos.coords.latitude.toFixed(5)} lng:${pos.coords.longitude.toFixed(5)} acc:${pos.coords.accuracy.toFixed(0)}m`, 'ok');
+    mapPlotPoint(pos.coords.latitude, pos.coords.longitude, '#48bb78');
+  }, 2000);
+}
+
+function geoStopWatch() {
+  if (geoWatchTimer) { clearInterval(geoWatchTimer); geoWatchTimer = null; }
+  document.getElementById('geoWatchBtn').disabled = false;
+  document.getElementById('geoClearBtn').disabled = true;
+  clearLog('geoConsole');
+  log('geoConsole', `navigator.geolocation.clearWatch(${geoWatchId})`, 'warn');
+  log('geoConsole', `watchId ${geoWatchId} の監視を停止しました`, 'warn');
+  geoWatchId = null;
+}
+
+function geoSimulateMove() {
+  clearLog('geoConsole');
+  log('geoConsole', '移動シミュレーション開始（5ポイント）', 'info');
+  const points = Array.from({length:5}, (_,i) => ({
+    lat: GEO_BASE.lat + (i - 2) * 0.001 + (Math.random() - 0.5) * 0.0005,
+    lng: GEO_BASE.lng + (i - 2) * 0.0015 + (Math.random() - 0.5) * 0.0005
+  }));
+  points.forEach((p, i) => {
+    setTimeout(() => {
+      const pos = { coords: { latitude:p.lat, longitude:p.lng, accuracy:15, altitude:12, speed:1.2 }, timestamp:Date.now() };
+      updateCoordCards(pos);
+      log('geoConsole', `移動 #${i+1}: (${p.lat.toFixed(5)}, ${p.lng.toFixed(5)})`, 'ok');
+      mapPlotPoint(p.lat, p.lng, '#f6ad55', i === 0 ? '出発' : i === 4 ? '到着' : null);
+    }, i * 600);
+  });
+}
+
+// ===================================================
+// DEMO 2: エラーコード詳細
+// ===================================================
+const GEO_ERROR_INFO = {
+  1: {
+    name: 'PERMISSION_DENIED',
+    cause: 'ユーザーがブラウザの位置情報ダイアログで「拒否」を選択した、またはサイトの権限設定で拒否されている',
+    handle: 'ユーザーに位置情報の許可を求めるメッセージを表示する。強制はできない',
+    code: `navigator.geolocation.getCurrentPosition(
+  success,
+  (error) => {
+    if (error.code === 1) {
+      showMessage('位置情報の使用を許可してください');
+    }
+  }
+);`
+  },
+  2: {
+    name: 'POSITION_UNAVAILABLE',
+    cause: 'GPS 信号なし・ネットワーク障害・機内モードなどで位置情報を取得できない',
+    handle: 'しばらく待ってから再試行するか、手動入力の代替手段を提供する',
+    code: `navigator.geolocation.getCurrentPosition(
+  success,
+  (error) => {
+    if (error.code === 2) {
+      showMessage('位置情報を取得できません。電波状況を確認してください');
+      setTimeout(retryGetPosition, 5000);
+    }
+  }
+);`
+  },
+  3: {
+    name: 'TIMEOUT',
+    cause: 'timeout オプションで指定した時間内に位置情報を取得できなかった',
+    handle: 'timeout 値を大きくするか、enableHighAccuracy を false にして再試行する',
+    code: `navigator.geolocation.getCurrentPosition(
+  success,
+  (error) => {
+    if (error.code === 3) {
+      // タイムアウト → 低精度で再試行
+      navigator.geolocation.getCurrentPosition(success, fail, {
+        enableHighAccuracy: false,
+        timeout: 10000
+      });
+    }
+  },
+  { enableHighAccuracy: true, timeout: 3000 }
+);`
+  }
+};
+
+function showGeoError(code) {
+  [1,2,3].forEach(n => document.getElementById('errCard'+n).classList.remove('active'));
+  document.getElementById('errCard'+code).classList.add('active');
+  const info = GEO_ERROR_INFO[code];
+  clearLog('errConsole');
+  log('errConsole', `error.code = ${code} (${info.name})`, 'err');
+  log('errConsole', `原因: ${info.cause}`, 'warn');
+  log('errConsole', `対処: ${info.handle}`, 'info');
+  log('errConsole', '--- コード例 ---', 'info');
+  info.code.split('\n').forEach(line => log('errConsole', line, 'ok'));
+}
+
+// ===================================================
+// DEMO 3: マップビジュアライザー
+// ===================================================
+const mapCanvas = document.getElementById('mapCanvas');
+const mapCtx    = mapCanvas.getContext('2d');
+let mapPoints   = [];
+let mapCenter   = { lat: GEO_BASE.lat, lng: GEO_BASE.lng };
+
+function latLngToCanvas(lat, lng) {
+  const zoom = parseInt(document.getElementById('mapZoom').value);
+  const scale = zoom * 30000;
+  const cx = mapCanvas.width  / 2;
+  const cy = mapCanvas.height / 2;
+  const x  = cx + (lng - mapCenter.lng) * scale;
+  const y  = cy - (lat - mapCenter.lat) * scale;
+  return { x, y };
+}
+
+function mapRedraw() {
+  const zoom = parseInt(document.getElementById('mapZoom').value);
+  document.getElementById('mapZoomVal').textContent = zoom;
+  const w = mapCanvas.width;
+  const h = mapCanvas.height;
+  mapCtx.clearRect(0, 0, w, h);
+
+  // 背景
+  mapCtx.fillStyle = '#1a2744';
+  mapCtx.fillRect(0, 0, w, h);
+
+  // グリッド（道路風）
+  mapCtx.strokeStyle = 'rgba(255,255,255,0.06)';
+  mapCtx.lineWidth   = 1;
+  const gridSize = 40;
+  for (let x = 0; x < w; x += gridSize) {
+    mapCtx.beginPath(); mapCtx.moveTo(x,0); mapCtx.lineTo(x,h); mapCtx.stroke();
+  }
+  for (let y = 0; y < h; y += gridSize) {
+    mapCtx.beginPath(); mapCtx.moveTo(0,y); mapCtx.lineTo(w,y); mapCtx.stroke();
+  }
+
+  // 道路風ライン
+  mapCtx.strokeStyle = 'rgba(255,255,255,0.12)';
+  mapCtx.lineWidth   = 3;
+  [[0,h/2,w,h/2],[w/2,0,w/2,h],[0,h/3,w,h/3],[0,2*h/3,w,2*h/3]].forEach(([x1,y1,x2,y2]) => {
+    mapCtx.beginPath(); mapCtx.moveTo(x1,y1); mapCtx.lineTo(x2,y2); mapCtx.stroke();
+  });
+
+  // 中心マーカー
+  const cx = w/2, cy = h/2;
+  mapCtx.strokeStyle = 'rgba(159,122,234,0.3)';
+  mapCtx.lineWidth   = 1;
+  mapCtx.setLineDash([4,4]);
+  mapCtx.beginPath(); mapCtx.moveTo(cx,0); mapCtx.lineTo(cx,h); mapCtx.stroke();
+  mapCtx.beginPath(); mapCtx.moveTo(0,cy); mapCtx.lineTo(w,cy); mapCtx.stroke();
+  mapCtx.setLineDash([]);
+
+  // 軌跡ライン
+  if (mapPoints.length >= 2) {
+    mapCtx.strokeStyle = 'rgba(248,180,0,0.6)';
+    mapCtx.lineWidth   = 2;
+    mapCtx.setLineDash([6,3]);
+    mapCtx.beginPath();
+    const first = latLngToCanvas(mapPoints[0].lat, mapPoints[0].lng);
+    mapCtx.moveTo(first.x, first.y);
+    mapPoints.forEach(p => {
+      const pt = latLngToCanvas(p.lat, p.lng);
+      mapCtx.lineTo(pt.x, pt.y);
+    });
+    mapCtx.stroke();
+    mapCtx.setLineDash([]);
+  }
+
+  // ポイント
+  mapPoints.forEach((p, i) => {
+    const pt = latLngToCanvas(p.lat, p.lng);
+    const isLast = i === mapPoints.length - 1;
+
+    // 精度円
+    if (p.acc) {
+      const zoom = parseInt(document.getElementById('mapZoom').value);
+      const r = p.acc / 111000 * zoom * 30000;
+      mapCtx.beginPath();
+      mapCtx.arc(pt.x, pt.y, Math.max(r, 8), 0, Math.PI * 2);
+      mapCtx.fillStyle = p.color.replace(')',',0.1)').replace('rgb','rgba').replace('#','rgba(').replace(')',',0.1)');
+      mapCtx.strokeStyle = p.color + '44';
+      mapCtx.lineWidth = 1;
+      mapCtx.fill();
+      mapCtx.stroke();
+    }
+
+    // マーカー
+    mapCtx.beginPath();
+    mapCtx.arc(pt.x, pt.y, isLast ? 8 : 5, 0, Math.PI * 2);
+    mapCtx.fillStyle   = isLast ? '#fc8181' : p.color;
+    mapCtx.strokeStyle = '#ffffff';
+    mapCtx.lineWidth   = 2;
+    mapCtx.fill();
+    mapCtx.stroke();
+
+    // ラベル
+    if (p.label) {
+      mapCtx.fillStyle = '#ffffff';
+      mapCtx.font = 'bold 11px sans-serif';
+      mapCtx.textAlign = 'center';
+      mapCtx.fillText(p.label, pt.x, pt.y - 14);
+    }
+  });
+
+  // 座標表示
+  if (mapPoints.length > 0) {
+    const last = mapPoints[mapPoints.length - 1];
+    mapCtx.fillStyle = 'rgba(0,0,0,0.6)';
+    mapCtx.fillRect(8, 8, 260, 40);
+    mapCtx.fillStyle = '#9f7aea';
+    mapCtx.font = '11px monospace';
+    mapCtx.textAlign = 'left';
+    mapCtx.fillText(`lat: ${last.lat.toFixed(6)}  lng: ${last.lng.toFixed(6)}`, 14, 24);
+    mapCtx.fillStyle = '#68d391';
+    mapCtx.fillText(`ポイント数: ${mapPoints.length}  ズーム: ${parseInt(document.getElementById('mapZoom').value)}`, 14, 40);
+  }
+}
+
+function mapPlotPoint(lat, lng, color, label, acc) {
+  mapPoints.push({ lat, lng, color: color || '#9f7aea', label: label || null, acc: acc || 20 });
+  if (mapPoints.length > 50) mapPoints.shift();
+  mapCenter = { lat, lng };
+  mapRedraw();
+}
+
+function mapPlotCurrent() {
+  const pos = makePosition(true);
+  mapPlotPoint(pos.coords.latitude, pos.coords.longitude, '#9f7aea', '現在地', pos.coords.accuracy);
+  clearLog('mapConsole');
+  log('mapConsole', `プロット: (${pos.coords.latitude.toFixed(6)}, ${pos.coords.longitude.toFixed(6)})`, 'ok');
+  log('mapConsole', `accuracy: ${pos.coords.accuracy.toFixed(1)}m`, 'info');
+}
+
+function mapSimulateRoute() {
+  mapPoints = [];
+  clearLog('mapConsole');
+  log('mapConsole', 'ルートシミュレーション開始（10ポイント）', 'info');
+  const route = Array.from({length:10}, (_,i) => ({
+    lat: GEO_BASE.lat + Math.sin(i * 0.6) * 0.003 + i * 0.0004,
+    lng: GEO_BASE.lng + Math.cos(i * 0.4) * 0.002 + i * 0.0006
+  }));
+  route.forEach((p, i) => {
+    setTimeout(() => {
+      const label = i === 0 ? '出発' : i === 9 ? '到着' : null;
+      mapPlotPoint(p.lat, p.lng, i === 0 ? '#48bb78' : i === 9 ? '#fc8181' : '#9f7aea', label, 15);
+      log('mapConsole', `ポイント ${i+1}/10: (${p.lat.toFixed(5)}, ${p.lng.toFixed(5)})`, 'ok');
+    }, i * 400);
+  });
+}
+
+function mapClear() {
+  mapPoints = [];
+  mapRedraw();
+  clearLog('mapConsole');
+  log('mapConsole', 'マップをクリアしました', 'warn');
+}
+
+// 初期マップ描画
+mapRedraw();
+
+// ===================================================
+// DEMO 4: DeviceOrientation
+// ===================================================
+let orientSensorActive = false;
+let orientAnimId       = null;
+let orientAnimRunning  = false;
+
+function updateOrientation() {
+  const alpha = parseFloat(document.getElementById('sliderAlpha').value);
+  const beta  = parseFloat(document.getElementById('sliderBeta').value);
+  const gamma = parseFloat(document.getElementById('sliderGamma').value);
+  applyOrientation(alpha, beta, gamma);
+}
+
+function applyOrientation(alpha, beta, gamma) {
+  // バー更新
+  document.getElementById('barAlpha').style.width = (alpha / 360 * 100) + '%';
+  document.getElementById('barBeta').style.width  = ((beta + 180) / 360 * 100) + '%';
+  document.getElementById('barGamma').style.width = ((gamma + 90) / 180 * 100) + '%';
+
+  // 値表示
+  document.getElementById('valAlpha').textContent = alpha.toFixed(1) + '°';
+  document.getElementById('valBeta').textContent  = beta.toFixed(1)  + '°';
+  document.getElementById('valGamma').textContent = gamma.toFixed(1) + '°';
+
+  // 3Dデバイス回転
+  const phone = document.getElementById('device3d');
+  phone.style.transform = `rotateY(${gamma}deg) rotateX(${-beta * 0.5}deg) rotateZ(${alpha * 0.1}deg)`;
+
+  // 画面テキスト
+  document.getElementById('device3dScreen').innerHTML =
+    `α: ${alpha.toFixed(0)}°<br>β: ${beta.toFixed(0)}°<br>γ: ${gamma.toFixed(0)}°`;
+
+  clearLog('orientConsole');
+  log('orientConsole', `deviceorientation イベント`, 'info');
+  log('orientConsole', `  event.alpha  = ${alpha.toFixed(2)}  (Z軸: コンパス方位)`, 'ok');
+  log('orientConsole', `  event.beta   = ${beta.toFixed(2)}  (X軸: 前後の傾き)`, 'ok');
+  log('orientConsole', `  event.gamma  = ${gamma.toFixed(2)}  (Y軸: 左右の傾き)`, 'ok');
+  log('orientConsole', `  event.absolute = false`, 'info');
+}
+
+function startOrientSensor() {
+  if (typeof DeviceOrientationEvent !== 'undefined' &&
+      typeof DeviceOrientationEvent.requestPermission === 'function') {
+    DeviceOrientationEvent.requestPermission().then(state => {
+      if (state === 'granted') {
+        orientSensorActive = true;
+        window.addEventListener('deviceorientation', handleRealOrientation);
+        clearLog('orientConsole');
+        log('orientConsole', 'DeviceOrientationEvent.requestPermission() → granted', 'ok');
+        log('orientConsole', 'deviceorientation イベントリスナーを登録しました', 'ok');
+      } else {
+        log('orientConsole', 'DeviceOrientationEvent.requestPermission() → denied', 'err');
+      }
+    }).catch(() => {
+      log('orientConsole', '⚠ iOS 13+ の許可が必要です。シミュレーションモードで動作します', 'warn');
+      startOrientSimulation();
+    });
+  } else if (typeof DeviceOrientationEvent !== 'undefined') {
+    orientSensorActive = true;
+    window.addEventListener('deviceorientation', handleRealOrientation);
+    clearLog('orientConsole');
+    log('orientConsole', 'deviceorientation イベントリスナーを登録しました', 'ok');
+    log('orientConsole', 'デバイスを傾けてみてください', 'info');
+  } else {
+    log('orientConsole', '⚠ このブラウザは DeviceOrientationEvent をサポートしていません', 'warn');
+    startOrientSimulation();
+  }
+}
+
+function handleRealOrientation(e) {
+  const alpha = e.alpha || 0;
+  const beta  = e.beta  || 0;
+  const gamma = e.gamma || 0;
+  document.getElementById('sliderAlpha').value = alpha;
+  document.getElementById('sliderBeta').value  = beta;
+  document.getElementById('sliderGamma').value = gamma;
+  applyOrientation(alpha, beta, gamma);
+}
+
+function startOrientSimulation() {
+  if (orientAnimRunning) return;
+  orientAnimRunning = true;
+  let t = 0;
+  function tick() {
+    if (!orientAnimRunning) return;
+    t += 0.03;
+    const alpha = (t * 20) % 360;
+    const beta  = Math.sin(t * 0.7) * 45;
+    const gamma = Math.cos(t * 0.5) * 30;
+    document.getElementById('sliderAlpha').value = alpha;
+    document.getElementById('sliderBeta').value  = beta;
+    document.getElementById('sliderGamma').value = gamma;
+    applyOrientation(alpha, beta, gamma);
+    orientAnimId = requestAnimationFrame(tick);
+  }
+  tick();
+  clearLog('orientConsole');
+  log('orientConsole', 'シミュレーションモード: アニメーション中', 'warn');
+}
+
+function stopOrientSensor() {
+  orientAnimRunning = false;
+  if (orientAnimId) { cancelAnimationFrame(orientAnimId); orientAnimId = null; }
+  if (orientSensorActive) {
+    window.removeEventListener('deviceorientation', handleRealOrientation);
+    orientSensorActive = false;
+  }
+  clearLog('orientConsole');
+  log('orientConsole', 'センサー / シミュレーション停止', 'warn');
+}
+
+function resetOrientation() {
+  stopOrientSensor();
+  document.getElementById('sliderAlpha').value = 0;
+  document.getElementById('sliderBeta').value  = 0;
+  document.getElementById('sliderGamma').value = 0;
+  applyOrientation(0, 0, 0);
+}
+
+function animateOrientation() {
+  startOrientSimulation();
+}
+
+// ===================================================
+// DEMO 5: DeviceMotion グラフ
+// ===================================================
+const motCanvas = document.getElementById('motionCanvas');
+const motCtx    = motCanvas.getContext('2d');
+let motRunning  = false;
+let motAnimId   = null;
+let motRealActive = false;
+const MOT_HISTORY = 120;
+const motData   = { x:[], y:[], z:[], total:[] };
+let motT        = 0;
+
+function getMotionPattern() {
+  const p = document.getElementById('motionPattern').value;
+  motT += 0.08;
+  let x, y, z;
+  if (p === 'idle') {
+    x = (Math.random() - 0.5) * 0.4;
+    y = (Math.random() - 0.5) * 0.4;
+    z = -9.8 + (Math.random() - 0.5) * 0.3;
+  } else if (p === 'walk') {
+    x = Math.sin(motT * 3) * 2 + (Math.random() - 0.5) * 0.5;
+    y = Math.cos(motT * 3) * 1.5 + (Math.random() - 0.5) * 0.5;
+    z = -9.8 + Math.sin(motT * 6) * 1.5;
+  } else if (p === 'shake') {
+    const shakeAmp = 15 + Math.sin(motT * 0.5) * 5;
+    x = (Math.random() - 0.5) * shakeAmp;
+    y = (Math.random() - 0.5) * shakeAmp;
+    z = -9.8 + (Math.random() - 0.5) * shakeAmp;
+  } else {
+    x = Math.sin(motT * 4) * 8;
+    y = Math.cos(motT * 4) * 8;
+    z = -9.8 + Math.sin(motT * 2) * 3;
+  }
+  return { x, y, z };
+}
+
+function pushMotData(x, y, z) {
+  const total = Math.sqrt(x*x + y*y + z*z);
+  motData.x.push(x); motData.y.push(y);
+  motData.z.push(z); motData.total.push(total);
+  if (motData.x.length > MOT_HISTORY) {
+    motData.x.shift(); motData.y.shift();
+    motData.z.shift(); motData.total.shift();
+  }
+  document.getElementById('motX').innerHTML     = x.toFixed(2) + '<span class="cc-unit">m/s²</span>';
+  document.getElementById('motY').innerHTML     = y.toFixed(2) + '<span class="cc-unit">m/s²</span>';
+  document.getElementById('motZ').innerHTML     = z.toFixed(2) + '<span class="cc-unit">m/s²</span>';
+  document.getElementById('motTotal').innerHTML = total.toFixed(2) + '<span class="cc-unit">m/s²</span>';
+}
+
+function drawMotionGraph() {
+  const w = motCanvas.width;
+  const h = motCanvas.height;
+  motCtx.fillStyle = '#0d1117';
+  motCtx.fillRect(0, 0, w, h);
+
+  // グリッド
+  motCtx.strokeStyle = 'rgba(255,255,255,0.05)';
+  motCtx.lineWidth   = 1;
+  for (let i = 1; i < 4; i++) {
+    const y = h * i / 4;
+    motCtx.beginPath(); motCtx.moveTo(0,y); motCtx.lineTo(w,y); motCtx.stroke();
+  }
+
+  // 中心線
+  motCtx.strokeStyle = 'rgba(255,255,255,0.15)';
+  motCtx.lineWidth   = 1;
+  motCtx.beginPath(); motCtx.moveTo(0,h/2); motCtx.lineTo(w,h/2); motCtx.stroke();
+
+  const SCALE = 8;
+  const lines = [
+    { data: motData.x,     color: '#fc8181' },
+    { data: motData.y,     color: '#68d391' },
+    { data: motData.z,     color: '#90cdf4' },
+    { data: motData.total, color: '#f6ad55' },
+  ];
+
+  lines.forEach(({ data, color }) => {
+    if (data.length < 2) return;
+    motCtx.strokeStyle = color;
+    motCtx.lineWidth   = 1.5;
+    motCtx.beginPath();
+    data.forEach((v, i) => {
+      const x = (i / MOT_HISTORY) * w;
+      const y = h/2 - (v / SCALE) * (h/2 - 10);
+      if (i === 0) motCtx.moveTo(x, y);
+      else         motCtx.lineTo(x, y);
+    });
+    motCtx.stroke();
+  });
+
+  // スケール表示
+  motCtx.fillStyle = '#4a5568';
+  motCtx.font = '10px monospace';
+  motCtx.textAlign = 'left';
+  [`+${SCALE}m/s²`, '0', `-${SCALE}m/s²`].forEach((label, i) => {
+    motCtx.fillText(label, 4, [12, h/2 + 4, h - 4][i]);
+  });
+}
+
+function handleRealMotion(e) {
+  const acc = e.accelerationIncludingGravity;
+  if (!acc) return;
+  pushMotData(acc.x || 0, acc.y || 0, acc.z || 0);
+  drawMotionGraph();
+}
+
+function startMotion() {
+  if (motRunning) return;
+  motRunning = true;
+  document.getElementById('motionStartBtn').disabled = true;
+  document.getElementById('motionStopBtn').disabled  = false;
+  clearLog('motionConsole');
+
+  if (typeof DeviceMotionEvent !== 'undefined' &&
+      typeof DeviceMotionEvent.requestPermission === 'function') {
+    DeviceMotionEvent.requestPermission().then(state => {
+      if (state === 'granted') {
+        motRealActive = true;
+        window.addEventListener('devicemotion', handleRealMotion);
+        log('motionConsole', 'DeviceMotionEvent.requestPermission() → granted', 'ok');
+        log('motionConsole', 'devicemotion イベントリスナーを登録しました', 'ok');
+      } else {
+        startMotionSimulation();
+      }
+    }).catch(() => startMotionSimulation());
+  } else if (typeof DeviceMotionEvent !== 'undefined') {
+    motRealActive = true;
+    window.addEventListener('devicemotion', handleRealMotion);
+    log('motionConsole', 'devicemotion イベントリスナーを登録しました', 'ok');
+    log('motionConsole', 'デバイスを動かしてみてください', 'info');
+  } else {
+    startMotionSimulation();
+  }
+}
+
+function startMotionSimulation() {
+  log('motionConsole', 'シミュレーションモード: devicemotion をシミュレート中', 'warn');
+  log('motionConsole', `パターン: ${document.getElementById('motionPattern').value}`, 'info');
+
+  function tick() {
+    if (!motRunning) return;
+    const { x, y, z } = getMotionPattern();
+    pushMotData(x, y, z);
+    drawMotionGraph();
+
+    const total = Math.sqrt(x*x + y*y + z*z);
+    if (total > 25 && document.getElementById('motionPattern').value === 'shake') {
+      clearLog('motionConsole');
+      log('motionConsole', `🔔 シェイク検出! 合成加速度: ${total.toFixed(1)} m/s²`, 'warn');
+    }
+    motAnimId = requestAnimationFrame(tick);
+  }
+  tick();
+}
+
+function stopMotion() {
+  motRunning = false;
+  if (motAnimId) { cancelAnimationFrame(motAnimId); motAnimId = null; }
+  if (motRealActive) {
+    window.removeEventListener('devicemotion', handleRealMotion);
+    motRealActive = false;
+  }
+  document.getElementById('motionStartBtn').disabled = false;
+  document.getElementById('motionStopBtn').disabled  = true;
+  clearLog('motionConsole');
+  log('motionConsole', 'センサー / シミュレーション停止', 'warn');
+}
+
+function resetMotionGraph() {
+  motData.x = []; motData.y = []; motData.z = []; motData.total = [];
+  drawMotionGraph();
+  clearLog('motionConsole');
+  log('motionConsole', 'グラフをリセットしました', 'warn');
+}
+
+// ===================================================
+// 演習問題
+// ===================================================
+function checkQ(btn, qid, correctLetter) {
+  const item = document.getElementById(qid);
+  item.querySelectorAll('.option-btn').forEach(b => {
+    b.disabled = true;
+    if (b.textContent.trim().startsWith(correctLetter + '.') ||
+        b.textContent.trim().startsWith(correctLetter + '（')) b.classList.add('correct');
+  });
+  if (!btn.classList.contains('correct')) btn.classList.add('wrong');
+  document.getElementById('exp_' + qid).classList.add('show');
+}
+
+function toggleMulti(btn) {
+  if (btn.disabled) return;
+  btn.classList.toggle('selected');
+  btn.style.borderColor = btn.classList.contains('selected') ? 'var(--purple-light)' : '';
+  btn.style.background  = btn.classList.contains('selected') ? 'var(--purple-bg)'    : '';
+}
+
+function checkQ5Multi() {
+  const btns = document.querySelectorAll('#q5options .option-btn');
+  btns.forEach(b => {
+    b.disabled = true;
+    const isCorrect  = b.dataset.correct === 'true';
+    const isSelected = b.classList.contains('selected');
+    b.style.borderColor = ''; b.style.background = '';
+    if (isCorrect)                b.classList.add('correct');
+    if (!isCorrect && isSelected) b.classList.add('wrong');
+  });
+  document.getElementById('exp_q5').classList.add('show');
+  document.querySelector('#q5 .btn-primary').disabled = true;
+}
+
+function checkQ6() {
+  const a   = document.getElementById('q6a').value.trim().toLowerCase().replace(/[()]/g,'');
+  const b   = document.getElementById('q6b').value.trim().toLowerCase().replace(/[()]/g,'');
+  const aOk = a === 'watchposition';
+  const bOk = b === 'clearwatch';
+  const exp = document.getElementById('exp_q6');
+  exp.classList.add('show');
+  let html = '';
+  if (aOk && bOk) {
+    html = '<strong>✅ 両方正解！</strong><br><br>';
+  } else {
+    html  = '<strong>' + (aOk ? '✅' : '❌') + ' A: watchPosition</strong>（あなたの答え: ' + (document.getElementById('q6a').value || '未入力') + '）<br>';
+    html += '<strong>' + (bOk ? '✅' : '❌') + ' B: clearWatch</strong>（あなたの答え: ' + (document.getElementById('q6b').value || '未入力') + '）<br><br>';
+  }
+  html += '<strong>解説：</strong><br>';
+  html += '• <code>watchPosition(success, error, options)</code> — 位置情報を継続的に監視します。位置が変化するたびに success コールバックが呼ばれます。戻り値は数値の watchId です。<br>';
+  html += '• <code>clearWatch(watchId)</code> — watchPosition() で開始した監視を停止します。watchId を引数に渡します。<code>setInterval</code> と <code>clearInterval</code> の関係に似ています。<br>';
+  html += '• <code>getCurrentPosition()</code> は1回だけ取得し、戻り値はありません（undefined）。';
+  exp.innerHTML = html;
+}
+
+// ===================================================
+// 完了ボタン
+// ===================================================
+function markComplete() {
+  const key = 'html5lv2_ch4_05';
+  const btn = document.getElementById('completeBtn');
+  if (localStorage.getItem(key) === 'done') {
+    localStorage.removeItem(key);
+    btn.textContent = '✅ このセクションを完了にする';
+    btn.classList.remove('done');
+  } else {
+    localStorage.setItem(key, 'done');
+    btn.textContent = '🎉 完了済み！（クリックで取り消し）';
+    btn.classList.add('done');
+  }
+}
+
+// ===================================================
+// 初期化
+// ===================================================
+(function init() {
+  if (localStorage.getItem('html5lv2_ch4_05') === 'done') {
+    const btn = document.getElementById('completeBtn');
+    btn.textContent = '🎉 完了済み！（クリックで取り消し）';
+    btn.classList.add('done');
+  }
+  updateOrientation();
+  drawMotionGraph();
+})();
+</script>
+</body>
+</html>

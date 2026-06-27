@@ -1,0 +1,1691 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>4-4 通信 | HTML5 Level 2 学習サイト</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --purple-dark:  #553c9a;
+      --purple-light: #9f7aea;
+      --purple-bg:    #faf5ff;
+      --purple-border:#e9d8fd;
+      --success-bg:   #f0fff4;
+      --success:      #48bb78;
+      --success-dark: #276749;
+      --warning-bg:   #fffaf0;
+      --warning:      #ed8936;
+      --warning-dark: #744210;
+      --danger-bg:    #fff5f5;
+      --danger:       #fc8181;
+      --danger-dark:  #c53030;
+      --info-bg:      #ebf8ff;
+      --info:         #4299e1;
+      --info-dark:    #2b6cb0;
+      --bg:           #f0f4f8;
+      --text:         #2d3748;
+      --muted:        #718096;
+      --dark-bg:      #1a202c;
+      --white:        #ffffff;
+      --border:       #e2e8f0;
+    }
+    body { font-family:'Segoe UI','Hiragino Sans','Meiryo',sans-serif; background:var(--bg); color:var(--text); line-height:1.7; }
+    a { color:var(--purple-dark); text-decoration:none; }
+    a:hover { text-decoration:underline; }
+
+    .breadcrumb { background:var(--white); border-bottom:1px solid var(--border); padding:10px 24px; font-size:0.85rem; color:var(--muted); }
+    .breadcrumb a { color:var(--purple-dark); }
+
+    .chapter-header { background:linear-gradient(135deg,var(--purple-dark) 0%,var(--purple-light) 100%); color:var(--white); padding:48px 24px 40px; text-align:center; position:relative; overflow:hidden; }
+    .chapter-header::before { content:''; position:absolute; top:-60px; right:-60px; width:220px; height:220px; background:rgba(255,255,255,0.06); border-radius:50%; }
+    .chapter-header::after  { content:''; position:absolute; bottom:-80px; left:-40px; width:280px; height:280px; background:rgba(255,255,255,0.04); border-radius:50%; }
+    .chapter-header .sec-label { font-size:0.85rem; letter-spacing:0.15em; opacity:0.8; margin-bottom:8px; }
+    .chapter-header h1 { font-size:clamp(1.5rem,4vw,2.2rem); font-weight:800; margin-bottom:12px; position:relative; z-index:1; }
+    .chapter-header p  { font-size:0.97rem; opacity:0.88; max-width:580px; margin:0 auto; position:relative; z-index:1; }
+
+    .section-nav { background:var(--white); border-bottom:1px solid var(--border); padding:12px 20px; overflow-x:auto; white-space:nowrap; }
+    .section-nav a { display:inline-block; padding:5px 12px; margin-right:6px; border-radius:20px; font-size:0.82rem; color:var(--muted); border:1px solid var(--border); transition:all 0.2s; }
+    .section-nav a:hover { background:var(--purple-bg); border-color:var(--purple-light); color:var(--purple-dark); text-decoration:none; }
+    .section-nav a.active { background:var(--purple-dark); color:var(--white); border-color:var(--purple-dark); }
+
+    .main { max-width:960px; margin:0 auto; padding:40px 20px 60px; }
+
+    .sec-heading { font-size:1.4rem; font-weight:800; color:var(--purple-dark); border-left:5px solid var(--purple-light); padding-left:14px; margin:48px 0 20px; }
+    .sec-heading:first-of-type { margin-top:0; }
+    .sub-heading { font-size:1.1rem; font-weight:700; color:var(--text); margin:28px 0 12px; display:flex; align-items:center; gap:8px; }
+    .sub-heading::before { content:''; display:inline-block; width:4px; height:18px; background:var(--purple-light); border-radius:2px; }
+
+    .info-box { border-radius:8px; padding:16px 20px; margin:20px 0; font-size:0.9rem; line-height:1.7; }
+    .info-box.point { background:var(--purple-bg); border:1px solid var(--purple-border); border-left:4px solid var(--purple-dark); }
+    .info-box.point strong { color:var(--purple-dark); }
+    .info-box.warn  { background:var(--warning-bg); border:1px solid #fbd38d; border-left:4px solid var(--warning); }
+    .info-box.warn  strong { color:var(--warning-dark); }
+    .info-box.tip   { background:var(--success-bg); border:1px solid #c6f6d5; border-left:4px solid var(--success); }
+    .info-box.tip   strong { color:var(--success-dark); }
+    .info-box p { margin-top:6px; }
+    .info-box ul { margin:8px 0 0 18px; }
+    .info-box li { margin-bottom:4px; }
+
+    .tbl-wrap { overflow-x:auto; margin:20px 0; border-radius:8px; border:1px solid var(--border); }
+    table { width:100%; border-collapse:collapse; font-size:0.88rem; }
+    th { background:var(--purple-dark); color:var(--white); padding:10px 14px; text-align:left; font-weight:600; }
+    td { padding:9px 14px; border-bottom:1px solid var(--border); vertical-align:top; }
+    tr:last-child td { border-bottom:none; }
+    tr:nth-child(even) td { background:#f7f8fa; }
+    code { background:#edf2f7; color:var(--purple-dark); padding:1px 6px; border-radius:4px; font-size:0.85em; font-family:'Consolas','Monaco',monospace; }
+
+    .code-block { position:relative; background:var(--dark-bg); border-radius:10px; margin:20px 0; overflow:hidden; }
+    .code-block-header { background:#2d3748; padding:8px 16px; font-size:0.78rem; color:#a0aec0; display:flex; justify-content:space-between; align-items:center; }
+    .copy-btn { background:transparent; border:1px solid #4a5568; color:#a0aec0; padding:3px 10px; border-radius:4px; font-size:0.75rem; cursor:pointer; transition:all 0.2s; }
+    .copy-btn:hover { background:#4a5568; color:var(--white); }
+    .copy-btn.copied { background:var(--success-dark); border-color:var(--success-dark); color:var(--white); }
+    .code-block pre { padding:20px; overflow-x:auto; font-size:0.85rem; line-height:1.7; color:#e2e8f0; font-family:'Consolas','Monaco','Courier New',monospace; }
+    .kw  { color:#90cdf4; }
+    .fn  { color:#b794f4; }
+    .str { color:#fbd38d; }
+    .num { color:#fc8181; }
+    .cm  { color:#68d391; }
+    .op  { color:#f6ad55; }
+    .out { color:#a0aec0; }
+    .tag { color:#fc8181; }
+    .atr { color:#90cdf4; }
+    .val { color:#fbd38d; }
+
+    .demo-box { background:var(--white); border:2px solid var(--purple-border); border-radius:12px; padding:24px; margin:24px 0; }
+    .demo-box h3 { font-size:1rem; font-weight:700; color:var(--purple-dark); margin-bottom:16px; display:flex; align-items:center; gap:8px; }
+    .demo-box h3 .demo-num { background:var(--purple-dark); color:var(--white); border-radius:50%; width:24px; height:24px; display:inline-flex; align-items:center; justify-content:center; font-size:0.75rem; flex-shrink:0; }
+
+    .btn { padding:8px 16px; border:none; border-radius:7px; font-size:0.88rem; font-weight:600; cursor:pointer; transition:all 0.2s; }
+    .btn:disabled { opacity:0.45; cursor:not-allowed; }
+    .btn-primary { background:var(--purple-dark); color:var(--white); }
+    .btn-primary:hover:not(:disabled) { background:var(--purple-light); }
+    .btn-success { background:var(--success-dark); color:var(--white); }
+    .btn-success:hover:not(:disabled) { background:var(--success); }
+    .btn-danger  { background:var(--danger-dark); color:var(--white); }
+    .btn-danger:hover:not(:disabled)  { background:var(--danger); }
+    .btn-info    { background:var(--info-dark); color:var(--white); }
+    .btn-info:hover:not(:disabled)    { background:var(--info); }
+    .btn-warn    { background:var(--warning-dark); color:var(--white); }
+    .btn-warn:hover:not(:disabled)    { background:var(--warning); }
+    .btn-outline { background:transparent; border:2px solid var(--purple-dark); color:var(--purple-dark); }
+    .btn-outline:hover:not(:disabled) { background:var(--purple-bg); }
+    .btn-sm { padding:5px 12px; font-size:0.82rem; }
+
+    .ctrl-row { display:flex; flex-wrap:wrap; gap:10px; align-items:center; margin-bottom:12px; }
+    label { font-size:0.85rem; color:var(--muted); }
+    input[type=text] { padding:7px 10px; border:1px solid var(--border); border-radius:6px; font-size:0.88rem; color:var(--text); background:var(--white); }
+    input[type=text]:focus { outline:none; border-color:var(--purple-light); }
+    select { padding:6px 10px; border:1px solid var(--border); border-radius:6px; font-size:0.85rem; color:var(--text); background:var(--white); }
+
+    .console { background:var(--dark-bg); border-radius:8px; padding:14px 16px; font-family:'Consolas','Monaco',monospace; font-size:0.82rem; color:#e2e8f0; min-height:80px; max-height:260px; overflow-y:auto; margin-top:12px; }
+    .console .log-line { margin-bottom:4px; }
+    .console .log-line.ok   { color:#68d391; }
+    .console .log-line.err  { color:#fc8181; }
+    .console .log-line.info { color:#90cdf4; }
+    .console .log-line.warn { color:#f6ad55; }
+    .console .log-line.send { color:#fbd38d; }
+    .console .log-line.recv { color:#b794f4; }
+
+    /* WebSocket ステートマシン */
+    .ws-state-machine { display:flex; align-items:center; justify-content:center; gap:0; flex-wrap:wrap; margin:16px 0; }
+    .ws-state { display:flex; flex-direction:column; align-items:center; gap:4px; }
+    .ws-state-bubble { width:80px; height:80px; border-radius:50%; display:flex; flex-direction:column; align-items:center; justify-content:center; font-size:0.72rem; font-weight:700; border:3px solid var(--border); background:#f7f8fa; color:var(--muted); transition:all 0.4s; cursor:default; text-align:center; line-height:1.3; }
+    .ws-state-bubble.active { border-color:var(--purple-light); background:var(--purple-bg); color:var(--purple-dark); box-shadow:0 0 0 4px rgba(159,122,234,0.2); }
+    .ws-state-bubble.done   { border-color:var(--success); background:var(--success-bg); color:var(--success-dark); }
+    .ws-state-bubble.error  { border-color:var(--danger);  background:var(--danger-bg);  color:var(--danger-dark); }
+    .ws-state-num { font-size:1.1rem; font-weight:800; }
+    .ws-arrow { font-size:1.4rem; color:var(--muted); padding:0 6px; margin-top:-20px; }
+
+    /* SSE ストリーム */
+    .sse-stream { background:var(--dark-bg); border-radius:8px; padding:14px 16px; font-family:'Consolas','Monaco',monospace; font-size:0.82rem; color:#e2e8f0; min-height:120px; max-height:220px; overflow-y:auto; }
+    .sse-line { margin-bottom:6px; }
+    .sse-line .sse-field { color:#90cdf4; }
+    .sse-line .sse-val   { color:#fbd38d; }
+    .sse-line .sse-sep   { color:#4a5568; }
+    .sse-line .sse-comment { color:#68d391; }
+
+    /* XHR vs Fetch 比較 */
+    .compare-2col { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+    .compare-panel { background:#f7f8fa; border:1px solid var(--border); border-radius:8px; overflow:hidden; }
+    .compare-panel-header { padding:8px 14px; font-size:0.85rem; font-weight:700; }
+    .compare-panel-header.xhr  { background:#2b6cb0; color:var(--white); }
+    .compare-panel-header.fetch { background:#276749; color:var(--white); }
+    .compare-panel-body { padding:12px 14px; font-size:0.82rem; }
+    .compare-panel .mini-console { background:var(--dark-bg); border-radius:6px; padding:10px 12px; font-family:monospace; font-size:0.8rem; color:#e2e8f0; min-height:60px; max-height:140px; overflow-y:auto; margin-top:8px; }
+
+    /* 非同期パターン */
+    .async-tabs { display:flex; gap:6px; margin-bottom:0; }
+    .async-tab { padding:7px 16px; border:2px solid var(--border); border-bottom:none; border-radius:8px 8px 0 0; font-size:0.85rem; font-weight:600; cursor:pointer; background:#f7f8fa; color:var(--muted); transition:all 0.2s; }
+    .async-tab.active { background:var(--purple-dark); color:var(--white); border-color:var(--purple-dark); }
+    .async-panel { display:none; background:var(--dark-bg); border-radius:0 8px 8px 8px; border:2px solid var(--purple-dark); }
+    .async-panel.active { display:block; }
+
+    /* Fetch オプションビルダー */
+    .fetch-builder { background:#f7f8fa; border:1px solid var(--border); border-radius:8px; padding:16px; }
+    .fetch-option-row { display:grid; grid-template-columns:140px 1fr; gap:10px; align-items:center; margin-bottom:10px; }
+    .fetch-option-label { font-size:0.83rem; font-weight:600; color:var(--purple-dark); font-family:monospace; }
+    .fetch-option-val   { font-size:0.83rem; }
+
+    /* 演習問題 */
+    .quiz-section { background:var(--white); border:2px solid var(--purple-border); border-radius:14px; padding:28px; margin:48px 0 32px; }
+    .quiz-section h2 { font-size:1.2rem; font-weight:800; color:var(--purple-dark); margin-bottom:6px; }
+    .quiz-section .quiz-desc { font-size:0.88rem; color:var(--muted); margin-bottom:24px; }
+    .quiz-item { background:var(--bg); border-radius:10px; padding:20px; margin-bottom:16px; }
+    .quiz-item .q-num  { font-size:0.78rem; font-weight:700; color:var(--purple-light); letter-spacing:0.1em; margin-bottom:6px; }
+    .quiz-item .q-text { font-size:0.95rem; font-weight:600; color:var(--text); margin-bottom:14px; line-height:1.6; }
+    .quiz-item .q-code { background:var(--dark-bg); border-radius:6px; padding:12px 16px; font-family:'Consolas','Monaco',monospace; font-size:0.83rem; color:#e2e8f0; margin-bottom:14px; line-height:1.6; }
+    .options { display:flex; flex-direction:column; gap:8px; }
+    .option-btn { background:var(--white); border:2px solid var(--border); border-radius:8px; padding:10px 16px; font-size:0.88rem; text-align:left; cursor:pointer; transition:all 0.2s; color:var(--text); }
+    .option-btn:hover:not(:disabled) { border-color:var(--purple-light); background:var(--purple-bg); }
+    .option-btn.correct  { border-color:var(--success); background:var(--success-bg); color:var(--success-dark); font-weight:600; }
+    .option-btn.wrong    { border-color:var(--danger);  background:var(--danger-bg);  color:var(--danger-dark); }
+    .option-btn:disabled { cursor:default; }
+    .option-btn.selected { border-color:var(--purple-light); background:var(--purple-bg); }
+    .explanation { display:none; margin-top:12px; padding:12px 16px; background:var(--purple-bg); border:1px solid var(--purple-border); border-radius:8px; font-size:0.87rem; color:var(--text); line-height:1.7; }
+    .explanation.show { display:block; }
+    .explanation strong { color:var(--purple-dark); }
+    .fill-input { width:100%; padding:8px 12px; border:2px solid var(--border); border-radius:7px; font-size:0.9rem; font-family:'Consolas','Monaco',monospace; margin-bottom:8px; }
+    .fill-input:focus { outline:none; border-color:var(--purple-light); }
+
+    .complete-area { text-align:center; margin:40px 0 20px; }
+    .complete-btn { background:linear-gradient(135deg,var(--purple-dark),var(--purple-light)); color:var(--white); border:none; border-radius:12px; padding:16px 40px; font-size:1rem; font-weight:700; cursor:pointer; transition:all 0.3s; box-shadow:0 4px 15px rgba(85,60,154,0.3); }
+    .complete-btn:hover { transform:translateY(-2px); box-shadow:0 6px 20px rgba(85,60,154,0.4); }
+    .complete-btn.done { background:linear-gradient(135deg,var(--success-dark),var(--success)); box-shadow:0 4px 15px rgba(72,187,120,0.3); }
+
+    .page-nav { display:flex; justify-content:space-between; align-items:center; gap:16px; flex-wrap:wrap; margin-top:40px; padding-top:24px; border-top:2px solid var(--border); }
+    .page-nav-btn { display:inline-flex; align-items:center; gap:8px; background:var(--white); border:2px solid var(--purple-border); color:var(--purple-dark); border-radius:10px; padding:12px 20px; font-size:0.9rem; font-weight:600; transition:all 0.2s; }
+    .page-nav-btn:hover { background:var(--purple-bg); border-color:var(--purple-light); text-decoration:none; }
+
+    footer { background:var(--dark-bg); color:#a0aec0; text-align:center; padding:28px 20px; font-size:0.85rem; margin-top:60px; }
+    footer a { color:var(--purple-light); }
+
+    @media(max-width:640px){
+      .main { padding:24px 14px 48px; }
+      .compare-2col { grid-template-columns:1fr; }
+      .ws-state-machine { gap:0; }
+      .ws-state-bubble { width:64px; height:64px; font-size:0.65rem; }
+      .fetch-option-row { grid-template-columns:1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- パンくずナビ -->
+<div class="breadcrumb">
+  <a href="../index.html">🏠 HTML5 Level 2</a> ›
+  <a href="index.html">Chapter 4</a> ›
+  4-4 通信
+</div>
+
+<!-- チャプターヘッダー -->
+<div class="chapter-header">
+  <div class="sec-label">CHAPTER 4 — SECTION 4</div>
+  <h1>🔌 通信</h1>
+  <p>WebSocket・XMLHttpRequest・Server-Sent Events・Fetch API など、ブラウザの通信 API を体系的に学びます。</p>
+</div>
+
+<!-- セクションナビ -->
+<div class="section-nav">
+  <a href="01_graphics.html">4-1 グラフィックス</a>
+  <a href="02_media.html">4-2 メディア</a>
+  <a href="03_storage.html">4-3 ストレージ</a>
+  <a href="04_communication.html" class="active">4-4 通信</a>
+  <a href="05_device.html">4-5 デバイス</a>
+  <a href="06_performance.html">4-6 パフォーマンス</a>
+  <a href="07_security.html">4-7 セキュリティ</a>
+</div>
+
+<main class="main">
+
+  <!-- ========== 1. WebSocket ========== -->
+  <h2 class="sec-heading">1. WebSocket</h2>
+
+  <p>WebSocket はサーバーとクライアント間で<strong>双方向・全二重通信</strong>を実現するプロトコルです。HTTP のハンドシェイクで接続を確立した後、<code>ws://</code> または <code>wss://</code> プロトコルで持続的な接続を維持します。</p>
+
+  <div class="code-block">
+    <div class="code-block-header">
+      <span>WebSocket の基本 API</span>
+      <button class="copy-btn" onclick="copyCode(this)">copy</button>
+    </div>
+    <pre><span class="cm">// WebSocket 接続の確立</span>
+<span class="kw">const</span> ws <span class="op">=</span> <span class="kw">new</span> <span class="fn">WebSocket</span>(<span class="str">'wss://example.com/socket'</span>);
+<span class="cm">// ws:// → 非暗号化、wss:// → TLS 暗号化（推奨）</span>
+
+<span class="cm">// ── readyState の値 ──</span>
+<span class="cm">// WebSocket.CONNECTING = 0  接続中</span>
+<span class="cm">// WebSocket.OPEN       = 1  接続済み（送受信可能）</span>
+<span class="cm">// WebSocket.CLOSING    = 2  切断中</span>
+<span class="cm">// WebSocket.CLOSED     = 3  切断済み</span>
+
+<span class="cm">// ── イベントハンドラ ──</span>
+ws.onopen <span class="op">=</span> (event) <span class="op">=></span> {
+  console.<span class="fn">log</span>(<span class="str">'接続完了 readyState:'</span>, ws.readyState); <span class="out">// → 1</span>
+  ws.<span class="fn">send</span>(<span class="str">'Hello Server!'</span>);          <span class="cm">// 文字列を送信</span>
+  ws.<span class="fn">send</span>(JSON.<span class="fn">stringify</span>({ type: <span class="str">'ping'</span> })); <span class="cm">// JSON を送信</span>
+};
+
+ws.onmessage <span class="op">=</span> (event) <span class="op">=></span> {
+  console.<span class="fn">log</span>(<span class="str">'受信:'</span>, event.data);   <span class="cm">// 文字列 or Blob or ArrayBuffer</span>
+  <span class="kw">const</span> data <span class="op">=</span> JSON.<span class="fn">parse</span>(event.data);
+};
+
+ws.onclose <span class="op">=</span> (event) <span class="op">=></span> {
+  console.<span class="fn">log</span>(<span class="str">'切断 code:'</span>, event.code);   <span class="cm">// 1000=正常, 1006=異常切断</span>
+  console.<span class="fn">log</span>(<span class="str">'reason:'</span>, event.reason);
+  console.<span class="fn">log</span>(<span class="str">'wasClean:'</span>, event.wasClean);
+};
+
+ws.onerror <span class="op">=</span> (event) <span class="op">=></span> {
+  console.<span class="fn">log</span>(<span class="str">'エラー発生'</span>);
+};
+
+<span class="cm">// ── メッセージ送信 ──</span>
+ws.<span class="fn">send</span>(<span class="str">'text message'</span>);           <span class="cm">// 文字列</span>
+ws.<span class="fn">send</span>(<span class="kw">new</span> <span class="fn">ArrayBuffer</span>(<span class="num">8</span>));      <span class="cm">// バイナリ</span>
+ws.<span class="fn">send</span>(<span class="kw">new</span> <span class="fn">Blob</span>([<span class="str">'data'</span>]));      <span class="cm">// Blob</span>
+
+<span class="cm">// ── 接続を閉じる ──</span>
+ws.<span class="fn">close</span>();                        <span class="cm">// 正常切断</span>
+ws.<span class="fn">close</span>(<span class="num">1000</span>, <span class="str">'正常終了'</span>);       <span class="cm">// コードと理由を指定</span>
+
+<span class="cm">// ── バッファリングされた送信データ量 ──</span>
+console.<span class="fn">log</span>(ws.bufferedAmount);    <span class="cm">// 未送信のバイト数</span>
+
+<span class="cm">// ── 受信データの型を指定 ──</span>
+ws.binaryType <span class="op">=</span> <span class="str">'arraybuffer'</span>;    <span class="cm">// 'blob'（デフォルト）or 'arraybuffer'</span></pre>
+  </div>
+
+  <div class="tbl-wrap">
+    <table>
+      <tr><th>readyState 値</th><th>定数名</th><th>状態</th><th>send() の可否</th></tr>
+      <tr><td><code>0</code></td><td><code>CONNECTING</code></td><td>接続中（ハンドシェイク中）</td><td>不可</td></tr>
+      <tr><td><code>1</code></td><td><code>OPEN</code></td><td>接続済み（通信可能）</td><td>可能</td></tr>
+      <tr><td><code>2</code></td><td><code>CLOSING</code></td><td>切断処理中</td><td>不可</td></tr>
+      <tr><td><code>3</code></td><td><code>CLOSED</code></td><td>切断済み</td><td>不可</td></tr>
+    </table>
+  </div>
+
+  <div class="info-box point">
+    <strong>📌 試験頻出：WebSocket の readyState</strong>
+    <ul>
+      <li>CONNECTING=<strong>0</strong>、OPEN=<strong>1</strong>、CLOSING=<strong>2</strong>、CLOSED=<strong>3</strong> の4値を必ず覚える</li>
+      <li><code>send()</code> が呼べるのは <code>readyState === 1</code>（OPEN）のときのみ</li>
+      <li>HTTP とは異なり、<strong>接続を維持したまま</strong>双方向にメッセージを送受信できる</li>
+      <li><code>wss://</code> は TLS で暗号化された WebSocket（HTTPS の ws 版）</li>
+      <li>HTTP のアップグレードリクエストで接続を確立する（Upgrade: websocket ヘッダー）</li>
+    </ul>
+  </div>
+
+  <!-- ===== DEMO 1: WebSocket シミュレーター ===== -->
+  <div class="demo-box">
+    <h3><span class="demo-num">1</span> WebSocket シミュレーター（readyState 遷移 + エコーサーバー）</h3>
+    <p style="font-size:0.85rem;color:var(--muted);margin-bottom:16px;">実際のサーバーなしで WebSocket の動作をシミュレートします。エコーサーバーが送信したメッセージをそのまま返します。</p>
+
+    <!-- ステートマシン -->
+    <div class="ws-state-machine" id="wsStateMachine">
+      <div class="ws-state">
+        <div class="ws-state-bubble" id="wsState0">
+          <span class="ws-state-num">0</span>
+          <span>CONNECTING</span>
+        </div>
+        <span style="font-size:0.72rem;color:var(--muted);margin-top:4px;">接続中</span>
+      </div>
+      <div class="ws-arrow">→</div>
+      <div class="ws-state">
+        <div class="ws-state-bubble" id="wsState1">
+          <span class="ws-state-num">1</span>
+          <span>OPEN</span>
+        </div>
+        <span style="font-size:0.72rem;color:var(--muted);margin-top:4px;">通信可能</span>
+      </div>
+      <div class="ws-arrow">→</div>
+      <div class="ws-state">
+        <div class="ws-state-bubble" id="wsState2">
+          <span class="ws-state-num">2</span>
+          <span>CLOSING</span>
+        </div>
+        <span style="font-size:0.72rem;color:var(--muted);margin-top:4px;">切断中</span>
+      </div>
+      <div class="ws-arrow">→</div>
+      <div class="ws-state">
+        <div class="ws-state-bubble" id="wsState3">
+          <span class="ws-state-num">3</span>
+          <span>CLOSED</span>
+        </div>
+        <span style="font-size:0.72rem;color:var(--muted);margin-top:4px;">切断済み</span>
+      </div>
+    </div>
+
+    <div class="ctrl-row" style="margin-top:16px;">
+      <button class="btn btn-success btn-sm" id="wsConnBtn" onclick="wsConnect()">接続 (connect)</button>
+      <button class="btn btn-danger btn-sm"  id="wsCloseBtn" onclick="wsClose()" disabled>切断 (close)</button>
+      <button class="btn btn-outline btn-sm" onclick="wsSimulateError()">エラーをシミュレート</button>
+    </div>
+    <div class="ctrl-row">
+      <input type="text" id="wsMsgInput" placeholder="送信メッセージを入力" style="flex:1;min-width:200px;" disabled>
+      <button class="btn btn-primary btn-sm" id="wsSendBtn" onclick="wsSend()" disabled>送信 (send)</button>
+      <button class="btn btn-info btn-sm" onclick="wsSendJson()" id="wsJsonBtn" disabled>JSON 送信</button>
+    </div>
+    <div class="console" id="wsConsole"><div class="log-line info">▶ 「接続」ボタンを押して WebSocket 接続をシミュレートしてください</div></div>
+  </div>
+
+  <!-- ========== 2. XMLHttpRequest ========== -->
+  <h2 class="sec-heading">2. XMLHttpRequest（XHR）</h2>
+
+  <p>XMLHttpRequest は HTTP リクエストを非同期で送受信する API です。<code>readyState</code> プロパティで処理の進行状態を管理します。</p>
+
+  <div class="code-block">
+    <div class="code-block-header">
+      <span>XMLHttpRequest の基本パターン</span>
+      <button class="copy-btn" onclick="copyCode(this)">copy</button>
+    </div>
+    <pre><span class="kw">const</span> xhr <span class="op">=</span> <span class="kw">new</span> <span class="fn">XMLHttpRequest</span>();
+
+<span class="cm">// ── readyState の値 ──</span>
+<span class="cm">// UNSENT           = 0  open() 未呼び出し</span>
+<span class="cm">// OPENED           = 1  open() 呼び出し済み</span>
+<span class="cm">// HEADERS_RECEIVED = 2  レスポンスヘッダー受信済み</span>
+<span class="cm">// LOADING          = 3  レスポンスボディ受信中</span>
+<span class="cm">// DONE             = 4  通信完了</span>
+
+xhr.<span class="fn">open</span>(<span class="str">'GET'</span>, <span class="str">'https://api.example.com/data'</span>, <span class="kw">true</span>);
+<span class="cm">// open(method, url, async=true, user, password)</span>
+
+<span class="cm">// リクエストヘッダーの設定（open の後、send の前）</span>
+xhr.<span class="fn">setRequestHeader</span>(<span class="str">'Content-Type'</span>, <span class="str">'application/json'</span>);
+xhr.<span class="fn">setRequestHeader</span>(<span class="str">'Authorization'</span>, <span class="str">'Bearer token123'</span>);
+
+<span class="cm">// レスポンスの型を指定</span>
+xhr.responseType <span class="op">=</span> <span class="str">'json'</span>; <span class="cm">// '' / 'text' / 'json' / 'blob' / 'arraybuffer' / 'document'</span>
+
+<span class="cm">// タイムアウト設定（ms）</span>
+xhr.timeout <span class="op">=</span> <span class="num">5000</span>;
+
+<span class="cm">// 状態変化イベント</span>
+xhr.onreadystatechange <span class="op">=</span> () <span class="op">=></span> {
+  <span class="kw">if</span> (xhr.readyState <span class="op">===</span> <span class="num">4</span>) {           <span class="cm">// DONE</span>
+    <span class="kw">if</span> (xhr.status <span class="op">===</span> <span class="num">200</span>) {
+      console.<span class="fn">log</span>(xhr.response);        <span class="cm">// レスポンスデータ</span>
+      console.<span class="fn">log</span>(xhr.responseText);    <span class="cm">// テキスト形式</span>
+      console.<span class="fn">log</span>(xhr.responseURL);     <span class="cm">// 最終 URL（リダイレクト後）</span>
+      console.<span class="fn">log</span>(xhr.<span class="fn">getResponseHeader</span>(<span class="str">'Content-Type'</span>));
+    }
+  }
+};
+
+<span class="cm">// 進捗イベント</span>
+xhr.onprogress <span class="op">=</span> (e) <span class="op">=></span> {
+  <span class="kw">if</span> (e.lengthComputable) {
+    console.<span class="fn">log</span>(<span class="str">`${e.loaded} / ${e.total} bytes`</span>);
+  }
+};
+
+xhr.onload    <span class="op">=</span> () <span class="op">=></span> console.<span class="fn">log</span>(<span class="str">'完了'</span>);
+xhr.onerror   <span class="op">=</span> () <span class="op">=></span> console.<span class="fn">log</span>(<span class="str">'ネットワークエラー'</span>);
+xhr.ontimeout <span class="op">=</span> () <span class="op">=></span> console.<span class="fn">log</span>(<span class="str">'タイムアウト'</span>);
+xhr.onabort   <span class="op">=</span> () <span class="op">=></span> console.<span class="fn">log</span>(<span class="str">'中断'</span>);
+
+<span class="cm">// リクエスト送信</span>
+xhr.<span class="fn">send</span>();                            <span class="cm">// GET の場合は引数なし</span>
+xhr.<span class="fn">send</span>(JSON.<span class="fn">stringify</span>({ key: <span class="str">'val'</span> })); <span class="cm">// POST の場合はボディを渡す</span>
+
+<span class="cm">// 中断</span>
+xhr.<span class="fn">abort</span>();</pre>
+  </div>
+
+  <div class="tbl-wrap">
+    <table>
+      <tr><th>readyState 値</th><th>定数名</th><th>状態</th></tr>
+      <tr><td><code>0</code></td><td><code>UNSENT</code></td><td>open() が呼ばれていない初期状態</td></tr>
+      <tr><td><code>1</code></td><td><code>OPENED</code></td><td>open() が呼ばれた。send() 可能</td></tr>
+      <tr><td><code>2</code></td><td><code>HEADERS_RECEIVED</code></td><td>send() が呼ばれ、レスポンスヘッダーを受信済み</td></tr>
+      <tr><td><code>3</code></td><td><code>LOADING</code></td><td>レスポンスボディを受信中</td></tr>
+      <tr><td><code>4</code></td><td><code>DONE</code></td><td>通信完了（成功・失敗問わず）</td></tr>
+    </table>
+  </div>
+
+  <div class="info-box point">
+    <strong>📌 試験頻出：XHR の readyState</strong>
+    <ul>
+      <li>UNSENT=<strong>0</strong>、OPENED=<strong>1</strong>、HEADERS_RECEIVED=<strong>2</strong>、LOADING=<strong>3</strong>、DONE=<strong>4</strong></li>
+      <li>実際のレスポンス処理は <code>readyState === 4</code> かつ <code>status === 200</code> で行う</li>
+      <li><code>onreadystatechange</code> は readyState が変わるたびに呼ばれる（0→1→2→3→4）</li>
+      <li><code>responseType = 'json'</code> を設定すると <code>response</code> が自動的にパースされたオブジェクトになる</li>
+    </ul>
+  </div>
+
+  <!-- ========== 3. Fetch API ========== -->
+  <h2 class="sec-heading">3. Fetch API</h2>
+
+  <div class="code-block">
+    <div class="code-block-header">
+      <span>Fetch API の基本と応用</span>
+      <button class="copy-btn" onclick="copyCode(this)">copy</button>
+    </div>
+    <pre><span class="cm">// ── 基本的な GET リクエスト ──</span>
+<span class="fn">fetch</span>(<span class="str">'https://api.example.com/users'</span>)
+  .<span class="fn">then</span>(response <span class="op">=></span> {
+    console.<span class="fn">log</span>(response.status);     <span class="cm">// 200, 404, 500 など</span>
+    console.<span class="fn">log</span>(response.ok);         <span class="cm">// true: 200〜299, false: それ以外</span>
+    console.<span class="fn">log</span>(response.statusText);  <span class="cm">// 'OK', 'Not Found' など</span>
+    console.<span class="fn">log</span>(response.headers.<span class="fn">get</span>(<span class="str">'Content-Type'</span>));
+    <span class="kw">if</span> (!response.ok) <span class="kw">throw</span> <span class="kw">new</span> <span class="fn">Error</span>(<span class="str">`HTTP error: ${response.status}`</span>);
+    <span class="kw">return</span> response.<span class="fn">json</span>();           <span class="cm">// Promise&lt;Object&gt;</span>
+  })
+  .<span class="fn">then</span>(data <span class="op">=></span> console.<span class="fn">log</span>(data))
+  .<span class="fn">catch</span>(err <span class="op">=></span> console.<span class="fn">log</span>(<span class="str">'エラー:'</span>, err));
+
+<span class="cm">// ── POST リクエスト（JSON 送信）──</span>
+<span class="fn">fetch</span>(<span class="str">'https://api.example.com/users'</span>, {
+  method:  <span class="str">'POST'</span>,
+  headers: { <span class="str">'Content-Type'</span>: <span class="str">'application/json'</span> },
+  body:    JSON.<span class="fn">stringify</span>({ name: <span class="str">'Alice'</span>, age: <span class="num">30</span> }),
+  mode:    <span class="str">'cors'</span>,        <span class="cm">// 'cors' / 'no-cors' / 'same-origin'</span>
+  credentials: <span class="str">'include'</span>, <span class="cm">// 'omit' / 'same-origin' / 'include'</span>
+  cache:   <span class="str">'no-cache'</span>,    <span class="cm">// 'default' / 'no-cache' / 'reload' / 'force-cache'</span>
+});
+
+<span class="cm">// ── Response のボディ読み取りメソッド ──</span>
+response.<span class="fn">json</span>();        <span class="cm">// Promise&lt;Object&gt; — JSON パース</span>
+response.<span class="fn">text</span>();        <span class="cm">// Promise&lt;string&gt; — テキスト</span>
+response.<span class="fn">blob</span>();        <span class="cm">// Promise&lt;Blob&gt;   — バイナリ</span>
+response.<span class="fn">arrayBuffer</span>(); <span class="cm">// Promise&lt;ArrayBuffer&gt;</span>
+response.<span class="fn">formData</span>();   <span class="cm">// Promise&lt;FormData&gt;</span>
+
+<span class="cm">// ── async/await で書く ──</span>
+<span class="kw">async function</span> <span class="fn">fetchData</span>() {
+  <span class="kw">try</span> {
+    <span class="kw">const</span> res  <span class="op">=</span> <span class="kw">await</span> <span class="fn">fetch</span>(<span class="str">'https://api.example.com/data'</span>);
+    <span class="kw">if</span> (!res.ok) <span class="kw">throw</span> <span class="kw">new</span> <span class="fn">Error</span>(<span class="str">`${res.status}`</span>);
+    <span class="kw">const</span> data <span class="op">=</span> <span class="kw">await</span> res.<span class="fn">json</span>();
+    <span class="kw">return</span> data;
+  } <span class="kw">catch</span> (err) {
+    console.<span class="fn">log</span>(<span class="str">'fetch エラー:'</span>, err);
+  }
+}
+
+<span class="cm">// ── AbortController でキャンセル ──</span>
+<span class="kw">const</span> controller <span class="op">=</span> <span class="kw">new</span> <span class="fn">AbortController</span>();
+<span class="fn">fetch</span>(url, { signal: controller.signal });
+controller.<span class="fn">abort</span>(); <span class="cm">// リクエストをキャンセル</span></pre>
+  </div>
+
+  <!-- ===== DEMO 2: XHR vs Fetch 比較デモ ===== -->
+  <div class="demo-box">
+    <h3><span class="demo-num">2</span> XMLHttpRequest vs Fetch API 比較デモ</h3>
+    <p style="font-size:0.85rem;color:var(--muted);margin-bottom:14px;">同じリクエストを XHR と Fetch の両方でシミュレートし、コードと動作の違いを比較します。</p>
+
+    <div class="ctrl-row">
+      <label>メソッド:
+        <select id="reqMethod">
+          <option value="GET">GET</option>
+          <option value="POST">POST</option>
+          <option value="PUT">PUT</option>
+          <option value="DELETE">DELETE</option>
+        </select>
+      </label>
+      <label>シナリオ:
+        <select id="reqScenario">
+          <option value="success">成功 (200 OK)</option>
+          <option value="notfound">404 Not Found</option>
+          <option value="error">500 Server Error</option>
+          <option value="timeout">タイムアウト</option>
+          <option value="network">ネットワークエラー</option>
+        </select>
+      </label>
+      <button class="btn btn-primary btn-sm" onclick="runBothRequests()">▶ 両方実行</button>
+      <button class="btn btn-outline btn-sm" onclick="clearBothConsoles()">クリア</button>
+    </div>
+
+    <div class="compare-2col">
+      <div class="compare-panel">
+        <div class="compare-panel-header xhr">XMLHttpRequest</div>
+        <div class="compare-panel-body">
+          <div style="font-size:0.78rem;color:var(--muted);margin-bottom:6px;">readyState の遷移:</div>
+          <div id="xhrStateRow" style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px;">
+            <span id="xhrRS0" style="padding:3px 8px;border-radius:4px;font-size:0.75rem;font-weight:700;background:#f7f8fa;border:1px solid var(--border);color:var(--muted);">0:UNSENT</span>
+            <span id="xhrRS1" style="padding:3px 8px;border-radius:4px;font-size:0.75rem;font-weight:700;background:#f7f8fa;border:1px solid var(--border);color:var(--muted);">1:OPENED</span>
+            <span id="xhrRS2" style="padding:3px 8px;border-radius:4px;font-size:0.75rem;font-weight:700;background:#f7f8fa;border:1px solid var(--border);color:var(--muted);">2:HEADERS</span>
+            <span id="xhrRS3" style="padding:3px 8px;border-radius:4px;font-size:0.75rem;font-weight:700;background:#f7f8fa;border:1px solid var(--border);color:var(--muted);">3:LOADING</span>
+            <span id="xhrRS4" style="padding:3px 8px;border-radius:4px;font-size:0.75rem;font-weight:700;background:#f7f8fa;border:1px solid var(--border);color:var(--muted);">4:DONE</span>
+          </div>
+          <div class="mini-console" id="xhrConsole"><span style="color:#4a5568;">待機中...</span></div>
+        </div>
+      </div>
+      <div class="compare-panel">
+        <div class="compare-panel-header fetch">Fetch API</div>
+        <div class="compare-panel-body">
+          <div style="font-size:0.78rem;color:var(--muted);margin-bottom:6px;">Promise の状態:</div>
+          <div id="fetchStateRow" style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px;">
+            <span id="fetchPending"  style="padding:3px 8px;border-radius:4px;font-size:0.75rem;font-weight:700;background:#f7f8fa;border:1px solid var(--border);color:var(--muted);">pending</span>
+            <span id="fetchFulfilled" style="padding:3px 8px;border-radius:4px;font-size:0.75rem;font-weight:700;background:#f7f8fa;border:1px solid var(--border);color:var(--muted);">fulfilled</span>
+            <span id="fetchRejected"  style="padding:3px 8px;border-radius:4px;font-size:0.75rem;font-weight:700;background:#f7f8fa;border:1px solid var(--border);color:var(--muted);">rejected</span>
+          </div>
+          <div class="mini-console" id="fetchConsole"><span style="color:#4a5568;">待機中...</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="console" id="compareConsole" style="min-height:50px;"><div class="log-line info">▶ メソッドとシナリオを選択して「両方実行」をクリックしてください</div></div>
+  </div>
+
+  <!-- ========== 4. Server-Sent Events ========== -->
+  <h2 class="sec-heading">4. Server-Sent Events（SSE）</h2>
+
+  <p>Server-Sent Events は<strong>サーバーからクライアントへの一方向</strong>リアルタイム通信を実現します。HTTP 接続を維持したまま、サーバーがイベントをプッシュします。</p>
+
+  <div class="code-block">
+    <div class="code-block-header">
+      <span>EventSource（SSE）の使い方</span>
+      <button class="copy-btn" onclick="copyCode(this)">copy</button>
+    </div>
+    <pre><span class="cm">// EventSource の作成</span>
+<span class="kw">const</span> es <span class="op">=</span> <span class="kw">new</span> <span class="fn">EventSource</span>(<span class="str">'/events'</span>);
+<span class="cm">// withCredentials オプション</span>
+<span class="kw">const</span> es2 <span class="op">=</span> <span class="kw">new</span> <span class="fn">EventSource</span>(<span class="str">'/events'</span>, { withCredentials: <span class="kw">true</span> });
+
+<span class="cm">// ── readyState ──</span>
+<span class="cm">// EventSource.CONNECTING = 0  接続中（再接続中も含む）</span>
+<span class="cm">// EventSource.OPEN       = 1  接続済み</span>
+<span class="cm">// EventSource.CLOSED     = 2  切断済み</span>
+
+<span class="cm">// ── イベントハンドラ ──</span>
+es.onopen <span class="op">=</span> () <span class="op">=></span> console.<span class="fn">log</span>(<span class="str">'SSE 接続完了'</span>);
+
+es.onmessage <span class="op">=</span> (e) <span class="op">=></span> {
+  console.<span class="fn">log</span>(<span class="str">'受信:'</span>, e.data);    <span class="cm">// data フィールドの値</span>
+  console.<span class="fn">log</span>(<span class="str">'id:'</span>, e.lastEventId); <span class="cm">// イベント ID</span>
+};
+
+<span class="cm">// カスタムイベント名で受信</span>
+es.<span class="fn">addEventListener</span>(<span class="str">'update'</span>, (e) <span class="op">=></span> {
+  console.<span class="fn">log</span>(<span class="str">'update イベント:'</span>, e.data);
+});
+
+es.onerror <span class="op">=</span> (e) <span class="op">=></span> {
+  <span class="kw">if</span> (es.readyState <span class="op">===</span> EventSource.CLOSED) {
+    console.<span class="fn">log</span>(<span class="str">'接続が切断されました'</span>);
+  } <span class="kw">else</span> {
+    console.<span class="fn">log</span>(<span class="str">'エラー。自動再接続します...'</span>);
+  }
+};
+
+<span class="cm">// 接続を閉じる（自動再接続しない）</span>
+es.<span class="fn">close</span>();
+
+<span class="cm">// ── SSE のイベントストリーム形式（サーバー側）──</span>
+<span class="cm">// Content-Type: text/event-stream</span>
+<span class="cm">//</span>
+<span class="cm">// : コメント行（クライアントには届かない）</span>
+<span class="cm">//</span>
+<span class="cm">// id: 1</span>
+<span class="cm">// event: update</span>
+<span class="cm">// data: {"message": "Hello"}</span>
+<span class="cm">//</span>
+<span class="cm">// data: 複数行の</span>
+<span class="cm">// data: データも可能</span>
+<span class="cm">//</span>
+<span class="cm">// retry: 3000</span>
+<span class="cm">// data: 再接続間隔を3秒に設定</span></pre>
+  </div>
+
+  <div class="tbl-wrap">
+    <table>
+      <tr><th>比較項目</th><th>Server-Sent Events</th><th>WebSocket</th></tr>
+      <tr><td>通信方向</td><td>サーバー → クライアント（一方向）</td><td>双方向（全二重）</td></tr>
+      <tr><td>プロトコル</td><td>HTTP（通常の HTTP 接続を維持）</td><td>ws:// または wss://（独自プロトコル）</td></tr>
+      <tr><td>自動再接続</td><td>あり（ブラウザが自動で再接続）</td><td>なし（手動で実装が必要）</td></tr>
+      <tr><td>データ形式</td><td>テキストのみ</td><td>テキスト + バイナリ</td></tr>
+      <tr><td>用途</td><td>通知・ライブフィード・株価更新</td><td>チャット・ゲーム・リアルタイム協調</td></tr>
+      <tr><td>HTTP/2 対応</td><td>効率的に多重化できる</td><td>別途接続が必要</td></tr>
+    </table>
+  </div>
+
+  <!-- ===== DEMO 3: SSE シミュレーター ===== -->
+  <div class="demo-box">
+    <h3><span class="demo-num">3</span> Server-Sent Events シミュレーター</h3>
+    <p style="font-size:0.85rem;color:var(--muted);margin-bottom:14px;">サーバーからのイベントストリームをシミュレートします。イベントのパース方法を確認できます。</p>
+
+    <div class="ctrl-row">
+      <button class="btn btn-success btn-sm" id="sseConnBtn"  onclick="sseConnect()">接続 (EventSource)</button>
+      <button class="btn btn-danger btn-sm"  id="sseCloseBtn" onclick="sseClose()" disabled>切断 (close)</button>
+      <button class="btn btn-info btn-sm"    onclick="sseSendManual()">手動イベント送信</button>
+      <label>間隔:
+        <select id="sseInterval">
+          <option value="1000">1秒</option>
+          <option value="2000" selected>2秒</option>
+          <option value="3000">3秒</option>
+        </select>
+      </label>
+    </div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+      <div>
+        <div style="font-size:0.82rem;font-weight:600;color:var(--muted);margin-bottom:6px;">📡 イベントストリーム（生データ）</div>
+        <div class="sse-stream" id="sseRawStream"><span style="color:#4a5568;">（未接続）</span></div>
+      </div>
+      <div>
+        <div style="font-size:0.82rem;font-weight:600;color:var(--muted);margin-bottom:6px;">📥 パース済みイベント</div>
+        <div class="sse-stream" id="sseParsedStream"><span style="color:#4a5568;">（未接続）</span></div>
+      </div>
+    </div>
+
+    <div style="display:flex;gap:12px;margin-top:10px;flex-wrap:wrap;">
+      <div style="background:#f7f8fa;border:1px solid var(--border);border-radius:6px;padding:8px 12px;font-size:0.82rem;">
+        <span style="color:var(--muted);">readyState:</span>
+        <strong id="sseReadyState" style="color:var(--purple-dark);">— (未接続)</strong>
+      </div>
+      <div style="background:#f7f8fa;border:1px solid var(--border);border-radius:6px;padding:8px 12px;font-size:0.82rem;">
+        <span style="color:var(--muted);">受信イベント数:</span>
+        <strong id="sseEventCount" style="color:var(--purple-dark);">0</strong>
+      </div>
+      <div style="background:#f7f8fa;border:1px solid var(--border);border-radius:6px;padding:8px 12px;font-size:0.82rem;">
+        <span style="color:var(--muted);">lastEventId:</span>
+        <strong id="sseLastId" style="color:var(--purple-dark);">—</strong>
+      </div>
+    </div>
+    <div class="console" id="sseConsole" style="min-height:50px;"><div class="log-line info">▶ 「接続」ボタンを押してイベントストリームを開始してください</div></div>
+  </div>
+
+  <!-- ========== 5. 非同期処理パターン ========== -->
+  <h2 class="sec-heading">5. 非同期処理パターン</h2>
+
+  <p>JavaScript の非同期処理は、<strong>コールバック → Promise → async/await</strong> と進化してきました。それぞれのパターンを比較して理解しましょう。</p>
+
+  <!-- ===== DEMO 4: 非同期パターン比較 ===== -->
+  <div class="demo-box">
+    <h3><span class="demo-num">4</span> 非同期処理パターン比較デモ</h3>
+    <p style="font-size:0.85rem;color:var(--muted);margin-bottom:14px;">同じ処理（3ステップの非同期タスク）をコールバック・Promise・async/await で実装した場合の違いを確認できます。</p>
+
+    <div class="async-tabs">
+      <div class="async-tab active" onclick="switchAsyncTab('callback')">コールバック</div>
+      <div class="async-tab" onclick="switchAsyncTab('promise')">Promise</div>
+      <div class="async-tab" onclick="switchAsyncTab('async')">async/await</div>
+    </div>
+
+    <!-- コールバック -->
+    <div class="async-panel active" id="panel_callback">
+      <pre style="padding:20px;font-size:0.83rem;line-height:1.7;color:#e2e8f0;overflow-x:auto;"><span class="cm">// コールバックパターン（コールバック地獄）</span>
+<span class="kw">function</span> <span class="fn">step1</span>(callback) {
+  setTimeout(() <span class="op">=></span> {
+    console.<span class="fn">log</span>(<span class="str">'Step 1: ユーザー取得'</span>);
+    <span class="fn">callback</span>(<span class="kw">null</span>, { id: <span class="num">1</span>, name: <span class="str">'Alice'</span> });
+  }, <span class="num">500</span>);
+}
+<span class="kw">function</span> <span class="fn">step2</span>(user, callback) {
+  setTimeout(() <span class="op">=></span> {
+    console.<span class="fn">log</span>(<span class="str">'Step 2: 注文取得'</span>);
+    <span class="fn">callback</span>(<span class="kw">null</span>, [{ id: <span class="num">101</span>, item: <span class="str">'Book'</span> }]);
+  }, <span class="num">500</span>);
+}
+<span class="kw">function</span> <span class="fn">step3</span>(orders, callback) {
+  setTimeout(() <span class="op">=></span> {
+    console.<span class="fn">log</span>(<span class="str">'Step 3: 配送情報取得'</span>);
+    <span class="fn">callback</span>(<span class="kw">null</span>, { status: <span class="str">'shipped'</span> });
+  }, <span class="num">500</span>);
+}
+
+<span class="cm">// ネストが深くなる（コールバック地獄）</span>
+<span class="fn">step1</span>((err, user) <span class="op">=></span> {
+  <span class="kw">if</span> (err) <span class="kw">return</span> console.<span class="fn">log</span>(<span class="str">'エラー:'</span>, err);
+  <span class="fn">step2</span>(user, (err, orders) <span class="op">=></span> {
+    <span class="kw">if</span> (err) <span class="kw">return</span> console.<span class="fn">log</span>(<span class="str">'エラー:'</span>, err);
+    <span class="fn">step3</span>(orders, (err, delivery) <span class="op">=></span> {
+      <span class="kw">if</span> (err) <span class="kw">return</span> console.<span class="fn">log</span>(<span class="str">'エラー:'</span>, err);
+      console.<span class="fn">log</span>(<span class="str">'完了:'</span>, delivery);
+    });
+  });
+});</pre>
+    </div>
+
+    <!-- Promise -->
+    <div class="async-panel" id="panel_promise">
+      <pre style="padding:20px;font-size:0.83rem;line-height:1.7;color:#e2e8f0;overflow-x:auto;"><span class="cm">// Promise パターン（チェーン）</span>
+<span class="kw">function</span> <span class="fn">step1</span>() {
+  <span class="kw">return new</span> <span class="fn">Promise</span>((resolve, reject) <span class="op">=></span> {
+    setTimeout(() <span class="op">=></span> {
+      console.<span class="fn">log</span>(<span class="str">'Step 1: ユーザー取得'</span>);
+      <span class="fn">resolve</span>({ id: <span class="num">1</span>, name: <span class="str">'Alice'</span> });
+    }, <span class="num">500</span>);
+  });
+}
+<span class="kw">function</span> <span class="fn">step2</span>(user) {
+  <span class="kw">return new</span> <span class="fn">Promise</span>((resolve) <span class="op">=></span> {
+    setTimeout(() <span class="op">=></span> {
+      console.<span class="fn">log</span>(<span class="str">'Step 2: 注文取得'</span>);
+      <span class="fn">resolve</span>([{ id: <span class="num">101</span>, item: <span class="str">'Book'</span> }]);
+    }, <span class="num">500</span>);
+  });
+}
+<span class="kw">function</span> <span class="fn">step3</span>(orders) {
+  <span class="kw">return new</span> <span class="fn">Promise</span>((resolve) <span class="op">=></span> {
+    setTimeout(() <span class="op">=></span> {
+      console.<span class="fn">log</span>(<span class="str">'Step 3: 配送情報取得'</span>);
+      <span class="fn">resolve</span>({ status: <span class="str">'shipped'</span> });
+    }, <span class="num">500</span>);
+  });
+}
+
+<span class="cm">// フラットなチェーン（エラーは1箇所でキャッチ）</span>
+<span class="fn">step1</span>()
+  .<span class="fn">then</span>(user    <span class="op">=></span> <span class="fn">step2</span>(user))
+  .<span class="fn">then</span>(orders  <span class="op">=></span> <span class="fn">step3</span>(orders))
+  .<span class="fn">then</span>(delivery <span class="op">=></span> console.<span class="fn">log</span>(<span class="str">'完了:'</span>, delivery))
+  .<span class="fn">catch</span>(err   <span class="op">=></span> console.<span class="fn">log</span>(<span class="str">'エラー:'</span>, err));</pre>
+    </div>
+
+    <!-- async/await -->
+    <div class="async-panel" id="panel_async">
+      <pre style="padding:20px;font-size:0.83rem;line-height:1.7;color:#e2e8f0;overflow-x:auto;"><span class="cm">// async/await パターン（同期的な書き方）</span>
+<span class="kw">function</span> <span class="fn">step1</span>() {
+  <span class="kw">return new</span> <span class="fn">Promise</span>(resolve <span class="op">=></span>
+    setTimeout(() <span class="op">=></span> <span class="fn">resolve</span>({ id: <span class="num">1</span>, name: <span class="str">'Alice'</span> }), <span class="num">500</span>)
+  );
+}
+<span class="kw">function</span> <span class="fn">step2</span>(user) {
+  <span class="kw">return new</span> <span class="fn">Promise</span>(resolve <span class="op">=></span>
+    setTimeout(() <span class="op">=></span> <span class="fn">resolve</span>([{ id: <span class="num">101</span>, item: <span class="str">'Book'</span> }]), <span class="num">500</span>)
+  );
+}
+<span class="kw">function</span> <span class="fn">step3</span>(orders) {
+  <span class="kw">return new</span> <span class="fn">Promise</span>(resolve <span class="op">=></span>
+    setTimeout(() <span class="op">=></span> <span class="fn">resolve</span>({ status: <span class="str">'shipped'</span> }), <span class="num">500</span>)
+  );
+}
+
+<span class="cm">// 同期コードのように読める</span>
+<span class="kw">async function</span> <span class="fn">main</span>() {
+  <span class="kw">try</span> {
+    <span class="kw">const</span> user     <span class="op">=</span> <span class="kw">await</span> <span class="fn">step1</span>();
+    console.<span class="fn">log</span>(<span class="str">'Step 1:'</span>, user);
+    <span class="kw">const</span> orders   <span class="op">=</span> <span class="kw">await</span> <span class="fn">step2</span>(user);
+    console.<span class="fn">log</span>(<span class="str">'Step 2:'</span>, orders);
+    <span class="kw">const</span> delivery <span class="op">=</span> <span class="kw">await</span> <span class="fn">step3</span>(orders);
+    console.<span class="fn">log</span>(<span class="str">'Step 3:'</span>, delivery);
+    console.<span class="fn">log</span>(<span class="str">'完了!'</span>);
+  } <span class="kw">catch</span> (err) {
+    console.<span class="fn">log</span>(<span class="str">'エラー:'</span>, err);
+  }
+}
+<span class="fn">main</span>();</pre>
+    </div>
+
+    <div class="ctrl-row" style="margin-top:14px;">
+      <button class="btn btn-success btn-sm" onclick="runAsyncDemo('callback')">コールバック実行</button>
+      <button class="btn btn-info btn-sm"    onclick="runAsyncDemo('promise')">Promise 実行</button>
+      <button class="btn btn-primary btn-sm" onclick="runAsyncDemo('async')">async/await 実行</button>
+      <button class="btn btn-outline btn-sm" onclick="clearLog('asyncConsole')">クリア</button>
+    </div>
+    <div class="console" id="asyncConsole"><div class="log-line info">▶ 各パターンのタブを確認してから「実行」ボタンを押してください</div></div>
+  </div>
+
+  <!-- ===== DEMO 5: Fetch オプションビルダー ===== -->
+  <div class="demo-box">
+    <h3><span class="demo-num">5</span> Fetch API オプションビルダー</h3>
+    <p style="font-size:0.85rem;color:var(--muted);margin-bottom:14px;">fetch() の各オプションを変更すると、生成されるコードとリクエストの動作がリアルタイムで変わります。</p>
+
+    <div class="fetch-builder">
+      <div class="fetch-option-row">
+        <span class="fetch-option-label">method</span>
+        <select id="fbMethod" onchange="updateFetchBuilder()">
+          <option>GET</option><option>POST</option><option>PUT</option><option>PATCH</option><option>DELETE</option>
+        </select>
+      </div>
+      <div class="fetch-option-row">
+        <span class="fetch-option-label">mode</span>
+        <select id="fbMode" onchange="updateFetchBuilder()">
+          <option value="cors">cors</option>
+          <option value="no-cors">no-cors</option>
+          <option value="same-origin">same-origin</option>
+        </select>
+      </div>
+      <div class="fetch-option-row">
+        <span class="fetch-option-label">credentials</span>
+        <select id="fbCredentials" onchange="updateFetchBuilder()">
+          <option value="omit">omit</option>
+          <option value="same-origin">same-origin</option>
+          <option value="include">include</option>
+        </select>
+      </div>
+      <div class="fetch-option-row">
+        <span class="fetch-option-label">cache</span>
+        <select id="fbCache" onchange="updateFetchBuilder()">
+          <option value="default">default</option>
+          <option value="no-cache">no-cache</option>
+          <option value="no-store">no-store</option>
+          <option value="reload">reload</option>
+          <option value="force-cache">force-cache</option>
+        </select>
+      </div>
+      <div class="fetch-option-row">
+        <span class="fetch-option-label">Content-Type</span>
+        <select id="fbContentType" onchange="updateFetchBuilder()">
+          <option value="application/json">application/json</option>
+          <option value="application/x-www-form-urlencoded">application/x-www-form-urlencoded</option>
+          <option value="multipart/form-data">multipart/form-data</option>
+          <option value="text/plain">text/plain</option>
+        </select>
+      </div>
+    </div>
+
+    <div style="margin-top:14px;">
+      <div style="font-size:0.82rem;font-weight:600;color:var(--muted);margin-bottom:6px;">生成されるコード:</div>
+      <div class="code-block" style="margin:0;">
+        <div class="code-block-header">
+          <span>fetch() コード</span>
+          <button class="copy-btn" onclick="copyFetchCode(this)">copy</button>
+        </div>
+        <pre id="fetchBuilderCode" style="padding:16px;font-size:0.82rem;line-height:1.7;color:#e2e8f0;overflow-x:auto;"></pre>
+      </div>
+    </div>
+    <div class="ctrl-row" style="margin-top:12px;">
+      <button class="btn btn-primary btn-sm" onclick="runFetchSimulation()">▶ シミュレーション実行</button>
+    </div>
+    <div class="console" id="fetchBuilderConsole" style="min-height:50px;"><div class="log-line info">▶ オプションを変更してコードを確認してください</div></div>
+  </div>
+
+  <!-- ========== 演習問題 ========== -->
+  <div class="quiz-section">
+    <h2>🧩 演習問題</h2>
+    <p class="quiz-desc">4-4 通信の理解を確認しましょう。</p>
+
+    <!-- Q1 -->
+    <div class="quiz-item" id="q1">
+      <div class="q-num">QUESTION 1 / 6</div>
+      <div class="q-text">WebSocket の <code>readyState</code> が <code>1</code> のとき、その状態を表す定数名はどれですか？</div>
+      <div class="options">
+        <button class="option-btn" onclick="checkQ(this,'q1','B')">A. CONNECTING</button>
+        <button class="option-btn" onclick="checkQ(this,'q1','B')">B. OPEN</button>
+        <button class="option-btn" onclick="checkQ(this,'q1','B')">C. CLOSING</button>
+        <button class="option-btn" onclick="checkQ(this,'q1','B')">D. CLOSED</button>
+      </div>
+      <div class="explanation" id="exp_q1">
+        <strong>✅ 正解：B（OPEN）</strong><br>
+        WebSocket の readyState は4値です：<br>
+        • 0: <strong>CONNECTING</strong> — 接続中（ハンドシェイク中）<br>
+        • 1: <strong>OPEN</strong> — 接続済み。send() で送信可能<br>
+        • 2: <strong>CLOSING</strong> — 切断処理中<br>
+        • 3: <strong>CLOSED</strong> — 切断済み<br>
+        <code>send()</code> を呼べるのは <code>readyState === 1</code>（OPEN）のときだけです。
+      </div>
+    </div>
+
+    <!-- Q2 -->
+    <div class="quiz-item" id="q2">
+      <div class="q-num">QUESTION 2 / 6</div>
+      <div class="q-text">XMLHttpRequest の <code>readyState</code> が <code>4</code>（DONE）になったとき、必ずしも通信が成功したとは言えない理由として正しいものはどれですか？</div>
+      <div class="options">
+        <button class="option-btn" onclick="checkQ(this,'q2','C')">A. readyState 4 はタイムアウトのときのみ発生するから</button>
+        <button class="option-btn" onclick="checkQ(this,'q2','C')">B. readyState 4 はサーバーエラーでは発生しないから</button>
+        <button class="option-btn" onclick="checkQ(this,'q2','C')">C. readyState 4 は成功・失敗問わず通信完了を示すだけで、status で判定が必要だから</button>
+        <button class="option-btn" onclick="checkQ(this,'q2','C')">D. readyState 4 では response が null になるから</button>
+      </div>
+      <div class="explanation" id="exp_q2">
+        <strong>✅ 正解：C</strong><br>
+        <code>readyState === 4</code>（DONE）は「通信処理が完了した」ことを示すだけです。HTTP ステータスコードが 200（成功）でも 404（Not Found）でも 500（Server Error）でも、readyState は 4 になります。<br>
+        実際の成功判定には <code>status === 200</code> または <code>status >= 200 && status < 300</code> を確認する必要があります。<br>
+        ネットワークエラーの場合は <code>onerror</code> イベントが発火します。
+      </div>
+    </div>
+
+    <!-- Q3 -->
+    <div class="quiz-item" id="q3">
+      <div class="q-num">QUESTION 3 / 6</div>
+      <div class="q-text">Server-Sent Events（SSE）と WebSocket の違いについて<strong>正しい</strong>説明はどれですか？</div>
+      <div class="options">
+        <button class="option-btn" onclick="checkQ(this,'q3','B')">A. SSE は双方向通信が可能で、WebSocket は一方向のみ</button>
+        <button class="option-btn" onclick="checkQ(this,'q3','B')">B. SSE はサーバーからクライアントへの一方向通信で、自動再接続機能がある</button>
+        <button class="option-btn" onclick="checkQ(this,'q3','B')">C. SSE はバイナリデータを効率的に送信できる</button>
+        <button class="option-btn" onclick="checkQ(this,'q3','B')">D. SSE は ws:// プロトコルを使用する</button>
+      </div>
+      <div class="explanation" id="exp_q3">
+        <strong>✅ 正解：B</strong><br>
+        SSE（Server-Sent Events）の特徴：<br>
+        • <strong>サーバー → クライアントの一方向通信</strong>（クライアントからサーバーへは通常の HTTP リクエストを使う）<br>
+        • <strong>自動再接続</strong>：接続が切れるとブラウザが自動的に再接続する<br>
+        • HTTP プロトコル上で動作（ws:// ではない）<br>
+        • テキストデータのみ（バイナリ非対応）<br>
+        WebSocket は双方向・全二重通信が可能で、バイナリも送受信できます。
+      </div>
+    </div>
+
+    <!-- Q4 -->
+    <div class="quiz-item" id="q4">
+      <div class="q-num">QUESTION 4 / 6</div>
+      <div class="q-text">Fetch API について<strong>誤っている</strong>説明はどれですか？</div>
+      <div class="options">
+        <button class="option-btn" onclick="checkQ(this,'q4','C')">A. fetch() は Promise を返す</button>
+        <button class="option-btn" onclick="checkQ(this,'q4','C')">B. HTTP ステータスが 404 でも Promise は fulfilled になる</button>
+        <button class="option-btn" onclick="checkQ(this,'q4','C')">C. fetch() はネットワークエラーでも常に fulfilled になる</button>
+        <button class="option-btn" onclick="checkQ(this,'q4','C')">D. response.ok は 200〜299 のとき true になる</button>
+      </div>
+      <div class="explanation" id="exp_q4">
+        <strong>✅ 正解（誤り）：C</strong><br>
+        Fetch API の重要な特性：<br>
+        <strong>A ○</strong> fetch() は Promise を返します。<br>
+        <strong>B ○</strong> HTTP ステータスが 404・500 でも Promise は <strong>fulfilled</strong>（解決）になります。<code>response.ok</code> が false になるだけです。<br>
+        <strong>C ✗（誤り）</strong> ネットワークエラー（DNS 解決失敗・接続拒否など）の場合は Promise が <strong>rejected</strong>（拒否）になります。<br>
+        <strong>D ○</strong> <code>response.ok</code> は HTTP ステータスが 200〜299 のとき true です。
+      </div>
+    </div>
+
+    <!-- Q5 複数選択 -->
+    <div class="quiz-item" id="q5">
+      <div class="q-num">QUESTION 5 / 6（複数選択）</div>
+      <div class="q-text">WebSocket の <code>send()</code> メソッドで送信できるデータ型をすべて選んでください。</div>
+      <div style="font-size:0.82rem;color:var(--muted);margin-bottom:10px;">※ 正しいものをすべてクリックして「確認」を押してください</div>
+      <div class="options" id="q5options">
+        <button class="option-btn" onclick="toggleMulti(this)" data-correct="true">A. 文字列（String）</button>
+        <button class="option-btn" onclick="toggleMulti(this)" data-correct="true">B. ArrayBuffer</button>
+        <button class="option-btn" onclick="toggleMulti(this)" data-correct="false">C. オブジェクト（Object）※ JSON.stringify なし</button>
+        <button class="option-btn" onclick="toggleMulti(this)" data-correct="true">D. Blob</button>
+        <button class="option-btn" onclick="toggleMulti(this)" data-correct="false">E. undefined</button>
+      </div>
+      <button class="btn btn-primary btn-sm" style="margin-top:10px;" onclick="checkQ5Multi()">確認</button>
+      <div class="explanation" id="exp_q5">
+        <strong>✅ 正解：A・B・D</strong><br>
+        WebSocket の send() で送信できるのは：<br>
+        <strong>A ○</strong> 文字列（String）— テキストフレームとして送信<br>
+        <strong>B ○</strong> ArrayBuffer — バイナリフレームとして送信<br>
+        <strong>C ✗</strong> オブジェクトをそのまま送ると "[object Object]" という文字列になる。JSON.stringify() で変換が必要<br>
+        <strong>D ○</strong> Blob — バイナリフレームとして送信<br>
+        <strong>E ✗</strong> undefined は送信できない<br>
+        また TypedArray（Uint8Array など）も送信可能です。
+      </div>
+    </div>
+
+    <!-- Q6 穴埋め -->
+    <div class="quiz-item" id="q6">
+      <div class="q-num">QUESTION 6 / 6（穴埋め）</div>
+      <div class="q-text">以下のコードの空欄を埋めてください。XHR で通信完了後にレスポンスを処理し、Fetch で HTTP エラーを検出します。</div>
+      <div class="q-code">// XHR: 通信完了を検知
+xhr.onreadystatechange = () => {
+  if (xhr.[___A___] === 4 && xhr.status === 200) {
+    console.log(xhr.responseText);
+  }
+};
+
+// Fetch: HTTP エラーを検出
+fetch(url).then(res => {
+  if (!res.[___B___]) throw new Error('HTTP Error');
+  return res.json();
+});</div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:8px;">
+        <div style="flex:1;min-width:180px;">
+          <label style="font-size:0.82rem;color:var(--muted);">A の答え：</label>
+          <input type="text" class="fill-input" id="q6a" placeholder="プロパティ名">
+        </div>
+        <div style="flex:1;min-width:180px;">
+          <label style="font-size:0.82rem;color:var(--muted);">B の答え：</label>
+          <input type="text" class="fill-input" id="q6b" placeholder="プロパティ名">
+        </div>
+      </div>
+      <button class="btn btn-primary btn-sm" onclick="checkQ6()">答え合わせ</button>
+      <div class="explanation" id="exp_q6"></div>
+    </div>
+
+  </div><!-- /quiz-section -->
+
+  <!-- 完了ボタン -->
+  <div class="complete-area">
+    <button class="complete-btn" id="completeBtn" onclick="markComplete()">
+      ✅ このセクションを完了にする
+    </button>
+  </div>
+
+  <!-- ページナビ -->
+  <div class="page-nav">
+    <a href="03_storage.html" class="page-nav-btn">← 4-3 ストレージ</a>
+    <div style="font-size:0.85rem;color:var(--muted);text-align:center;">
+      <a href="index.html">📚 Chapter 4 目次</a>
+    </div>
+    <a href="05_device.html" class="page-nav-btn">4-5 デバイス →</a>
+  </div>
+
+</main>
+
+<footer>
+  <p>© MeshinoKiwamiOkome |
+    <a href="https://github.com/MeshinoKiwamiOkome/html5lv2" target="_blank" rel="noopener">GitHub リポジトリ</a>
+  </p>
+  <p style="margin-top:6px;font-size:0.8rem;opacity:0.7;">HTML5 Professional Level 2 学習サイト</p>
+</footer>
+
+<script>
+// ===================================================
+// ユーティリティ
+// ===================================================
+function copyCode(btn) {
+  const pre = btn.closest('.code-block').querySelector('pre');
+  navigator.clipboard.writeText(pre.innerText).then(() => {
+    btn.textContent = 'copied!'; btn.classList.add('copied');
+    setTimeout(() => { btn.textContent = 'copy'; btn.classList.remove('copied'); }, 2000);
+  });
+}
+function log(id, msg, type='') {
+  const c = document.getElementById(id);
+  if (!c) return;
+  const d = document.createElement('div');
+  d.className = 'log-line ' + type;
+  d.textContent = msg;
+  c.appendChild(d);
+  c.scrollTop = c.scrollHeight;
+}
+function clearLog(id) {
+  const c = document.getElementById(id);
+  if (c) c.innerHTML = '';
+}
+function miniLog(id, msg, color) {
+  const c = document.getElementById(id);
+  if (!c) return;
+  const d = document.createElement('div');
+  d.style.cssText = `color:${color};margin-bottom:3px;font-size:0.8rem;`;
+  d.textContent = msg;
+  c.appendChild(d);
+  c.scrollTop = c.scrollHeight;
+}
+function clearMini(id) {
+  const c = document.getElementById(id);
+  if (c) c.innerHTML = '';
+}
+
+// ===================================================
+// DEMO 1: WebSocket シミュレーター
+// ===================================================
+let wsState       = 3; // 初期: CLOSED
+let wsConnTimeout = null;
+let wsOpenTimeout = null;
+let wsEchoTimeout = null;
+let wsMsgCount    = 0;
+
+const WS_STATE_NAMES = ['CONNECTING','OPEN','CLOSING','CLOSED'];
+const WS_STATE_COLORS = {
+  active: { border:'var(--purple-light)', bg:'var(--purple-bg)', color:'var(--purple-dark)' },
+  done:   { border:'var(--success)',      bg:'var(--success-bg)', color:'var(--success-dark)' },
+  error:  { border:'var(--danger)',       bg:'var(--danger-bg)',  color:'var(--danger-dark)' },
+};
+
+function setWsStateBubble(stateNum, style) {
+  for (let i = 0; i <= 3; i++) {
+    const el = document.getElementById('wsState' + i);
+    el.classList.remove('active','done','error');
+  }
+  const el = document.getElementById('wsState' + stateNum);
+  if (style) el.classList.add(style);
+}
+
+function wsConnect() {
+  if (wsState === 0 || wsState === 1) return;
+  wsState = 0;
+  setWsStateBubble(0, 'active');
+  document.getElementById('wsConnBtn').disabled  = true;
+  document.getElementById('wsCloseBtn').disabled = true;
+  document.getElementById('wsSendBtn').disabled  = true;
+  document.getElementById('wsJsonBtn').disabled  = true;
+  document.getElementById('wsMsgInput').disabled = true;
+  clearLog('wsConsole');
+  log('wsConsole', 'new WebSocket("wss://echo.example.com")', 'info');
+  log('wsConsole', 'readyState: 0 (CONNECTING) — ハンドシェイク中...', 'warn');
+
+  wsConnTimeout = setTimeout(() => {
+    wsState = 1;
+    setWsStateBubble(1, 'done');
+    document.getElementById('wsCloseBtn').disabled = false;
+    document.getElementById('wsSendBtn').disabled  = false;
+    document.getElementById('wsJsonBtn').disabled  = false;
+    document.getElementById('wsMsgInput').disabled = false;
+    log('wsConsole', 'onopen — readyState: 1 (OPEN) 接続完了', 'ok');
+    log('wsConsole', 'Upgrade: websocket ヘッダーで HTTP → WebSocket にアップグレード', 'info');
+  }, 1200);
+}
+
+function wsClose() {
+  if (wsState !== 1) return;
+  wsState = 2;
+  setWsStateBubble(2, 'active');
+  document.getElementById('wsCloseBtn').disabled = true;
+  document.getElementById('wsSendBtn').disabled  = true;
+  document.getElementById('wsJsonBtn').disabled  = true;
+  document.getElementById('wsMsgInput').disabled = true;
+  log('wsConsole', 'ws.close() — readyState: 2 (CLOSING) 切断処理中...', 'warn');
+
+  setTimeout(() => {
+    wsState = 3;
+    setWsStateBubble(3, 'done');
+    document.getElementById('wsConnBtn').disabled = false;
+    log('wsConsole', 'onclose — readyState: 3 (CLOSED) code:1000 wasClean:true', 'warn');
+    log('wsConsole', '正常切断完了', 'ok');
+  }, 800);
+}
+
+function wsSimulateError() {
+  if (wsState === 1) {
+    setWsStateBubble(3, 'error');
+    wsState = 3;
+    document.getElementById('wsCloseBtn').disabled = true;
+    document.getElementById('wsSendBtn').disabled  = true;
+    document.getElementById('wsJsonBtn').disabled  = true;
+    document.getElementById('wsMsgInput').disabled = true;
+    document.getElementById('wsConnBtn').disabled  = false;
+    log('wsConsole', 'onerror — 接続エラーが発生しました', 'err');
+    log('wsConsole', 'onclose — readyState: 3 (CLOSED) code:1006 wasClean:false', 'err');
+    log('wsConsole', '⚠ code:1006 は異常切断（ネットワーク障害など）', 'warn');
+  } else {
+    log('wsConsole', '⚠ エラーシミュレートには接続中（OPEN）である必要があります', 'warn');
+  }
+}
+
+function wsSend() {
+  if (wsState !== 1) {
+    log('wsConsole', '⚠ send() は readyState === 1 (OPEN) のときのみ呼べます', 'err');
+    return;
+  }
+  const msg = document.getElementById('wsMsgInput').value.trim() || 'Hello WebSocket!';
+  wsMsgCount++;
+  log('wsConsole', `ws.send("${msg}") — 送信 #${wsMsgCount}`, 'send');
+  log('wsConsole', `bufferedAmount: 0 bytes`, 'info');
+
+  // エコーサーバーシミュレーション
+  setTimeout(() => {
+    log('wsConsole', `onmessage ← [ECHO] "${msg}"`, 'recv');
+    log('wsConsole', `event.data = "${msg}"`, 'info');
+  }, 300 + Math.random() * 200);
+}
+
+function wsSendJson() {
+  if (wsState !== 1) {
+    log('wsConsole', '⚠ send() は readyState === 1 (OPEN) のときのみ呼べます', 'err');
+    return;
+  }
+  const payload = { type: 'ping', timestamp: Date.now(), seq: ++wsMsgCount };
+  const json    = JSON.stringify(payload);
+  log('wsConsole', `ws.send(JSON.stringify(${JSON.stringify(payload)}))`, 'send');
+
+  setTimeout(() => {
+    const pong = JSON.stringify({ type: 'pong', timestamp: Date.now(), seq: payload.seq });
+    log('wsConsole', `onmessage ← ${pong}`, 'recv');
+  }, 250 + Math.random() * 150);
+}
+
+// ===================================================
+// DEMO 2: XHR vs Fetch 比較
+// ===================================================
+function highlightXhrState(n) {
+  for (let i = 0; i <= 4; i++) {
+    const el = document.getElementById('xhrRS' + i);
+    el.style.background   = i <= n ? 'var(--info-dark)' : '#f7f8fa';
+    el.style.color        = i <= n ? 'var(--white)'     : 'var(--muted)';
+    el.style.borderColor  = i <= n ? 'var(--info-dark)' : 'var(--border)';
+  }
+}
+function highlightFetchState(state) {
+  ['fetchPending','fetchFulfilled','fetchRejected'].forEach(id => {
+    const el = document.getElementById(id);
+    el.style.background  = '#f7f8fa';
+    el.style.color       = 'var(--muted)';
+    el.style.borderColor = 'var(--border)';
+  });
+  const map = { pending:'fetchPending', fulfilled:'fetchFulfilled', rejected:'fetchRejected' };
+  const colors = {
+    pending:   { bg:'var(--warning-bg)', color:'var(--warning-dark)', border:'var(--warning)' },
+    fulfilled: { bg:'var(--success-bg)', color:'var(--success-dark)', border:'var(--success)' },
+    rejected:  { bg:'var(--danger-bg)',  color:'var(--danger-dark)',  border:'var(--danger)' },
+  };
+  const el = document.getElementById(map[state]);
+  if (el && colors[state]) {
+    el.style.background  = colors[state].bg;
+    el.style.color       = colors[state].color;
+    el.style.borderColor = colors[state].border;
+  }
+}
+
+function clearBothConsoles() {
+  clearMini('xhrConsole'); clearMini('fetchConsole'); clearLog('compareConsole');
+  highlightXhrState(-1); highlightFetchState('');
+  document.getElementById('xhrConsole').innerHTML  = '<span style="color:#4a5568;">待機中...</span>';
+  document.getElementById('fetchConsole').innerHTML = '<span style="color:#4a5568;">待機中...</span>';
+}
+
+function runBothRequests() {
+  const method   = document.getElementById('reqMethod').value;
+  const scenario = document.getElementById('reqScenario').value;
+  clearMini('xhrConsole'); clearMini('fetchConsole'); clearLog('compareConsole');
+  highlightXhrState(0);
+  highlightFetchState('pending');
+
+  log('compareConsole', `▶ ${method} リクエスト — シナリオ: ${scenario}`, 'info');
+
+  // XHR シミュレーション
+  const xhrSteps = [
+    { rs:0, delay:0,    msg:'new XMLHttpRequest()  readyState: 0 (UNSENT)',           color:'#a0aec0' },
+    { rs:1, delay:100,  msg:`xhr.open('${method}', url)  readyState: 1 (OPENED)`,      color:'#90cdf4' },
+    { rs:2, delay:400,  msg:'readyState: 2 (HEADERS_RECEIVED)',                         color:'#90cdf4' },
+    { rs:3, delay:700,  msg:'readyState: 3 (LOADING) — ボディ受信中...',                color:'#f6ad55' },
+    { rs:4, delay:1000, msg:'',                                                          color:'' },
+  ];
+
+  xhrSteps.forEach(step => {
+    setTimeout(() => {
+      highlightXhrState(step.rs);
+      if (step.rs < 4) {
+        miniLog('xhrConsole', step.msg, step.color);
+      } else {
+        // DONE
+        if (scenario === 'success') {
+          miniLog('xhrConsole', 'readyState: 4 (DONE)  status: 200', '#68d391');
+          miniLog('xhrConsole', 'xhr.responseText = {"data":"success"}', '#68d391');
+          log('compareConsole', 'XHR: 成功 (status 200)', 'ok');
+        } else if (scenario === 'notfound') {
+          miniLog('xhrConsole', 'readyState: 4 (DONE)  status: 404', '#fc8181');
+          miniLog('xhrConsole', '⚠ status !== 200 → エラー処理', '#f6ad55');
+          log('compareConsole', 'XHR: 404 Not Found (readyState は 4 になる)', 'warn');
+        } else if (scenario === 'error') {
+          miniLog('xhrConsole', 'readyState: 4 (DONE)  status: 500', '#fc8181');
+          log('compareConsole', 'XHR: 500 Server Error', 'err');
+        } else if (scenario === 'timeout') {
+          miniLog('xhrConsole', 'ontimeout — タイムアウト発生', '#fc8181');
+          log('compareConsole', 'XHR: タイムアウト → ontimeout イベント', 'err');
+        } else if (scenario === 'network') {
+          miniLog('xhrConsole', 'onerror — ネットワークエラー', '#fc8181');
+          log('compareConsole', 'XHR: ネットワークエラー → onerror イベント', 'err');
+        }
+      }
+    }, step.delay);
+  });
+
+  // Fetch シミュレーション
+  const fetchDelay = 1100;
+  setTimeout(() => {
+    miniLog('fetchConsole', `fetch('${method === 'GET' ? '/api/data' : '/api/resource'}', {method:'${method}'})`, '#90cdf4');
+    miniLog('fetchConsole', 'Promise: pending...', '#f6ad55');
+  }, 50);
+
+  setTimeout(() => {
+    if (scenario === 'success') {
+      highlightFetchState('fulfilled');
+      miniLog('fetchConsole', 'Promise: fulfilled', '#68d391');
+      miniLog('fetchConsole', 'response.status = 200  response.ok = true', '#68d391');
+      miniLog('fetchConsole', 'response.json() → {"data":"success"}', '#68d391');
+      log('compareConsole', 'Fetch: 成功 (response.ok = true)', 'ok');
+    } else if (scenario === 'notfound') {
+      highlightFetchState('fulfilled');
+      miniLog('fetchConsole', 'Promise: fulfilled ← 404 でも fulfilled!', '#f6ad55');
+      miniLog('fetchConsole', 'response.status = 404  response.ok = false', '#fc8181');
+      miniLog('fetchConsole', '⚠ !response.ok → throw new Error("HTTP Error")', '#f6ad55');
+      log('compareConsole', 'Fetch: 404 でも fulfilled。response.ok で判定が必要', 'warn');
+    } else if (scenario === 'error') {
+      highlightFetchState('fulfilled');
+      miniLog('fetchConsole', 'Promise: fulfilled ← 500 でも fulfilled!', '#f6ad55');
+      miniLog('fetchConsole', 'response.status = 500  response.ok = false', '#fc8181');
+      log('compareConsole', 'Fetch: 500 でも fulfilled。response.ok = false', 'warn');
+    } else if (scenario === 'timeout') {
+      highlightFetchState('rejected');
+      miniLog('fetchConsole', 'AbortController.abort() でキャンセル可能', '#f6ad55');
+      miniLog('fetchConsole', 'Promise: rejected (AbortError)', '#fc8181');
+      log('compareConsole', 'Fetch: タイムアウトは AbortController で実装', 'err');
+    } else if (scenario === 'network') {
+      highlightFetchState('rejected');
+      miniLog('fetchConsole', 'Promise: rejected ← ネットワークエラーは rejected', '#fc8181');
+      miniLog('fetchConsole', '.catch(err => ...) で捕捉', '#fc8181');
+      log('compareConsole', 'Fetch: ネットワークエラー → rejected（catch で捕捉）', 'err');
+    }
+  }, fetchDelay);
+}
+
+// ===================================================
+// DEMO 3: SSE シミュレーター
+// ===================================================
+let sseTimer      = null;
+let sseConnected  = false;
+let sseEventCount = 0;
+let sseEventId    = 0;
+
+const SSE_EVENTS = [
+  { event:'message', data:'{"type":"heartbeat","time":"' },
+  { event:'update',  data:'{"price":3250,"change":+12}' },
+  { event:'message', data:'接続維持中...' },
+  { event:'notify',  data:'{"level":"info","msg":"新しいメッセージがあります"}' },
+  { event:'update',  data:'{"price":3265,"change":+15}' },
+  { event:'message', data:'{"status":"ok","users":42}' },
+];
+
+function sseConnect() {
+  if (sseConnected) return;
+  sseConnected = true;
+  sseEventCount = 0;
+  document.getElementById('sseConnBtn').disabled  = true;
+  document.getElementById('sseCloseBtn').disabled = false;
+  document.getElementById('sseReadyState').textContent = '1 (OPEN)';
+  document.getElementById('sseReadyState').style.color = 'var(--success-dark)';
+
+  document.getElementById('sseRawStream').innerHTML   = '';
+  document.getElementById('sseParsedStream').innerHTML = '';
+  clearLog('sseConsole');
+
+  log('sseConsole', 'new EventSource("/events")', 'info');
+  log('sseConsole', 'onopen — readyState: 1 (OPEN)', 'ok');
+  log('sseConsole', 'Content-Type: text/event-stream', 'info');
+  log('sseConsole', 'Connection: keep-alive', 'info');
+
+  addSseRaw(': SSE ストリーム開始', 'comment');
+  addSseRaw('', '');
+
+  const interval = parseInt(document.getElementById('sseInterval').value);
+  sseTimer = setInterval(() => {
+    if (!sseConnected) return;
+    sseEventId++;
+    sseEventCount++;
+    document.getElementById('sseEventCount').textContent = sseEventCount;
+    document.getElementById('sseLastId').textContent     = sseEventId;
+
+    const ev   = SSE_EVENTS[(sseEventCount - 1) % SSE_EVENTS.length];
+    const data = ev.event === 'message' && ev.data.includes('"time"')
+      ? ev.data + new Date().toLocaleTimeString() + '"}'
+      : ev.data;
+
+    // 生データ
+    addSseRaw(`id: ${sseEventId}`, 'field');
+    if (ev.event !== 'message') addSseRaw(`event: ${ev.event}`, 'field');
+    addSseRaw(`data: ${data}`, 'field');
+    addSseRaw('', 'sep');
+
+    // パース済み
+    addSseParsed(sseEventId, ev.event, data);
+    log('sseConsole', `onmessage [${ev.event}] id:${sseEventId} — ${data.substring(0,40)}`, 'recv');
+  }, interval);
+}
+
+function addSseRaw(text, type) {
+  const el = document.getElementById('sseRawStream');
+  const d  = document.createElement('div');
+  d.className = 'sse-line';
+  if (type === 'comment') {
+    d.innerHTML = `<span class="sse-comment">${text}</span>`;
+  } else if (type === 'field') {
+    const colon = text.indexOf(':');
+    if (colon > -1) {
+      d.innerHTML = `<span class="sse-field">${text.substring(0,colon)}</span><span class="sse-sep">:</span><span class="sse-val">${text.substring(colon+1)}</span>`;
+    } else {
+      d.textContent = text;
+    }
+  } else if (type === 'sep') {
+    d.innerHTML = '<span style="color:#4a5568;">（空行 = イベント区切り）</span>';
+  } else {
+    d.textContent = text;
+  }
+  el.appendChild(d);
+  el.scrollTop = el.scrollHeight;
+}
+
+function addSseParsed(id, event, data) {
+  const el = document.getElementById('sseParsedStream');
+  const d  = document.createElement('div');
+  d.className = 'sse-line';
+  d.style.cssText = 'background:#21262d;border-radius:4px;padding:6px 8px;margin-bottom:6px;';
+  d.innerHTML = `
+    <div style="color:#90cdf4;font-size:0.78rem;">event: <span style="color:#fbd38d;">${event}</span>  id: <span style="color:#fc8181;">${id}</span></div>
+    <div style="color:#e2e8f0;font-size:0.8rem;margin-top:2px;">${data.substring(0,60)}${data.length>60?'...':''}</div>`;
+  el.appendChild(d);
+  el.scrollTop = el.scrollHeight;
+}
+
+function sseSendManual() {
+  if (!sseConnected) {
+    log('sseConsole', '⚠ 先に接続してください', 'err');
+    return;
+  }
+  sseEventId++;
+  sseEventCount++;
+  document.getElementById('sseEventCount').textContent = sseEventCount;
+  document.getElementById('sseLastId').textContent     = sseEventId;
+  const data = `{"manual":true,"msg":"手動送信イベント","id":${sseEventId}}`;
+  addSseRaw(`id: ${sseEventId}`, 'field');
+  addSseRaw(`event: manual`, 'field');
+  addSseRaw(`data: ${data}`, 'field');
+  addSseRaw('', 'sep');
+  addSseParsed(sseEventId, 'manual', data);
+  log('sseConsole', `手動イベント送信 id:${sseEventId}`, 'ok');
+}
+
+function sseClose() {
+  if (!sseConnected) return;
+  sseConnected = false;
+  if (sseTimer) { clearInterval(sseTimer); sseTimer = null; }
+  document.getElementById('sseConnBtn').disabled  = false;
+  document.getElementById('sseCloseBtn').disabled = true;
+  document.getElementById('sseReadyState').textContent = '2 (CLOSED)';
+  document.getElementById('sseReadyState').style.color = 'var(--danger-dark)';
+  log('sseConsole', 'es.close() — readyState: 2 (CLOSED)', 'warn');
+  log('sseConsole', '⚠ close() を呼ぶと自動再接続しない。呼ばなければ自動再接続する', 'warn');
+  addSseRaw(': 接続終了', 'comment');
+}
+
+// ===================================================
+// DEMO 4: 非同期パターン比較
+// ===================================================
+function switchAsyncTab(name) {
+  document.querySelectorAll('.async-tab').forEach((t, i) => {
+    const names = ['callback','promise','async'];
+    t.classList.toggle('active', names[i] === name);
+  });
+  document.querySelectorAll('.async-panel').forEach(p => p.classList.remove('active'));
+  document.getElementById('panel_' + name).classList.add('active');
+}
+
+function asyncStep(label, delay) {
+  return new Promise(resolve => {
+    setTimeout(() => {
+      log('asyncConsole', `  ${label}`, 'ok');
+      resolve({ step: label, ts: Date.now() });
+    }, delay);
+  });
+}
+
+function runAsyncDemo(type) {
+  clearLog('asyncConsole');
+  log('asyncConsole', `▶ ${type === 'callback' ? 'コールバック' : type === 'promise' ? 'Promise' : 'async/await'} パターン実行開始`, 'info');
+
+  if (type === 'callback') {
+    log('asyncConsole', 'step1 呼び出し...', 'info');
+    setTimeout(() => {
+      log('asyncConsole', '  Step 1 完了: ユーザー取得 { id:1, name:"Alice" }', 'ok');
+      log('asyncConsole', '  step2 呼び出し...', 'info');
+      setTimeout(() => {
+        log('asyncConsole', '  Step 2 完了: 注文取得 [{ id:101, item:"Book" }]', 'ok');
+        log('asyncConsole', '  step3 呼び出し...', 'info');
+        setTimeout(() => {
+          log('asyncConsole', '  Step 3 完了: 配送情報 { status:"shipped" }', 'ok');
+          log('asyncConsole', '✅ 全ステップ完了（コールバック）', 'ok');
+          log('asyncConsole', '⚠ ネストが深くなる → コールバック地獄', 'warn');
+        }, 500);
+      }, 500);
+    }, 500);
+
+  } else if (type === 'promise') {
+    log('asyncConsole', 'step1().then(step2).then(step3)...', 'info');
+    asyncStep('Step 1 完了: ユーザー取得 { id:1, name:"Alice" }', 500)
+      .then(() => asyncStep('Step 2 完了: 注文取得 [{ id:101, item:"Book" }]', 500))
+      .then(() => asyncStep('Step 3 完了: 配送情報 { status:"shipped" }', 500))
+      .then(() => {
+        log('asyncConsole', '✅ 全ステップ完了（Promise チェーン）', 'ok');
+        log('asyncConsole', '✓ フラットなチェーン、エラーは .catch() 1箇所で処理', 'info');
+      });
+
+  } else {
+    log('asyncConsole', 'async function main() { ... } を実行中', 'info');
+    (async () => {
+      const u = await asyncStep('Step 1 完了: ユーザー取得 { id:1, name:"Alice" }', 500);
+      const o = await asyncStep('Step 2 完了: 注文取得 [{ id:101, item:"Book" }]', 500);
+      const d = await asyncStep('Step 3 完了: 配送情報 { status:"shipped" }', 500);
+      log('asyncConsole', '✅ 全ステップ完了（async/await）', 'ok');
+      log('asyncConsole', '✓ 同期コードのように読める、try/catch でエラー処理', 'info');
+    })();
+  }
+}
+
+// ===================================================
+// DEMO 5: Fetch オプションビルダー
+// ===================================================
+function updateFetchBuilder() {
+  const method      = document.getElementById('fbMethod').value;
+  const mode        = document.getElementById('fbMode').value;
+  const credentials = document.getElementById('fbCredentials').value;
+  const cache       = document.getElementById('fbCache').value;
+  const ct          = document.getElementById('fbContentType').value;
+  const hasBody     = ['POST','PUT','PATCH'].includes(method);
+
+  let code = `<span class="kw">const</span> response <span class="op">=</span> <span class="kw">await</span> <span class="fn">fetch</span>(<span class="str">'https://api.example.com/resource'</span>, {\n`;
+  code += `  method:      <span class="str">'${method}'</span>,\n`;
+  code += `  mode:        <span class="str">'${mode}'</span>,\n`;
+  code += `  credentials: <span class="str">'${credentials}'</span>,\n`;
+  code += `  cache:       <span class="str">'${cache}'</span>,\n`;
+  code += `  headers: {\n`;
+  code += `    <span class="str">'Content-Type'</span>: <span class="str">'${ct}'</span>,\n`;
+  code += `  },\n`;
+  if (hasBody) {
+    if (ct === 'application/json') {
+      code += `  body: JSON.<span class="fn">stringify</span>({ key: <span class="str">'value'</span> }),\n`;
+    } else if (ct === 'application/x-www-form-urlencoded') {
+      code += `  body: <span class="kw">new</span> <span class="fn">URLSearchParams</span>({ key: <span class="str">'value'</span> }),\n`;
+    } else if (ct === 'multipart/form-data') {
+      code += `  body: <span class="kw">new</span> <span class="fn">FormData</span>(formElement),\n`;
+    } else {
+      code += `  body: <span class="str">'text data'</span>,\n`;
+    }
+  }
+  code += `});\n\n`;
+  code += `<span class="kw">if</span> (!response.<span class="fn">ok</span>) {\n`;
+  code += `  <span class="kw">throw new</span> <span class="fn">Error</span>(<span class="str">\`HTTP \${response.status}\`</span>);\n`;
+  code += `}\n`;
+  code += `<span class="kw">const</span> data <span class="op">=</span> <span class="kw">await</span> response.<span class="fn">json</span>();`;
+
+  document.getElementById('fetchBuilderCode').innerHTML = code;
+}
+
+function copyFetchCode(btn) {
+  const pre = document.getElementById('fetchBuilderCode');
+  navigator.clipboard.writeText(pre.innerText).then(() => {
+    btn.textContent = 'copied!'; btn.classList.add('copied');
+    setTimeout(() => { btn.textContent = 'copy'; btn.classList.remove('copied'); }, 2000);
+  });
+}
+
+function runFetchSimulation() {
+  const method      = document.getElementById('fbMethod').value;
+  const mode        = document.getElementById('fbMode').value;
+  const credentials = document.getElementById('fbCredentials').value;
+  const cache       = document.getElementById('fbCache').value;
+  const ct          = document.getElementById('fbContentType').value;
+
+  clearLog('fetchBuilderConsole');
+  log('fetchBuilderConsole', `fetch() 実行シミュレーション`, 'info');
+  log('fetchBuilderConsole', `method: ${method}`, 'info');
+  log('fetchBuilderConsole', `mode: ${mode}  credentials: ${credentials}  cache: ${cache}`, 'info');
+
+  if (mode === 'no-cors') {
+    log('fetchBuilderConsole', '⚠ mode: "no-cors" — レスポンスは opaque になり、status/body にアクセス不可', 'warn');
+  }
+  if (credentials === 'include') {
+    log('fetchBuilderConsole', '⚠ credentials: "include" — CORS では Access-Control-Allow-Origin: * は使えない', 'warn');
+  }
+  if (cache === 'no-store') {
+    log('fetchBuilderConsole', 'ℹ cache: "no-store" — キャッシュを一切使用しない', 'info');
+  }
+
+  setTimeout(() => {
+    log('fetchBuilderConsole', 'Promise: pending...', 'warn');
+    setTimeout(() => {
+      log('fetchBuilderConsole', 'Promise: fulfilled', 'ok');
+      log('fetchBuilderConsole', 'response.status = 200  response.ok = true', 'ok');
+      log('fetchBuilderConsole', `response.headers.get('Content-Type') = 'application/json'`, 'info');
+      log('fetchBuilderConsole', 'data = { "result": "success", "method": "' + method + '" }', 'ok');
+    }, 600);
+  }, 100);
+}
+
+// ===================================================
+// 演習問題
+// ===================================================
+function checkQ(btn, qid, correctLetter) {
+  const item = document.getElementById(qid);
+  item.querySelectorAll('.option-btn').forEach(b => {
+    b.disabled = true;
+    if (b.textContent.trim().startsWith(correctLetter + '.') ||
+        b.textContent.trim().startsWith(correctLetter + ' ')) b.classList.add('correct');
+  });
+  if (!btn.classList.contains('correct')) btn.classList.add('wrong');
+  document.getElementById('exp_' + qid).classList.add('show');
+}
+
+function toggleMulti(btn) {
+  if (btn.disabled) return;
+  btn.classList.toggle('selected');
+  btn.style.borderColor = btn.classList.contains('selected') ? 'var(--purple-light)' : '';
+  btn.style.background  = btn.classList.contains('selected') ? 'var(--purple-bg)'    : '';
+}
+
+function checkQ5Multi() {
+  const btns = document.querySelectorAll('#q5options .option-btn');
+  btns.forEach(b => {
+    b.disabled = true;
+    const isCorrect  = b.dataset.correct === 'true';
+    const isSelected = b.classList.contains('selected');
+    b.style.borderColor = ''; b.style.background = '';
+    if (isCorrect)                b.classList.add('correct');
+    if (!isCorrect && isSelected) b.classList.add('wrong');
+  });
+  document.getElementById('exp_q5').classList.add('show');
+  document.querySelector('#q5 .btn-primary').disabled = true;
+}
+
+function checkQ6() {
+  const a   = document.getElementById('q6a').value.trim().toLowerCase();
+  const b   = document.getElementById('q6b').value.trim().toLowerCase();
+  const aOk = a === 'readystate';
+  const bOk = b === 'ok';
+  const exp = document.getElementById('exp_q6');
+  exp.classList.add('show');
+  let html = '';
+  if (aOk && bOk) {
+    html = '<strong>✅ 両方正解！</strong><br><br>';
+  } else {
+    html  = '<strong>' + (aOk ? '✅' : '❌') + ' A: readyState</strong>（あなたの答え: ' + (document.getElementById('q6a').value || '未入力') + '）<br>';
+    html += '<strong>' + (bOk ? '✅' : '❌') + ' B: ok</strong>（あなたの答え: ' + (document.getElementById('q6b').value || '未入力') + '）<br><br>';
+  }
+  html += '<strong>解説：</strong><br>';
+  html += '• <code>readyState</code> — XHR の処理状態を示すプロパティ。0〜4 の値を取り、<code>4</code>（DONE）になったとき通信が完了したことを示します。ただし成功・失敗問わず 4 になるため、<code>status</code> で判定が必要です。<br>';
+  html += '• <code>ok</code> — Fetch API の Response オブジェクトのプロパティ。HTTP ステータスが 200〜299 のとき <code>true</code>、それ以外は <code>false</code> になります。Fetch は 404/500 でも Promise が fulfilled になるため、<code>!response.ok</code> でエラーを検出する必要があります。';
+  exp.innerHTML = html;
+}
+
+// ===================================================
+// 完了ボタン
+// ===================================================
+function markComplete() {
+  const key = 'html5lv2_ch4_04';
+  const btn = document.getElementById('completeBtn');
+  if (localStorage.getItem(key) === 'done') {
+    localStorage.removeItem(key);
+    btn.textContent = '✅ このセクションを完了にする';
+    btn.classList.remove('done');
+  } else {
+    localStorage.setItem(key, 'done');
+    btn.textContent = '🎉 完了済み！（クリックで取り消し）';
+    btn.classList.add('done');
+  }
+}
+
+// ===================================================
+// 初期化
+// ===================================================
+(function init() {
+  if (localStorage.getItem('html5lv2_ch4_04') === 'done') {
+    const btn = document.getElementById('completeBtn');
+    btn.textContent = '🎉 完了済み！（クリックで取り消し）';
+    btn.classList.add('done');
+  }
+  updateFetchBuilder();
+})();
+</script>
+</body>
+</html>

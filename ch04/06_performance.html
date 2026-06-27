@@ -1,0 +1,1533 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>4-6 パフォーマンスとオンライン | HTML5 Level 2 学習サイト</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --purple-dark:  #553c9a;
+      --purple-light: #9f7aea;
+      --purple-bg:    #faf5ff;
+      --purple-border:#e9d8fd;
+      --success-bg:   #f0fff4;
+      --success:      #48bb78;
+      --success-dark: #276749;
+      --warning-bg:   #fffaf0;
+      --warning:      #ed8936;
+      --warning-dark: #744210;
+      --danger-bg:    #fff5f5;
+      --danger:       #fc8181;
+      --danger-dark:  #c53030;
+      --info-bg:      #ebf8ff;
+      --info:         #4299e1;
+      --info-dark:    #2b6cb0;
+      --bg:           #f0f4f8;
+      --text:         #2d3748;
+      --muted:        #718096;
+      --dark-bg:      #1a202c;
+      --white:        #ffffff;
+      --border:       #e2e8f0;
+    }
+    body { font-family:'Segoe UI','Hiragino Sans','Meiryo',sans-serif; background:var(--bg); color:var(--text); line-height:1.7; }
+    a { color:var(--purple-dark); text-decoration:none; }
+    a:hover { text-decoration:underline; }
+
+    .breadcrumb { background:var(--white); border-bottom:1px solid var(--border); padding:10px 24px; font-size:0.85rem; color:var(--muted); }
+    .breadcrumb a { color:var(--purple-dark); }
+
+    .chapter-header { background:linear-gradient(135deg,var(--purple-dark) 0%,var(--purple-light) 100%); color:var(--white); padding:48px 24px 40px; text-align:center; position:relative; overflow:hidden; }
+    .chapter-header::before { content:''; position:absolute; top:-60px; right:-60px; width:220px; height:220px; background:rgba(255,255,255,0.06); border-radius:50%; }
+    .chapter-header::after  { content:''; position:absolute; bottom:-80px; left:-40px; width:280px; height:280px; background:rgba(255,255,255,0.04); border-radius:50%; }
+    .chapter-header .sec-label { font-size:0.85rem; letter-spacing:0.15em; opacity:0.8; margin-bottom:8px; }
+    .chapter-header h1 { font-size:clamp(1.5rem,4vw,2.2rem); font-weight:800; margin-bottom:12px; position:relative; z-index:1; }
+    .chapter-header p  { font-size:0.97rem; opacity:0.88; max-width:580px; margin:0 auto; position:relative; z-index:1; }
+
+    .section-nav { background:var(--white); border-bottom:1px solid var(--border); padding:12px 20px; overflow-x:auto; white-space:nowrap; }
+    .section-nav a { display:inline-block; padding:5px 12px; margin-right:6px; border-radius:20px; font-size:0.82rem; color:var(--muted); border:1px solid var(--border); transition:all 0.2s; }
+    .section-nav a:hover { background:var(--purple-bg); border-color:var(--purple-light); color:var(--purple-dark); text-decoration:none; }
+    .section-nav a.active { background:var(--purple-dark); color:var(--white); border-color:var(--purple-dark); }
+
+    .main { max-width:960px; margin:0 auto; padding:40px 20px 60px; }
+
+    .sec-heading { font-size:1.4rem; font-weight:800; color:var(--purple-dark); border-left:5px solid var(--purple-light); padding-left:14px; margin:48px 0 20px; }
+    .sec-heading:first-of-type { margin-top:0; }
+    .sub-heading { font-size:1.1rem; font-weight:700; color:var(--text); margin:28px 0 12px; display:flex; align-items:center; gap:8px; }
+    .sub-heading::before { content:''; display:inline-block; width:4px; height:18px; background:var(--purple-light); border-radius:2px; }
+
+    .info-box { border-radius:8px; padding:16px 20px; margin:20px 0; font-size:0.9rem; line-height:1.7; }
+    .info-box.point { background:var(--purple-bg); border:1px solid var(--purple-border); border-left:4px solid var(--purple-dark); }
+    .info-box.point strong { color:var(--purple-dark); }
+    .info-box.warn  { background:var(--warning-bg); border:1px solid #fbd38d; border-left:4px solid var(--warning); }
+    .info-box.warn  strong { color:var(--warning-dark); }
+    .info-box.tip   { background:var(--success-bg); border:1px solid #c6f6d5; border-left:4px solid var(--success); }
+    .info-box.tip   strong { color:var(--success-dark); }
+    .info-box p { margin-top:6px; }
+    .info-box ul { margin:8px 0 0 18px; }
+    .info-box li { margin-bottom:4px; }
+
+    .tbl-wrap { overflow-x:auto; margin:20px 0; border-radius:8px; border:1px solid var(--border); }
+    table { width:100%; border-collapse:collapse; font-size:0.88rem; }
+    th { background:var(--purple-dark); color:var(--white); padding:10px 14px; text-align:left; font-weight:600; }
+    td { padding:9px 14px; border-bottom:1px solid var(--border); vertical-align:top; }
+    tr:last-child td { border-bottom:none; }
+    tr:nth-child(even) td { background:#f7f8fa; }
+    code { background:#edf2f7; color:var(--purple-dark); padding:1px 6px; border-radius:4px; font-size:0.85em; font-family:'Consolas','Monaco',monospace; }
+
+    .code-block { position:relative; background:var(--dark-bg); border-radius:10px; margin:20px 0; overflow:hidden; }
+    .code-block-header { background:#2d3748; padding:8px 16px; font-size:0.78rem; color:#a0aec0; display:flex; justify-content:space-between; align-items:center; }
+    .copy-btn { background:transparent; border:1px solid #4a5568; color:#a0aec0; padding:3px 10px; border-radius:4px; font-size:0.75rem; cursor:pointer; transition:all 0.2s; }
+    .copy-btn:hover { background:#4a5568; color:var(--white); }
+    .copy-btn.copied { background:var(--success-dark); border-color:var(--success-dark); color:var(--white); }
+    .code-block pre { padding:20px; overflow-x:auto; font-size:0.85rem; line-height:1.7; color:#e2e8f0; font-family:'Consolas','Monaco','Courier New',monospace; }
+    .kw  { color:#90cdf4; }
+    .fn  { color:#b794f4; }
+    .str { color:#fbd38d; }
+    .num { color:#fc8181; }
+    .cm  { color:#68d391; }
+    .op  { color:#f6ad55; }
+    .out { color:#a0aec0; }
+
+    .demo-box { background:var(--white); border:2px solid var(--purple-border); border-radius:12px; padding:24px; margin:24px 0; }
+    .demo-box h3 { font-size:1rem; font-weight:700; color:var(--purple-dark); margin-bottom:16px; display:flex; align-items:center; gap:8px; }
+    .demo-box h3 .demo-num { background:var(--purple-dark); color:var(--white); border-radius:50%; width:24px; height:24px; display:inline-flex; align-items:center; justify-content:center; font-size:0.75rem; flex-shrink:0; }
+
+    .btn { padding:8px 16px; border:none; border-radius:7px; font-size:0.88rem; font-weight:600; cursor:pointer; transition:all 0.2s; }
+    .btn:disabled { opacity:0.45; cursor:not-allowed; }
+    .btn-primary { background:var(--purple-dark); color:var(--white); }
+    .btn-primary:hover:not(:disabled) { background:var(--purple-light); }
+    .btn-success { background:var(--success-dark); color:var(--white); }
+    .btn-success:hover:not(:disabled) { background:var(--success); }
+    .btn-danger  { background:var(--danger-dark); color:var(--white); }
+    .btn-danger:hover:not(:disabled)  { background:var(--danger); }
+    .btn-info    { background:var(--info-dark); color:var(--white); }
+    .btn-info:hover:not(:disabled)    { background:var(--info); }
+    .btn-warn    { background:var(--warning-dark); color:var(--white); }
+    .btn-warn:hover:not(:disabled)    { background:var(--warning); }
+    .btn-outline { background:transparent; border:2px solid var(--purple-dark); color:var(--purple-dark); }
+    .btn-outline:hover:not(:disabled) { background:var(--purple-bg); }
+    .btn-sm { padding:5px 12px; font-size:0.82rem; }
+
+    .ctrl-row { display:flex; flex-wrap:wrap; gap:10px; align-items:center; margin-bottom:12px; }
+    label { font-size:0.85rem; color:var(--muted); }
+    input[type=range] { width:110px; accent-color:var(--purple-dark); }
+    select { padding:6px 10px; border:1px solid var(--border); border-radius:6px; font-size:0.85rem; color:var(--text); background:var(--white); }
+
+    .console { background:var(--dark-bg); border-radius:8px; padding:14px 16px; font-family:'Consolas','Monaco',monospace; font-size:0.82rem; color:#e2e8f0; min-height:80px; max-height:240px; overflow-y:auto; margin-top:12px; }
+    .console .log-line { margin-bottom:4px; }
+    .console .log-line.ok   { color:#68d391; }
+    .console .log-line.err  { color:#fc8181; }
+    .console .log-line.info { color:#90cdf4; }
+    .console .log-line.warn { color:#f6ad55; }
+    .console .log-line.main { color:#fbd38d; }
+    .console .log-line.worker { color:#b794f4; }
+
+    /* Web Workers ビジュアライザ */
+    .threads-wrap { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+    .thread-panel { background:#0d1117; border-radius:10px; overflow:hidden; }
+    .thread-header { padding:8px 14px; font-size:0.82rem; font-weight:700; display:flex; align-items:center; gap:8px; }
+    .thread-header.main   { background:#2d3748; color:#fbd38d; }
+    .thread-header.worker { background:#1e1b4b; color:#b794f4; }
+    .thread-body { padding:12px 14px; min-height:120px; }
+    .thread-progress { height:8px; background:#2d3748; border-radius:4px; margin:8px 0; overflow:hidden; }
+    .thread-progress-bar { height:100%; border-radius:4px; transition:width 0.1s; width:0%; }
+    .thread-progress-bar.main   { background:linear-gradient(90deg,#f6ad55,#fbd38d); }
+    .thread-progress-bar.worker { background:linear-gradient(90deg,#553c9a,#9f7aea); }
+    .thread-stat { font-size:0.8rem; color:#a0aec0; font-family:monospace; margin-bottom:4px; }
+    .thread-stat span { color:#e2e8f0; }
+
+    /* UI ブロックデモ */
+    .ui-block-demo { display:flex; gap:12px; align-items:center; flex-wrap:wrap; margin:12px 0; }
+    .bounce-ball { width:40px; height:40px; border-radius:50%; background:linear-gradient(135deg,var(--purple-dark),var(--purple-light)); box-shadow:0 4px 12px rgba(85,60,154,0.4); animation:bounce 0.8s infinite alternate; }
+    @keyframes bounce { from{transform:translateY(0)} to{transform:translateY(-30px)} }
+    .bounce-ball.blocked { animation:none; opacity:0.3; }
+    .ui-status { font-size:0.85rem; padding:6px 14px; border-radius:6px; font-weight:600; }
+    .ui-status.ok   { background:var(--success-bg); color:var(--success-dark); border:1px solid var(--success); }
+    .ui-status.blocked { background:var(--danger-bg); color:var(--danger-dark); border:1px solid var(--danger); }
+
+    /* Performance タイムライン */
+    .perf-timeline { background:#f7f8fa; border:1px solid var(--border); border-radius:8px; overflow:hidden; margin:12px 0; }
+    .perf-timeline-header { background:var(--purple-dark); color:var(--white); padding:8px 14px; font-size:0.82rem; font-weight:600; display:flex; justify-content:space-between; }
+    .perf-mark-row { display:flex; align-items:center; gap:10px; padding:8px 14px; border-bottom:1px solid var(--border); font-size:0.83rem; }
+    .perf-mark-row:last-child { border-bottom:none; }
+    .perf-mark-name { font-family:monospace; color:var(--purple-dark); font-weight:600; min-width:160px; }
+    .perf-mark-bar-wrap { flex:1; height:10px; background:#e2e8f0; border-radius:5px; overflow:hidden; }
+    .perf-mark-bar { height:100%; border-radius:5px; }
+    .perf-mark-val { font-family:monospace; font-size:0.78rem; color:var(--muted); min-width:70px; text-align:right; }
+
+    /* Page Visibility */
+    .visibility-display { background:var(--dark-bg); border-radius:10px; padding:24px; text-align:center; margin:12px 0; }
+    .visibility-icon { font-size:3rem; margin-bottom:10px; transition:all 0.3s; }
+    .visibility-state { font-size:1.1rem; font-weight:700; color:var(--white); margin-bottom:6px; }
+    .visibility-desc  { font-size:0.85rem; color:#a0aec0; }
+    .visibility-counter { display:flex; gap:16px; justify-content:center; margin-top:14px; flex-wrap:wrap; }
+    .vc-item { background:#2d3748; border-radius:8px; padding:10px 16px; text-align:center; }
+    .vc-num  { font-size:1.4rem; font-weight:800; color:var(--purple-light); }
+    .vc-label { font-size:0.75rem; color:#a0aec0; }
+
+    /* Navigation Timing */
+    .nav-timing-chart { background:#f7f8fa; border:1px solid var(--border); border-radius:8px; overflow:hidden; }
+    .nav-timing-row { display:flex; align-items:center; gap:10px; padding:7px 14px; border-bottom:1px solid var(--border); }
+    .nav-timing-row:last-child { border-bottom:none; }
+    .nav-timing-label { font-size:0.8rem; font-family:monospace; color:var(--purple-dark); font-weight:600; min-width:180px; flex-shrink:0; }
+    .nav-timing-bar-wrap { flex:1; height:14px; background:#e2e8f0; border-radius:4px; overflow:hidden; position:relative; }
+    .nav-timing-bar { height:100%; border-radius:4px; position:absolute; top:0; transition:all 0.6s ease; }
+    .nav-timing-val { font-size:0.78rem; color:var(--muted); font-family:monospace; min-width:60px; text-align:right; flex-shrink:0; }
+
+    /* オンライン状態 */
+    .online-indicator { display:flex; align-items:center; gap:12px; padding:16px 20px; border-radius:10px; border:2px solid var(--border); background:#f7f8fa; margin:12px 0; transition:all 0.3s; }
+    .online-indicator.online  { border-color:var(--success); background:var(--success-bg); }
+    .online-indicator.offline { border-color:var(--danger);  background:var(--danger-bg); }
+    .online-dot { width:14px; height:14px; border-radius:50%; flex-shrink:0; transition:background 0.3s; }
+    .online-dot.online  { background:var(--success); box-shadow:0 0 0 4px rgba(72,187,120,0.2); animation:pulse-green 1.5s infinite; }
+    .online-dot.offline { background:var(--danger); }
+    @keyframes pulse-green { 0%,100%{box-shadow:0 0 0 4px rgba(72,187,120,0.2)} 50%{box-shadow:0 0 0 8px rgba(72,187,120,0.1)} }
+    .online-text { font-weight:700; font-size:1rem; }
+    .online-text.online  { color:var(--success-dark); }
+    .online-text.offline { color:var(--danger-dark); }
+
+    /* 演習問題 */
+    .quiz-section { background:var(--white); border:2px solid var(--purple-border); border-radius:14px; padding:28px; margin:48px 0 32px; }
+    .quiz-section h2 { font-size:1.2rem; font-weight:800; color:var(--purple-dark); margin-bottom:6px; }
+    .quiz-section .quiz-desc { font-size:0.88rem; color:var(--muted); margin-bottom:24px; }
+    .quiz-item { background:var(--bg); border-radius:10px; padding:20px; margin-bottom:16px; }
+    .quiz-item .q-num  { font-size:0.78rem; font-weight:700; color:var(--purple-light); letter-spacing:0.1em; margin-bottom:6px; }
+    .quiz-item .q-text { font-size:0.95rem; font-weight:600; color:var(--text); margin-bottom:14px; line-height:1.6; }
+    .quiz-item .q-code { background:var(--dark-bg); border-radius:6px; padding:12px 16px; font-family:'Consolas','Monaco',monospace; font-size:0.83rem; color:#e2e8f0; margin-bottom:14px; line-height:1.6; }
+    .options { display:flex; flex-direction:column; gap:8px; }
+    .option-btn { background:var(--white); border:2px solid var(--border); border-radius:8px; padding:10px 16px; font-size:0.88rem; text-align:left; cursor:pointer; transition:all 0.2s; color:var(--text); }
+    .option-btn:hover:not(:disabled) { border-color:var(--purple-light); background:var(--purple-bg); }
+    .option-btn.correct  { border-color:var(--success); background:var(--success-bg); color:var(--success-dark); font-weight:600; }
+    .option-btn.wrong    { border-color:var(--danger);  background:var(--danger-bg);  color:var(--danger-dark); }
+    .option-btn:disabled { cursor:default; }
+    .option-btn.selected { border-color:var(--purple-light); background:var(--purple-bg); }
+    .explanation { display:none; margin-top:12px; padding:12px 16px; background:var(--purple-bg); border:1px solid var(--purple-border); border-radius:8px; font-size:0.87rem; color:var(--text); line-height:1.7; }
+    .explanation.show { display:block; }
+    .explanation strong { color:var(--purple-dark); }
+    .fill-input { width:100%; padding:8px 12px; border:2px solid var(--border); border-radius:7px; font-size:0.9rem; font-family:'Consolas','Monaco',monospace; margin-bottom:8px; }
+    .fill-input:focus { outline:none; border-color:var(--purple-light); }
+
+    .complete-area { text-align:center; margin:40px 0 20px; }
+    .complete-btn { background:linear-gradient(135deg,var(--purple-dark),var(--purple-light)); color:var(--white); border:none; border-radius:12px; padding:16px 40px; font-size:1rem; font-weight:700; cursor:pointer; transition:all 0.3s; box-shadow:0 4px 15px rgba(85,60,154,0.3); }
+    .complete-btn:hover { transform:translateY(-2px); box-shadow:0 6px 20px rgba(85,60,154,0.4); }
+    .complete-btn.done { background:linear-gradient(135deg,var(--success-dark),var(--success)); box-shadow:0 4px 15px rgba(72,187,120,0.3); }
+
+    .page-nav { display:flex; justify-content:space-between; align-items:center; gap:16px; flex-wrap:wrap; margin-top:40px; padding-top:24px; border-top:2px solid var(--border); }
+    .page-nav-btn { display:inline-flex; align-items:center; gap:8px; background:var(--white); border:2px solid var(--purple-border); color:var(--purple-dark); border-radius:10px; padding:12px 20px; font-size:0.9rem; font-weight:600; transition:all 0.2s; }
+    .page-nav-btn:hover { background:var(--purple-bg); border-color:var(--purple-light); text-decoration:none; }
+
+    footer { background:var(--dark-bg); color:#a0aec0; text-align:center; padding:28px 20px; font-size:0.85rem; margin-top:60px; }
+    footer a { color:var(--purple-light); }
+
+    @media(max-width:640px){
+      .main { padding:24px 14px 48px; }
+      .threads-wrap { grid-template-columns:1fr; }
+      .nav-timing-label { min-width:120px; font-size:0.72rem; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- パンくずナビ -->
+<div class="breadcrumb">
+  <a href="../index.html">🏠 HTML5 Level 2</a> ›
+  <a href="index.html">Chapter 4</a> ›
+  4-6 パフォーマンスとオンライン
+</div>
+
+<!-- チャプターヘッダー -->
+<div class="chapter-header">
+  <div class="sec-label">CHAPTER 4 — SECTION 6</div>
+  <h1>⚡ パフォーマンスとオンライン</h1>
+  <p>Web Workers・High Resolution Time・Page Visibility・Navigation Timing・オフライン制御など、パフォーマンス最適化 API を学びます。</p>
+</div>
+
+<!-- セクションナビ -->
+<div class="section-nav">
+  <a href="01_graphics.html">4-1 グラフィックス</a>
+  <a href="02_media.html">4-2 メディア</a>
+  <a href="03_storage.html">4-3 ストレージ</a>
+  <a href="04_communication.html">4-4 通信</a>
+  <a href="05_device.html">4-5 デバイス</a>
+  <a href="06_performance.html" class="active">4-6 パフォーマンス</a>
+  <a href="07_security.html">4-7 セキュリティ</a>
+</div>
+
+<main class="main">
+
+  <!-- ========== 1. Web Workers ========== -->
+  <h2 class="sec-heading">1. Web Workers</h2>
+
+  <p>Web Workers はメインスレッドとは<strong>別のスレッド</strong>で JavaScript を実行します。重い計算処理をワーカーに移すことで、UI がブロックされずにスムーズに動作します。</p>
+
+  <div class="code-block">
+    <div class="code-block-header">
+      <span>Web Workers の基本 API</span>
+      <button class="copy-btn" onclick="copyCode(this)">copy</button>
+    </div>
+    <pre><span class="cm">// ── メインスレッド側 ──</span>
+
+<span class="cm">// Worker の作成（別ファイルを指定）</span>
+<span class="kw">const</span> worker <span class="op">=</span> <span class="kw">new</span> <span class="fn">Worker</span>(<span class="str">'worker.js'</span>);
+
+<span class="cm">// Worker にメッセージを送信</span>
+worker.<span class="fn">postMessage</span>({ type: <span class="str">'start'</span>, data: <span class="num">1000000</span> });
+
+<span class="cm">// Worker からメッセージを受信</span>
+worker.onmessage <span class="op">=</span> (event) <span class="op">=></span> {
+  console.<span class="fn">log</span>(<span class="str">'Worker から受信:'</span>, event.data);
+};
+
+<span class="cm">// Worker のエラーを捕捉</span>
+worker.onerror <span class="op">=</span> (error) <span class="op">=></span> {
+  console.<span class="fn">log</span>(<span class="str">'Worker エラー:'</span>, error.message);
+};
+
+<span class="cm">// Worker を終了（メインスレッドから）</span>
+worker.<span class="fn">terminate</span>();
+
+<span class="cm">// ── worker.js 側 ──</span>
+
+<span class="cm">// メインスレッドからメッセージを受信</span>
+self.onmessage <span class="op">=</span> (event) <span class="op">=></span> {
+  <span class="kw">const</span> { type, data } <span class="op">=</span> event.data;
+  <span class="kw">if</span> (type <span class="op">===</span> <span class="str">'start'</span>) {
+    <span class="cm">// 重い計算処理</span>
+    <span class="kw">let</span> result <span class="op">=</span> <span class="num">0</span>;
+    <span class="kw">for</span> (<span class="kw">let</span> i <span class="op">=</span> <span class="num">0</span>; i <span class="op"><</span> data; i<span class="op">++</span>) {
+      result <span class="op">+=</span> Math.<span class="fn">sqrt</span>(i);
+    }
+    <span class="cm">// メインスレッドに結果を送信</span>
+    self.<span class="fn">postMessage</span>({ type: <span class="str">'result'</span>, result });
+  }
+};
+
+<span class="cm">// Worker 自身を終了</span>
+self.<span class="fn">close</span>();
+
+<span class="cm">// ── Worker でアクセスできないもの ──</span>
+<span class="cm">// DOM（document, window, document.getElementById など）</span>
+<span class="cm">// window オブジェクト（alert, confirm など）</span>
+<span class="cm">// localStorage / sessionStorage</span>
+<span class="cm">// ── Worker でアクセスできるもの ──</span>
+<span class="cm">// XMLHttpRequest / fetch</span>
+<span class="cm">// setTimeout / setInterval</span>
+<span class="cm">// IndexedDB</span>
+<span class="cm">// WebSocket</span>
+<span class="cm">// importScripts()</span></pre>
+  </div>
+
+  <div class="tbl-wrap">
+    <table>
+      <tr><th>項目</th><th>メインスレッド</th><th>Web Worker</th></tr>
+      <tr><td>DOM 操作</td><td>可能</td><td><strong>不可</strong>（document・window にアクセス不可）</td></tr>
+      <tr><td>localStorage</td><td>可能</td><td><strong>不可</strong></td></tr>
+      <tr><td>IndexedDB</td><td>可能</td><td>可能</td></tr>
+      <tr><td>fetch / XHR</td><td>可能</td><td>可能</td></tr>
+      <tr><td>WebSocket</td><td>可能</td><td>可能</td></tr>
+      <tr><td>setTimeout</td><td>可能</td><td>可能</td></tr>
+      <tr><td>importScripts()</td><td>不可</td><td>可能（外部スクリプト読み込み）</td></tr>
+      <tr><td>通信方法</td><td>postMessage() / onmessage</td><td>self.postMessage() / self.onmessage</td></tr>
+      <tr><td>終了方法</td><td>worker.terminate()</td><td>self.close()</td></tr>
+    </table>
+  </div>
+
+  <div class="info-box point">
+    <strong>📌 試験頻出：Web Workers の制約</strong>
+    <ul>
+      <li>Worker は <strong>DOM にアクセスできない</strong>（document・window・alert 等は使用不可）</li>
+      <li><strong>localStorage・sessionStorage</strong> にもアクセスできない</li>
+      <li>メインスレッドとの通信は <code>postMessage()</code> と <code>onmessage</code> のみ</li>
+      <li>データは<strong>コピー</strong>（構造化複製）されて渡される（参照共有ではない）</li>
+      <li>例外: <code>ArrayBuffer</code> は <strong>Transferable</strong> として転送（コピーなし）できる</li>
+      <li>Worker 内で別の Worker を作成することも可能（Nested Worker）</li>
+    </ul>
+  </div>
+
+  <!-- ===== DEMO 1: Web Workers デモ ===== -->
+  <div class="demo-box">
+    <h3><span class="demo-num">1</span> Web Workers 並列処理デモ（UI ブロック比較）</h3>
+    <p style="font-size:0.85rem;color:var(--muted);margin-bottom:14px;">同じ重い計算をメインスレッドとワーカーで実行し、UI への影響の違いを体験します。</p>
+
+    <!-- アニメーションボール（UIブロック確認用） -->
+    <div style="background:#f7f8fa;border:1px solid var(--border);border-radius:8px;padding:14px;margin-bottom:14px;">
+      <div style="font-size:0.82rem;color:var(--muted);margin-bottom:8px;">UI アニメーション（ブロックされると止まります）</div>
+      <div class="ui-block-demo">
+        <div class="bounce-ball" id="bounceBall"></div>
+        <div class="bounce-ball" id="bounceBall2" style="background:linear-gradient(135deg,var(--info-dark),var(--info));animation-delay:0.2s;"></div>
+        <div class="bounce-ball" id="bounceBall3" style="background:linear-gradient(135deg,var(--success-dark),var(--success));animation-delay:0.4s;"></div>
+        <div class="ui-status ok" id="uiStatus">UI: 正常動作中</div>
+      </div>
+    </div>
+
+    <div class="threads-wrap">
+      <div class="thread-panel">
+        <div class="thread-header main">
+          <span>🔴</span> メインスレッド
+        </div>
+        <div class="thread-body">
+          <div class="thread-stat">状態: <span id="mainState">待機中</span></div>
+          <div class="thread-stat">計算量: <span id="mainCalcSize">—</span></div>
+          <div class="thread-stat">経過時間: <span id="mainElapsed">—</span></div>
+          <div class="thread-stat">結果: <span id="mainResult">—</span></div>
+          <div class="thread-progress">
+            <div class="thread-progress-bar main" id="mainProgressBar"></div>
+          </div>
+        </div>
+      </div>
+      <div class="thread-panel">
+        <div class="thread-header worker">
+          <span>🟣</span> Web Worker スレッド
+        </div>
+        <div class="thread-body">
+          <div class="thread-stat">状態: <span id="workerState">待機中</span></div>
+          <div class="thread-stat">計算量: <span id="workerCalcSize">—</span></div>
+          <div class="thread-stat">経過時間: <span id="workerElapsed">—</span></div>
+          <div class="thread-stat">結果: <span id="workerResult">—</span></div>
+          <div class="thread-progress">
+            <div class="thread-progress-bar worker" id="workerProgressBar"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="ctrl-row" style="margin-top:14px;">
+      <label>計算量:
+        <select id="calcSize">
+          <option value="5000000">500万回</option>
+          <option value="20000000" selected>2000万回</option>
+          <option value="50000000">5000万回</option>
+        </select>
+      </label>
+      <button class="btn btn-danger btn-sm"  onclick="runMainThread()">🔴 メインスレッドで実行（UIブロック）</button>
+      <button class="btn btn-primary btn-sm" onclick="runWorkerThread()">🟣 Workerで実行（UIブロックなし）</button>
+      <button class="btn btn-outline btn-sm" onclick="resetWorkerDemo()">リセット</button>
+    </div>
+    <div class="console" id="workerConsole"><div class="log-line info">▶ 「メインスレッドで実行」と「Workerで実行」を比べてみてください</div></div>
+  </div>
+
+  <!-- ========== 2. High Resolution Time ========== -->
+  <h2 class="sec-heading">2. High Resolution Time（performance API）</h2>
+
+  <div class="code-block">
+    <div class="code-block-header">
+      <span>performance API の使い方</span>
+      <button class="copy-btn" onclick="copyCode(this)">copy</button>
+    </div>
+    <pre><span class="cm">// ── performance.now() ──</span>
+<span class="cm">// ページ読み込み開始からの経過時間（ミリ秒、小数点以下あり）</span>
+<span class="kw">const</span> t0 <span class="op">=</span> performance.<span class="fn">now</span>();
+<span class="cm">// ... 処理 ...</span>
+<span class="kw">const</span> t1 <span class="op">=</span> performance.<span class="fn">now</span>();
+console.<span class="fn">log</span>(<span class="str">`処理時間: ${t1 - t0} ms`</span>); <span class="out">// 例: 12.345678 ms</span>
+
+<span class="cm">// Date.now() との違い</span>
+<span class="cm">// Date.now()        → Unix タイムスタンプ（ms整数）、精度低め</span>
+<span class="cm">// performance.now() → ページ起動からの相対時間（μs精度）、単調増加</span>
+
+<span class="cm">// ── performance.mark() ── カスタムマーカーを記録</span>
+performance.<span class="fn">mark</span>(<span class="str">'fetch-start'</span>);
+<span class="cm">// ... fetch 処理 ...</span>
+performance.<span class="fn">mark</span>(<span class="str">'fetch-end'</span>);
+
+<span class="cm">// ── performance.measure() ── 2つのマーク間の時間を計測</span>
+performance.<span class="fn">measure</span>(
+  <span class="str">'fetch-duration'</span>,  <span class="cm">// 計測名</span>
+  <span class="str">'fetch-start'</span>,     <span class="cm">// 開始マーク</span>
+  <span class="str">'fetch-end'</span>        <span class="cm">// 終了マーク</span>
+);
+
+<span class="cm">// ── 記録を取得 ──</span>
+<span class="kw">const</span> marks    <span class="op">=</span> performance.<span class="fn">getEntriesByType</span>(<span class="str">'mark'</span>);
+<span class="kw">const</span> measures <span class="op">=</span> performance.<span class="fn">getEntriesByType</span>(<span class="str">'measure'</span>);
+<span class="kw">const</span> entry    <span class="op">=</span> performance.<span class="fn">getEntriesByName</span>(<span class="str">'fetch-duration'</span>)[<span class="num">0</span>];
+console.<span class="fn">log</span>(entry.duration);  <span class="out">// 計測時間（ms）</span>
+console.<span class="fn">log</span>(entry.startTime); <span class="out">// 開始時刻（ms）</span>
+
+<span class="cm">// ── 記録をクリア ──</span>
+performance.<span class="fn">clearMarks</span>();
+performance.<span class="fn">clearMeasures</span>();
+
+<span class="cm">// ── PerformanceObserver（非同期で監視）──</span>
+<span class="kw">const</span> observer <span class="op">=</span> <span class="kw">new</span> <span class="fn">PerformanceObserver</span>((list) <span class="op">=></span> {
+  list.<span class="fn">getEntries</span>().<span class="fn">forEach</span>(entry <span class="op">=></span> {
+    console.<span class="fn">log</span>(entry.name, entry.duration);
+  });
+});
+observer.<span class="fn">observe</span>({ entryTypes: [<span class="str">'measure'</span>] });</pre>
+  </div>
+
+  <div class="info-box point">
+    <strong>📌 試験頻出：performance.now() の特性</strong>
+    <ul>
+      <li><strong>マイクロ秒精度</strong>（小数点以下あり）。<code>Date.now()</code> はミリ秒整数</li>
+      <li><strong>単調増加</strong>（システム時刻変更の影響を受けない）</li>
+      <li>ページの <strong>navigationStart</strong> からの相対時間（Unix タイムスタンプではない）</li>
+      <li>セキュリティのため、精度が意図的に下げられることがある（Spectre 対策）</li>
+      <li><code>performance.mark()</code> と <code>performance.measure()</code> でユーザー定義の計測ポイントを設定できる</li>
+    </ul>
+  </div>
+
+  <!-- ===== DEMO 2: High Resolution Time ===== -->
+  <div class="demo-box">
+    <h3><span class="demo-num">2</span> High Resolution Time 計測デモ</h3>
+    <p style="font-size:0.85rem;color:var(--muted);margin-bottom:14px;">performance.now()・mark()・measure() を使って各処理の実行時間を計測し、タイムラインで可視化します。</p>
+
+    <div class="ctrl-row">
+      <button class="btn btn-primary btn-sm" onclick="runPerfMeasure()">▶ 計測実行</button>
+      <button class="btn btn-outline btn-sm" onclick="clearPerfTimeline()">クリア</button>
+      <label>処理セット:
+        <select id="perfTask">
+          <option value="sort">配列ソート</option>
+          <option value="dom">DOM 操作</option>
+          <option value="calc">数値計算</option>
+          <option value="json">JSON 処理</option>
+        </select>
+      </label>
+    </div>
+
+    <div class="perf-timeline" id="perfTimeline">
+      <div class="perf-timeline-header">
+        <span>performance タイムライン</span>
+        <span id="perfTotalTime" style="opacity:0.8;">—</span>
+      </div>
+      <div id="perfTimelineBody" style="padding:8px 0;">
+        <div style="padding:12px 14px;color:var(--muted);font-size:0.85rem;">「計測実行」をクリックしてください</div>
+      </div>
+    </div>
+    <div class="console" id="perfConsole"><div class="log-line info">▶ 「計測実行」をクリックして performance API を体験してください</div></div>
+  </div>
+
+  <!-- ========== 3. Page Visibility API ========== -->
+  <h2 class="sec-heading">3. Page Visibility API</h2>
+
+  <div class="code-block">
+    <div class="code-block-header">
+      <span>Page Visibility API の使い方</span>
+      <button class="copy-btn" onclick="copyCode(this)">copy</button>
+    </div>
+    <pre><span class="cm">// ── document.visibilityState ──</span>
+<span class="cm">// 'visible'  → ページが表示されている</span>
+<span class="cm">// 'hidden'   → ページが非表示（別タブ・最小化・ロック画面等）</span>
+<span class="cm">// 'prerender' → ページがバックグラウンドでプリレンダリング中（非推奨）</span>
+
+console.<span class="fn">log</span>(document.visibilityState); <span class="out">// 'visible' or 'hidden'</span>
+console.<span class="fn">log</span>(document.hidden);          <span class="out">// true: 非表示, false: 表示中</span>
+
+<span class="cm">// ── visibilitychange イベント ──</span>
+document.<span class="fn">addEventListener</span>(<span class="str">'visibilitychange'</span>, () <span class="op">=></span> {
+  <span class="kw">if</span> (document.visibilityState <span class="op">===</span> <span class="str">'hidden'</span>) {
+    <span class="cm">// タブが非表示になった → アニメーション停止・通信削減</span>
+    <span class="fn">pauseAnimation</span>();
+    <span class="fn">stopPolling</span>();
+    console.<span class="fn">log</span>(<span class="str">'ページが非表示になりました'</span>);
+  } <span class="kw">else</span> {
+    <span class="cm">// タブが表示された → アニメーション再開・データ更新</span>
+    <span class="fn">resumeAnimation</span>();
+    <span class="fn">startPolling</span>();
+    console.<span class="fn">log</span>(<span class="str">'ページが表示されました'</span>);
+  }
+});
+
+<span class="cm">// ── 活用例: 動画の自動停止 ──</span>
+document.<span class="fn">addEventListener</span>(<span class="str">'visibilitychange'</span>, () <span class="op">=></span> {
+  <span class="kw">if</span> (document.hidden) {
+    video.<span class="fn">pause</span>();
+  } <span class="kw">else</span> {
+    video.<span class="fn">play</span>();
+  }
+});
+
+<span class="cm">// ── 活用例: requestAnimationFrame との組み合わせ ──</span>
+<span class="kw">function</span> <span class="fn">animate</span>() {
+  <span class="kw">if</span> (!document.hidden) {
+    <span class="cm">// 表示中のみ描画</span>
+    <span class="fn">drawFrame</span>();
+  }
+  <span class="fn">requestAnimationFrame</span>(animate);
+}</pre>
+  </div>
+
+  <div class="info-box point">
+    <strong>📌 試験頻出：document.visibilityState の値</strong>
+    <ul>
+      <li><code>'visible'</code> — ページが少なくとも部分的に表示されている</li>
+      <li><code>'hidden'</code> — 別タブに切り替え・ウィンドウ最小化・画面ロック時</li>
+      <li><code>document.hidden</code> は <code>visibilityState === 'hidden'</code> のとき <code>true</code></li>
+      <li><code>requestAnimationFrame</code> はタブが非表示のとき自動停止するが、<code>setInterval</code> は停止しない → Page Visibility API と組み合わせて制御する</li>
+    </ul>
+  </div>
+
+  <!-- ===== DEMO 3: Page Visibility ===== -->
+  <div class="demo-box">
+    <h3><span class="demo-num">3</span> Page Visibility API デモ</h3>
+    <p style="font-size:0.85rem;color:var(--muted);margin-bottom:14px;">別のタブに切り替えたり、このウィンドウを最小化すると <code>visibilitychange</code> イベントが発火します。</p>
+
+    <div class="visibility-display" id="visibilityDisplay">
+      <div class="visibility-icon" id="visIcon">👁️</div>
+      <div class="visibility-state" id="visState">visible</div>
+      <div class="visibility-desc" id="visDesc">ページが表示されています</div>
+    </div>
+
+    <div class="visibility-counter">
+      <div class="vc-item">
+        <div class="vc-num" id="visibleCount">0</div>
+        <div class="vc-label">visible 回数</div>
+      </div>
+      <div class="vc-item">
+        <div class="vc-num" id="hiddenCount">0</div>
+        <div class="vc-label">hidden 回数</div>
+      </div>
+      <div class="vc-item">
+        <div class="vc-num" id="totalHiddenTime">0</div>
+        <div class="vc-label">非表示時間 (秒)</div>
+      </div>
+      <div class="vc-item">
+        <div class="vc-num" id="changeCount">0</div>
+        <div class="vc-label">イベント発火回数</div>
+      </div>
+    </div>
+
+    <div class="ctrl-row" style="margin-top:14px;">
+      <button class="btn btn-outline btn-sm" onclick="resetVisibility()">カウントリセット</button>
+      <span style="font-size:0.82rem;color:var(--muted);">別タブに切り替えるか、ウィンドウを最小化してみてください</span>
+    </div>
+    <div class="console" id="visConsole"><div class="log-line info">▶ タブを切り替えると visibilitychange イベントが発火します</div></div>
+  </div>
+
+  <!-- ========== 4. Navigation Timing ========== -->
+  <h2 class="sec-heading">4. Navigation Timing API</h2>
+
+  <div class="code-block">
+    <div class="code-block-header">
+      <span>Navigation Timing API の使い方</span>
+      <button class="copy-btn" onclick="copyCode(this)">copy</button>
+    </div>
+    <pre><span class="cm">// ── performance.timing（旧 API）──</span>
+<span class="kw">const</span> t <span class="op">=</span> performance.timing;
+
+<span class="cm">// 各フェーズの時間を計算</span>
+<span class="kw">const</span> dns      <span class="op">=</span> t.domainLookupEnd  <span class="op">-</span> t.domainLookupStart;  <span class="cm">// DNS 解決時間</span>
+<span class="kw">const</span> tcp      <span class="op">=</span> t.connectEnd       <span class="op">-</span> t.connectStart;       <span class="cm">// TCP 接続時間</span>
+<span class="kw">const</span> ttfb     <span class="op">=</span> t.responseStart    <span class="op">-</span> t.requestStart;       <span class="cm">// Time to First Byte</span>
+<span class="kw">const</span> download <span class="op">=</span> t.responseEnd      <span class="op">-</span> t.responseStart;      <span class="cm">// ダウンロード時間</span>
+<span class="kw">const</span> domParse <span class="op">=</span> t.domInteractive   <span class="op">-</span> t.responseEnd;        <span class="cm">// DOM パース時間</span>
+<span class="kw">const</span> domReady <span class="op">=</span> t.domContentLoadedEventEnd <span class="op">-</span> t.navigationStart; <span class="cm">// DOMContentLoaded まで</span>
+<span class="kw">const</span> loadTime <span class="op">=</span> t.loadEventEnd     <span class="op">-</span> t.navigationStart;    <span class="cm">// load イベントまで</span>
+
+<span class="cm">// ── Navigation Timing Level 2（新 API）──</span>
+<span class="kw">const</span> [navEntry] <span class="op">=</span> performance.<span class="fn">getEntriesByType</span>(<span class="str">'navigation'</span>);
+console.<span class="fn">log</span>(navEntry.domainLookupEnd  <span class="op">-</span> navEntry.domainLookupStart); <span class="cm">// DNS</span>
+console.<span class="fn">log</span>(navEntry.connectEnd       <span class="op">-</span> navEntry.connectStart);      <span class="cm">// TCP</span>
+console.<span class="fn">log</span>(navEntry.responseStart    <span class="op">-</span> navEntry.requestStart);      <span class="cm">// TTFB</span>
+console.<span class="fn">log</span>(navEntry.domContentLoadedEventEnd);                       <span class="cm">// DCL</span>
+console.<span class="fn">log</span>(navEntry.loadEventEnd);                                    <span class="cm">// Load</span>
+console.<span class="fn">log</span>(navEntry.type);   <span class="out">// 'navigate' / 'reload' / 'back_forward'</span>
+console.<span class="fn">log</span>(navEntry.transferSize); <span class="out">// 転送バイト数</span></pre>
+  </div>
+
+  <!-- ===== DEMO 4: Navigation Timing ===== -->
+  <div class="demo-box">
+    <h3><span class="demo-num">4</span> Navigation Timing ビジュアライザー</h3>
+    <p style="font-size:0.85rem;color:var(--muted);margin-bottom:14px;">このページの実際の読み込み時間を Navigation Timing API で取得し、各フェーズを棒グラフで表示します。</p>
+
+    <div class="ctrl-row">
+      <button class="btn btn-primary btn-sm" onclick="loadNavTiming()">▶ 計測データを取得</button>
+      <button class="btn btn-info btn-sm"    onclick="loadNavTimingSimulated()">シミュレーションデータで表示</button>
+    </div>
+
+    <div class="nav-timing-chart" id="navTimingChart">
+      <div style="padding:14px;color:var(--muted);font-size:0.85rem;">「計測データを取得」をクリックしてください</div>
+    </div>
+    <div class="console" id="navConsole" style="min-height:50px;"><div class="log-line info">▶ ボタンをクリックして Navigation Timing データを取得してください</div></div>
+  </div>
+
+  <!-- ========== 5. オンライン制御 ========== -->
+  <h2 class="sec-heading">5. オンライン状態の検出</h2>
+
+  <div class="code-block">
+    <div class="code-block-header">
+      <span>オンライン/オフライン検出</span>
+      <button class="copy-btn" onclick="copyCode(this)">copy</button>
+    </div>
+    <pre><span class="cm">// ── navigator.onLine ──</span>
+console.<span class="fn">log</span>(navigator.onLine); <span class="out">// true: オンライン, false: オフライン</span>
+
+<span class="cm">// ── online / offline イベント ──</span>
+window.<span class="fn">addEventListener</span>(<span class="str">'online'</span>, () <span class="op">=></span> {
+  console.<span class="fn">log</span>(<span class="str">'オンラインになりました'</span>);
+  <span class="cm">// キューに溜めたリクエストを送信</span>
+  <span class="fn">flushRequestQueue</span>();
+});
+
+window.<span class="fn">addEventListener</span>(<span class="str">'offline'</span>, () <span class="op">=></span> {
+  console.<span class="fn">log</span>(<span class="str">'オフラインになりました'</span>);
+  <span class="cm">// リクエストをキューに保存</span>
+  <span class="fn">saveToQueue</span>(pendingRequest);
+});
+
+<span class="cm">// ── 注意点 ──</span>
+<span class="cm">// navigator.onLine が true でも実際に通信できるとは限らない</span>
+<span class="cm">// （ルーターには繋がっているがインターネット不通の場合など）</span>
+<span class="cm">// 確実な確認には fetch で実際にリクエストを送る</span>
+<span class="kw">async function</span> <span class="fn">checkConnectivity</span>() {
+  <span class="kw">try</span> {
+    <span class="kw">await</span> <span class="fn">fetch</span>(<span class="str">'/ping'</span>, { method: <span class="str">'HEAD'</span>, cache: <span class="str">'no-store'</span> });
+    <span class="kw">return</span> <span class="kw">true</span>;
+  } <span class="kw">catch</span> {
+    <span class="kw">return</span> <span class="kw">false</span>;
+  }
+}</pre>
+  </div>
+
+  <!-- ===== DEMO 5: オンライン/オフライン ===== -->
+  <div class="demo-box">
+    <h3><span class="demo-num">5</span> オンライン/オフライン状態デモ</h3>
+    <p style="font-size:0.85rem;color:var(--muted);margin-bottom:14px;">現在のオンライン状態を表示します。ブラウザの開発者ツールでネットワークをオフラインにすると変化を確認できます。</p>
+
+    <div class="online-indicator" id="onlineIndicator">
+      <div class="online-dot" id="onlineDot"></div>
+      <div>
+        <div class="online-text" id="onlineText">—</div>
+        <div style="font-size:0.8rem;color:var(--muted);" id="onlineDetail">—</div>
+      </div>
+      <div style="margin-left:auto;font-family:monospace;font-size:0.85rem;color:var(--muted);">
+        navigator.onLine: <strong id="onlineRaw">—</strong>
+      </div>
+    </div>
+
+    <div class="ctrl-row">
+      <button class="btn btn-success btn-sm" onclick="simOnline()">オンラインをシミュレート</button>
+      <button class="btn btn-danger btn-sm"  onclick="simOffline()">オフラインをシミュレート</button>
+      <button class="btn btn-outline btn-sm" onclick="resetOnlineSim()">実際の状態に戻す</button>
+    </div>
+
+    <!-- オフライン時のキュー -->
+    <div style="background:#f7f8fa;border:1px solid var(--border);border-radius:8px;padding:14px;margin-top:12px;">
+      <div style="font-size:0.85rem;font-weight:600;color:var(--text);margin-bottom:10px;">📦 オフライン時のリクエストキュー</div>
+      <div class="ctrl-row">
+        <button class="btn btn-info btn-sm"    onclick="addToQueue()">リクエストを追加</button>
+        <button class="btn btn-success btn-sm" onclick="flushQueue()">キューを送信（オンライン時）</button>
+        <button class="btn btn-outline btn-sm" onclick="clearQueue()">キューをクリア</button>
+      </div>
+      <div id="requestQueue" style="min-height:40px;font-size:0.82rem;color:var(--muted);">（キューは空です）</div>
+    </div>
+
+    <div class="console" id="onlineConsole"><div class="log-line info">▶ オンライン状態の変化を監視しています</div></div>
+  </div>
+
+  <!-- ========== 演習問題 ========== -->
+  <div class="quiz-section">
+    <h2>🧩 演習問題</h2>
+    <p class="quiz-desc">4-6 パフォーマンスとオンラインの理解を確認しましょう。</p>
+
+    <!-- Q1 -->
+    <div class="quiz-item" id="q1">
+      <div class="q-num">QUESTION 1 / 6</div>
+      <div class="q-text">Web Workers でアクセス<strong>できない</strong>ものはどれですか？</div>
+      <div class="options">
+        <button class="option-btn" onclick="checkQ(this,'q1','C')">A. XMLHttpRequest</button>
+        <button class="option-btn" onclick="checkQ(this,'q1','C')">B. IndexedDB</button>
+        <button class="option-btn" onclick="checkQ(this,'q1','C')">C. document.getElementById()</button>
+        <button class="option-btn" onclick="checkQ(this,'q1','C')">D. setTimeout()</button>
+      </div>
+      <div class="explanation" id="exp_q1">
+        <strong>✅ 正解：C（document.getElementById()）</strong><br>
+        Web Workers は DOM にアクセスできません。<code>document</code>・<code>window</code>・<code>alert()</code> などは使用不可です。<br>
+        <strong>A ○</strong> XMLHttpRequest は Worker 内で使用可能<br>
+        <strong>B ○</strong> IndexedDB は Worker 内で使用可能<br>
+        <strong>C ✗</strong> <code>document.getElementById()</code> は DOM 操作 → Worker では使用不可<br>
+        <strong>D ○</strong> setTimeout() は Worker 内で使用可能<br>
+        また <code>localStorage</code>・<code>sessionStorage</code> も Worker では使用できません。
+      </div>
+    </div>
+
+    <!-- Q2 -->
+    <div class="quiz-item" id="q2">
+      <div class="q-num">QUESTION 2 / 6</div>
+      <div class="q-text"><code>performance.now()</code> と <code>Date.now()</code> の違いについて正しい説明はどれですか？</div>
+      <div class="options">
+        <button class="option-btn" onclick="checkQ(this,'q2','B')">A. performance.now() は Unix タイムスタンプを返す</button>
+        <button class="option-btn" onclick="checkQ(this,'q2','B')">B. performance.now() はページ読み込み開始からの相対時間をマイクロ秒精度で返す</button>
+        <button class="option-btn" onclick="checkQ(this,'q2','B')">C. Date.now() の方が精度が高い</button>
+        <button class="option-btn" onclick="checkQ(this,'q2','B')">D. 両者は同じ値を返す</button>
+      </div>
+      <div class="explanation" id="exp_q2">
+        <strong>✅ 正解：B</strong><br>
+        <code>performance.now()</code> の特性：<br>
+        • ページの <strong>navigationStart</strong> からの相対時間（Unix タイムスタンプではない）<br>
+        • <strong>マイクロ秒精度</strong>（小数点以下あり）<br>
+        • <strong>単調増加</strong>（システム時刻変更の影響を受けない）<br>
+        <code>Date.now()</code> は Unix タイムスタンプ（1970年1月1日からのミリ秒整数）を返します。<br>
+        パフォーマンス計測には <code>performance.now()</code> が適しています。
+      </div>
+    </div>
+
+    <!-- Q3 -->
+    <div class="quiz-item" id="q3">
+      <div class="q-num">QUESTION 3 / 6</div>
+      <div class="q-text"><code>document.visibilityState</code> が取りうる値として正しい組み合わせはどれですか？</div>
+      <div class="options">
+        <button class="option-btn" onclick="checkQ(this,'q3','B')">A. 'active' と 'inactive'</button>
+        <button class="option-btn" onclick="checkQ(this,'q3','B')">B. 'visible' と 'hidden'</button>
+        <button class="option-btn" onclick="checkQ(this,'q3','B')">C. 'foreground' と 'background'</button>
+        <button class="option-btn" onclick="checkQ(this,'q3','B')">D. 'shown' と 'hidden'</button>
+      </div>
+      <div class="explanation" id="exp_q3">
+        <strong>✅ 正解：B（'visible' と 'hidden'）</strong><br>
+        <code>document.visibilityState</code> の値：<br>
+        • <code>'visible'</code>: ページが少なくとも部分的に表示されている<br>
+        • <code>'hidden'</code>: 別タブに切り替え・ウィンドウ最小化・画面ロック時<br>
+        （仕様上 <code>'prerender'</code> もありますが、現代のブラウザではほぼ使われません）<br>
+        <code>document.hidden</code> プロパティは <code>visibilityState === 'hidden'</code> のとき <code>true</code> になります。
+      </div>
+    </div>
+
+    <!-- Q4 -->
+    <div class="quiz-item" id="q4">
+      <div class="q-num">QUESTION 4 / 6</div>
+      <div class="q-text">以下のコードで、Worker からメインスレッドにメッセージを送信する正しい方法はどれですか？</div>
+      <div class="q-code">// worker.js 内のコード
+self.onmessage = (event) => {
+  const result = heavyCalculation(event.data);
+  // ← ここでメインスレッドに結果を送信
+};</div>
+      <div class="options">
+        <button class="option-btn" onclick="checkQ(this,'q4','C')">A. window.postMessage(result)</button>
+        <button class="option-btn" onclick="checkQ(this,'q4','C')">B. parent.postMessage(result)</button>
+        <button class="option-btn" onclick="checkQ(this,'q4','C')">C. self.postMessage(result)</button>
+        <button class="option-btn" onclick="checkQ(this,'q4','C')">D. worker.postMessage(result)</button>
+      </div>
+      <div class="explanation" id="exp_q4">
+        <strong>✅ 正解：C（self.postMessage(result)）</strong><br>
+        Worker 内でメインスレッドにメッセージを送信するには <code>self.postMessage()</code> を使います。<br>
+        • <code>self</code> は Worker のグローバルオブジェクト（<code>WorkerGlobalScope</code>）<br>
+        • <code>window</code> は Worker 内では使えない<br>
+        • <code>parent</code> は Nested Worker での親 Worker への参照（通常は使わない）<br>
+        • <code>worker</code> はメインスレッド側の変数名（Worker 内からは参照できない）<br>
+        メインスレッド側では <code>worker.onmessage</code> で受信します。
+      </div>
+    </div>
+
+    <!-- Q5 複数選択 -->
+    <div class="quiz-item" id="q5">
+      <div class="q-num">QUESTION 5 / 6（複数選択）</div>
+      <div class="q-text">Navigation Timing API で計測できる時間として正しいものをすべて選んでください。</div>
+      <div style="font-size:0.82rem;color:var(--muted);margin-bottom:10px;">※ 正しいものをすべてクリックして「確認」を押してください</div>
+      <div class="options" id="q5options">
+        <button class="option-btn" onclick="toggleMulti(this)" data-correct="true">A. DNS 解決にかかった時間</button>
+        <button class="option-btn" onclick="toggleMulti(this)" data-correct="true">B. TCP 接続にかかった時間</button>
+        <button class="option-btn" onclick="toggleMulti(this)" data-correct="false">C. ユーザーがボタンをクリックするまでの時間</button>
+        <button class="option-btn" onclick="toggleMulti(this)" data-correct="true">D. DOM の解析にかかった時間</button>
+        <button class="option-btn" onclick="toggleMulti(this)" data-correct="true">E. Time to First Byte（TTFB）</button>
+      </div>
+      <button class="btn btn-primary btn-sm" style="margin-top:10px;" onclick="checkQ5Multi()">確認</button>
+      <div class="explanation" id="exp_q5">
+        <strong>✅ 正解：A・B・D・E</strong><br>
+        Navigation Timing API で計測できるフェーズ：<br>
+        <strong>A ○</strong> DNS 解決: <code>domainLookupEnd - domainLookupStart</code><br>
+        <strong>B ○</strong> TCP 接続: <code>connectEnd - connectStart</code><br>
+        <strong>C ✗</strong> ユーザー操作の時間は Navigation Timing では計測できない（User Timing API を使う）<br>
+        <strong>D ○</strong> DOM パース: <code>domInteractive - responseEnd</code><br>
+        <strong>E ○</strong> TTFB: <code>responseStart - requestStart</code>（最初の1バイトを受信するまでの時間）
+      </div>
+    </div>
+
+    <!-- Q6 穴埋め -->
+    <div class="quiz-item" id="q6">
+      <div class="q-num">QUESTION 6 / 6（穴埋め）</div>
+      <div class="q-text">以下のコードの空欄を埋めてください。Worker にメッセージを送信し、Worker からの返信を受け取ります。</div>
+      <div class="q-code">// メインスレッド
+const worker = new Worker('worker.js');
+
+// Worker にデータを送信
+worker.[___A___]({ type: 'calc', n: 1000000 });
+
+// Worker からの結果を受信
+worker.[___B___] = (event) => {
+  console.log('結果:', event.data);
+};</div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:8px;">
+        <div style="flex:1;min-width:180px;">
+          <label style="font-size:0.82rem;color:var(--muted);">A の答え（メソッド名）：</label>
+          <input type="text" class="fill-input" id="q6a" placeholder="メソッド名">
+        </div>
+        <div style="flex:1;min-width:180px;">
+          <label style="font-size:0.82rem;color:var(--muted);">B の答え（プロパティ名）：</label>
+          <input type="text" class="fill-input" id="q6b" placeholder="プロパティ名">
+        </div>
+      </div>
+      <button class="btn btn-primary btn-sm" onclick="checkQ6()">答え合わせ</button>
+      <div class="explanation" id="exp_q6"></div>
+    </div>
+
+  </div><!-- /quiz-section -->
+
+  <!-- 完了ボタン -->
+  <div class="complete-area">
+    <button class="complete-btn" id="completeBtn" onclick="markComplete()">
+      ✅ このセクションを完了にする
+    </button>
+  </div>
+
+  <!-- ページナビ -->
+  <div class="page-nav">
+    <a href="05_device.html" class="page-nav-btn">← 4-5 デバイス</a>
+    <div style="font-size:0.85rem;color:var(--muted);text-align:center;">
+      <a href="index.html">📚 Chapter 4 目次</a>
+    </div>
+    <a href="07_security.html" class="page-nav-btn">4-7 セキュリティ →</a>
+  </div>
+
+</main>
+
+<footer>
+  <p>© MeshinoKiwamiOkome |
+    <a href="https://github.com/MeshinoKiwamiOkome/html5lv2" target="_blank" rel="noopener">GitHub リポジトリ</a>
+  </p>
+  <p style="margin-top:6px;font-size:0.8rem;opacity:0.7;">HTML5 Professional Level 2 学習サイト</p>
+</footer>
+
+<script>
+// ===================================================
+// ユーティリティ
+// ===================================================
+function copyCode(btn) {
+  const pre = btn.closest('.code-block').querySelector('pre');
+  navigator.clipboard.writeText(pre.innerText).then(() => {
+    btn.textContent = 'copied!'; btn.classList.add('copied');
+    setTimeout(() => { btn.textContent = 'copy'; btn.classList.remove('copied'); }, 2000);
+  });
+}
+function log(id, msg, type='') {
+  const c = document.getElementById(id);
+  if (!c) return;
+  const d = document.createElement('div');
+  d.className = 'log-line ' + type;
+  d.textContent = msg;
+  c.appendChild(d);
+  c.scrollTop = c.scrollHeight;
+}
+function clearLog(id) {
+  const c = document.getElementById(id);
+  if (c) c.innerHTML = '';
+}
+
+// ===================================================
+// DEMO 1: Web Workers
+// ===================================================
+let workerInstance = null;
+
+// Blob URL で Worker を作成（外部ファイル不要）
+function createWorkerBlob() {
+  const code = `
+    self.onmessage = function(e) {
+      const { size } = e.data;
+      const t0 = Date.now();
+      let result = 0;
+      const chunk = Math.floor(size / 20);
+      for (let i = 0; i < size; i++) {
+        result += Math.sqrt(i);
+        if (i % chunk === 0) {
+          self.postMessage({ type: 'progress', progress: Math.round(i / size * 100) });
+        }
+      }
+      const elapsed = Date.now() - t0;
+      self.postMessage({ type: 'done', result: result.toFixed(4), elapsed });
+    };
+  `;
+  const blob = new Blob([code], { type: 'application/javascript' });
+  return URL.createObjectURL(blob);
+}
+
+function setThreadStat(prefix, state, calcSize, elapsed, result, progress) {
+  if (state    !== null) document.getElementById(prefix + 'State').textContent    = state;
+  if (calcSize !== null) document.getElementById(prefix + 'CalcSize').textContent = calcSize;
+  if (elapsed  !== null) document.getElementById(prefix + 'Elapsed').textContent  = elapsed;
+  if (result   !== null) document.getElementById(prefix + 'Result').textContent   = result;
+  if (progress !== null) document.getElementById(prefix + 'ProgressBar').style.width = progress + '%';
+}
+
+function runMainThread() {
+  const size = parseInt(document.getElementById('calcSize').value);
+  clearLog('workerConsole');
+  log('workerConsole', `メインスレッドで ${size.toLocaleString()} 回の計算を開始`, 'main');
+  log('workerConsole', '⚠ UI がブロックされます（アニメーションが止まります）', 'warn');
+
+  setThreadStat('main', '実行中...', size.toLocaleString() + ' 回', '計算中...', '計算中...', 0);
+
+  // UIブロック表示
+  const balls = ['bounceBall','bounceBall2','bounceBall3'];
+  balls.forEach(id => document.getElementById(id).classList.add('blocked'));
+  const statusEl = document.getElementById('uiStatus');
+  statusEl.textContent = 'UI: ブロック中 ⚠';
+  statusEl.className   = 'ui-status blocked';
+
+  // 少し遅延させてUIを更新してから重い処理を実行
+  setTimeout(() => {
+    const t0     = performance.now();
+    let result   = 0;
+    for (let i = 0; i < size; i++) {
+      result += Math.sqrt(i);
+    }
+    const elapsed = (performance.now() - t0).toFixed(2);
+
+    setThreadStat('main', '完了', size.toLocaleString() + ' 回', elapsed + ' ms', result.toFixed(4), 100);
+
+    balls.forEach(id => document.getElementById(id).classList.remove('blocked'));
+    statusEl.textContent = 'UI: 正常動作中';
+    statusEl.className   = 'ui-status ok';
+
+    clearLog('workerConsole');
+    log('workerConsole', `メインスレッド完了: ${elapsed} ms`, 'main');
+    log('workerConsole', `結果: ${result.toFixed(4)}`, 'main');
+    log('workerConsole', '⚠ 実行中は UI がフリーズしていました', 'warn');
+  }, 50);
+}
+
+function runWorkerThread() {
+  const size = parseInt(document.getElementById('calcSize').value);
+  clearLog('workerConsole');
+  log('workerConsole', `Worker スレッドで ${size.toLocaleString()} 回の計算を開始`, 'worker');
+  log('workerConsole', '✅ メインスレッドは解放されています（アニメーション継続）', 'ok');
+
+  setThreadStat('worker', '実行中...', size.toLocaleString() + ' 回', '計算中...', '計算中...', 0);
+
+  const statusEl = document.getElementById('uiStatus');
+  statusEl.textContent = 'UI: 正常動作中（Worker 実行中）';
+  statusEl.className   = 'ui-status ok';
+
+  if (workerInstance) { workerInstance.terminate(); }
+  const blobUrl    = createWorkerBlob();
+  workerInstance   = new Worker(blobUrl);
+  const workerT0   = performance.now();
+
+  workerInstance.postMessage({ size });
+
+  workerInstance.onmessage = (e) => {
+    if (e.data.type === 'progress') {
+      setThreadStat('worker', '実行中...', null, null, null, e.data.progress);
+    } else if (e.data.type === 'done') {
+      const mainElapsed = (performance.now() - workerT0).toFixed(2);
+      setThreadStat('worker', '完了', size.toLocaleString() + ' 回',
+        e.data.elapsed + ' ms (Worker内)', e.data.result, 100);
+      clearLog('workerConsole');
+      log('workerConsole', `Worker 完了: Worker内 ${e.data.elapsed} ms / 全体 ${mainElapsed} ms`, 'worker');
+      log('workerConsole', `結果: ${e.data.result}`, 'worker');
+      log('workerConsole', '✅ 計算中も UI はスムーズに動作していました', 'ok');
+      log('workerConsole', `postMessage でデータを受信: event.data = { type:'done', result:'${e.data.result}', elapsed:${e.data.elapsed} }`, 'info');
+      URL.revokeObjectURL(blobUrl);
+    }
+  };
+  workerInstance.onerror = (e) => {
+    log('workerConsole', 'Worker エラー: ' + e.message, 'err');
+  };
+}
+
+function resetWorkerDemo() {
+  if (workerInstance) { workerInstance.terminate(); workerInstance = null; }
+  ['main','worker'].forEach(p => setThreadStat(p, '待機中', '—', '—', '—', 0));
+  const balls = ['bounceBall','bounceBall2','bounceBall3'];
+  balls.forEach(id => document.getElementById(id).classList.remove('blocked'));
+  const statusEl = document.getElementById('uiStatus');
+  statusEl.textContent = 'UI: 正常動作中';
+  statusEl.className   = 'ui-status ok';
+  clearLog('workerConsole');
+  log('workerConsole', 'リセットしました', 'warn');
+}
+
+// ===================================================
+// DEMO 2: High Resolution Time
+// ===================================================
+const PERF_TASKS = {
+  sort: [
+    { name:'配列生成 (100万要素)',   fn: () => { const a = Array.from({length:1000000},(_,i)=>Math.random()); return a; } },
+    { name:'Array.sort()',           fn: (a) => { a.sort((x,y)=>x-y); return a; } },
+    { name:'先頭100要素の合計',       fn: (a) => { let s=0; for(let i=0;i<100;i++) s+=a[i]; return s; } },
+    { name:'配列のフィルタリング',    fn: (a) => a.filter(x=>x>0.5) },
+  ],
+  dom: [
+    { name:'div 要素を100個作成',     fn: () => { const f=document.createDocumentFragment(); for(let i=0;i<100;i++){const d=document.createElement('div');d.textContent=i;f.appendChild(d);} return f; } },
+    { name:'DocumentFragment 追加',  fn: (f) => { const tmp=document.createElement('div'); tmp.style.display='none'; document.body.appendChild(tmp); tmp.appendChild(f); return tmp; } },
+    { name:'querySelectorAll',        fn: () => document.querySelectorAll('*') },
+    { name:'DOM 要素を削除',          fn: (tmp) => { if(tmp && tmp.parentNode) tmp.parentNode.removeChild(tmp); return null; } },
+  ],
+  calc: [
+    { name:'素数判定 (1〜10万)',      fn: () => { let c=0; for(let n=2;n<100000;n++){let p=true;for(let i=2;i<=Math.sqrt(n);i++){if(n%i===0){p=false;break;}}if(p)c++;} return c; } },
+    { name:'フィボナッチ数列 (40項)', fn: () => { function fib(n){return n<=1?n:fib(n-1)+fib(n-2);} return fib(35); } },
+    { name:'行列積 (100×100)',        fn: () => { const n=100,a=[],b=[],c=[]; for(let i=0;i<n;i++){a[i]=[];b[i]=[];c[i]=[];for(let j=0;j<n;j++){a[i][j]=Math.random();b[i][j]=Math.random();c[i][j]=0;}} for(let i=0;i<n;i++)for(let j=0;j<n;j++)for(let k=0;k<n;k++)c[i][j]+=a[i][k]*b[k][j]; return c[0][0]; } },
+    { name:'JSON.stringify (大データ)',fn: () => { const d=Array.from({length:10000},(_,i)=>({id:i,name:`item${i}`,val:Math.random()})); return JSON.stringify(d).length; } },
+  ],
+  json: [
+    { name:'JSON データ生成',          fn: () => Array.from({length:5000},(_,i)=>({id:i,name:`user${i}`,score:Math.random()*100})) },
+    { name:'JSON.stringify()',         fn: (d) => JSON.stringify(d) },
+    { name:'JSON.parse()',             fn: (s) => JSON.parse(s) },
+    { name:'配列フィルタ + ソート',    fn: (d) => d.filter(x=>x.score>50).sort((a,b)=>b.score-a.score) },
+  ],
+};
+
+function runPerfMeasure() {
+  const taskKey = document.getElementById('perfTask').value;
+  const tasks   = PERF_TASKS[taskKey];
+  performance.clearMarks();
+  performance.clearMeasures();
+  clearLog('perfConsole');
+  log('perfConsole', `performance.clearMarks() / clearMeasures()`, 'info');
+
+  const results = [];
+  let prev = null;
+  const overallStart = performance.now();
+
+  tasks.forEach((task, i) => {
+    const markStart = `task-${i}-start`;
+    const markEnd   = `task-${i}-end`;
+    const measName  = `task-${i}`;
+
+    performance.mark(markStart);
+    log('perfConsole', `performance.mark('${markStart}')`, 'info');
+
+    const t0  = performance.now();
+    prev      = task.fn(prev);
+    const dur = performance.now() - t0;
+
+    performance.mark(markEnd);
+    performance.measure(measName, markStart, markEnd);
+
+    const entry = performance.getEntriesByName(measName)[0];
+    results.push({ name: task.name, duration: entry.duration, startTime: entry.startTime });
+    log('perfConsole', `performance.measure('${measName}') → ${entry.duration.toFixed(3)} ms`, 'ok');
+  });
+
+  const totalTime = performance.now() - overallStart;
+  document.getElementById('perfTotalTime').textContent = `合計: ${totalTime.toFixed(2)} ms`;
+
+  // タイムライン描画
+  const maxDur = Math.max(...results.map(r => r.duration), 1);
+  const body   = document.getElementById('perfTimelineBody');
+  body.innerHTML = '';
+
+  const COLORS = ['#9f7aea','#68d391','#f6ad55','#90cdf4','#fc8181'];
+  results.forEach((r, i) => {
+    const pct = Math.max(2, (r.duration / maxDur) * 100);
+    const row = document.createElement('div');
+    row.className = 'perf-mark-row';
+    row.innerHTML = `
+      <div class="perf-mark-name">${r.name}</div>
+      <div class="perf-mark-bar-wrap">
+        <div class="perf-mark-bar" style="width:${pct}%;background:${COLORS[i % COLORS.length]};"></div>
+      </div>
+      <div class="perf-mark-val">${r.duration.toFixed(3)} ms</div>`;
+    body.appendChild(row);
+  });
+
+  log('perfConsole', `合計実行時間: ${totalTime.toFixed(3)} ms`, 'ok');
+  log('perfConsole', `performance.getEntriesByType('measure') → ${results.length} 件`, 'info');
+}
+
+function clearPerfTimeline() {
+  performance.clearMarks();
+  performance.clearMeasures();
+  document.getElementById('perfTimelineBody').innerHTML =
+    '<div style="padding:12px 14px;color:var(--muted);font-size:0.85rem;">「計測実行」をクリックしてください</div>';
+  document.getElementById('perfTotalTime').textContent = '—';
+  clearLog('perfConsole');
+  log('perfConsole', 'performance.clearMarks() / clearMeasures() — クリアしました', 'warn');
+}
+
+// ===================================================
+// DEMO 3: Page Visibility
+// ===================================================
+let visibleCount    = 0;
+let hiddenCount     = 0;
+let changeCount     = 0;
+let hiddenStartTime = null;
+let totalHiddenMs   = 0;
+
+function updateVisibilityDisplay(state) {
+  const display = document.getElementById('visibilityDisplay');
+  const icon    = document.getElementById('visIcon');
+  const stateEl = document.getElementById('visState');
+  const descEl  = document.getElementById('visDesc');
+
+  if (state === 'visible') {
+    display.style.background = '#1a2744';
+    icon.textContent    = '👁️';
+    stateEl.textContent = 'visible';
+    stateEl.style.color = '#68d391';
+    descEl.textContent  = 'ページが表示されています（document.hidden = false）';
+  } else {
+    display.style.background = '#2d1515';
+    icon.textContent    = '🙈';
+    stateEl.textContent = 'hidden';
+    stateEl.style.color = '#fc8181';
+    descEl.textContent  = 'ページが非表示です（document.hidden = true）';
+  }
+}
+
+function handleVisibilityChange() {
+  const state = document.visibilityState;
+  changeCount++;
+  document.getElementById('changeCount').textContent = changeCount;
+  updateVisibilityDisplay(state);
+
+  if (state === 'hidden') {
+    hiddenCount++;
+    hiddenStartTime = performance.now();
+    document.getElementById('hiddenCount').textContent = hiddenCount;
+    log('visConsole', `visibilitychange → hidden  document.hidden = true`, 'warn');
+    log('visConsole', `  アニメーション停止・通信削減などを実行`, 'info');
+  } else {
+    visibleCount++;
+    document.getElementById('visibleCount').textContent = visibleCount;
+    if (hiddenStartTime !== null) {
+      totalHiddenMs += performance.now() - hiddenStartTime;
+      hiddenStartTime = null;
+      document.getElementById('totalHiddenTime').textContent = (totalHiddenMs / 1000).toFixed(1);
+    }
+    log('visConsole', `visibilitychange → visible  document.hidden = false`, 'ok');
+    log('visConsole', `  アニメーション再開・データ更新などを実行`, 'info');
+  }
+}
+
+document.addEventListener('visibilitychange', handleVisibilityChange);
+// 初期状態
+updateVisibilityDisplay(document.visibilityState);
+
+function resetVisibility() {
+  visibleCount = hiddenCount = changeCount = totalHiddenMs = 0;
+  hiddenStartTime = null;
+  ['visibleCount','hiddenCount','changeCount'].forEach(id => {
+    document.getElementById(id).textContent = '0';
+  });
+  document.getElementById('totalHiddenTime').textContent = '0';
+  clearLog('visConsole');
+  log('visConsole', 'カウントをリセットしました', 'warn');
+}
+
+// ===================================================
+// DEMO 4: Navigation Timing
+// ===================================================
+function renderNavTimingChart(phases) {
+  const chart  = document.getElementById('navTimingChart');
+  const maxVal = Math.max(...phases.map(p => p.end), 1);
+  chart.innerHTML = '';
+
+  const COLORS = ['#9f7aea','#4299e1','#48bb78','#f6ad55','#fc8181','#b794f4','#68d391'];
+  phases.forEach((phase, i) => {
+    const startPct = (phase.start / maxVal) * 100;
+    const widthPct = Math.max(0.5, ((phase.end - phase.start) / maxVal) * 100);
+    const dur      = (phase.end - phase.start).toFixed(1);
+
+    const row = document.createElement('div');
+    row.className = 'nav-timing-row';
+    row.innerHTML = `
+      <div class="nav-timing-label">${phase.label}</div>
+      <div class="nav-timing-bar-wrap">
+        <div class="nav-timing-bar" style="left:${startPct}%;width:${widthPct}%;background:${COLORS[i%COLORS.length]};"></div>
+      </div>
+      <div class="nav-timing-val">${dur} ms</div>`;
+    chart.appendChild(row);
+  });
+}
+
+function loadNavTiming() {
+  clearLog('navConsole');
+  const entries = performance.getEntriesByType('navigation');
+  if (entries.length === 0) {
+    log('navConsole', '⚠ Navigation Timing データが取得できません。シミュレーションを使用してください', 'warn');
+    loadNavTimingSimulated();
+    return;
+  }
+  const nav = entries[0];
+  log('navConsole', 'performance.getEntriesByType("navigation")[0]', 'info');
+  log('navConsole', `type: ${nav.type}`, 'info');
+  log('navConsole', `transferSize: ${nav.transferSize} bytes`, 'info');
+
+  const phases = [
+    { label:'navigationStart → fetchStart',     start: 0,                          end: nav.fetchStart },
+    { label:'DNS 解決',                           start: nav.domainLookupStart,      end: nav.domainLookupEnd },
+    { label:'TCP 接続',                           start: nav.connectStart,           end: nav.connectEnd },
+    { label:'リクエスト送信',                     start: nav.requestStart,           end: nav.responseStart },
+    { label:'レスポンス受信 (TTFB〜)',            start: nav.responseStart,          end: nav.responseEnd },
+    { label:'DOM パース',                         start: nav.responseEnd,            end: nav.domInteractive },
+    { label:'DOMContentLoaded',                   start: nav.domContentLoadedEventStart, end: nav.domContentLoadedEventEnd },
+    { label:'load イベント',                      start: nav.loadEventStart,         end: nav.loadEventEnd },
+  ].filter(p => p.end > p.start || p.label.includes('navigationStart'));
+
+  renderNavTimingChart(phases);
+  phases.forEach(p => {
+    log('navConsole', `${p.label}: ${(p.end - p.start).toFixed(1)} ms`, 'ok');
+  });
+}
+
+function loadNavTimingSimulated() {
+  clearLog('navConsole');
+  log('navConsole', 'シミュレーションデータを使用', 'warn');
+
+  // 典型的なページ読み込みのシミュレーション
+  const sim = {
+    fetchStart:                  2,
+    domainLookupStart:           5,
+    domainLookupEnd:             28,
+    connectStart:                28,
+    connectEnd:                  95,
+    requestStart:                96,
+    responseStart:               210,
+    responseEnd:                 340,
+    domInteractive:              580,
+    domContentLoadedEventStart:  582,
+    domContentLoadedEventEnd:    590,
+    loadEventStart:              820,
+    loadEventEnd:                835,
+  };
+
+  const phases = [
+    { label:'fetchStart',                         start: 0,                              end: sim.fetchStart },
+    { label:'DNS 解決',                            start: sim.domainLookupStart,          end: sim.domainLookupEnd },
+    { label:'TCP 接続',                            start: sim.connectStart,               end: sim.connectEnd },
+    { label:'リクエスト送信',                      start: sim.requestStart,               end: sim.responseStart },
+    { label:'レスポンス受信 (TTFB〜)',             start: sim.responseStart,              end: sim.responseEnd },
+    { label:'DOM パース',                          start: sim.responseEnd,                end: sim.domInteractive },
+    { label:'DOMContentLoaded',                    start: sim.domContentLoadedEventStart, end: sim.domContentLoadedEventEnd },
+    { label:'load イベント',                       start: sim.loadEventStart,             end: sim.loadEventEnd },
+  ];
+
+  renderNavTimingChart(phases);
+  phases.forEach(p => {
+    log('navConsole', `${p.label}: ${(p.end - p.start).toFixed(1)} ms`, 'ok');
+  });
+  log('navConsole', `合計 (loadEventEnd): ${sim.loadEventEnd} ms`, 'info');
+  log('navConsole', `TTFB: ${sim.responseStart - sim.requestStart} ms`, 'info');
+  log('navConsole', `DOM パース: ${sim.domInteractive - sim.responseEnd} ms`, 'info');
+}
+
+// ===================================================
+// DEMO 5: オンライン/オフライン
+// ===================================================
+let simOnlineState  = null; // null=実際の状態, true=オンライン, false=オフライン
+let requestQueue    = [];
+let reqCounter      = 0;
+
+function getOnlineState() {
+  return simOnlineState !== null ? simOnlineState : navigator.onLine;
+}
+
+function updateOnlineUI(online) {
+  const indicator = document.getElementById('onlineIndicator');
+  const dot       = document.getElementById('onlineDot');
+  const text      = document.getElementById('onlineText');
+  const detail    = document.getElementById('onlineDetail');
+  const raw       = document.getElementById('onlineRaw');
+
+  indicator.className = 'online-indicator ' + (online ? 'online' : 'offline');
+  dot.className       = 'online-dot ' + (online ? 'online' : 'offline');
+  text.className      = 'online-text ' + (online ? 'online' : 'offline');
+  text.textContent    = online ? '🌐 オンライン' : '📵 オフライン';
+  detail.textContent  = online
+    ? 'ネットワーク接続あり。リクエストを送信できます。'
+    : 'ネットワーク接続なし。リクエストはキューに保存されます。';
+  raw.textContent     = String(navigator.onLine);
+}
+
+function simOnline() {
+  simOnlineState = true;
+  updateOnlineUI(true);
+  clearLog('onlineConsole');
+  log('onlineConsole', 'online イベント発火（シミュレーション）', 'ok');
+  log('onlineConsole', 'navigator.onLine → true', 'ok');
+  if (requestQueue.length > 0) {
+    log('onlineConsole', `キューに ${requestQueue.length} 件のリクエストがあります。送信を試みます...`, 'warn');
+  }
+}
+
+function simOffline() {
+  simOnlineState = false;
+  updateOnlineUI(false);
+  clearLog('onlineConsole');
+  log('onlineConsole', 'offline イベント発火（シミュレーション）', 'err');
+  log('onlineConsole', 'navigator.onLine → false', 'err');
+  log('onlineConsole', '以降のリクエストはキューに保存されます', 'warn');
+}
+
+function resetOnlineSim() {
+  simOnlineState = null;
+  updateOnlineUI(navigator.onLine);
+  clearLog('onlineConsole');
+  log('onlineConsole', '実際の navigator.onLine 状態に戻しました', 'info');
+  log('onlineConsole', `現在の状態: ${navigator.onLine ? 'オンライン' : 'オフライン'}`, navigator.onLine ? 'ok' : 'err');
+}
+
+function addToQueue() {
+  reqCounter++;
+  const req = {
+    id:      reqCounter,
+    url:     `/api/data/${reqCounter}`,
+    method:  ['GET','POST','PUT'][reqCounter % 3],
+    ts:      new Date().toLocaleTimeString()
+  };
+  requestQueue.push(req);
+  renderQueue();
+  clearLog('onlineConsole');
+  if (!getOnlineState()) {
+    log('onlineConsole', `オフライン: リクエスト #${req.id} をキューに追加`, 'warn');
+    log('onlineConsole', `  ${req.method} ${req.url}`, 'info');
+  } else {
+    log('onlineConsole', `オンライン: リクエスト #${req.id} を即時送信`, 'ok');
+    log('onlineConsole', `  ${req.method} ${req.url}`, 'info');
+    setTimeout(() => {
+      requestQueue = requestQueue.filter(r => r.id !== req.id);
+      renderQueue();
+      log('onlineConsole', `リクエスト #${req.id} 送信完了 (200 OK)`, 'ok');
+    }, 500);
+  }
+}
+
+function flushQueue() {
+  if (!getOnlineState()) {
+    log('onlineConsole', '⚠ オフライン状態です。オンラインになってから送信してください', 'err');
+    return;
+  }
+  if (requestQueue.length === 0) {
+    log('onlineConsole', 'キューは空です', 'info');
+    return;
+  }
+  clearLog('onlineConsole');
+  log('onlineConsole', `キューの ${requestQueue.length} 件を送信中...`, 'ok');
+  const toSend = [...requestQueue];
+  requestQueue = [];
+  renderQueue();
+  toSend.forEach((req, i) => {
+    setTimeout(() => {
+      log('onlineConsole', `  #${req.id} ${req.method} ${req.url} → 200 OK`, 'ok');
+    }, i * 200);
+  });
+  setTimeout(() => {
+    log('onlineConsole', `全 ${toSend.length} 件の送信完了`, 'ok');
+  }, toSend.length * 200 + 100);
+}
+
+function clearQueue() {
+  requestQueue = [];
+  renderQueue();
+  log('onlineConsole', 'キューをクリアしました', 'warn');
+}
+
+function renderQueue() {
+  const el = document.getElementById('requestQueue');
+  if (requestQueue.length === 0) {
+    el.innerHTML = '<span style="color:var(--muted);">（キューは空です）</span>';
+    return;
+  }
+  el.innerHTML = requestQueue.map(r =>
+    `<div style="display:flex;gap:8px;align-items:center;padding:4px 0;border-bottom:1px solid var(--border);">
+      <span style="background:var(--purple-bg);color:var(--purple-dark);border-radius:4px;padding:1px 6px;font-size:0.75rem;font-weight:700;">#${r.id}</span>
+      <span style="font-family:monospace;font-size:0.8rem;color:var(--info-dark);">${r.method}</span>
+      <span style="font-size:0.8rem;color:var(--text);">${r.url}</span>
+      <span style="font-size:0.75rem;color:var(--muted);margin-left:auto;">${r.ts}</span>
+    </div>`
+  ).join('');
+}
+
+// online/offline イベントを実際にリッスン
+window.addEventListener('online', () => {
+  if (simOnlineState === null) {
+    updateOnlineUI(true);
+    log('onlineConsole', 'online イベント発火（実際のネットワーク変化）', 'ok');
+  }
+});
+window.addEventListener('offline', () => {
+  if (simOnlineState === null) {
+    updateOnlineUI(false);
+    log('onlineConsole', 'offline イベント発火（実際のネットワーク変化）', 'err');
+  }
+});
+
+// ===================================================
+// 演習問題
+// ===================================================
+function checkQ(btn, qid, correctLetter) {
+  const item = document.getElementById(qid);
+  item.querySelectorAll('.option-btn').forEach(b => {
+    b.disabled = true;
+    if (b.textContent.trim().startsWith(correctLetter + '.') ||
+        b.textContent.trim().startsWith(correctLetter + '（')) b.classList.add('correct');
+  });
+  if (!btn.classList.contains('correct')) btn.classList.add('wrong');
+  document.getElementById('exp_' + qid).classList.add('show');
+}
+
+function toggleMulti(btn) {
+  if (btn.disabled) return;
+  btn.classList.toggle('selected');
+  btn.style.borderColor = btn.classList.contains('selected') ? 'var(--purple-light)' : '';
+  btn.style.background  = btn.classList.contains('selected') ? 'var(--purple-bg)'    : '';
+}
+
+function checkQ5Multi() {
+  const btns = document.querySelectorAll('#q5options .option-btn');
+  btns.forEach(b => {
+    b.disabled = true;
+    const isCorrect  = b.dataset.correct === 'true';
+    const isSelected = b.classList.contains('selected');
+    b.style.borderColor = ''; b.style.background = '';
+    if (isCorrect)                b.classList.add('correct');
+    if (!isCorrect && isSelected) b.classList.add('wrong');
+  });
+  document.getElementById('exp_q5').classList.add('show');
+  document.querySelector('#q5 .btn-primary').disabled = true;
+}
+
+function checkQ6() {
+  const a   = document.getElementById('q6a').value.trim().toLowerCase().replace(/[()]/g,'');
+  const b   = document.getElementById('q6b').value.trim().toLowerCase();
+  const aOk = a === 'postmessage';
+  const bOk = b === 'onmessage';
+  const exp = document.getElementById('exp_q6');
+  exp.classList.add('show');
+  let html = '';
+  if (aOk && bOk) {
+    html = '<strong>✅ 両方正解！</strong><br><br>';
+  } else {
+    html  = '<strong>' + (aOk ? '✅' : '❌') + ' A: postMessage</strong>（あなたの答え: ' + (document.getElementById('q6a').value || '未入力') + '）<br>';
+    html += '<strong>' + (bOk ? '✅' : '❌') + ' B: onmessage</strong>（あなたの答え: ' + (document.getElementById('q6b').value || '未入力') + '）<br><br>';
+  }
+  html += '<strong>解説：</strong><br>';
+  html += '• <code>worker.postMessage(data)</code> — メインスレッドから Worker にデータを送信します。データは構造化複製（ディープコピー）されて渡されます。<br>';
+  html += '• <code>worker.onmessage = handler</code> — Worker からのメッセージを受信するハンドラを設定します。<code>event.data</code> に Worker が <code>self.postMessage()</code> で送ったデータが入ります。<br>';
+  html += '• Worker 側では逆に <code>self.postMessage()</code> で送信し、<code>self.onmessage</code> で受信します。';
+  exp.innerHTML = html;
+}
+
+// ===================================================
+// 完了ボタン
+// ===================================================
+function markComplete() {
+  const key = 'html5lv2_ch4_06';
+  const btn = document.getElementById('completeBtn');
+  if (localStorage.getItem(key) === 'done') {
+    localStorage.removeItem(key);
+    btn.textContent = '✅ このセクションを完了にする';
+    btn.classList.remove('done');
+  } else {
+    localStorage.setItem(key, 'done');
+    btn.textContent = '🎉 完了済み！（クリックで取り消し）';
+    btn.classList.add('done');
+  }
+}
+
+// ===================================================
+// 初期化
+// ===================================================
+(function init() {
+  if (localStorage.getItem('html5lv2_ch4_06') === 'done') {
+    const btn = document.getElementById('completeBtn');
+    btn.textContent = '🎉 完了済み！（クリックで取り消し）';
+    btn.classList.add('done');
+  }
+  updateOnlineUI(navigator.onLine);
+  loadNavTimingSimulated();
+})();
+</script>
+</body>
+</html>

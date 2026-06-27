@@ -1,0 +1,1541 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>4-3 ストレージ | HTML5 Level 2 学習サイト</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --purple-dark:  #553c9a;
+      --purple-light: #9f7aea;
+      --purple-bg:    #faf5ff;
+      --purple-border:#e9d8fd;
+      --success-bg:   #f0fff4;
+      --success:      #48bb78;
+      --success-dark: #276749;
+      --warning-bg:   #fffaf0;
+      --warning:      #ed8936;
+      --warning-dark: #744210;
+      --danger-bg:    #fff5f5;
+      --danger:       #fc8181;
+      --danger-dark:  #c53030;
+      --info-bg:      #ebf8ff;
+      --info:         #4299e1;
+      --info-dark:    #2b6cb0;
+      --bg:           #f0f4f8;
+      --text:         #2d3748;
+      --muted:        #718096;
+      --dark-bg:      #1a202c;
+      --white:        #ffffff;
+      --border:       #e2e8f0;
+    }
+    body { font-family:'Segoe UI','Hiragino Sans','Meiryo',sans-serif; background:var(--bg); color:var(--text); line-height:1.7; }
+    a { color:var(--purple-dark); text-decoration:none; }
+    a:hover { text-decoration:underline; }
+
+    .breadcrumb { background:var(--white); border-bottom:1px solid var(--border); padding:10px 24px; font-size:0.85rem; color:var(--muted); }
+    .breadcrumb a { color:var(--purple-dark); }
+
+    .chapter-header { background:linear-gradient(135deg,var(--purple-dark) 0%,var(--purple-light) 100%); color:var(--white); padding:48px 24px 40px; text-align:center; position:relative; overflow:hidden; }
+    .chapter-header::before { content:''; position:absolute; top:-60px; right:-60px; width:220px; height:220px; background:rgba(255,255,255,0.06); border-radius:50%; }
+    .chapter-header::after  { content:''; position:absolute; bottom:-80px; left:-40px; width:280px; height:280px; background:rgba(255,255,255,0.04); border-radius:50%; }
+    .chapter-header .sec-label { font-size:0.85rem; letter-spacing:0.15em; opacity:0.8; margin-bottom:8px; }
+    .chapter-header h1 { font-size:clamp(1.5rem,4vw,2.2rem); font-weight:800; margin-bottom:12px; position:relative; z-index:1; }
+    .chapter-header p  { font-size:0.97rem; opacity:0.88; max-width:580px; margin:0 auto; position:relative; z-index:1; }
+
+    .section-nav { background:var(--white); border-bottom:1px solid var(--border); padding:12px 20px; overflow-x:auto; white-space:nowrap; }
+    .section-nav a { display:inline-block; padding:5px 12px; margin-right:6px; border-radius:20px; font-size:0.82rem; color:var(--muted); border:1px solid var(--border); transition:all 0.2s; }
+    .section-nav a:hover { background:var(--purple-bg); border-color:var(--purple-light); color:var(--purple-dark); text-decoration:none; }
+    .section-nav a.active { background:var(--purple-dark); color:var(--white); border-color:var(--purple-dark); }
+
+    .main { max-width:960px; margin:0 auto; padding:40px 20px 60px; }
+
+    .sec-heading { font-size:1.4rem; font-weight:800; color:var(--purple-dark); border-left:5px solid var(--purple-light); padding-left:14px; margin:48px 0 20px; }
+    .sec-heading:first-of-type { margin-top:0; }
+    .sub-heading { font-size:1.1rem; font-weight:700; color:var(--text); margin:28px 0 12px; display:flex; align-items:center; gap:8px; }
+    .sub-heading::before { content:''; display:inline-block; width:4px; height:18px; background:var(--purple-light); border-radius:2px; }
+
+    .info-box { border-radius:8px; padding:16px 20px; margin:20px 0; font-size:0.9rem; line-height:1.7; }
+    .info-box.point { background:var(--purple-bg); border:1px solid var(--purple-border); border-left:4px solid var(--purple-dark); }
+    .info-box.point strong { color:var(--purple-dark); }
+    .info-box.warn  { background:var(--warning-bg); border:1px solid #fbd38d; border-left:4px solid var(--warning); }
+    .info-box.warn  strong { color:var(--warning-dark); }
+    .info-box.tip   { background:var(--success-bg); border:1px solid #c6f6d5; border-left:4px solid var(--success); }
+    .info-box.tip   strong { color:var(--success-dark); }
+    .info-box p { margin-top:6px; }
+    .info-box ul { margin:8px 0 0 18px; }
+    .info-box li { margin-bottom:4px; }
+
+    .tbl-wrap { overflow-x:auto; margin:20px 0; border-radius:8px; border:1px solid var(--border); }
+    table { width:100%; border-collapse:collapse; font-size:0.88rem; }
+    th { background:var(--purple-dark); color:var(--white); padding:10px 14px; text-align:left; font-weight:600; }
+    td { padding:9px 14px; border-bottom:1px solid var(--border); vertical-align:top; }
+    tr:last-child td { border-bottom:none; }
+    tr:nth-child(even) td { background:#f7f8fa; }
+    code { background:#edf2f7; color:var(--purple-dark); padding:1px 6px; border-radius:4px; font-size:0.85em; font-family:'Consolas','Monaco',monospace; }
+
+    .code-block { position:relative; background:var(--dark-bg); border-radius:10px; margin:20px 0; overflow:hidden; }
+    .code-block-header { background:#2d3748; padding:8px 16px; font-size:0.78rem; color:#a0aec0; display:flex; justify-content:space-between; align-items:center; }
+    .copy-btn { background:transparent; border:1px solid #4a5568; color:#a0aec0; padding:3px 10px; border-radius:4px; font-size:0.75rem; cursor:pointer; transition:all 0.2s; }
+    .copy-btn:hover { background:#4a5568; color:var(--white); }
+    .copy-btn.copied { background:var(--success-dark); border-color:var(--success-dark); color:var(--white); }
+    .code-block pre { padding:20px; overflow-x:auto; font-size:0.85rem; line-height:1.7; color:#e2e8f0; font-family:'Consolas','Monaco','Courier New',monospace; }
+    .kw  { color:#90cdf4; }
+    .fn  { color:#b794f4; }
+    .str { color:#fbd38d; }
+    .num { color:#fc8181; }
+    .cm  { color:#68d391; }
+    .op  { color:#f6ad55; }
+    .out { color:#a0aec0; }
+    .tag { color:#fc8181; }
+    .atr { color:#90cdf4; }
+    .val { color:#fbd38d; }
+
+    .demo-box { background:var(--white); border:2px solid var(--purple-border); border-radius:12px; padding:24px; margin:24px 0; }
+    .demo-box h3 { font-size:1rem; font-weight:700; color:var(--purple-dark); margin-bottom:16px; display:flex; align-items:center; gap:8px; }
+    .demo-box h3 .demo-num { background:var(--purple-dark); color:var(--white); border-radius:50%; width:24px; height:24px; display:inline-flex; align-items:center; justify-content:center; font-size:0.75rem; flex-shrink:0; }
+
+    .btn { padding:8px 16px; border:none; border-radius:7px; font-size:0.88rem; font-weight:600; cursor:pointer; transition:all 0.2s; }
+    .btn:disabled { opacity:0.45; cursor:not-allowed; }
+    .btn-primary { background:var(--purple-dark); color:var(--white); }
+    .btn-primary:hover:not(:disabled) { background:var(--purple-light); }
+    .btn-success { background:var(--success-dark); color:var(--white); }
+    .btn-success:hover:not(:disabled) { background:var(--success); }
+    .btn-danger  { background:var(--danger-dark); color:var(--white); }
+    .btn-danger:hover:not(:disabled)  { background:var(--danger); }
+    .btn-info    { background:var(--info-dark); color:var(--white); }
+    .btn-info:hover:not(:disabled)    { background:var(--info); }
+    .btn-warn    { background:var(--warning-dark); color:var(--white); }
+    .btn-warn:hover:not(:disabled)    { background:var(--warning); }
+    .btn-outline { background:transparent; border:2px solid var(--purple-dark); color:var(--purple-dark); }
+    .btn-outline:hover:not(:disabled) { background:var(--purple-bg); }
+    .btn-sm { padding:5px 12px; font-size:0.82rem; }
+
+    .ctrl-row { display:flex; flex-wrap:wrap; gap:10px; align-items:center; margin-bottom:12px; }
+    label { font-size:0.85rem; color:var(--muted); }
+    input[type=text], input[type=number] { padding:7px 10px; border:1px solid var(--border); border-radius:6px; font-size:0.88rem; color:var(--text); background:var(--white); }
+    input[type=text]:focus, input[type=number]:focus { outline:none; border-color:var(--purple-light); }
+    select { padding:6px 10px; border:1px solid var(--border); border-radius:6px; font-size:0.85rem; color:var(--text); background:var(--white); }
+
+    .console { background:var(--dark-bg); border-radius:8px; padding:14px 16px; font-family:'Consolas','Monaco',monospace; font-size:0.82rem; color:#e2e8f0; min-height:80px; max-height:220px; overflow-y:auto; margin-top:12px; }
+    .console .log-line { margin-bottom:4px; }
+    .console .log-line.ok   { color:#68d391; }
+    .console .log-line.err  { color:#fc8181; }
+    .console .log-line.info { color:#90cdf4; }
+    .console .log-line.warn { color:#f6ad55; }
+
+    /* Web Storage ビューア */
+    .storage-viewer { background:#f7f8fa; border:1px solid var(--border); border-radius:8px; overflow:hidden; margin-top:12px; }
+    .storage-viewer-header { background:var(--purple-dark); color:var(--white); padding:8px 14px; font-size:0.82rem; font-weight:600; display:flex; justify-content:space-between; align-items:center; }
+    .storage-viewer-body { padding:0; max-height:200px; overflow-y:auto; }
+    .storage-row { display:grid; grid-template-columns:1fr 1fr auto; gap:0; border-bottom:1px solid var(--border); font-size:0.83rem; }
+    .storage-row:last-child { border-bottom:none; }
+    .storage-row .s-key   { padding:8px 12px; color:var(--purple-dark); font-weight:600; font-family:monospace; border-right:1px solid var(--border); word-break:break-all; }
+    .storage-row .s-val   { padding:8px 12px; color:var(--text); font-family:monospace; word-break:break-all; border-right:1px solid var(--border); }
+    .storage-row .s-del   { padding:8px 10px; display:flex; align-items:center; justify-content:center; }
+    .storage-row .s-del button { background:var(--danger-bg); border:1px solid var(--danger); color:var(--danger-dark); border-radius:4px; padding:2px 8px; font-size:0.75rem; cursor:pointer; }
+    .storage-row .s-del button:hover { background:var(--danger); color:var(--white); }
+    .storage-empty { padding:16px; text-align:center; color:var(--muted); font-size:0.85rem; }
+
+    /* IndexedDB フロービジュアライザ */
+    .idb-flow { display:flex; flex-direction:column; gap:6px; margin:14px 0; }
+    .idb-step { display:flex; align-items:center; gap:10px; padding:10px 14px; border-radius:8px; background:#f7f8fa; border:1px solid var(--border); font-size:0.85rem; transition:all 0.3s; }
+    .idb-step.active   { background:var(--purple-bg); border-color:var(--purple-light); }
+    .idb-step.done     { background:var(--success-bg); border-color:var(--success); }
+    .idb-step.error    { background:var(--danger-bg);  border-color:var(--danger); }
+    .idb-step .step-icon { font-size:1.1rem; flex-shrink:0; }
+    .idb-step .step-label { font-weight:600; color:var(--text); flex:1; }
+    .idb-step .step-status { font-size:0.78rem; color:var(--muted); }
+    .idb-step.active .step-status { color:var(--purple-dark); }
+    .idb-step.done   .step-status { color:var(--success-dark); }
+
+    /* File API */
+    .file-drop-zone { border:2px dashed var(--purple-border); border-radius:10px; padding:32px; text-align:center; background:var(--purple-bg); cursor:pointer; transition:all 0.2s; }
+    .file-drop-zone:hover, .file-drop-zone.dragover { border-color:var(--purple-dark); background:#f0e6ff; }
+    .file-drop-zone p { color:var(--muted); font-size:0.9rem; margin-top:8px; }
+    .file-drop-zone input[type=file] { display:none; }
+    .file-result-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:12px; margin-top:14px; }
+    .file-result-card { background:#f7f8fa; border:1px solid var(--border); border-radius:8px; padding:12px; }
+    .file-result-card .frc-label { font-size:0.78rem; font-weight:700; color:var(--purple-dark); margin-bottom:6px; }
+    .file-result-card .frc-val   { font-size:0.8rem; color:var(--text); font-family:monospace; word-break:break-all; max-height:80px; overflow-y:auto; }
+
+    /* TypedArray 比較 */
+    .typed-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(180px,1fr)); gap:10px; margin:14px 0; }
+    .typed-card { background:#f7f8fa; border:1px solid var(--border); border-radius:8px; padding:12px; }
+    .typed-card .tc-name  { font-family:monospace; font-size:0.85rem; font-weight:700; color:var(--purple-dark); margin-bottom:4px; }
+    .typed-card .tc-bytes { font-size:0.78rem; color:var(--muted); margin-bottom:6px; }
+    .typed-card .tc-range { font-size:0.78rem; color:var(--text); font-family:monospace; }
+    .typed-card.highlight { border-color:var(--purple-light); background:var(--purple-bg); }
+
+    /* 演習問題 */
+    .quiz-section { background:var(--white); border:2px solid var(--purple-border); border-radius:14px; padding:28px; margin:48px 0 32px; }
+    .quiz-section h2 { font-size:1.2rem; font-weight:800; color:var(--purple-dark); margin-bottom:6px; }
+    .quiz-section .quiz-desc { font-size:0.88rem; color:var(--muted); margin-bottom:24px; }
+    .quiz-item { background:var(--bg); border-radius:10px; padding:20px; margin-bottom:16px; }
+    .quiz-item .q-num  { font-size:0.78rem; font-weight:700; color:var(--purple-light); letter-spacing:0.1em; margin-bottom:6px; }
+    .quiz-item .q-text { font-size:0.95rem; font-weight:600; color:var(--text); margin-bottom:14px; line-height:1.6; }
+    .quiz-item .q-code { background:var(--dark-bg); border-radius:6px; padding:12px 16px; font-family:'Consolas','Monaco',monospace; font-size:0.83rem; color:#e2e8f0; margin-bottom:14px; line-height:1.6; }
+    .options { display:flex; flex-direction:column; gap:8px; }
+    .option-btn { background:var(--white); border:2px solid var(--border); border-radius:8px; padding:10px 16px; font-size:0.88rem; text-align:left; cursor:pointer; transition:all 0.2s; color:var(--text); }
+    .option-btn:hover:not(:disabled) { border-color:var(--purple-light); background:var(--purple-bg); }
+    .option-btn.correct  { border-color:var(--success); background:var(--success-bg); color:var(--success-dark); font-weight:600; }
+    .option-btn.wrong    { border-color:var(--danger);  background:var(--danger-bg);  color:var(--danger-dark); }
+    .option-btn:disabled { cursor:default; }
+    .explanation { display:none; margin-top:12px; padding:12px 16px; background:var(--purple-bg); border:1px solid var(--purple-border); border-radius:8px; font-size:0.87rem; color:var(--text); line-height:1.7; }
+    .explanation.show { display:block; }
+    .explanation strong { color:var(--purple-dark); }
+    .fill-input { width:100%; padding:8px 12px; border:2px solid var(--border); border-radius:7px; font-size:0.9rem; font-family:'Consolas','Monaco',monospace; margin-bottom:8px; }
+    .fill-input:focus { outline:none; border-color:var(--purple-light); }
+
+    .complete-area { text-align:center; margin:40px 0 20px; }
+    .complete-btn { background:linear-gradient(135deg,var(--purple-dark),var(--purple-light)); color:var(--white); border:none; border-radius:12px; padding:16px 40px; font-size:1rem; font-weight:700; cursor:pointer; transition:all 0.3s; box-shadow:0 4px 15px rgba(85,60,154,0.3); }
+    .complete-btn:hover { transform:translateY(-2px); box-shadow:0 6px 20px rgba(85,60,154,0.4); }
+    .complete-btn.done { background:linear-gradient(135deg,var(--success-dark),var(--success)); box-shadow:0 4px 15px rgba(72,187,120,0.3); }
+
+    .page-nav { display:flex; justify-content:space-between; align-items:center; gap:16px; flex-wrap:wrap; margin-top:40px; padding-top:24px; border-top:2px solid var(--border); }
+    .page-nav-btn { display:inline-flex; align-items:center; gap:8px; background:var(--white); border:2px solid var(--purple-border); color:var(--purple-dark); border-radius:10px; padding:12px 20px; font-size:0.9rem; font-weight:600; transition:all 0.2s; }
+    .page-nav-btn:hover { background:var(--purple-bg); border-color:var(--purple-light); text-decoration:none; }
+
+    footer { background:var(--dark-bg); color:#a0aec0; text-align:center; padding:28px 20px; font-size:0.85rem; margin-top:60px; }
+    footer a { color:var(--purple-light); }
+
+    @media(max-width:640px){
+      .main { padding:24px 14px 48px; }
+      .storage-row { grid-template-columns:1fr 1fr auto; }
+      .typed-grid { grid-template-columns:1fr 1fr; }
+      .file-result-grid { grid-template-columns:1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- パンくずナビ -->
+<div class="breadcrumb">
+  <a href="../index.html">🏠 HTML5 Level 2</a> ›
+  <a href="index.html">Chapter 4</a> ›
+  4-3 ストレージ
+</div>
+
+<!-- チャプターヘッダー -->
+<div class="chapter-header">
+  <div class="sec-label">CHAPTER 4 — SECTION 3</div>
+  <h1>💾 ストレージ</h1>
+  <p>Web Storage・IndexedDB・File API・バイナリデータ操作など、クライアントサイドのデータ保存技術を学びます。</p>
+</div>
+
+<!-- セクションナビ -->
+<div class="section-nav">
+  <a href="01_graphics.html">4-1 グラフィックス</a>
+  <a href="02_media.html">4-2 メディア</a>
+  <a href="03_storage.html" class="active">4-3 ストレージ</a>
+  <a href="04_communication.html">4-4 通信</a>
+  <a href="05_device.html">4-5 デバイス</a>
+  <a href="06_performance.html">4-6 パフォーマンス</a>
+  <a href="07_security.html">4-7 セキュリティ</a>
+</div>
+
+<main class="main">
+
+  <!-- ========== 1. Web Storage ========== -->
+  <h2 class="sec-heading">1. Web Storage（localStorage / sessionStorage）</h2>
+
+  <p>Web Storage はキー・バリュー形式でデータをブラウザに保存する仕組みです。<code>localStorage</code> と <code>sessionStorage</code> の2種類があり、永続性とスコープが異なります。</p>
+
+  <div class="tbl-wrap">
+    <table>
+      <tr><th>比較項目</th><th>localStorage</th><th>sessionStorage</th></tr>
+      <tr><td>永続性</td><td>明示的に削除するまで永続</td><td>タブ（セッション）を閉じると消える</td></tr>
+      <tr><td>スコープ</td><td>同一オリジンの全タブ・ウィンドウで共有</td><td>同一タブ内のみ（タブごとに独立）</td></tr>
+      <tr><td>容量</td><td>約 5MB（ブラウザ依存）</td><td>約 5MB（ブラウザ依存）</td></tr>
+      <tr><td>データ型</td><td>文字列のみ（JSON.stringify で変換）</td><td>文字列のみ（JSON.stringify で変換）</td></tr>
+      <tr><td>storage イベント</td><td>他タブへ変更通知あり</td><td>他タブへの通知なし</td></tr>
+      <tr><td>サーバー送信</td><td>自動送信なし（Cookie と異なる）</td><td>自動送信なし</td></tr>
+    </table>
+  </div>
+
+  <div class="code-block">
+    <div class="code-block-header">
+      <span>Web Storage の CRUD 操作</span>
+      <button class="copy-btn" onclick="copyCode(this)">copy</button>
+    </div>
+    <pre><span class="cm">// ── localStorage ──</span>
+
+<span class="cm">// 保存（setItem）</span>
+localStorage.<span class="fn">setItem</span>(<span class="str">'username'</span>, <span class="str">'Alice'</span>);
+localStorage.<span class="fn">setItem</span>(<span class="str">'count'</span>, <span class="fn">String</span>(<span class="num">42</span>));          <span class="cm">// 数値は文字列に変換</span>
+localStorage.<span class="fn">setItem</span>(<span class="str">'user'</span>, JSON.<span class="fn">stringify</span>({ id:<span class="num">1</span>, name:<span class="str">'Alice'</span> }));
+
+<span class="cm">// 取得（getItem）</span>
+<span class="kw">const</span> name  <span class="op">=</span> localStorage.<span class="fn">getItem</span>(<span class="str">'username'</span>);    <span class="cm">// 'Alice'</span>
+<span class="kw">const</span> count <span class="op">=</span> <span class="fn">parseInt</span>(localStorage.<span class="fn">getItem</span>(<span class="str">'count'</span>)); <span class="cm">// 42（数値に変換）</span>
+<span class="kw">const</span> user  <span class="op">=</span> JSON.<span class="fn">parse</span>(localStorage.<span class="fn">getItem</span>(<span class="str">'user'</span>));  <span class="cm">// オブジェクトに変換</span>
+<span class="kw">const</span> none  <span class="op">=</span> localStorage.<span class="fn">getItem</span>(<span class="str">'missing'</span>);     <span class="cm">// null（存在しない場合）</span>
+
+<span class="cm">// 削除（removeItem）</span>
+localStorage.<span class="fn">removeItem</span>(<span class="str">'username'</span>);
+
+<span class="cm">// 全削除（clear）</span>
+localStorage.<span class="fn">clear</span>();
+
+<span class="cm">// キー数とキー名</span>
+<span class="kw">const</span> len <span class="op">=</span> localStorage.length;            <span class="cm">// 保存件数</span>
+<span class="kw">const</span> key <span class="op">=</span> localStorage.<span class="fn">key</span>(<span class="num">0</span>);            <span class="cm">// インデックスでキー名取得</span>
+
+<span class="cm">// storage イベント（他タブからの変更を検知）</span>
+window.<span class="fn">addEventListener</span>(<span class="str">'storage'</span>, (e) <span class="op">=></span> {
+  console.<span class="fn">log</span>(e.key);        <span class="cm">// 変更されたキー</span>
+  console.<span class="fn">log</span>(e.oldValue);   <span class="cm">// 変更前の値</span>
+  console.<span class="fn">log</span>(e.newValue);   <span class="cm">// 変更後の値</span>
+  console.<span class="fn">log</span>(e.storageArea); <span class="cm">// localStorage or sessionStorage</span>
+});
+
+<span class="cm">// sessionStorage も同じ API</span>
+sessionStorage.<span class="fn">setItem</span>(<span class="str">'temp'</span>, <span class="str">'session data'</span>);</pre>
+  </div>
+
+  <div class="info-box point">
+    <strong>📌 試験頻出：Web Storage の特性</strong>
+    <ul>
+      <li>保存できるのは<strong>文字列のみ</strong>。オブジェクトは <code>JSON.stringify()</code> で変換が必要</li>
+      <li>存在しないキーの <code>getItem()</code> は <code>null</code> を返す（undefined ではない）</li>
+      <li><code>localStorage</code> は同一オリジンの全タブで共有される</li>
+      <li><code>sessionStorage</code> はタブごとに独立。同じオリジンでも別タブは別ストレージ</li>
+      <li>Cookie と異なり、<strong>サーバーに自動送信されない</strong></li>
+      <li><code>storage</code> イベントは変更を行ったタブ自身には発火しない（他タブのみ）</li>
+    </ul>
+  </div>
+
+  <!-- ===== DEMO 1: Web Storage CRUD ===== -->
+  <div class="demo-box">
+    <h3><span class="demo-num">1</span> Web Storage CRUD デモ</h3>
+    <p style="font-size:0.85rem;color:var(--muted);margin-bottom:14px;">localStorage / sessionStorage を切り替えながら、データの追加・取得・削除を体験できます。</p>
+
+    <div class="ctrl-row">
+      <label>ストレージ種別:</label>
+      <select id="storageType" onchange="refreshStorageView()">
+        <option value="local">localStorage</option>
+        <option value="session">sessionStorage</option>
+      </select>
+    </div>
+    <div class="ctrl-row">
+      <input type="text" id="wsKey"   placeholder="キー名" style="width:160px;">
+      <input type="text" id="wsValue" placeholder="値" style="width:200px;">
+      <button class="btn btn-success btn-sm" onclick="wsSetItem()">setItem</button>
+      <button class="btn btn-info btn-sm"    onclick="wsGetItem()">getItem</button>
+      <button class="btn btn-danger btn-sm"  onclick="wsRemoveItem()">removeItem</button>
+      <button class="btn btn-warn btn-sm"    onclick="wsClear()">clear</button>
+    </div>
+
+    <div class="storage-viewer">
+      <div class="storage-viewer-header">
+        <span id="storageViewerTitle">localStorage の中身</span>
+        <span id="storageCount" style="opacity:0.8;">0 件</span>
+      </div>
+      <div class="storage-viewer-body" id="storageViewerBody">
+        <div class="storage-empty">（データなし）</div>
+      </div>
+    </div>
+    <div class="console" id="wsConsole"><div class="log-line info">▶ キーと値を入力して操作してください</div></div>
+  </div>
+
+  <!-- ========== 2. IndexedDB ========== -->
+  <h2 class="sec-heading">2. IndexedDB</h2>
+
+  <p>IndexedDB はブラウザ内の<strong>非同期トランザクション型データベース</strong>です。大量のデータや構造化データを保存でき、インデックスによる高速検索が可能です。</p>
+
+  <div class="code-block">
+    <div class="code-block-header">
+      <span>IndexedDB の基本操作</span>
+      <button class="copy-btn" onclick="copyCode(this)">copy</button>
+    </div>
+    <pre><span class="cm">// ── DB を開く（なければ作成）──</span>
+<span class="kw">const</span> request <span class="op">=</span> indexedDB.<span class="fn">open</span>(<span class="str">'MyDatabase'</span>, <span class="num">1</span>); <span class="cm">// (DB名, バージョン)</span>
+
+<span class="cm">// バージョンが上がったとき（スキーマ変更）</span>
+request.onupgradeneeded <span class="op">=</span> (event) <span class="op">=></span> {
+  <span class="kw">const</span> db <span class="op">=</span> event.target.result;
+
+  <span class="cm">// オブジェクトストアの作成</span>
+  <span class="kw">const</span> store <span class="op">=</span> db.<span class="fn">createObjectStore</span>(<span class="str">'users'</span>, {
+    keyPath: <span class="str">'id'</span>,          <span class="cm">// プライマリキーのフィールド名</span>
+    autoIncrement: <span class="kw">true</span>    <span class="cm">// 自動採番</span>
+  });
+
+  <span class="cm">// インデックスの作成</span>
+  store.<span class="fn">createIndex</span>(<span class="str">'name'</span>, <span class="str">'name'</span>, { unique: <span class="kw">false</span> });
+  store.<span class="fn">createIndex</span>(<span class="str">'email'</span>, <span class="str">'email'</span>, { unique: <span class="kw">true</span> });
+};
+
+request.onsuccess <span class="op">=</span> (event) <span class="op">=></span> {
+  <span class="kw">const</span> db <span class="op">=</span> event.target.result;
+
+  <span class="cm">// ── データの追加（readwrite トランザクション）──</span>
+  <span class="kw">const</span> tx    <span class="op">=</span> db.<span class="fn">transaction</span>(<span class="str">'users'</span>, <span class="str">'readwrite'</span>);
+  <span class="kw">const</span> store <span class="op">=</span> tx.<span class="fn">objectStore</span>(<span class="str">'users'</span>);
+
+  <span class="kw">const</span> addReq <span class="op">=</span> store.<span class="fn">add</span>({ name: <span class="str">'Alice'</span>, email: <span class="str">'alice@example.com'</span> });
+  addReq.onsuccess <span class="op">=</span> (e) <span class="op">=></span> console.<span class="fn">log</span>(<span class="str">'追加成功: id='</span>, e.target.result);
+
+  <span class="cm">// ── データの取得（readonly トランザクション）──</span>
+  <span class="kw">const</span> tx2    <span class="op">=</span> db.<span class="fn">transaction</span>(<span class="str">'users'</span>, <span class="str">'readonly'</span>);
+  <span class="kw">const</span> store2 <span class="op">=</span> tx2.<span class="fn">objectStore</span>(<span class="str">'users'</span>);
+
+  store2.<span class="fn">get</span>(<span class="num">1</span>).onsuccess <span class="op">=</span> (e) <span class="op">=></span> console.<span class="fn">log</span>(e.target.result);
+
+  <span class="cm">// ── 全件取得 ──</span>
+  store2.<span class="fn">getAll</span>().onsuccess <span class="op">=</span> (e) <span class="op">=></span> console.<span class="fn">log</span>(e.target.result);
+
+  <span class="cm">// ── 更新 ──</span>
+  store.<span class="fn">put</span>({ id: <span class="num">1</span>, name: <span class="str">'Alice Updated'</span>, email: <span class="str">'alice@example.com'</span> });
+
+  <span class="cm">// ── 削除 ──</span>
+  store.<span class="fn">delete</span>(<span class="num">1</span>);
+
+  <span class="cm">// トランザクション完了</span>
+  tx.oncomplete <span class="op">=</span> () <span class="op">=></span> console.<span class="fn">log</span>(<span class="str">'トランザクション完了'</span>);
+  tx.onerror    <span class="op">=</span> (e) <span class="op">=></span> console.<span class="fn">log</span>(<span class="str">'エラー:'</span>, e.target.error);
+};
+
+request.onerror <span class="op">=</span> (event) <span class="op">=></span> {
+  console.<span class="fn">log</span>(<span class="str">'DB オープンエラー:'</span>, event.target.error);
+};</pre>
+  </div>
+
+  <div class="info-box point">
+    <strong>📌 試験頻出：IndexedDB の仕組み</strong>
+    <ul>
+      <li>すべての操作は<strong>非同期</strong>（コールバック or Promise ベース）</li>
+      <li>データの読み書きは必ず<strong>トランザクション</strong>内で行う</li>
+      <li>トランザクションモード: <code>'readonly'</code>（読み取り専用）/ <code>'readwrite'</code>（読み書き）</li>
+      <li><code>onupgradeneeded</code> はバージョンが上がったときのみ呼ばれる（スキーマ変更の場所）</li>
+      <li>キーパス（<code>keyPath</code>）でオブジェクトのプロパティをプライマリキーに指定できる</li>
+      <li>Web Storage より大容量（数十〜数百MB）のデータを扱える</li>
+    </ul>
+  </div>
+
+  <!-- ===== DEMO 2: IndexedDB 操作デモ ===== -->
+  <div class="demo-box">
+    <h3><span class="demo-num">2</span> IndexedDB 操作デモ（トランザクション可視化）</h3>
+    <p style="font-size:0.85rem;color:var(--muted);margin-bottom:14px;">実際の IndexedDB を操作しながら、トランザクションの流れをステップで確認できます。</p>
+
+    <div class="ctrl-row">
+      <button class="btn btn-primary btn-sm" onclick="idbOpen()">① DB を開く</button>
+      <button class="btn btn-success btn-sm" onclick="idbAdd()" id="idbAddBtn" disabled>② データ追加</button>
+      <button class="btn btn-info btn-sm"    onclick="idbGetAll()" id="idbGetBtn" disabled>③ 全件取得</button>
+      <button class="btn btn-warn btn-sm"    onclick="idbDelete()" id="idbDelBtn" disabled>④ 削除</button>
+      <button class="btn btn-danger btn-sm"  onclick="idbClear()" id="idbClrBtn" disabled>⑤ DB削除</button>
+    </div>
+
+    <div class="idb-flow" id="idbFlow">
+      <div class="idb-step" id="idbStep1">
+        <span class="step-icon">🔓</span>
+        <span class="step-label">indexedDB.open('DemoStore', 1)</span>
+        <span class="step-status">待機中</span>
+      </div>
+      <div class="idb-step" id="idbStep2">
+        <span class="step-icon">🏗️</span>
+        <span class="step-label">onupgradeneeded → createObjectStore('items')</span>
+        <span class="step-status">待機中</span>
+      </div>
+      <div class="idb-step" id="idbStep3">
+        <span class="step-icon">✅</span>
+        <span class="step-label">onsuccess → DB オープン完了</span>
+        <span class="step-status">待機中</span>
+      </div>
+      <div class="idb-step" id="idbStep4">
+        <span class="step-icon">📝</span>
+        <span class="step-label">transaction('items', 'readwrite') → store.add()</span>
+        <span class="step-status">待機中</span>
+      </div>
+      <div class="idb-step" id="idbStep5">
+        <span class="step-icon">📖</span>
+        <span class="step-label">transaction('items', 'readonly') → store.getAll()</span>
+        <span class="step-status">待機中</span>
+      </div>
+      <div class="idb-step" id="idbStep6">
+        <span class="step-icon">🗑️</span>
+        <span class="step-label">transaction('items', 'readwrite') → store.delete()</span>
+        <span class="step-status">待機中</span>
+      </div>
+    </div>
+
+    <!-- IDB データビューア -->
+    <div class="storage-viewer" style="margin-top:0;">
+      <div class="storage-viewer-header">
+        <span>IndexedDB: items ストア</span>
+        <span id="idbCount">0 件</span>
+      </div>
+      <div class="storage-viewer-body" id="idbViewerBody">
+        <div class="storage-empty">（DB 未オープン）</div>
+      </div>
+    </div>
+    <div class="console" id="idbConsole"><div class="log-line info">▶ 「① DB を開く」から順番に操作してください</div></div>
+  </div>
+
+  <!-- ========== 3. File API ========== -->
+  <h2 class="sec-heading">3. File API</h2>
+
+  <p>File API を使うと、ユーザーが選択したファイルを JavaScript で読み込めます。<code>FileReader</code> オブジェクトが中心的な役割を担います。</p>
+
+  <div class="code-block">
+    <div class="code-block-header">
+      <span>FileReader の使い方</span>
+      <button class="copy-btn" onclick="copyCode(this)">copy</button>
+    </div>
+    <pre><span class="cm">// input[type=file] からファイルを取得</span>
+<span class="kw">const</span> input <span class="op">=</span> document.<span class="fn">getElementById</span>(<span class="str">'fileInput'</span>);
+input.<span class="fn">addEventListener</span>(<span class="str">'change'</span>, (e) <span class="op">=></span> {
+  <span class="kw">const</span> file <span class="op">=</span> e.target.files[<span class="num">0</span>]; <span class="cm">// File オブジェクト</span>
+
+  <span class="cm">// File オブジェクトのプロパティ</span>
+  console.<span class="fn">log</span>(file.name);         <span class="cm">// ファイル名</span>
+  console.<span class="fn">log</span>(file.size);         <span class="cm">// バイト数</span>
+  console.<span class="fn">log</span>(file.type);         <span class="cm">// MIME タイプ（例: 'text/plain'）</span>
+  console.<span class="fn">log</span>(file.lastModified); <span class="cm">// 最終更新日時（Unix タイムスタンプ ms）</span>
+
+  <span class="kw">const</span> reader <span class="op">=</span> <span class="kw">new</span> <span class="fn">FileReader</span>();
+
+  <span class="cm">// ── テキストとして読み込む ──</span>
+  reader.<span class="fn">readAsText</span>(file, <span class="str">'UTF-8'</span>);
+  reader.onload <span class="op">=</span> (e) <span class="op">=></span> {
+    console.<span class="fn">log</span>(e.target.result); <span class="cm">// 文字列</span>
+  };
+
+  <span class="cm">// ── Data URL として読み込む（画像プレビュー等）──</span>
+  reader.<span class="fn">readAsDataURL</span>(file);
+  reader.onload <span class="op">=</span> (e) <span class="op">=></span> {
+    <span class="cm">// 'data:image/png;base64,iVBORw0KGgo...'</span>
+    imgEl.src <span class="op">=</span> e.target.result;
+  };
+
+  <span class="cm">// ── ArrayBuffer として読み込む（バイナリ処理）──</span>
+  reader.<span class="fn">readAsArrayBuffer</span>(file);
+  reader.onload <span class="op">=</span> (e) <span class="op">=></span> {
+    <span class="kw">const</span> buffer <span class="op">=</span> e.target.result; <span class="cm">// ArrayBuffer</span>
+    <span class="kw">const</span> view   <span class="op">=</span> <span class="kw">new</span> <span class="fn">Uint8Array</span>(buffer);
+    console.<span class="fn">log</span>(view[<span class="num">0</span>], view[<span class="num">1</span>]); <span class="cm">// 最初の2バイト</span>
+  };
+
+  <span class="cm">// イベント一覧</span>
+  reader.onloadstart  <span class="op">=</span> () <span class="op">=></span> console.<span class="fn">log</span>(<span class="str">'読み込み開始'</span>);
+  reader.onprogress   <span class="op">=</span> (e) <span class="op">=></span> console.<span class="fn">log</span>(<span class="str">`${e.loaded} / ${e.total}`</span>);
+  reader.onloadend    <span class="op">=</span> () <span class="op">=></span> console.<span class="fn">log</span>(<span class="str">'読み込み終了'</span>);
+  reader.onerror      <span class="op">=</span> () <span class="op">=></span> console.<span class="fn">log</span>(<span class="str">'エラー'</span>);
+  reader.onabort      <span class="op">=</span> () <span class="op">=></span> console.<span class="fn">log</span>(<span class="str">'中断'</span>);
+
+  <span class="cm">// 読み込み中断</span>
+  reader.<span class="fn">abort</span>();
+});</pre>
+  </div>
+
+  <div class="tbl-wrap">
+    <table>
+      <tr><th>メソッド</th><th>結果（result プロパティ）</th><th>用途</th></tr>
+      <tr><td><code>readAsText(file, encoding)</code></td><td>文字列（DOMString）</td><td>テキストファイルの読み込み</td></tr>
+      <tr><td><code>readAsDataURL(file)</code></td><td>Data URL（base64 エンコード）</td><td>画像プレビュー・埋め込み</td></tr>
+      <tr><td><code>readAsArrayBuffer(file)</code></td><td>ArrayBuffer（バイナリ）</td><td>バイナリ処理・音声/画像加工</td></tr>
+      <tr><td><code>readAsBinaryString(file)</code></td><td>バイナリ文字列（非推奨）</td><td>レガシー用途（ArrayBuffer 推奨）</td></tr>
+      <tr><td><code>abort()</code></td><td>—</td><td>読み込みを中断</td></tr>
+    </table>
+  </div>
+
+  <div class="info-box warn">
+    <strong>⚠️ FileReader は非同期</strong>
+    <p><code>readAsText()</code> などを呼んだ直後に <code>reader.result</code> を参照しても <code>null</code> です。必ず <code>onload</code> イベント内で結果を取得してください。また、同じ FileReader インスタンスで複数のファイルを同時に読み込もうとすると <code>InvalidStateError</code> が発生します。</p>
+  </div>
+
+  <!-- ===== DEMO 3: File API デモ ===== -->
+  <div class="demo-box">
+    <h3><span class="demo-num">3</span> File API デモ（ファイル読み込み比較）</h3>
+    <p style="font-size:0.85rem;color:var(--muted);margin-bottom:14px;">ファイルを選択すると、3種類の読み込み方法（Text・DataURL・ArrayBuffer）で同時に読み込みます。</p>
+
+    <div class="file-drop-zone" id="fileDropZone" onclick="document.getElementById('fileInput').click()">
+      <div style="font-size:2rem;">📂</div>
+      <p>クリックまたはファイルをドロップ</p>
+      <p style="font-size:0.8rem;margin-top:4px;">テキスト・画像・任意のファイルを選択してください</p>
+      <input type="file" id="fileInput" onchange="handleFileSelect(event)">
+    </div>
+
+    <div class="file-result-grid" id="fileResultGrid" style="display:none;">
+      <div class="file-result-card">
+        <div class="frc-label">📋 ファイル情報（File オブジェクト）</div>
+        <div class="frc-val" id="fileInfo">—</div>
+      </div>
+      <div class="file-result-card">
+        <div class="frc-label">📝 readAsText() の結果</div>
+        <div class="frc-val" id="fileText">—</div>
+      </div>
+      <div class="file-result-card">
+        <div class="frc-label">🔗 readAsDataURL() の結果（先頭60文字）</div>
+        <div class="frc-val" id="fileDataURL">—</div>
+        <div id="filePreview" style="margin-top:8px;"></div>
+      </div>
+      <div class="file-result-card">
+        <div class="frc-label">🔢 readAsArrayBuffer() の結果（先頭16バイト）</div>
+        <div class="frc-val" id="fileArrayBuffer">—</div>
+      </div>
+    </div>
+    <div class="console" id="fileConsole"><div class="log-line info">▶ ファイルを選択してください</div></div>
+  </div>
+
+  <!-- ========== 4. ArrayBuffer / TypedArray ========== -->
+  <h2 class="sec-heading">4. バイナリデータ（ArrayBuffer・TypedArray）</h2>
+
+  <p>ArrayBuffer は固定長のバイナリデータバッファです。直接アクセスはできず、<strong>TypedArray</strong>（型付き配列）または <strong>DataView</strong> を通じて操作します。</p>
+
+  <div class="code-block">
+    <div class="code-block-header">
+      <span>ArrayBuffer と TypedArray の操作</span>
+      <button class="copy-btn" onclick="copyCode(this)">copy</button>
+    </div>
+    <pre><span class="cm">// ── ArrayBuffer の作成 ──</span>
+<span class="kw">const</span> buffer <span class="op">=</span> <span class="kw">new</span> <span class="fn">ArrayBuffer</span>(<span class="num">16</span>); <span class="cm">// 16バイトのバッファ</span>
+console.<span class="fn">log</span>(buffer.byteLength);     <span class="out">// → 16</span>
+
+<span class="cm">// ── TypedArray でビューを作成 ──</span>
+<span class="kw">const</span> uint8  <span class="op">=</span> <span class="kw">new</span> <span class="fn">Uint8Array</span>(buffer);   <span class="cm">// 1バイト符号なし整数 × 16要素</span>
+<span class="kw">const</span> int16  <span class="op">=</span> <span class="kw">new</span> <span class="fn">Int16Array</span>(buffer);   <span class="cm">// 2バイト符号あり整数 × 8要素</span>
+<span class="kw">const</span> float32<span class="op">=</span> <span class="kw">new</span> <span class="fn">Float32Array</span>(buffer); <span class="cm">// 4バイト浮動小数点 × 4要素</span>
+
+<span class="cm">// 書き込み</span>
+uint8[<span class="num">0</span>] <span class="op">=</span> <span class="num">255</span>;   <span class="cm">// 0xFF</span>
+uint8[<span class="num">1</span>] <span class="op">=</span> <span class="num">128</span>;   <span class="cm">// 0x80</span>
+uint8[<span class="num">2</span>] <span class="op">=</span> <span class="num">256</span>;   <span class="cm">// オーバーフロー → 0（Uint8Array はクランプしない）</span>
+
+<span class="cm">// 同じバッファを別の型で見ると値が変わる</span>
+console.<span class="fn">log</span>(uint8[<span class="num">0</span>]);   <span class="out">// → 255</span>
+console.<span class="fn">log</span>(int16[<span class="num">0</span>]);   <span class="out">// → -128 (リトルエンディアン: 0xFF80 = -128)</span>
+
+<span class="cm">// ── Uint8ClampedArray（Canvas で使用）──</span>
+<span class="kw">const</span> clamped <span class="op">=</span> <span class="kw">new</span> <span class="fn">Uint8ClampedArray</span>(<span class="num">4</span>);
+clamped[<span class="num">0</span>] <span class="op">=</span> <span class="num">300</span>; <span class="cm">// → 255 にクランプ（オーバーフローしない）</span>
+clamped[<span class="num">1</span>] <span class="op">=</span> <span class="op">-</span><span class="num">5</span>;  <span class="cm">// → 0 にクランプ</span>
+
+<span class="cm">// ── DataView（エンディアン制御が必要な場合）──</span>
+<span class="kw">const</span> view <span class="op">=</span> <span class="kw">new</span> <span class="fn">DataView</span>(buffer);
+view.<span class="fn">setUint8</span>(<span class="num">0</span>, <span class="num">0xFF</span>);
+view.<span class="fn">setInt16</span>(<span class="num">2</span>, <span class="num">1000</span>, <span class="kw">true</span>);  <span class="cm">// true = リトルエンディアン</span>
+<span class="kw">const</span> val <span class="op">=</span> view.<span class="fn">getInt16</span>(<span class="num">2</span>, <span class="kw">true</span>); <span class="out">// → 1000</span>
+
+<span class="cm">// ── スライス（部分コピー）──</span>
+<span class="kw">const</span> slice <span class="op">=</span> buffer.<span class="fn">slice</span>(<span class="num">0</span>, <span class="num">8</span>);    <span class="cm">// 先頭8バイトをコピー</span>
+<span class="kw">const</span> sub   <span class="op">=</span> uint8.<span class="fn">subarray</span>(<span class="num">0</span>, <span class="num">4</span>); <span class="cm">// コピーなし（同じバッファを参照）</span></pre>
+  </div>
+
+  <div class="tbl-wrap">
+    <table>
+      <tr><th>TypedArray</th><th>バイト数/要素</th><th>値の範囲</th><th>説明</th></tr>
+      <tr><td><code>Int8Array</code></td><td>1</td><td>-128 〜 127</td><td>符号あり8ビット整数</td></tr>
+      <tr><td><code>Uint8Array</code></td><td>1</td><td>0 〜 255</td><td>符号なし8ビット整数</td></tr>
+      <tr><td><code>Uint8ClampedArray</code></td><td>1</td><td>0 〜 255（クランプ）</td><td>Canvas ImageData で使用</td></tr>
+      <tr><td><code>Int16Array</code></td><td>2</td><td>-32768 〜 32767</td><td>符号あり16ビット整数</td></tr>
+      <tr><td><code>Uint16Array</code></td><td>2</td><td>0 〜 65535</td><td>符号なし16ビット整数</td></tr>
+      <tr><td><code>Int32Array</code></td><td>4</td><td>-2^31 〜 2^31-1</td><td>符号あり32ビット整数</td></tr>
+      <tr><td><code>Uint32Array</code></td><td>4</td><td>0 〜 2^32-1</td><td>符号なし32ビット整数</td></tr>
+      <tr><td><code>Float32Array</code></td><td>4</td><td>IEEE 754 単精度</td><td>Web Audio API で使用</td></tr>
+      <tr><td><code>Float64Array</code></td><td>8</td><td>IEEE 754 倍精度</td><td>高精度数値計算</td></tr>
+    </table>
+  </div>
+
+  <div class="info-box point">
+    <strong>📌 試験頻出：Uint8Array vs Uint8ClampedArray</strong>
+    <ul>
+      <li><code>Uint8Array</code>: 256 を代入すると 0 になる（ビットマスク: 256 &amp; 0xFF = 0）</li>
+      <li><code>Uint8ClampedArray</code>: 256 を代入すると 255 になる（クランプ）、-1 は 0 になる</li>
+      <li>Canvas の <code>getImageData()</code> が返す <code>ImageData.data</code> は <strong>Uint8ClampedArray</strong></li>
+      <li>Web Audio API の <code>getByteTimeDomainData()</code> は <strong>Uint8Array</strong> を使用</li>
+    </ul>
+  </div>
+
+  <!-- ===== DEMO 4: ArrayBuffer / TypedArray デモ ===== -->
+  <div class="demo-box">
+    <h3><span class="demo-num">4</span> ArrayBuffer・TypedArray インタラクティブデモ</h3>
+    <p style="font-size:0.85rem;color:var(--muted);margin-bottom:14px;">同じ ArrayBuffer を異なる TypedArray で参照すると値がどう変わるかを確認できます。</p>
+
+    <div class="ctrl-row">
+      <label>バッファサイズ:
+        <select id="bufSize">
+          <option value="8">8 バイト</option>
+          <option value="16" selected>16 バイト</option>
+          <option value="32">32 バイト</option>
+        </select>
+      </label>
+      <button class="btn btn-primary btn-sm" onclick="createBuffer()">バッファ作成</button>
+      <button class="btn btn-success btn-sm" onclick="fillRandom()">ランダム値を書き込む</button>
+      <button class="btn btn-outline btn-sm" onclick="fillPattern()">パターン書き込み</button>
+      <button class="btn btn-danger btn-sm" onclick="clearBuffer()">クリア</button>
+    </div>
+
+    <!-- バイトビジュアライザ -->
+    <div style="background:var(--dark-bg);border-radius:8px;padding:14px;margin:12px 0;overflow-x:auto;">
+      <div style="font-size:0.78rem;color:#a0aec0;margin-bottom:8px;">ArrayBuffer（16進数バイト表示）</div>
+      <div id="bufferHexView" style="font-family:monospace;font-size:0.85rem;color:#e2e8f0;display:flex;flex-wrap:wrap;gap:4px;">
+        <span style="color:#4a5568;">（バッファ未作成）</span>
+      </div>
+    </div>
+
+    <div class="typed-grid" id="typedGrid">
+      <!-- TypedArray カードはJSで生成 -->
+    </div>
+
+    <div class="console" id="bufConsole"><div class="log-line info">▶ 「バッファ作成」をクリックしてください</div></div>
+  </div>
+
+  <!-- ===== DEMO 5: ストレージ比較チャート ===== -->
+  <div class="demo-box">
+    <h3><span class="demo-num">5</span> クライアントサイドストレージ比較チャート</h3>
+    <p style="font-size:0.85rem;color:var(--muted);margin-bottom:14px;">各ストレージの特性を視覚的に比較します。</p>
+
+    <div style="overflow-x:auto;">
+      <canvas id="storageChart" width="700" height="300" style="width:100%;max-width:700px;background:#f7f8fa;border-radius:8px;"></canvas>
+    </div>
+    <div class="ctrl-row" style="margin-top:12px;">
+      <button class="btn btn-primary btn-sm" onclick="drawStorageChart()">チャートを描画</button>
+      <select id="chartMetric" onchange="drawStorageChart()">
+        <option value="capacity">容量（相対値）</option>
+        <option value="speed">アクセス速度（相対値）</option>
+        <option value="complexity">実装複雑度</option>
+      </select>
+    </div>
+    <div class="console" id="chartConsole" style="min-height:50px;"><div class="log-line info">▶ 「チャートを描画」をクリックしてください</div></div>
+  </div>
+
+  <!-- ========== 演習問題 ========== -->
+  <div class="quiz-section">
+    <h2>🧩 演習問題</h2>
+    <p class="quiz-desc">4-3 ストレージの理解を確認しましょう。</p>
+
+    <!-- Q1 -->
+    <div class="quiz-item" id="q1">
+      <div class="q-num">QUESTION 1 / 6</div>
+      <div class="q-text"><code>localStorage</code> と <code>sessionStorage</code> の違いについて<strong>正しい</strong>説明はどれですか？</div>
+      <div class="options">
+        <button class="option-btn" onclick="checkQ(this,'q1','B')">A. sessionStorage は同一オリジンの全タブで共有される</button>
+        <button class="option-btn" onclick="checkQ(this,'q1','B')">B. localStorage のデータはブラウザを閉じても消えない</button>
+        <button class="option-btn" onclick="checkQ(this,'q1','B')">C. localStorage はサーバーに自動送信される</button>
+        <button class="option-btn" onclick="checkQ(this,'q1','B')">D. sessionStorage の容量は localStorage より大きい</button>
+      </div>
+      <div class="explanation" id="exp_q1">
+        <strong>✅ 正解：B</strong><br>
+        <strong>B ○</strong> localStorage のデータは明示的に削除するまで永続します。ブラウザを閉じても消えません。<br>
+        <strong>A ✗</strong> 全タブで共有されるのは <strong>localStorage</strong> です。sessionStorage はタブごとに独立しています。<br>
+        <strong>C ✗</strong> Web Storage はサーバーに自動送信されません（Cookie と異なる重要な特性）。<br>
+        <strong>D ✗</strong> 両者の容量は同程度（約5MB）です。
+      </div>
+    </div>
+
+    <!-- Q2 -->
+    <div class="quiz-item" id="q2">
+      <div class="q-num">QUESTION 2 / 6</div>
+      <div class="q-text">IndexedDB でデータを追加する際に必要なトランザクションモードはどれですか？</div>
+      <div class="options">
+        <button class="option-btn" onclick="checkQ(this,'q2','C')">A. 'readonly'</button>
+        <button class="option-btn" onclick="checkQ(this,'q2','C')">B. 'writeonly'</button>
+        <button class="option-btn" onclick="checkQ(this,'q2','C')">C. 'readwrite'</button>
+        <button class="option-btn" onclick="checkQ(this,'q2','C')">D. 'write'</button>
+      </div>
+      <div class="explanation" id="exp_q2">
+        <strong>✅ 正解：C（'readwrite'）</strong><br>
+        IndexedDB のトランザクションモードは2種類です：<br>
+        • <code>'readonly'</code> — 読み取り専用（get・getAll など）<br>
+        • <code>'readwrite'</code> — 読み書き両方（add・put・delete など）<br>
+        'writeonly' や 'write' というモードは存在しません。データの追加・更新・削除には必ず <code>'readwrite'</code> を指定します。
+      </div>
+    </div>
+
+    <!-- Q3 -->
+    <div class="quiz-item" id="q3">
+      <div class="q-num">QUESTION 3 / 6</div>
+      <div class="q-text">FileReader で画像ファイルを読み込んで <code>&lt;img&gt;</code> タグの <code>src</code> に直接セットしたい場合、どのメソッドを使うべきですか？</div>
+      <div class="options">
+        <button class="option-btn" onclick="checkQ(this,'q3','B')">A. readAsText()</button>
+        <button class="option-btn" onclick="checkQ(this,'q3','B')">B. readAsDataURL()</button>
+        <button class="option-btn" onclick="checkQ(this,'q3','B')">C. readAsArrayBuffer()</button>
+        <button class="option-btn" onclick="checkQ(this,'q3','B')">D. readAsBinaryString()</button>
+      </div>
+      <div class="explanation" id="exp_q3">
+        <strong>✅ 正解：B（readAsDataURL()）</strong><br>
+        <code>readAsDataURL()</code> は <code>data:image/png;base64,...</code> 形式の Data URL を生成します。この文字列をそのまま <code>img.src</code> に代入すると画像が表示されます。<br>
+        • <code>readAsText()</code>: テキストファイル向け（バイナリを文字列として読むと文字化け）<br>
+        • <code>readAsArrayBuffer()</code>: バイナリ処理向け（img.src には使えない）<br>
+        • <code>readAsBinaryString()</code>: 非推奨。ArrayBuffer を使うべき
+      </div>
+    </div>
+
+    <!-- Q4 -->
+    <div class="quiz-item" id="q4">
+      <div class="q-num">QUESTION 4 / 6</div>
+      <div class="q-text">以下のコードを実行したとき、<code>result</code> の値はいくつになりますか？</div>
+      <div class="q-code">const arr = new Uint8Array(1);
+arr[0] = 300;
+const result = arr[0];</div>
+      <div class="options">
+        <button class="option-btn" onclick="checkQ(this,'q4','C')">A. 300</button>
+        <button class="option-btn" onclick="checkQ(this,'q4','C')">B. 255</button>
+        <button class="option-btn" onclick="checkQ(this,'q4','C')">C. 44</button>
+        <button class="option-btn" onclick="checkQ(this,'q4','C')">D. 0</button>
+      </div>
+      <div class="explanation" id="exp_q4">
+        <strong>✅ 正解：C（44）</strong><br>
+        <code>Uint8Array</code> は 0〜255 の範囲の符号なし8ビット整数です。300 を代入すると <strong>ビットマスク</strong>（モジュロ演算）が行われます：<br>
+        300 % 256 = <strong>44</strong><br>
+        （300 = 0x12C → 下位8ビット = 0x2C = 44）<br>
+        <br>
+        ※ <code>Uint8ClampedArray</code> の場合は 255 にクランプされます。<br>
+        この違いが試験で問われることがあります：<br>
+        • <code>Uint8Array</code>: オーバーフロー → ビットマスク（300 → 44）<br>
+        • <code>Uint8ClampedArray</code>: オーバーフロー → クランプ（300 → 255）
+      </div>
+    </div>
+
+    <!-- Q5 -->
+    <div class="quiz-item" id="q5">
+      <div class="q-num">QUESTION 5 / 6</div>
+      <div class="q-text">IndexedDB の <code>onupgradeneeded</code> イベントが発火するタイミングとして正しいものをすべて選んでください。</div>
+      <div style="font-size:0.82rem;color:var(--muted);margin-bottom:10px;">※ 正しいものをすべてクリックして「確認」ボタンを押してください</div>
+      <div class="options" id="q5options">
+        <button class="option-btn" onclick="toggleMulti(this)" data-correct="true">A. 指定した名前の DB が存在しない（初回作成）</button>
+        <button class="option-btn" onclick="toggleMulti(this)" data-correct="false">B. DB を開くたびに毎回発火する</button>
+        <button class="option-btn" onclick="toggleMulti(this)" data-correct="true">C. open() に指定したバージョンが現在より大きい</button>
+        <button class="option-btn" onclick="toggleMulti(this)" data-correct="false">D. データを追加したとき</button>
+      </div>
+      <button class="btn btn-primary btn-sm" style="margin-top:10px;" onclick="checkQ5Multi()">確認</button>
+      <div class="explanation" id="exp_q5">
+        <strong>✅ 正解：A・C</strong><br>
+        <code>onupgradeneeded</code> は以下の場合に発火します：<br>
+        <strong>A ○</strong> DB が存在しない（初回作成）→ バージョン 0 から指定バージョンへのアップグレード<br>
+        <strong>B ✗</strong> 毎回発火しません。バージョンが変わったときのみです<br>
+        <strong>C ○</strong> open() のバージョン引数が現在の DB バージョンより大きい場合<br>
+        <strong>D ✗</strong> データ操作では発火しません。スキーマ変更専用のイベントです<br>
+        <br>
+        <code>onupgradeneeded</code> 内でのみ <code>createObjectStore()</code> や <code>createIndex()</code> が呼べます。
+      </div>
+    </div>
+
+    <!-- Q6 穴埋め -->
+    <div class="quiz-item" id="q6">
+      <div class="q-num">QUESTION 6 / 6（穴埋め）</div>
+      <div class="q-text">以下のコードの空欄を埋めてください。localStorage にオブジェクトを保存し、取り出してオブジェクトに戻します。</div>
+      <div class="q-code">const data = { name: 'Alice', score: 100 };
+
+// オブジェクトを文字列に変換して保存
+localStorage.setItem('data', [___A___](data));
+
+// 取り出して再びオブジェクトに変換
+const obj = [___B___](localStorage.getItem('data'));</div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:8px;">
+        <div style="flex:1;min-width:180px;">
+          <label style="font-size:0.82rem;color:var(--muted);">A の答え（メソッド名）：</label>
+          <input type="text" class="fill-input" id="q6a" placeholder="JSON.???">
+        </div>
+        <div style="flex:1;min-width:180px;">
+          <label style="font-size:0.82rem;color:var(--muted);">B の答え（メソッド名）：</label>
+          <input type="text" class="fill-input" id="q6b" placeholder="JSON.???">
+        </div>
+      </div>
+      <button class="btn btn-primary btn-sm" onclick="checkQ6()">答え合わせ</button>
+      <div class="explanation" id="exp_q6"></div>
+    </div>
+
+  </div><!-- /quiz-section -->
+
+  <!-- 完了ボタン -->
+  <div class="complete-area">
+    <button class="complete-btn" id="completeBtn" onclick="markComplete()">
+      ✅ このセクションを完了にする
+    </button>
+  </div>
+
+  <!-- ページナビ -->
+  <div class="page-nav">
+    <a href="02_media.html" class="page-nav-btn">← 4-2 メディア</a>
+    <div style="font-size:0.85rem;color:var(--muted);text-align:center;">
+      <a href="index.html">📚 Chapter 4 目次</a>
+    </div>
+    <a href="04_communication.html" class="page-nav-btn">4-4 通信 →</a>
+  </div>
+
+</main>
+
+<footer>
+  <p>© MeshinoKiwamiOkome |
+    <a href="https://github.com/MeshinoKiwamiOkome/html5lv2" target="_blank" rel="noopener">GitHub リポジトリ</a>
+  </p>
+  <p style="margin-top:6px;font-size:0.8rem;opacity:0.7;">HTML5 Professional Level 2 学習サイト</p>
+</footer>
+
+<script>
+// ===================================================
+// ユーティリティ
+// ===================================================
+function copyCode(btn) {
+  const pre  = btn.closest('.code-block').querySelector('pre');
+  navigator.clipboard.writeText(pre.innerText).then(() => {
+    btn.textContent = 'copied!'; btn.classList.add('copied');
+    setTimeout(() => { btn.textContent = 'copy'; btn.classList.remove('copied'); }, 2000);
+  });
+}
+function log(id, msg, type='') {
+  const c = document.getElementById(id);
+  const d = document.createElement('div');
+  d.className = 'log-line ' + type;
+  d.textContent = msg;
+  c.appendChild(d);
+  c.scrollTop = c.scrollHeight;
+}
+function clearLog(id) { document.getElementById(id).innerHTML = ''; }
+
+// ===================================================
+// DEMO 1: Web Storage CRUD
+// ===================================================
+const WS_PREFIX = 'demo_';
+
+function getStorage() {
+  return document.getElementById('storageType').value === 'local'
+    ? localStorage : sessionStorage;
+}
+
+function refreshStorageView() {
+  const storage = getStorage();
+  const isLocal = document.getElementById('storageType').value === 'local';
+  const title   = isLocal ? 'localStorage の中身' : 'sessionStorage の中身';
+  document.getElementById('storageViewerTitle').textContent = title;
+
+  const body = document.getElementById('storageViewerBody');
+  body.innerHTML = '';
+
+  // このデモ専用のキーのみ表示（WS_PREFIX で始まるもの）
+  const demoKeys = [];
+  for (let i = 0; i < storage.length; i++) {
+    const k = storage.key(i);
+    if (k && k.startsWith(WS_PREFIX)) demoKeys.push(k);
+  }
+
+  document.getElementById('storageCount').textContent = demoKeys.length + ' 件';
+
+  if (demoKeys.length === 0) {
+    body.innerHTML = '<div class="storage-empty">（データなし）</div>';
+    return;
+  }
+
+  demoKeys.sort().forEach(k => {
+    const v   = storage.getItem(k);
+    const row = document.createElement('div');
+    row.className = 'storage-row';
+    row.innerHTML = `
+      <div class="s-key">${escHtml(k.replace(WS_PREFIX,''))}</div>
+      <div class="s-val">${escHtml(v)}</div>
+      <div class="s-del"><button onclick="wsDeleteKey('${escHtml(k)}')">削除</button></div>`;
+    body.appendChild(row);
+  });
+}
+
+function escHtml(s) {
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function wsSetItem() {
+  const k = document.getElementById('wsKey').value.trim();
+  const v = document.getElementById('wsValue').value;
+  if (!k) { clearLog('wsConsole'); log('wsConsole','⚠ キー名を入力してください','err'); return; }
+  const storage = getStorage();
+  const fullKey = WS_PREFIX + k;
+  storage.setItem(fullKey, v);
+  clearLog('wsConsole');
+  log('wsConsole', `setItem('${k}', '${v}')`, 'ok');
+  log('wsConsole', `storage.length = ${storage.length}`, 'info');
+  refreshStorageView();
+}
+
+function wsGetItem() {
+  const k = document.getElementById('wsKey').value.trim();
+  if (!k) { clearLog('wsConsole'); log('wsConsole','⚠ キー名を入力してください','err'); return; }
+  const storage = getStorage();
+  const val = storage.getItem(WS_PREFIX + k);
+  clearLog('wsConsole');
+  if (val === null) {
+    log('wsConsole', `getItem('${k}') → null（存在しないキー）`, 'warn');
+  } else {
+    log('wsConsole', `getItem('${k}') → '${val}'`, 'ok');
+  }
+}
+
+function wsRemoveItem() {
+  const k = document.getElementById('wsKey').value.trim();
+  if (!k) { clearLog('wsConsole'); log('wsConsole','⚠ キー名を入力してください','err'); return; }
+  const storage = getStorage();
+  storage.removeItem(WS_PREFIX + k);
+  clearLog('wsConsole');
+  log('wsConsole', `removeItem('${k}') — 削除しました`, 'warn');
+  refreshStorageView();
+}
+
+function wsDeleteKey(fullKey) {
+  const storage = getStorage();
+  storage.removeItem(fullKey);
+  clearLog('wsConsole');
+  log('wsConsole', `removeItem('${fullKey.replace(WS_PREFIX,'')}') — 削除しました`, 'warn');
+  refreshStorageView();
+}
+
+function wsClear() {
+  const storage = getStorage();
+  // デモキーのみ削除
+  const toDelete = [];
+  for (let i = 0; i < storage.length; i++) {
+    const k = storage.key(i);
+    if (k && k.startsWith(WS_PREFIX)) toDelete.push(k);
+  }
+  toDelete.forEach(k => storage.removeItem(k));
+  clearLog('wsConsole');
+  log('wsConsole', `clear() — ${toDelete.length} 件削除しました`, 'warn');
+  refreshStorageView();
+}
+
+// 初期化
+refreshStorageView();
+
+// ===================================================
+// DEMO 2: IndexedDB
+// ===================================================
+let idb = null;
+const IDB_NAME    = 'html5lv2_demo';
+const IDB_STORE   = 'items';
+const IDB_VERSION = 1;
+let idbNextId = 1;
+
+const SAMPLE_ITEMS = [
+  { name: 'Web Storage',  category: 'Storage', size: '5MB' },
+  { name: 'IndexedDB',    category: 'Storage', size: '大容量' },
+  { name: 'File API',     category: 'File',    size: '制限なし' },
+  { name: 'ArrayBuffer',  category: 'Binary',  size: '任意' },
+];
+
+function setIdbStep(stepId, state, statusText) {
+  const el = document.getElementById(stepId);
+  if (!el) return;
+  el.classList.remove('active','done','error');
+  el.classList.add(state);
+  el.querySelector('.step-status').textContent = statusText;
+}
+
+function refreshIdbView() {
+  if (!idb) return;
+  const tx    = idb.transaction(IDB_STORE, 'readonly');
+  const store = tx.objectStore(IDB_STORE);
+  const req   = store.getAll();
+  req.onsuccess = (e) => {
+    const items = e.target.result;
+    const body  = document.getElementById('idbViewerBody');
+    document.getElementById('idbCount').textContent = items.length + ' 件';
+    body.innerHTML = '';
+    if (items.length === 0) {
+      body.innerHTML = '<div class="storage-empty">（データなし）</div>';
+      return;
+    }
+    items.forEach(item => {
+      const row = document.createElement('div');
+      row.className = 'storage-row';
+      row.innerHTML = `
+        <div class="s-key">id: ${item.id}</div>
+        <div class="s-val">${escHtml(item.name)} [${escHtml(item.category)}]</div>
+        <div class="s-del"><button onclick="idbDeleteOne(${item.id})">削除</button></div>`;
+      body.appendChild(row);
+    });
+  };
+}
+
+function idbOpen() {
+  setIdbStep('idbStep1','active','処理中...');
+  clearLog('idbConsole');
+  log('idbConsole', `indexedDB.open('${IDB_NAME}', ${IDB_VERSION})`, 'info');
+
+  const req = indexedDB.open(IDB_NAME, IDB_VERSION);
+
+  req.onupgradeneeded = (e) => {
+    setIdbStep('idbStep1','done','完了');
+    setIdbStep('idbStep2','active','処理中...');
+    const db = e.target.result;
+    if (!db.objectStoreNames.contains(IDB_STORE)) {
+      const store = db.createObjectStore(IDB_STORE, { keyPath:'id', autoIncrement:true });
+      store.createIndex('name', 'name', { unique:false });
+      store.createIndex('category', 'category', { unique:false });
+      log('idbConsole', `onupgradeneeded: createObjectStore('${IDB_STORE}', {keyPath:'id', autoIncrement:true})`, 'ok');
+      log('idbConsole', `createIndex('name', 'name', {unique:false})`, 'ok');
+    }
+    setIdbStep('idbStep2','done','createObjectStore 完了');
+  };
+
+  req.onsuccess = (e) => {
+    idb = e.target.result;
+    setIdbStep('idbStep1','done','完了');
+    setIdbStep('idbStep3','done','DB オープン完了');
+    log('idbConsole', `onsuccess: DB オープン完了 (version: ${idb.version})`, 'ok');
+    log('idbConsole', `objectStoreNames: [${Array.from(idb.objectStoreNames).join(', ')}]`, 'info');
+    document.getElementById('idbAddBtn').disabled = false;
+    document.getElementById('idbGetBtn').disabled = false;
+    document.getElementById('idbDelBtn').disabled = false;
+    document.getElementById('idbClrBtn').disabled = false;
+    refreshIdbView();
+  };
+
+  req.onerror = (e) => {
+    setIdbStep('idbStep1','error','エラー');
+    log('idbConsole', 'onerror: ' + e.target.error, 'err');
+  };
+}
+
+function idbAdd() {
+  if (!idb) { log('idbConsole','⚠ 先に DB を開いてください','err'); return; }
+  setIdbStep('idbStep4','active','処理中...');
+  const sample = SAMPLE_ITEMS[(idbNextId - 1) % SAMPLE_ITEMS.length];
+  const item   = { name: sample.name, category: sample.category, size: sample.size, addedAt: new Date().toISOString() };
+  const tx     = idb.transaction(IDB_STORE, 'readwrite');
+  const store  = tx.objectStore(IDB_STORE);
+  const req    = store.add(item);
+
+  req.onsuccess = (e) => {
+    idbNextId++;
+    setIdbStep('idbStep4','done',`id=${e.target.result} で追加完了`);
+    clearLog('idbConsole');
+    log('idbConsole', `transaction('${IDB_STORE}', 'readwrite')`, 'info');
+    log('idbConsole', `store.add(${JSON.stringify(item)})`, 'ok');
+    log('idbConsole', `onsuccess: 生成された id = ${e.target.result}`, 'ok');
+    refreshIdbView();
+  };
+  tx.oncomplete = () => log('idbConsole', 'transaction.oncomplete — トランザクション完了', 'ok');
+  tx.onerror    = (e) => { setIdbStep('idbStep4','error','エラー'); log('idbConsole','エラー: '+e.target.error,'err'); };
+}
+
+function idbGetAll() {
+  if (!idb) { log('idbConsole','⚠ 先に DB を開いてください','err'); return; }
+  setIdbStep('idbStep5','active','処理中...');
+  const tx    = idb.transaction(IDB_STORE, 'readonly');
+  const store = tx.objectStore(IDB_STORE);
+  const req   = store.getAll();
+
+  req.onsuccess = (e) => {
+    const items = e.target.result;
+    setIdbStep('idbStep5','done',`${items.length} 件取得`);
+    clearLog('idbConsole');
+    log('idbConsole', `transaction('${IDB_STORE}', 'readonly')`, 'info');
+    log('idbConsole', `store.getAll() → ${items.length} 件`, 'ok');
+    items.forEach(item => {
+      log('idbConsole', `  { id:${item.id}, name:'${item.name}', category:'${item.category}' }`, 'info');
+    });
+    refreshIdbView();
+  };
+}
+
+function idbDelete() {
+  if (!idb) { log('idbConsole','⚠ 先に DB を開いてください','err'); return; }
+  const tx    = idb.transaction(IDB_STORE, 'readonly');
+  const store = tx.objectStore(IDB_STORE);
+  store.getAll().onsuccess = (e) => {
+    const items = e.target.result;
+    if (items.length === 0) { log('idbConsole','削除するデータがありません','warn'); return; }
+    const lastId = items[items.length - 1].id;
+    idbDeleteOne(lastId);
+  };
+}
+
+function idbDeleteOne(id) {
+  if (!idb) return;
+  setIdbStep('idbStep6','active','処理中...');
+  const tx    = idb.transaction(IDB_STORE, 'readwrite');
+  const store = tx.objectStore(IDB_STORE);
+  const req   = store.delete(id);
+  req.onsuccess = () => {
+    setIdbStep('idbStep6','done',`id=${id} 削除完了`);
+    clearLog('idbConsole');
+    log('idbConsole', `transaction('${IDB_STORE}', 'readwrite')`, 'info');
+    log('idbConsole', `store.delete(${id}) → 削除成功`, 'warn');
+    refreshIdbView();
+  };
+}
+
+function idbClear() {
+  if (idb) { idb.close(); idb = null; }
+  const req = indexedDB.deleteDatabase(IDB_NAME);
+  req.onsuccess = () => {
+    ['idbStep1','idbStep2','idbStep3','idbStep4','idbStep5','idbStep6'].forEach(id => {
+      setIdbStep(id,'','待機中');
+    });
+    document.getElementById('idbAddBtn').disabled = true;
+    document.getElementById('idbGetBtn').disabled = true;
+    document.getElementById('idbDelBtn').disabled = true;
+    document.getElementById('idbClrBtn').disabled = true;
+    document.getElementById('idbViewerBody').innerHTML = '<div class="storage-empty">（DB 未オープン）</div>';
+    document.getElementById('idbCount').textContent = '0 件';
+    idbNextId = 1;
+    clearLog('idbConsole');
+    log('idbConsole', `indexedDB.deleteDatabase('${IDB_NAME}') → DB を削除しました`, 'warn');
+  };
+  req.onerror = () => log('idbConsole','DB 削除エラー','err');
+}
+
+// ===================================================
+// DEMO 3: File API
+// ===================================================
+const dropZone = document.getElementById('fileDropZone');
+
+dropZone.addEventListener('dragover', (e) => {
+  e.preventDefault();
+  dropZone.classList.add('dragover');
+});
+dropZone.addEventListener('dragleave', () => dropZone.classList.remove('dragover'));
+dropZone.addEventListener('drop', (e) => {
+  e.preventDefault();
+  dropZone.classList.remove('dragover');
+  const file = e.dataTransfer.files[0];
+  if (file) processFile(file);
+});
+
+function handleFileSelect(e) {
+  const file = e.target.files[0];
+  if (file) processFile(file);
+}
+
+function processFile(file) {
+  clearLog('fileConsole');
+  document.getElementById('fileResultGrid').style.display = 'grid';
+
+  // ファイル情報
+  const info = `name: ${file.name}\nsize: ${file.size} bytes\ntype: ${file.type || '不明'}\nlastModified: ${new Date(file.lastModified).toLocaleString()}`;
+  document.getElementById('fileInfo').textContent = info;
+  log('fileConsole', `File: ${file.name} (${file.size} bytes, ${file.type || '不明'})`, 'ok');
+
+  // readAsText
+  const r1 = new FileReader();
+  r1.onloadstart = () => log('fileConsole', 'readAsText() — 開始', 'info');
+  r1.onload = (e) => {
+    const text = e.target.result;
+    document.getElementById('fileText').textContent = text.length > 200
+      ? text.substring(0, 200) + '...' : text;
+    log('fileConsole', `readAsText() → ${text.length} 文字`, 'ok');
+  };
+  r1.onerror = () => log('fileConsole', 'readAsText() エラー', 'err');
+  r1.readAsText(file, 'UTF-8');
+
+  // readAsDataURL
+  const r2 = new FileReader();
+  r2.onload = (e) => {
+    const url = e.target.result;
+    document.getElementById('fileDataURL').textContent = url.substring(0, 60) + '...';
+    log('fileConsole', `readAsDataURL() → ${url.length} 文字 (base64)`, 'ok');
+    const preview = document.getElementById('filePreview');
+    preview.innerHTML = '';
+    if (file.type.startsWith('image/')) {
+      const img = document.createElement('img');
+      img.src   = url;
+      img.style.cssText = 'max-width:100%;max-height:80px;border-radius:4px;margin-top:6px;';
+      preview.appendChild(img);
+    }
+  };
+  r2.readAsDataURL(file);
+
+  // readAsArrayBuffer
+  const r3 = new FileReader();
+  r3.onload = (e) => {
+    const buf  = e.target.result;
+    const view = new Uint8Array(buf);
+    const hex  = Array.from(view.slice(0, 16))
+      .map(b => b.toString(16).padStart(2,'0').toUpperCase())
+      .join(' ');
+    document.getElementById('fileArrayBuffer').textContent =
+      `byteLength: ${buf.byteLength}\n先頭16バイト(hex): ${hex}`;
+    log('fileConsole', `readAsArrayBuffer() → ${buf.byteLength} bytes`, 'ok');
+    log('fileConsole', `先頭16バイト: ${hex}`, 'info');
+  };
+  r3.readAsArrayBuffer(file);
+}
+
+// ===================================================
+// DEMO 4: ArrayBuffer / TypedArray
+// ===================================================
+let currentBuffer = null;
+
+function createBuffer() {
+  const size = parseInt(document.getElementById('bufSize').value);
+  currentBuffer = new ArrayBuffer(size);
+  clearLog('bufConsole');
+  log('bufConsole', `new ArrayBuffer(${size}) — ${size} バイトのバッファ作成`, 'ok');
+  log('bufConsole', `buffer.byteLength = ${currentBuffer.byteLength}`, 'info');
+  updateBufferView();
+}
+
+function fillRandom() {
+  if (!currentBuffer) { createBuffer(); }
+  const view = new Uint8Array(currentBuffer);
+  for (let i = 0; i < view.length; i++) view[i] = Math.floor(Math.random() * 256);
+  clearLog('bufConsole');
+  log('bufConsole', 'Uint8Array にランダム値を書き込みました', 'ok');
+  log('bufConsole', `new Uint8Array(buffer) → [${Array.from(view).join(', ')}]`, 'info');
+  updateBufferView();
+}
+
+function fillPattern() {
+  if (!currentBuffer) { createBuffer(); }
+  const view = new Uint8Array(currentBuffer);
+  for (let i = 0; i < view.length; i++) view[i] = (i * 17) % 256;
+  clearLog('bufConsole');
+  log('bufConsole', 'パターン書き込み: view[i] = (i * 17) % 256', 'ok');
+  updateBufferView();
+}
+
+function clearBuffer() {
+  if (!currentBuffer) return;
+  const view = new Uint8Array(currentBuffer);
+  view.fill(0);
+  clearLog('bufConsole');
+  log('bufConsole', 'Uint8Array.fill(0) — バッファをゼロクリア', 'warn');
+  updateBufferView();
+}
+
+function updateBufferView() {
+  if (!currentBuffer) return;
+  const uint8 = new Uint8Array(currentBuffer);
+
+  // 16進数ビュー
+  const hexView = document.getElementById('bufferHexView');
+  hexView.innerHTML = '';
+  Array.from(uint8).forEach((b, i) => {
+    const span = document.createElement('span');
+    span.style.cssText = `
+      display:inline-block;
+      padding:3px 5px;
+      border-radius:3px;
+      background:${b === 0 ? '#2d3748' : '#553c9a'};
+      color:${b === 0 ? '#4a5568' : '#e2e8f0'};
+      font-size:0.78rem;
+      min-width:28px;
+      text-align:center;
+    `;
+    span.textContent = b.toString(16).padStart(2,'0').toUpperCase();
+    span.title = `[${i}] = ${b} (0x${b.toString(16).toUpperCase()})`;
+    hexView.appendChild(span);
+  });
+
+  // TypedArray カード
+  const grid = document.getElementById('typedGrid');
+  grid.innerHTML = '';
+
+  const views = [
+    { name:'Uint8Array',   ctor: Uint8Array,   bytes:1 },
+    { name:'Int8Array',    ctor: Int8Array,     bytes:1 },
+    { name:'Uint16Array',  ctor: Uint16Array,   bytes:2 },
+    { name:'Int16Array',   ctor: Int16Array,    bytes:2 },
+    { name:'Uint32Array',  ctor: Uint32Array,   bytes:4 },
+    { name:'Float32Array', ctor: Float32Array,  bytes:4 },
+  ];
+
+  views.forEach(v => {
+    const arr  = new v.ctor(currentBuffer);
+    const vals = Array.from(arr).map(n =>
+      v.name.includes('Float') ? n.toFixed(2) : n
+    ).join(', ');
+
+    const card = document.createElement('div');
+    card.className = 'typed-card' + (v.name === 'Uint8Array' ? ' highlight' : '');
+    card.innerHTML = `
+      <div class="tc-name">${v.name}</div>
+      <div class="tc-bytes">${v.bytes} バイト/要素 × ${arr.length} 要素</div>
+      <div class="tc-range">[${vals}]</div>`;
+    grid.appendChild(card);
+  });
+}
+
+// ===================================================
+// DEMO 5: ストレージ比較チャート
+// ===================================================
+const chartCanvas = document.getElementById('storageChart');
+const chartCtx    = chartCanvas.getContext('2d');
+
+const STORAGE_DATA = {
+  capacity:   [5, 5, 500, 100, 50],
+  speed:      [90, 85, 40, 70, 95],
+  complexity: [10, 15, 80, 60, 30],
+};
+const STORAGE_LABELS = ['localStorage','sessionStorage','IndexedDB','File API','Cookie'];
+const STORAGE_COLORS = ['#553c9a','#9f7aea','#4299e1','#48bb78','#ed8936'];
+
+function drawStorageChart() {
+  const metric = document.getElementById('chartMetric').value;
+  const data   = STORAGE_DATA[metric];
+  const w = chartCanvas.width;
+  const h = chartCanvas.height;
+  const pad = { top:40, right:20, bottom:80, left:60 };
+  const chartW = w - pad.left - pad.right;
+  const chartH = h - pad.top  - pad.bottom;
+  const maxVal = Math.max(...data) * 1.15;
+
+  chartCtx.clearRect(0, 0, w, h);
+
+  // 背景
+  chartCtx.fillStyle = '#f7f8fa';
+  chartCtx.fillRect(0, 0, w, h);
+
+  // タイトル
+  const titles = { capacity:'容量（相対値）', speed:'アクセス速度（相対値）', complexity:'実装複雑度' };
+  chartCtx.fillStyle = '#2d3748';
+  chartCtx.font = 'bold 14px sans-serif';
+  chartCtx.textAlign = 'center';
+  chartCtx.fillText(titles[metric], w / 2, 24);
+
+  // グリッド線
+  chartCtx.strokeStyle = '#e2e8f0';
+  chartCtx.lineWidth   = 1;
+  for (let i = 0; i <= 5; i++) {
+    const y = pad.top + chartH - (i / 5) * chartH;
+    chartCtx.beginPath();
+    chartCtx.moveTo(pad.left, y);
+    chartCtx.lineTo(pad.left + chartW, y);
+    chartCtx.stroke();
+    chartCtx.fillStyle = '#718096';
+    chartCtx.font = '11px sans-serif';
+    chartCtx.textAlign = 'right';
+    chartCtx.fillText(Math.round(maxVal * i / 5), pad.left - 6, y + 4);
+  }
+
+  // 棒グラフ
+  const barW   = chartW / STORAGE_LABELS.length * 0.6;
+  const barGap = chartW / STORAGE_LABELS.length;
+
+  STORAGE_LABELS.forEach((label, i) => {
+    const val  = data[i];
+    const barH = (val / maxVal) * chartH;
+    const x    = pad.left + i * barGap + (barGap - barW) / 2;
+    const y    = pad.top + chartH - barH;
+
+    // グラデーション棒
+    const grad = chartCtx.createLinearGradient(x, y, x, y + barH);
+    grad.addColorStop(0, STORAGE_COLORS[i]);
+    grad.addColorStop(1, STORAGE_COLORS[i] + '88');
+    chartCtx.fillStyle = grad;
+    chartCtx.beginPath();
+    chartCtx.roundRect(x, y, barW, barH, [4, 4, 0, 0]);
+    chartCtx.fill();
+
+    // 値ラベル
+    chartCtx.fillStyle = '#2d3748';
+    chartCtx.font = 'bold 12px sans-serif';
+    chartCtx.textAlign = 'center';
+    chartCtx.fillText(val, x + barW / 2, y - 6);
+
+    // X軸ラベル
+    chartCtx.fillStyle = '#4a5568';
+    chartCtx.font = '11px sans-serif';
+    const lx = x + barW / 2;
+    const ly = pad.top + chartH + 16;
+    // 折り返し
+    const words = label.split('');
+    if (label.length > 10) {
+      chartCtx.fillText(label.substring(0,10), lx, ly);
+      chartCtx.fillText(label.substring(10), lx, ly + 14);
+    } else {
+      chartCtx.fillText(label, lx, ly);
+    }
+  });
+
+  // Y軸線
+  chartCtx.strokeStyle = '#cbd5e0';
+  chartCtx.lineWidth   = 2;
+  chartCtx.beginPath();
+  chartCtx.moveTo(pad.left, pad.top);
+  chartCtx.lineTo(pad.left, pad.top + chartH);
+  chartCtx.lineTo(pad.left + chartW, pad.top + chartH);
+  chartCtx.stroke();
+
+  clearLog('chartConsole');
+  const metricLabels = { capacity:'容量', speed:'速度', complexity:'複雑度' };
+  log('chartConsole', `${metricLabels[metric]}の比較チャートを描画しました`, 'ok');
+  STORAGE_LABELS.forEach((label, i) => {
+    log('chartConsole', `  ${label}: ${data[i]}`, 'info');
+  });
+}
+
+// ===================================================
+// 演習問題
+// ===================================================
+function checkQ(btn, qid, correctLetter) {
+  const item = document.getElementById(qid);
+  item.querySelectorAll('.option-btn').forEach(b => {
+    b.disabled = true;
+    if (b.textContent.trim().startsWith(correctLetter + '.')) b.classList.add('correct');
+  });
+  if (!btn.classList.contains('correct')) btn.classList.add('wrong');
+  document.getElementById('exp_' + qid).classList.add('show');
+}
+
+function toggleMulti(btn) {
+  if (btn.disabled) return;
+  btn.classList.toggle('selected');
+  btn.style.borderColor = btn.classList.contains('selected') ? 'var(--purple-light)' : '';
+  btn.style.background  = btn.classList.contains('selected') ? 'var(--purple-bg)' : '';
+}
+
+function checkQ5Multi() {
+  const btns = document.querySelectorAll('#q5options .option-btn');
+  btns.forEach(b => {
+    b.disabled = true;
+    const isCorrect  = b.dataset.correct === 'true';
+    const isSelected = b.classList.contains('selected');
+    b.style.borderColor = ''; b.style.background = '';
+    if (isCorrect)             b.classList.add('correct');
+    if (!isCorrect && isSelected) b.classList.add('wrong');
+  });
+  document.getElementById('exp_q5').classList.add('show');
+  document.querySelector('#q5 .btn-primary').disabled = true;
+}
+
+function checkQ6() {
+  const a   = document.getElementById('q6a').value.trim().replace(/JSON\./i,'').toLowerCase();
+  const b   = document.getElementById('q6b').value.trim().replace(/JSON\./i,'').toLowerCase();
+  const aOk = a === 'stringify';
+  const bOk = b === 'parse';
+  const exp = document.getElementById('exp_q6');
+  exp.classList.add('show');
+  let html = '';
+  if (aOk && bOk) {
+    html = '<strong>✅ 両方正解！</strong><br><br>';
+  } else {
+    html  = '<strong>' + (aOk ? '✅' : '❌') + ' A: JSON.stringify</strong>（あなたの答え: ' + (document.getElementById('q6a').value || '未入力') + '）<br>';
+    html += '<strong>' + (bOk ? '✅' : '❌') + ' B: JSON.parse</strong>（あなたの答え: ' + (document.getElementById('q6b').value || '未入力') + '）<br><br>';
+  }
+  html += '<strong>解説：</strong><br>';
+  html += '• <code>JSON.stringify(obj)</code> — JavaScript のオブジェクト・配列・数値・真偽値を JSON 文字列に変換します。Web Storage は文字列しか保存できないため、オブジェクトを保存するときに必須です。<br>';
+  html += '• <code>JSON.parse(str)</code> — JSON 文字列を JavaScript のオブジェクトに変換します。<code>getItem()</code> で取り出した文字列をオブジェクトに戻すために使います。<br>';
+  html += '• 注意: <code>JSON.parse(null)</code> は <code>null</code> を返します（getItem でキーが存在しない場合の対策が必要）。';
+  exp.innerHTML = html;
+}
+
+// ===================================================
+// 完了ボタン
+// ===================================================
+function markComplete() {
+  const key = 'html5lv2_ch4_03';
+  const btn = document.getElementById('completeBtn');
+  if (localStorage.getItem(key) === 'done') {
+    localStorage.removeItem(key);
+    btn.textContent = '✅ このセクションを完了にする';
+    btn.classList.remove('done');
+  } else {
+    localStorage.setItem(key, 'done');
+    btn.textContent = '🎉 完了済み！（クリックで取り消し）';
+    btn.classList.add('done');
+  }
+}
+
+(function() {
+  if (localStorage.getItem('html5lv2_ch4_03') === 'done') {
+    const btn = document.getElementById('completeBtn');
+    btn.textContent = '🎉 完了済み！（クリックで取り消し）';
+    btn.classList.add('done');
+  }
+  // 初期チャート描画
+  drawStorageChart();
+})();
+</script>
+</body>
+</html>

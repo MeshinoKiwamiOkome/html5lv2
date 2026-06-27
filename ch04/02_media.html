@@ -1,0 +1,1443 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>4-2 メディア要素のAPI | HTML5 Level 2 学習サイト</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --purple-dark:  #553c9a;
+      --purple-light: #9f7aea;
+      --purple-bg:    #faf5ff;
+      --purple-border:#e9d8fd;
+      --success-bg:   #f0fff4;
+      --success:      #48bb78;
+      --success-dark: #276749;
+      --warning-bg:   #fffaf0;
+      --warning:      #ed8936;
+      --warning-dark: #744210;
+      --danger-bg:    #fff5f5;
+      --danger:       #fc8181;
+      --danger-dark:  #c53030;
+      --info-bg:      #ebf8ff;
+      --info:         #4299e1;
+      --info-dark:    #2b6cb0;
+      --bg:           #f0f4f8;
+      --text:         #2d3748;
+      --muted:        #718096;
+      --dark-bg:      #1a202c;
+      --white:        #ffffff;
+      --border:       #e2e8f0;
+    }
+    body { font-family:'Segoe UI','Hiragino Sans','Meiryo',sans-serif; background:var(--bg); color:var(--text); line-height:1.7; }
+    a { color:var(--purple-dark); text-decoration:none; }
+    a:hover { text-decoration:underline; }
+
+    .breadcrumb { background:var(--white); border-bottom:1px solid var(--border); padding:10px 24px; font-size:0.85rem; color:var(--muted); }
+    .breadcrumb a { color:var(--purple-dark); }
+
+    .chapter-header { background:linear-gradient(135deg,var(--purple-dark) 0%,var(--purple-light) 100%); color:var(--white); padding:48px 24px 40px; text-align:center; position:relative; overflow:hidden; }
+    .chapter-header::before { content:''; position:absolute; top:-60px; right:-60px; width:220px; height:220px; background:rgba(255,255,255,0.06); border-radius:50%; }
+    .chapter-header::after  { content:''; position:absolute; bottom:-80px; left:-40px; width:280px; height:280px; background:rgba(255,255,255,0.04); border-radius:50%; }
+    .chapter-header .sec-label { font-size:0.85rem; letter-spacing:0.15em; opacity:0.8; margin-bottom:8px; }
+    .chapter-header h1 { font-size:clamp(1.5rem,4vw,2.2rem); font-weight:800; margin-bottom:12px; position:relative; z-index:1; }
+    .chapter-header p  { font-size:0.97rem; opacity:0.88; max-width:580px; margin:0 auto; position:relative; z-index:1; }
+
+    .section-nav { background:var(--white); border-bottom:1px solid var(--border); padding:12px 20px; overflow-x:auto; white-space:nowrap; }
+    .section-nav a { display:inline-block; padding:5px 12px; margin-right:6px; border-radius:20px; font-size:0.82rem; color:var(--muted); border:1px solid var(--border); transition:all 0.2s; }
+    .section-nav a:hover { background:var(--purple-bg); border-color:var(--purple-light); color:var(--purple-dark); text-decoration:none; }
+    .section-nav a.active { background:var(--purple-dark); color:var(--white); border-color:var(--purple-dark); }
+
+    .main { max-width:960px; margin:0 auto; padding:40px 20px 60px; }
+
+    .sec-heading { font-size:1.4rem; font-weight:800; color:var(--purple-dark); border-left:5px solid var(--purple-light); padding-left:14px; margin:48px 0 20px; }
+    .sec-heading:first-of-type { margin-top:0; }
+    .sub-heading { font-size:1.1rem; font-weight:700; color:var(--text); margin:28px 0 12px; display:flex; align-items:center; gap:8px; }
+    .sub-heading::before { content:''; display:inline-block; width:4px; height:18px; background:var(--purple-light); border-radius:2px; }
+
+    .info-box { border-radius:8px; padding:16px 20px; margin:20px 0; font-size:0.9rem; line-height:1.7; }
+    .info-box.point { background:var(--purple-bg); border:1px solid var(--purple-border); border-left:4px solid var(--purple-dark); }
+    .info-box.point strong { color:var(--purple-dark); }
+    .info-box.warn  { background:var(--warning-bg); border:1px solid #fbd38d; border-left:4px solid var(--warning); }
+    .info-box.warn  strong { color:var(--warning-dark); }
+    .info-box.tip   { background:var(--success-bg); border:1px solid #c6f6d5; border-left:4px solid var(--success); }
+    .info-box.tip   strong { color:var(--success-dark); }
+    .info-box p { margin-top:6px; }
+    .info-box ul { margin:8px 0 0 18px; }
+    .info-box li { margin-bottom:4px; }
+
+    .tbl-wrap { overflow-x:auto; margin:20px 0; border-radius:8px; border:1px solid var(--border); }
+    table { width:100%; border-collapse:collapse; font-size:0.88rem; }
+    th { background:var(--purple-dark); color:var(--white); padding:10px 14px; text-align:left; font-weight:600; }
+    td { padding:9px 14px; border-bottom:1px solid var(--border); vertical-align:top; }
+    tr:last-child td { border-bottom:none; }
+    tr:nth-child(even) td { background:#f7f8fa; }
+    code { background:#edf2f7; color:var(--purple-dark); padding:1px 6px; border-radius:4px; font-size:0.85em; font-family:'Consolas','Monaco',monospace; }
+
+    .code-block { position:relative; background:var(--dark-bg); border-radius:10px; margin:20px 0; overflow:hidden; }
+    .code-block-header { background:#2d3748; padding:8px 16px; font-size:0.78rem; color:#a0aec0; display:flex; justify-content:space-between; align-items:center; }
+    .copy-btn { background:transparent; border:1px solid #4a5568; color:#a0aec0; padding:3px 10px; border-radius:4px; font-size:0.75rem; cursor:pointer; transition:all 0.2s; }
+    .copy-btn:hover { background:#4a5568; color:var(--white); }
+    .copy-btn.copied { background:var(--success-dark); border-color:var(--success-dark); color:var(--white); }
+    .code-block pre { padding:20px; overflow-x:auto; font-size:0.85rem; line-height:1.7; color:#e2e8f0; font-family:'Consolas','Monaco','Courier New',monospace; }
+    .kw  { color:#90cdf4; }
+    .fn  { color:#b794f4; }
+    .str { color:#fbd38d; }
+    .num { color:#fc8181; }
+    .cm  { color:#68d391; }
+    .op  { color:#f6ad55; }
+    .out { color:#a0aec0; }
+    .tag { color:#fc8181; }
+    .atr { color:#90cdf4; }
+    .val { color:#fbd38d; }
+
+    .demo-box { background:var(--white); border:2px solid var(--purple-border); border-radius:12px; padding:24px; margin:24px 0; }
+    .demo-box h3 { font-size:1rem; font-weight:700; color:var(--purple-dark); margin-bottom:16px; display:flex; align-items:center; gap:8px; }
+    .demo-box h3 .demo-num { background:var(--purple-dark); color:var(--white); border-radius:50%; width:24px; height:24px; display:inline-flex; align-items:center; justify-content:center; font-size:0.75rem; flex-shrink:0; }
+
+    .btn { padding:8px 16px; border:none; border-radius:7px; font-size:0.88rem; font-weight:600; cursor:pointer; transition:all 0.2s; }
+    .btn:disabled { opacity:0.45; cursor:not-allowed; }
+    .btn-primary { background:var(--purple-dark); color:var(--white); }
+    .btn-primary:hover:not(:disabled) { background:var(--purple-light); }
+    .btn-success { background:var(--success-dark); color:var(--white); }
+    .btn-success:hover:not(:disabled) { background:var(--success); }
+    .btn-danger  { background:var(--danger-dark); color:var(--white); }
+    .btn-danger:hover:not(:disabled)  { background:var(--danger); }
+    .btn-info    { background:var(--info-dark); color:var(--white); }
+    .btn-info:hover:not(:disabled)    { background:var(--info); }
+    .btn-warn    { background:var(--warning-dark); color:var(--white); }
+    .btn-warn:hover:not(:disabled)    { background:var(--warning); }
+    .btn-outline { background:transparent; border:2px solid var(--purple-dark); color:var(--purple-dark); }
+    .btn-outline:hover:not(:disabled) { background:var(--purple-bg); }
+    .btn-sm { padding:5px 12px; font-size:0.82rem; }
+
+    .ctrl-row { display:flex; flex-wrap:wrap; gap:10px; align-items:center; margin-bottom:12px; }
+    label { font-size:0.85rem; color:var(--muted); }
+    input[type=range] { width:110px; accent-color:var(--purple-dark); }
+    select { padding:6px 10px; border:1px solid var(--border); border-radius:6px; font-size:0.85rem; color:var(--text); background:var(--white); }
+
+    .console { background:var(--dark-bg); border-radius:8px; padding:14px 16px; font-family:'Consolas','Monaco',monospace; font-size:0.82rem; color:#e2e8f0; min-height:80px; max-height:220px; overflow-y:auto; margin-top:12px; }
+    .console .log-line { margin-bottom:4px; }
+    .console .log-line.ok   { color:#68d391; }
+    .console .log-line.err  { color:#fc8181; }
+    .console .log-line.info { color:#90cdf4; }
+    .console .log-line.warn { color:#f6ad55; }
+
+    /* カスタムプレーヤー */
+    .player-wrap { background:#0d1117; border-radius:12px; overflow:hidden; }
+    .player-screen { position:relative; background:#000; display:flex; align-items:center; justify-content:center; min-height:160px; }
+    .player-screen .player-placeholder { color:#4a5568; font-size:0.9rem; text-align:center; padding:20px; }
+    .player-screen canvas { display:block; width:100%; }
+    .player-controls { background:#161b22; padding:12px 16px; }
+    .player-progress-wrap { position:relative; height:6px; background:#30363d; border-radius:3px; margin-bottom:12px; cursor:pointer; }
+    .player-progress-bar  { height:100%; background:linear-gradient(90deg,var(--purple-dark),var(--purple-light)); border-radius:3px; transition:width 0.1s; pointer-events:none; }
+    .player-progress-thumb { position:absolute; top:50%; transform:translate(-50%,-50%); width:14px; height:14px; background:var(--white); border-radius:50%; pointer-events:none; transition:left 0.1s; }
+    .player-btn-row { display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
+    .player-btn { background:transparent; border:1px solid #30363d; color:#c9d1d9; border-radius:6px; padding:5px 10px; font-size:0.82rem; cursor:pointer; transition:all 0.2s; }
+    .player-btn:hover { background:#21262d; border-color:#58a6ff; color:#58a6ff; }
+    .player-btn.active { background:#553c9a; border-color:#9f7aea; color:var(--white); }
+    .player-time { color:#8b949e; font-size:0.8rem; font-family:monospace; margin-left:auto; }
+    .player-vol-wrap { display:flex; align-items:center; gap:6px; }
+    .player-vol-wrap input[type=range] { width:70px; }
+
+    /* イベントログ */
+    .event-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(140px,1fr)); gap:8px; margin-bottom:12px; }
+    .event-badge { background:#f7f8fa; border:2px solid var(--border); border-radius:8px; padding:8px 10px; text-align:center; font-size:0.8rem; transition:all 0.3s; }
+    .event-badge .ev-name { font-weight:700; color:var(--muted); display:block; margin-bottom:2px; }
+    .event-badge .ev-count { font-size:1.1rem; font-weight:800; color:var(--purple-dark); }
+    .event-badge.fired { border-color:var(--purple-light); background:var(--purple-bg); animation:flash 0.4s ease; }
+    @keyframes flash { 0%{background:#e9d8fd} 100%{background:var(--purple-bg)} }
+
+    /* Web Audio ビジュアライザ */
+    .visualizer-wrap { background:#0d1117; border-radius:10px; overflow:hidden; }
+    .visualizer-canvas { display:block; width:100%; }
+    .viz-controls { background:#161b22; padding:10px 14px; display:flex; gap:10px; flex-wrap:wrap; align-items:center; }
+    .viz-btn { background:#21262d; border:1px solid #30363d; color:#c9d1d9; border-radius:6px; padding:5px 12px; font-size:0.82rem; cursor:pointer; transition:all 0.2s; }
+    .viz-btn:hover { border-color:#9f7aea; color:#9f7aea; }
+    .viz-btn.active { background:#553c9a; border-color:#9f7aea; color:var(--white); }
+
+    /* TextTrack デモ */
+    .track-demo-wrap { background:#0d1117; border-radius:10px; padding:16px; }
+    .track-screen { background:#000; border-radius:6px; min-height:100px; display:flex; align-items:flex-end; justify-content:center; padding:12px; margin-bottom:10px; position:relative; }
+    .track-subtitle { background:rgba(0,0,0,0.8); color:var(--white); font-size:1rem; font-weight:600; padding:6px 14px; border-radius:4px; text-align:center; min-height:32px; display:flex; align-items:center; justify-content:center; width:100%; }
+    .track-timeline { display:flex; flex-direction:column; gap:6px; }
+    .track-cue { background:#21262d; border:1px solid #30363d; border-radius:6px; padding:8px 12px; font-size:0.82rem; color:#c9d1d9; cursor:pointer; display:flex; gap:10px; align-items:center; transition:all 0.2s; }
+    .track-cue:hover { border-color:#9f7aea; }
+    .track-cue.active { border-color:var(--purple-light); background:#1e1b4b; }
+    .track-cue .cue-time { color:#8b949e; font-family:monospace; flex-shrink:0; font-size:0.78rem; }
+    .track-cue .cue-text { color:#e2e8f0; }
+
+    /* canPlayType */
+    .cpt-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(200px,1fr)); gap:10px; }
+    .cpt-item { background:#f7f8fa; border:1px solid var(--border); border-radius:8px; padding:12px 14px; }
+    .cpt-item .cpt-type { font-family:monospace; font-size:0.8rem; color:var(--purple-dark); margin-bottom:6px; word-break:break-all; }
+    .cpt-item .cpt-result { font-size:0.88rem; font-weight:700; padding:3px 10px; border-radius:4px; display:inline-block; }
+    .cpt-result.probably { background:var(--success-bg); color:var(--success-dark); border:1px solid #c6f6d5; }
+    .cpt-result.maybe    { background:var(--warning-bg); color:var(--warning-dark); border:1px solid #fbd38d; }
+    .cpt-result.empty    { background:var(--danger-bg);  color:var(--danger-dark);  border:1px solid #fed7d7; }
+
+    /* 演習問題 */
+    .quiz-section { background:var(--white); border:2px solid var(--purple-border); border-radius:14px; padding:28px; margin:48px 0 32px; }
+    .quiz-section h2 { font-size:1.2rem; font-weight:800; color:var(--purple-dark); margin-bottom:6px; }
+    .quiz-section .quiz-desc { font-size:0.88rem; color:var(--muted); margin-bottom:24px; }
+    .quiz-item { background:var(--bg); border-radius:10px; padding:20px; margin-bottom:16px; }
+    .quiz-item .q-num  { font-size:0.78rem; font-weight:700; color:var(--purple-light); letter-spacing:0.1em; margin-bottom:6px; }
+    .quiz-item .q-text { font-size:0.95rem; font-weight:600; color:var(--text); margin-bottom:14px; line-height:1.6; }
+    .quiz-item .q-code { background:var(--dark-bg); border-radius:6px; padding:12px 16px; font-family:'Consolas','Monaco',monospace; font-size:0.83rem; color:#e2e8f0; margin-bottom:14px; line-height:1.6; }
+    .options { display:flex; flex-direction:column; gap:8px; }
+    .option-btn { background:var(--white); border:2px solid var(--border); border-radius:8px; padding:10px 16px; font-size:0.88rem; text-align:left; cursor:pointer; transition:all 0.2s; color:var(--text); }
+    .option-btn:hover:not(:disabled) { border-color:var(--purple-light); background:var(--purple-bg); }
+    .option-btn.correct  { border-color:var(--success); background:var(--success-bg); color:var(--success-dark); font-weight:600; }
+    .option-btn.wrong    { border-color:var(--danger);  background:var(--danger-bg);  color:var(--danger-dark); }
+    .option-btn:disabled { cursor:default; }
+    .explanation { display:none; margin-top:12px; padding:12px 16px; background:var(--purple-bg); border:1px solid var(--purple-border); border-radius:8px; font-size:0.87rem; color:var(--text); line-height:1.7; }
+    .explanation.show { display:block; }
+    .explanation strong { color:var(--purple-dark); }
+    .fill-input { width:100%; padding:8px 12px; border:2px solid var(--border); border-radius:7px; font-size:0.9rem; font-family:'Consolas','Monaco',monospace; margin-bottom:8px; }
+    .fill-input:focus { outline:none; border-color:var(--purple-light); }
+
+    .complete-area { text-align:center; margin:40px 0 20px; }
+    .complete-btn { background:linear-gradient(135deg,var(--purple-dark),var(--purple-light)); color:var(--white); border:none; border-radius:12px; padding:16px 40px; font-size:1rem; font-weight:700; cursor:pointer; transition:all 0.3s; box-shadow:0 4px 15px rgba(85,60,154,0.3); }
+    .complete-btn:hover { transform:translateY(-2px); box-shadow:0 6px 20px rgba(85,60,154,0.4); }
+    .complete-btn.done { background:linear-gradient(135deg,var(--success-dark),var(--success)); box-shadow:0 4px 15px rgba(72,187,120,0.3); }
+
+    .page-nav { display:flex; justify-content:space-between; align-items:center; gap:16px; flex-wrap:wrap; margin-top:40px; padding-top:24px; border-top:2px solid var(--border); }
+    .page-nav-btn { display:inline-flex; align-items:center; gap:8px; background:var(--white); border:2px solid var(--purple-border); color:var(--purple-dark); border-radius:10px; padding:12px 20px; font-size:0.9rem; font-weight:600; transition:all 0.2s; }
+    .page-nav-btn:hover { background:var(--purple-bg); border-color:var(--purple-light); text-decoration:none; }
+
+    footer { background:var(--dark-bg); color:#a0aec0; text-align:center; padding:28px 20px; font-size:0.85rem; margin-top:60px; }
+    footer a { color:var(--purple-light); }
+
+    @media(max-width:640px){
+      .main { padding:24px 14px 48px; }
+      .ctrl-row { gap:8px; }
+      .event-grid { grid-template-columns:repeat(3,1fr); }
+      .cpt-grid { grid-template-columns:1fr 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- パンくずナビ -->
+<div class="breadcrumb">
+  <a href="../index.html">🏠 HTML5 Level 2</a> ›
+  <a href="index.html">Chapter 4</a> ›
+  4-2 メディア要素のAPI
+</div>
+
+<!-- チャプターヘッダー -->
+<div class="chapter-header">
+  <div class="sec-label">CHAPTER 4 — SECTION 2</div>
+  <h1>🎵 メディア要素のAPI</h1>
+  <p>HTML5 の audio・video 要素を JavaScript で制御する方法と、Web Audio API・TextTrack API を学びます。</p>
+</div>
+
+<!-- セクションナビ -->
+<div class="section-nav">
+  <a href="01_graphics.html">4-1 グラフィックス</a>
+  <a href="02_media.html" class="active">4-2 メディア</a>
+  <a href="03_storage.html">4-3 ストレージ</a>
+  <a href="04_communication.html">4-4 通信</a>
+  <a href="05_device.html">4-5 デバイス</a>
+  <a href="06_performance.html">4-6 パフォーマンス</a>
+  <a href="07_security.html">4-7 セキュリティ</a>
+</div>
+
+<main class="main">
+
+  <!-- ========== 1. HTMLMediaElement ========== -->
+  <h2 class="sec-heading">1. HTMLMediaElement の基礎</h2>
+
+  <p><code>&lt;audio&gt;</code> と <code>&lt;video&gt;</code> は共通の <strong>HTMLMediaElement</strong> インターフェースを継承しています。JavaScript からメソッド・プロパティ・イベントを通じて完全に制御できます。</p>
+
+  <div class="code-block">
+    <div class="code-block-header">
+      <span>audio / video 要素の基本 HTML</span>
+      <button class="copy-btn" onclick="copyCode(this)">copy</button>
+    </div>
+    <pre><span class="cm">&lt;!-- video 要素 --&gt;</span>
+<span class="tag">&lt;video</span>
+  <span class="atr">id</span>=<span class="val">"myVideo"</span>
+  <span class="atr">width</span>=<span class="val">"640"</span>
+  <span class="atr">height</span>=<span class="val">"360"</span>
+  <span class="atr">controls</span>              <span class="cm">&lt;!-- ブラウザ標準コントロール表示 --&gt;</span>
+  <span class="atr">autoplay</span>             <span class="cm">&lt;!-- 自動再生（muted と併用が必要なことが多い）--&gt;</span>
+  <span class="atr">loop</span>                 <span class="cm">&lt;!-- ループ再生 --&gt;</span>
+  <span class="atr">muted</span>                <span class="cm">&lt;!-- ミュート --&gt;</span>
+  <span class="atr">preload</span>=<span class="val">"metadata"</span>  <span class="cm">&lt;!-- none / metadata / auto --&gt;</span>
+  <span class="atr">poster</span>=<span class="val">"thumb.jpg"</span>  <span class="cm">&lt;!-- サムネイル画像 --&gt;</span>
+<span class="tag">&gt;</span>
+  <span class="tag">&lt;source</span> <span class="atr">src</span>=<span class="val">"video.mp4"</span>  <span class="atr">type</span>=<span class="val">"video/mp4"</span><span class="tag">&gt;</span>
+  <span class="tag">&lt;source</span> <span class="atr">src</span>=<span class="val">"video.webm"</span> <span class="atr">type</span>=<span class="val">"video/webm"</span><span class="tag">&gt;</span>
+  <span class="cm">&lt;!-- フォールバックテキスト --&gt;</span>
+  お使いのブラウザは video 要素をサポートしていません。
+<span class="tag">&lt;/video&gt;</span>
+
+<span class="cm">&lt;!-- audio 要素 --&gt;</span>
+<span class="tag">&lt;audio</span> <span class="atr">id</span>=<span class="val">"myAudio"</span> <span class="atr">controls</span> <span class="atr">preload</span>=<span class="val">"auto"</span><span class="tag">&gt;</span>
+  <span class="tag">&lt;source</span> <span class="atr">src</span>=<span class="val">"audio.ogg"</span> <span class="atr">type</span>=<span class="val">"audio/ogg"</span><span class="tag">&gt;</span>
+  <span class="tag">&lt;source</span> <span class="atr">src</span>=<span class="val">"audio.mp3"</span> <span class="atr">type</span>=<span class="val">"audio/mpeg"</span><span class="tag">&gt;</span>
+<span class="tag">&lt;/audio&gt;</span></pre>
+  </div>
+
+  <div class="tbl-wrap">
+    <table>
+      <tr><th>プロパティ / メソッド</th><th>型</th><th>説明</th></tr>
+      <tr><td><code>play()</code></td><td>Promise</td><td>再生開始。Promise を返す（ES2016以降）</td></tr>
+      <tr><td><code>pause()</code></td><td>void</td><td>一時停止</td></tr>
+      <tr><td><code>load()</code></td><td>void</td><td>メディアをリセットして再読み込み</td></tr>
+      <tr><td><code>currentTime</code></td><td>number</td><td>現在の再生位置（秒）。書き込みでシーク</td></tr>
+      <tr><td><code>duration</code></td><td>number</td><td>メディアの総再生時間（秒）</td></tr>
+      <tr><td><code>paused</code></td><td>boolean</td><td>一時停止中かどうか</td></tr>
+      <tr><td><code>ended</code></td><td>boolean</td><td>再生終了したかどうか</td></tr>
+      <tr><td><code>volume</code></td><td>number</td><td>音量（0.0〜1.0）</td></tr>
+      <tr><td><code>muted</code></td><td>boolean</td><td>ミュート状態</td></tr>
+      <tr><td><code>playbackRate</code></td><td>number</td><td>再生速度（1.0が標準、0.5で半速、2.0で倍速）</td></tr>
+      <tr><td><code>readyState</code></td><td>number</td><td>メディアの準備状態（0〜4）</td></tr>
+      <tr><td><code>networkState</code></td><td>number</td><td>ネットワーク状態（0〜3）</td></tr>
+      <tr><td><code>buffered</code></td><td>TimeRanges</td><td>バッファリング済みの時間範囲</td></tr>
+      <tr><td><code>canPlayType(type)</code></td><td>string</td><td>再生可能かを返す（''/'maybe'/'probably'）</td></tr>
+    </table>
+  </div>
+
+  <div class="info-box point">
+    <strong>📌 試験頻出：readyState の値</strong>
+    <ul>
+      <li><code>HAVE_NOTHING (0)</code> — メディアデータなし</li>
+      <li><code>HAVE_METADATA (1)</code> — メタデータ（duration等）のみ取得済み</li>
+      <li><code>HAVE_CURRENT_DATA (2)</code> — 現在位置のデータあり（次フレームなし）</li>
+      <li><code>HAVE_FUTURE_DATA (3)</code> — 現在位置と次フレームのデータあり</li>
+      <li><code>HAVE_ENOUGH_DATA (4)</code> — 最後まで再生できるデータあり</li>
+    </ul>
+  </div>
+
+  <!-- ========== 2. メディアイベント ========== -->
+  <h2 class="sec-heading">2. メディアイベント</h2>
+
+  <div class="code-block">
+    <div class="code-block-header">
+      <span>主要メディアイベントの登録</span>
+      <button class="copy-btn" onclick="copyCode(this)">copy</button>
+    </div>
+    <pre><span class="kw">const</span> video <span class="op">=</span> document.<span class="fn">getElementById</span>(<span class="str">'myVideo'</span>);
+
+<span class="cm">// 再生・停止系</span>
+video.<span class="fn">addEventListener</span>(<span class="str">'play'</span>,    () <span class="op">=></span> console.<span class="fn">log</span>(<span class="str">'再生開始'</span>));
+video.<span class="fn">addEventListener</span>(<span class="str">'pause'</span>,   () <span class="op">=></span> console.<span class="fn">log</span>(<span class="str">'一時停止'</span>));
+video.<span class="fn">addEventListener</span>(<span class="str">'ended'</span>,   () <span class="op">=></span> console.<span class="fn">log</span>(<span class="str">'再生終了'</span>));
+video.<span class="fn">addEventListener</span>(<span class="str">'playing'</span>, () <span class="op">=></span> console.<span class="fn">log</span>(<span class="str">'再生中（バッファ後）'</span>));
+
+<span class="cm">// 時間・進行系</span>
+video.<span class="fn">addEventListener</span>(<span class="str">'timeupdate'</span>, () <span class="op">=></span> {
+  console.<span class="fn">log</span>(<span class="str">`現在位置: ${</span>video.currentTime.<span class="fn">toFixed</span>(<span class="num">2</span>)<span class="str">}秒`</span>);
+});
+video.<span class="fn">addEventListener</span>(<span class="str">'seeking'</span>,  () <span class="op">=></span> console.<span class="fn">log</span>(<span class="str">'シーク中'</span>));
+video.<span class="fn">addEventListener</span>(<span class="str">'seeked'</span>,   () <span class="op">=></span> console.<span class="fn">log</span>(<span class="str">'シーク完了'</span>));
+
+<span class="cm">// 読み込み系</span>
+video.<span class="fn">addEventListener</span>(<span class="str">'loadstart'</span>,    () <span class="op">=></span> console.<span class="fn">log</span>(<span class="str">'読み込み開始'</span>));
+video.<span class="fn">addEventListener</span>(<span class="str">'loadedmetadata'</span>,() <span class="op">=></span> {
+  console.<span class="fn">log</span>(<span class="str">`duration: ${</span>video.duration<span class="str">}秒`</span>);
+});
+video.<span class="fn">addEventListener</span>(<span class="str">'loadeddata'</span>,    () <span class="op">=></span> console.<span class="fn">log</span>(<span class="str">'データ読み込み完了'</span>));
+video.<span class="fn">addEventListener</span>(<span class="str">'canplay'</span>,       () <span class="op">=></span> console.<span class="fn">log</span>(<span class="str">'再生可能'</span>));
+video.<span class="fn">addEventListener</span>(<span class="str">'canplaythrough'</span>,() <span class="op">=></span> console.<span class="fn">log</span>(<span class="str">'最後まで再生可能'</span>));
+video.<span class="fn">addEventListener</span>(<span class="str">'waiting'</span>,       () <span class="op">=></span> console.<span class="fn">log</span>(<span class="str">'バッファ待ち'</span>));
+video.<span class="fn">addEventListener</span>(<span class="str">'stalled'</span>,       () <span class="op">=></span> console.<span class="fn">log</span>(<span class="str">'データ取得停滞'</span>));
+
+<span class="cm">// エラー</span>
+video.<span class="fn">addEventListener</span>(<span class="str">'error'</span>, (e) <span class="op">=></span> {
+  console.<span class="fn">log</span>(<span class="str">`エラー: ${</span>video.error.code<span class="str">}`</span>); <span class="cm">// 1〜4</span>
+});</pre>
+  </div>
+
+  <div class="tbl-wrap">
+    <table>
+      <tr><th>イベント名</th><th>発火タイミング</th></tr>
+      <tr><td><code>loadstart</code></td><td>メディアの読み込みが開始されたとき</td></tr>
+      <tr><td><code>loadedmetadata</code></td><td>duration・dimensions などのメタデータが読み込まれたとき</td></tr>
+      <tr><td><code>loadeddata</code></td><td>現在の再生位置のデータが読み込まれたとき</td></tr>
+      <tr><td><code>canplay</code></td><td>再生可能になったとき（バッファ不足で止まる可能性あり）</td></tr>
+      <tr><td><code>canplaythrough</code></td><td>最後まで止まらずに再生できると判断されたとき</td></tr>
+      <tr><td><code>play</code></td><td>play() が呼ばれたとき / autoplay 開始時</td></tr>
+      <tr><td><code>playing</code></td><td>実際に再生が始まったとき（バッファ後も含む）</td></tr>
+      <tr><td><code>pause</code></td><td>pause() が呼ばれたとき</td></tr>
+      <tr><td><code>timeupdate</code></td><td>currentTime が変化したとき（約250ms間隔）</td></tr>
+      <tr><td><code>seeking</code></td><td>シーク操作が始まったとき</td></tr>
+      <tr><td><code>seeked</code></td><td>シーク操作が完了したとき</td></tr>
+      <tr><td><code>ended</code></td><td>再生が終了したとき</td></tr>
+      <tr><td><code>volumechange</code></td><td>volume または muted が変化したとき</td></tr>
+      <tr><td><code>ratechange</code></td><td>playbackRate が変化したとき</td></tr>
+      <tr><td><code>waiting</code></td><td>次のフレームが利用可能になるまで待機中</td></tr>
+      <tr><td><code>error</code></td><td>エラーが発生したとき</td></tr>
+    </table>
+  </div>
+
+  <!-- ===== DEMO 1: カスタムプレーヤー ===== -->
+  <div class="demo-box">
+    <h3><span class="demo-num">1</span> カスタムメディアプレーヤー（シミュレーター）</h3>
+    <p style="font-size:0.85rem;color:var(--muted);margin-bottom:14px;">実際のメディアファイルなしで HTMLMediaElement の API 動作をシミュレートします。</p>
+
+    <div class="player-wrap">
+      <div class="player-screen">
+        <canvas id="playerCanvas" width="700" height="160"></canvas>
+      </div>
+      <div class="player-controls">
+        <div class="player-progress-wrap" id="progressWrap" onclick="seekPlayer(event)">
+          <div class="player-progress-bar"  id="progressBar"  style="width:0%"></div>
+          <div class="player-progress-thumb" id="progressThumb" style="left:0%"></div>
+        </div>
+        <div class="player-btn-row">
+          <button class="player-btn" id="playPauseBtn" onclick="togglePlayPause()">▶ 再生</button>
+          <button class="player-btn" onclick="stopPlayer()">⏹ 停止</button>
+          <button class="player-btn" onclick="seekRelative(-10)">⏪ -10s</button>
+          <button class="player-btn" onclick="seekRelative(10)">+10s ⏩</button>
+          <div class="player-vol-wrap">
+            <span style="color:#8b949e;font-size:0.8rem;">🔊</span>
+            <input type="range" id="volRange" min="0" max="100" value="80" oninput="changeVolume(this.value)">
+            <span id="volVal" style="color:#8b949e;font-size:0.78rem;">80%</span>
+          </div>
+          <select id="rateSelect" onchange="changeRate(this.value)" style="background:#21262d;color:#c9d1d9;border:1px solid #30363d;border-radius:6px;padding:4px 8px;font-size:0.8rem;">
+            <option value="0.5">0.5x</option>
+            <option value="1" selected>1.0x</option>
+            <option value="1.5">1.5x</option>
+            <option value="2">2.0x</option>
+          </select>
+          <span class="player-time" id="playerTime">0:00 / 3:00</span>
+        </div>
+      </div>
+    </div>
+    <div class="console" id="playerConsole"><div class="log-line info">▶ 「再生」ボタンを押してプレーヤーを操作してください</div></div>
+  </div>
+
+  <!-- ===== DEMO 2: イベントエクスプローラー ===== -->
+  <div class="demo-box">
+    <h3><span class="demo-num">2</span> メディアイベントエクスプローラー</h3>
+    <p style="font-size:0.85rem;color:var(--muted);margin-bottom:14px;">各操作を行うと対応するイベントが発火します。発火回数をリアルタイムで確認できます。</p>
+
+    <div class="event-grid" id="eventGrid">
+      <div class="event-badge" id="ev_play">
+        <span class="ev-name">play</span>
+        <span class="ev-count" id="cnt_play">0</span>
+      </div>
+      <div class="event-badge" id="ev_pause">
+        <span class="ev-name">pause</span>
+        <span class="ev-count" id="cnt_pause">0</span>
+      </div>
+      <div class="event-badge" id="ev_playing">
+        <span class="ev-name">playing</span>
+        <span class="ev-count" id="cnt_playing">0</span>
+      </div>
+      <div class="event-badge" id="ev_ended">
+        <span class="ev-name">ended</span>
+        <span class="ev-count" id="cnt_ended">0</span>
+      </div>
+      <div class="event-badge" id="ev_timeupdate">
+        <span class="ev-name">timeupdate</span>
+        <span class="ev-count" id="cnt_timeupdate">0</span>
+      </div>
+      <div class="event-badge" id="ev_seeking">
+        <span class="ev-name">seeking</span>
+        <span class="ev-count" id="cnt_seeking">0</span>
+      </div>
+      <div class="event-badge" id="ev_seeked">
+        <span class="ev-name">seeked</span>
+        <span class="ev-count" id="cnt_seeked">0</span>
+      </div>
+      <div class="event-badge" id="ev_volumechange">
+        <span class="ev-name">volumechange</span>
+        <span class="ev-count" id="cnt_volumechange">0</span>
+      </div>
+      <div class="event-badge" id="ev_ratechange">
+        <span class="ev-name">ratechange</span>
+        <span class="ev-count" id="cnt_ratechange">0</span>
+      </div>
+      <div class="event-badge" id="ev_loadedmetadata">
+        <span class="ev-name">loadedmetadata</span>
+        <span class="ev-count" id="cnt_loadedmetadata">0</span>
+      </div>
+      <div class="event-badge" id="ev_canplay">
+        <span class="ev-name">canplay</span>
+        <span class="ev-count" id="cnt_canplay">0</span>
+      </div>
+      <div class="event-badge" id="ev_waiting">
+        <span class="ev-name">waiting</span>
+        <span class="ev-count" id="cnt_waiting">0</span>
+      </div>
+    </div>
+    <div class="ctrl-row">
+      <button class="btn btn-outline btn-sm" onclick="resetEventCounts()">カウントリセット</button>
+      <span style="font-size:0.82rem;color:var(--muted);">上のプレーヤーを操作するとイベントが発火します</span>
+    </div>
+    <div class="console" id="eventConsole" style="min-height:60px;"><div class="log-line info">▶ プレーヤーを操作してイベントの発火を観察してください</div></div>
+  </div>
+
+  <!-- ========== 3. Web Audio API ========== -->
+  <h2 class="sec-heading">3. Web Audio API</h2>
+
+  <p>Web Audio API は高度な音声処理を JavaScript で実現します。<strong>AudioContext</strong> を中心に、複数の <strong>AudioNode</strong> をグラフ状に接続して処理パイプラインを構築します。</p>
+
+  <div class="code-block">
+    <div class="code-block-header">
+      <span>Web Audio API の基本構造</span>
+      <button class="copy-btn" onclick="copyCode(this)">copy</button>
+    </div>
+    <pre><span class="cm">// AudioContext の作成</span>
+<span class="kw">const</span> audioCtx <span class="op">=</span> <span class="kw">new</span> <span class="fn">AudioContext</span>();
+
+<span class="cm">// ── 音声ソース → 処理ノード → 出力先 ──</span>
+<span class="cm">// OscillatorNode（音声生成）</span>
+<span class="kw">const</span> osc <span class="op">=</span> audioCtx.<span class="fn">createOscillator</span>();
+osc.type      <span class="op">=</span> <span class="str">'sine'</span>;    <span class="cm">// sine / square / sawtooth / triangle</span>
+osc.frequency.<span class="fn">setValueAtTime</span>(<span class="num">440</span>, audioCtx.currentTime); <span class="cm">// 440Hz = ラ</span>
+
+<span class="cm">// GainNode（音量調整）</span>
+<span class="kw">const</span> gainNode <span class="op">=</span> audioCtx.<span class="fn">createGain</span>();
+gainNode.gain.<span class="fn">setValueAtTime</span>(<span class="num">0.5</span>, audioCtx.currentTime);
+
+<span class="cm">// AnalyserNode（波形分析）</span>
+<span class="kw">const</span> analyser <span class="op">=</span> audioCtx.<span class="fn">createAnalyser</span>();
+analyser.fftSize <span class="op">=</span> <span class="num">256</span>;  <span class="cm">// FFT サイズ（2の累乗）</span>
+<span class="kw">const</span> bufLen <span class="op">=</span> analyser.frequencyBinCount; <span class="cm">// fftSize / 2</span>
+<span class="kw">const</span> dataArr <span class="op">=</span> <span class="kw">new</span> <span class="fn">Uint8Array</span>(bufLen);
+
+<span class="cm">// ノードを接続: osc → gain → analyser → destination</span>
+osc.<span class="fn">connect</span>(gainNode);
+gainNode.<span class="fn">connect</span>(analyser);
+analyser.<span class="fn">connect</span>(audioCtx.destination); <span class="cm">// スピーカー出力</span>
+
+<span class="cm">// 再生開始・停止</span>
+osc.<span class="fn">start</span>(audioCtx.currentTime);
+osc.<span class="fn">stop</span>(audioCtx.currentTime <span class="op">+</span> <span class="num">2</span>); <span class="cm">// 2秒後に停止</span>
+
+<span class="cm">// 波形データの取得（アニメーションループ内で呼ぶ）</span>
+analyser.<span class="fn">getByteTimeDomainData</span>(dataArr);  <span class="cm">// 時間領域（波形）</span>
+analyser.<span class="fn">getByteFrequencyData</span>(dataArr);   <span class="cm">// 周波数領域（スペクトラム）</span></pre>
+  </div>
+
+  <div class="info-box point">
+    <strong>📌 試験頻出：AudioContext のノード種類</strong>
+    <ul>
+      <li><strong>ソースノード</strong>：OscillatorNode・AudioBufferSourceNode・MediaElementAudioSourceNode</li>
+      <li><strong>処理ノード</strong>：GainNode（音量）・BiquadFilterNode（フィルター）・DelayNode（遅延）・AnalyserNode（分析）</li>
+      <li><strong>出力先</strong>：AudioContext.destination（スピーカー）</li>
+      <li>ノードは <code>connect()</code> で接続し、グラフ構造を形成する</li>
+      <li>AudioContext はブラウザのユーザー操作後に作成する（自動再生ポリシー）</li>
+    </ul>
+  </div>
+
+  <!-- ===== DEMO 3: Web Audio ビジュアライザー ===== -->
+  <div class="demo-box">
+    <h3><span class="demo-num">3</span> Web Audio API ビジュアライザー</h3>
+    <p style="font-size:0.85rem;color:var(--muted);margin-bottom:14px;">OscillatorNode で音を生成し、AnalyserNode で波形・周波数をリアルタイム可視化します。</p>
+
+    <div class="visualizer-wrap">
+      <canvas id="vizCanvas" class="visualizer-canvas" width="700" height="160"></canvas>
+      <div class="viz-controls">
+        <button class="viz-btn" id="vizStartBtn" onclick="startViz()">▶ 音声開始</button>
+        <button class="viz-btn" id="vizStopBtn"  onclick="stopViz()" disabled>⏹ 停止</button>
+        <button class="viz-btn active" id="vizModeWave" onclick="setVizMode('waveform')">波形</button>
+        <button class="viz-btn" id="vizModeFreq" onclick="setVizMode('frequency')">周波数</button>
+        <select id="oscType" onchange="changeOscType(this.value)" style="background:#21262d;color:#c9d1d9;border:1px solid #30363d;border-radius:6px;padding:4px 8px;font-size:0.8rem;">
+          <option value="sine">sine（正弦波）</option>
+          <option value="square">square（矩形波）</option>
+          <option value="sawtooth">sawtooth（のこぎり波）</option>
+          <option value="triangle">triangle（三角波）</option>
+        </select>
+        <label style="color:#8b949e;font-size:0.8rem;">周波数:
+          <input type="range" id="freqRange" min="100" max="1200" value="440" oninput="changeFreq(this.value)" style="width:80px;accent-color:#9f7aea;">
+          <span id="freqVal" style="color:#c9d1d9;">440</span>Hz
+        </label>
+        <label style="color:#8b949e;font-size:0.8rem;">音量:
+          <input type="range" id="gainRange" min="0" max="80" value="30" oninput="changeGain(this.value)" style="width:70px;accent-color:#9f7aea;">
+          <span id="gainVal" style="color:#c9d1d9;">30</span>%
+        </label>
+      </div>
+    </div>
+    <div class="console" id="vizConsole" style="min-height:50px;"><div class="log-line info">▶ 「音声開始」をクリックすると OscillatorNode が起動します（音が出ます）</div></div>
+  </div>
+
+  <div class="info-box warn">
+    <strong>⚠️ 自動再生ポリシーに注意</strong>
+    <p>多くのブラウザでは、ユーザー操作なしに AudioContext を起動すると <code>suspended</code> 状態になります。必ずボタンクリックなどのユーザー操作をトリガーにして <code>audioCtx.resume()</code> を呼ぶか、操作後に AudioContext を作成してください。</p>
+  </div>
+
+  <!-- ========== 4. TextTrack API ========== -->
+  <h2 class="sec-heading">4. TextTrack API（字幕・トラック）</h2>
+
+  <div class="code-block">
+    <div class="code-block-header">
+      <span>track 要素と TextTrack API</span>
+      <button class="copy-btn" onclick="copyCode(this)">copy</button>
+    </div>
+    <pre><span class="cm">&lt;!-- HTML: track 要素で字幕を指定 --&gt;</span>
+<span class="tag">&lt;video</span> <span class="atr">id</span>=<span class="val">"v"</span><span class="tag">&gt;</span>
+  <span class="tag">&lt;source</span> <span class="atr">src</span>=<span class="val">"video.mp4"</span> <span class="atr">type</span>=<span class="val">"video/mp4"</span><span class="tag">&gt;</span>
+  <span class="tag">&lt;track</span>
+    <span class="atr">kind</span>=<span class="val">"subtitles"</span>  <span class="cm">&lt;!-- subtitles / captions / descriptions / chapters / metadata --&gt;</span>
+    <span class="atr">src</span>=<span class="val">"sub_ja.vtt"</span>
+    <span class="atr">srclang</span>=<span class="val">"ja"</span>
+    <span class="atr">label</span>=<span class="val">"日本語"</span>
+    <span class="atr">default</span>
+  <span class="tag">&gt;</span>
+<span class="tag">&lt;/video&gt;</span>
+
+<span class="cm">// JavaScript から TextTrack を操作</span>
+<span class="kw">const</span> video <span class="op">=</span> document.<span class="fn">getElementById</span>(<span class="str">'v'</span>);
+<span class="kw">const</span> tracks <span class="op">=</span> video.textTracks;          <span class="cm">// TextTrackList</span>
+<span class="kw">const</span> track  <span class="op">=</span> tracks[<span class="num">0</span>];                 <span class="cm">// TextTrack</span>
+
+<span class="cm">// トラックの表示モード</span>
+track.mode <span class="op">=</span> <span class="str">'showing'</span>;  <span class="cm">// showing / hidden / disabled</span>
+
+<span class="cm">// キュー（字幕の1行）へのアクセス</span>
+<span class="kw">const</span> cues <span class="op">=</span> track.cues;  <span class="cm">// TextTrackCueList</span>
+<span class="kw">const</span> cue  <span class="op">=</span> cues[<span class="num">0</span>];    <span class="cm">// VTTCue</span>
+console.<span class="fn">log</span>(cue.startTime); <span class="cm">// 開始時刻（秒）</span>
+console.<span class="fn">log</span>(cue.endTime);   <span class="cm">// 終了時刻（秒）</span>
+console.<span class="fn">log</span>(cue.text);      <span class="cm">// 字幕テキスト</span>
+
+<span class="cm">// cuechange イベント（字幕が切り替わるたびに発火）</span>
+track.<span class="fn">addEventListener</span>(<span class="str">'cuechange'</span>, () <span class="op">=></span> {
+  <span class="kw">const</span> activeCues <span class="op">=</span> track.activeCues;
+  <span class="kw">if</span> (activeCues.length <span class="op">></span> <span class="num">0</span>) {
+    console.<span class="fn">log</span>(activeCues[<span class="num">0</span>].text);
+  }
+});
+
+<span class="cm">// WebVTT フォーマット（.vtt ファイル）</span>
+<span class="cm">// WEBVTT</span>
+<span class="cm">//</span>
+<span class="cm">// 00:00:01.000 --> 00:00:04.000</span>
+<span class="cm">// こんにちは、HTML5 の世界へようこそ。</span>
+<span class="cm">//</span>
+<span class="cm">// 00:00:05.000 --> 00:00:08.000</span>
+<span class="cm">// Web API を学びましょう。</span></pre>
+  </div>
+
+  <!-- ===== DEMO 4: TextTrack デモ ===== -->
+  <div class="demo-box">
+    <h3><span class="demo-num">4</span> TextTrack API シミュレーター</h3>
+    <p style="font-size:0.85rem;color:var(--muted);margin-bottom:14px;">字幕キューをクリックすると、その字幕が「画面」に表示されます。track.mode の切り替えも体験できます。</p>
+
+    <div class="track-demo-wrap">
+      <div class="track-screen">
+        <div class="track-subtitle" id="subtitleDisplay">（字幕なし）</div>
+      </div>
+      <div class="ctrl-row" style="margin-bottom:12px;">
+        <span style="font-size:0.82rem;color:#8b949e;">track.mode:</span>
+        <button class="viz-btn active" id="modeShowing" onclick="setTrackMode('showing')">showing</button>
+        <button class="viz-btn" id="modeHidden"  onclick="setTrackMode('hidden')">hidden</button>
+        <button class="viz-btn" id="modeDisabled" onclick="setTrackMode('disabled')">disabled</button>
+        <button class="viz-btn" onclick="autoPlayTrack()" id="autoPlayBtn">▶ 自動再生</button>
+        <button class="viz-btn" onclick="stopTrackAuto()">⏹ 停止</button>
+      </div>
+      <div class="track-timeline" id="trackTimeline"></div>
+    </div>
+    <div class="console" id="trackConsole" style="min-height:50px;"><div class="log-line info">▶ キューをクリックすると字幕が表示されます</div></div>
+  </div>
+
+  <div class="tbl-wrap">
+    <table>
+      <tr><th>track.mode の値</th><th>説明</th></tr>
+      <tr><td><code>showing</code></td><td>トラックが有効で、字幕が画面に表示される</td></tr>
+      <tr><td><code>hidden</code></td><td>トラックは有効（イベント発火）だが、画面には表示されない</td></tr>
+      <tr><td><code>disabled</code></td><td>トラックが無効。cuechange イベントも発火しない</td></tr>
+    </table>
+  </div>
+
+  <!-- ========== 5. canPlayType ========== -->
+  <h2 class="sec-heading">5. canPlayType() によるメディア形式判定</h2>
+
+  <div class="code-block">
+    <div class="code-block-header">
+      <span>canPlayType() の使い方</span>
+      <button class="copy-btn" onclick="copyCode(this)">copy</button>
+    </div>
+    <pre><span class="kw">const</span> video <span class="op">=</span> document.<span class="fn">createElement</span>(<span class="str">'video'</span>);
+<span class="kw">const</span> audio <span class="op">=</span> document.<span class="fn">createElement</span>(<span class="str">'audio'</span>);
+
+<span class="cm">// 戻り値: '' (再生不可) / 'maybe' (おそらく可) / 'probably' (ほぼ確実に可)</span>
+
+<span class="cm">// 動画形式</span>
+video.<span class="fn">canPlayType</span>(<span class="str">'video/mp4'</span>);
+video.<span class="fn">canPlayType</span>(<span class="str">'video/mp4; codecs="avc1.42E01E, mp4a.40.2"'</span>);
+video.<span class="fn">canPlayType</span>(<span class="str">'video/webm'</span>);
+video.<span class="fn">canPlayType</span>(<span class="str">'video/webm; codecs="vp9, vorbis"'</span>);
+video.<span class="fn">canPlayType</span>(<span class="str">'video/ogg; codecs="theora"'</span>);
+
+<span class="cm">// 音声形式</span>
+audio.<span class="fn">canPlayType</span>(<span class="str">'audio/mpeg'</span>);          <span class="cm">// MP3</span>
+audio.<span class="fn">canPlayType</span>(<span class="str">'audio/ogg; codecs="vorbis"'</span>);
+audio.<span class="fn">canPlayType</span>(<span class="str">'audio/wav'</span>);
+audio.<span class="fn">canPlayType</span>(<span class="str">'audio/aac'</span>);
+
+<span class="cm">// 判定ロジックの例</span>
+<span class="kw">function</span> <span class="fn">canPlay</span>(el, type) {
+  <span class="kw">const</span> result <span class="op">=</span> el.<span class="fn">canPlayType</span>(type);
+  <span class="kw">if</span> (result <span class="op">===</span> <span class="str">'probably'</span>) <span class="kw">return</span> <span class="str">'✅ probably'</span>;
+  <span class="kw">if</span> (result <span class="op">===</span> <span class="str">'maybe'</span>)    <span class="kw">return</span> <span class="str">'⚠️ maybe'</span>;
+  <span class="kw">return</span> <span class="str">'❌ 再生不可'</span>;
+}
+
+<span class="out">// 注意: 'probably' でも実際に再生できない場合がある</span>
+<span class="out">// 'maybe' はコーデック情報なしで判定できない場合に返る</span></pre>
+  </div>
+
+  <!-- ===== DEMO 5: canPlayType デモ ===== -->
+  <div class="demo-box">
+    <h3><span class="demo-num">5</span> canPlayType() ブラウザ対応チェッカー</h3>
+    <p style="font-size:0.85rem;color:var(--muted);margin-bottom:14px;">このブラウザが各メディア形式を再生できるかをリアルタイムで判定します。</p>
+    <div class="ctrl-row" style="margin-bottom:14px;">
+      <button class="btn btn-primary btn-sm" onclick="runCanPlayType()">▶ 判定を実行</button>
+    </div>
+    <div class="cpt-grid" id="cptGrid">
+      <div style="color:var(--muted);font-size:0.88rem;grid-column:1/-1;">「判定を実行」ボタンを押してください</div>
+    </div>
+    <div class="console" id="cptConsole" style="min-height:50px;margin-top:12px;"></div>
+  </div>
+
+  <div class="info-box tip">
+    <strong>💡 canPlayType() の戻り値の意味</strong>
+    <ul>
+      <li><code>''</code>（空文字）— 再生不可。このブラウザはこの形式をサポートしていない</li>
+      <li><code>'maybe'</code> — コーデック情報なしでは確定できないが、再生できる可能性がある</li>
+      <li><code>'probably'</code> — コーデックまで指定されており、再生できる可能性が高い</li>
+      <li>コーデック情報（<code>codecs="..."</code>）を含めると <code>'maybe'</code> → <code>'probably'</code> になることが多い</li>
+    </ul>
+  </div>
+
+  <!-- ========== 演習問題 ========== -->
+  <div class="quiz-section">
+    <h2>🧩 演習問題</h2>
+    <p class="quiz-desc">4-2 メディア要素の API の理解を確認しましょう。</p>
+
+    <!-- Q1 -->
+    <div class="quiz-item" id="q1">
+      <div class="q-num">QUESTION 1 / 5</div>
+      <div class="q-text">HTMLMediaElement の <code>readyState</code> が <code>HAVE_METADATA (1)</code> のとき、取得できる情報として正しいものはどれですか？</div>
+      <div class="options">
+        <button class="option-btn" onclick="checkQ(this,'q1',false)">A. 現在の再生位置のフレームデータ</button>
+        <button class="option-btn" onclick="checkQ(this,'q1',true)">B. duration（総再生時間）とメディアの寸法</button>
+        <button class="option-btn" onclick="checkQ(this,'q1',false)">C. 最後まで再生できるだけのバッファデータ</button>
+        <button class="option-btn" onclick="checkQ(this,'q1',false)">D. 何も取得できない</button>
+      </div>
+      <div class="explanation" id="exp_q1">
+        <strong>✅ 正解：B</strong><br>
+        <code>HAVE_METADATA (1)</code> は「メタデータが読み込まれた状態」です。この状態では <strong>duration（総再生時間）・video の width/height・textTracks</strong> などのメタデータにアクセスできます。<br>
+        • readyState 0（HAVE_NOTHING）: データなし<br>
+        • readyState 1（HAVE_METADATA）: メタデータのみ<br>
+        • readyState 2（HAVE_CURRENT_DATA）: 現在フレームのデータあり<br>
+        • readyState 3（HAVE_FUTURE_DATA）: 次フレームもあり<br>
+        • readyState 4（HAVE_ENOUGH_DATA）: 最後まで再生可能
+      </div>
+    </div>
+
+    <!-- Q2 -->
+    <div class="quiz-item" id="q2">
+      <div class="q-num">QUESTION 2 / 5</div>
+      <div class="q-text">メディアの再生位置が変化するたびに約250ms間隔で発火するイベントはどれですか？</div>
+      <div class="options">
+        <button class="option-btn" onclick="checkQ(this,'q2',false)">A. playing</button>
+        <button class="option-btn" onclick="checkQ(this,'q2',false)">B. progress</button>
+        <button class="option-btn" onclick="checkQ(this,'q2',true)">C. timeupdate</button>
+        <button class="option-btn" onclick="checkQ(this,'q2',false)">D. currentchange</button>
+      </div>
+      <div class="explanation" id="exp_q2">
+        <strong>✅ 正解：C（timeupdate）</strong><br>
+        <code>timeupdate</code> イベントは <code>currentTime</code> が変化するたびに発火します。発火頻度はブラウザ依存ですが、仕様では約250ms間隔が推奨されています。<br>
+        • <code>playing</code>: 実際の再生が始まったとき（バッファ後も含む）<br>
+        • <code>progress</code>: データのダウンロードが進行中のとき<br>
+        • <code>currentchange</code>: そのようなイベントは存在しない
+      </div>
+    </div>
+
+    <!-- Q3 -->
+    <div class="quiz-item" id="q3">
+      <div class="q-num">QUESTION 3 / 5</div>
+      <div class="q-text">Web Audio API で音声の音量を調整するために使用するノードはどれですか？</div>
+      <div class="options">
+        <button class="option-btn" onclick="checkQ(this,'q3',false)">A. AnalyserNode</button>
+        <button class="option-btn" onclick="checkQ(this,'q3',true)">B. GainNode</button>
+        <button class="option-btn" onclick="checkQ(this,'q3',false)">C. OscillatorNode</button>
+        <button class="option-btn" onclick="checkQ(this,'q3',false)">D. DelayNode</button>
+      </div>
+      <div class="explanation" id="exp_q3">
+        <strong>✅ 正解：B（GainNode）</strong><br>
+        <code>GainNode</code> は音量（ゲイン）を調整するノードです。<code>gainNode.gain.value</code> または <code>gainNode.gain.setValueAtTime()</code> で音量を設定します。<br>
+        • <code>AnalyserNode</code>: 波形・周波数データの分析（視覚化に使用）<br>
+        • <code>OscillatorNode</code>: 音声信号の生成（サイン波・矩形波など）<br>
+        • <code>DelayNode</code>: 音声の遅延処理
+      </div>
+    </div>
+
+    <!-- Q4 -->
+    <div class="quiz-item" id="q4">
+      <div class="q-num">QUESTION 4 / 5</div>
+      <div class="q-text"><code>track</code> 要素の <code>kind</code> 属性に指定できる値として<strong>存在しない</strong>ものはどれですか？</div>
+      <div class="options">
+        <button class="option-btn" onclick="checkQ(this,'q4',false)">A. subtitles</button>
+        <button class="option-btn" onclick="checkQ(this,'q4',false)">B. captions</button>
+        <button class="option-btn" onclick="checkQ(this,'q4',true)">C. transcript</button>
+        <button class="option-btn" onclick="checkQ(this,'q4',false)">D. chapters</button>
+      </div>
+      <div class="explanation" id="exp_q4">
+        <strong>✅ 正解（存在しない値）：C（transcript）</strong><br>
+        <code>track</code> 要素の <code>kind</code> 属性に指定できる値は以下の5種類です：<br>
+        • <code>subtitles</code>: 字幕（翻訳）<br>
+        • <code>captions</code>: キャプション（音声説明を含む字幕）<br>
+        • <code>descriptions</code>: 映像の音声説明<br>
+        • <code>chapters</code>: チャプターナビゲーション<br>
+        • <code>metadata</code>: スクリプトから使用するメタデータ<br>
+        <code>transcript</code> は存在しません。
+      </div>
+    </div>
+
+    <!-- Q5 穴埋め -->
+    <div class="quiz-item" id="q5">
+      <div class="q-num">QUESTION 5 / 5（穴埋め）</div>
+      <div class="q-text">以下のコードの空欄を埋めてください。動画の再生速度を2倍にし、音量を50%に設定します。</div>
+      <div class="q-code">const video = document.getElementById('myVideo');
+
+// 再生速度を2倍に
+video.[___A___] = 2;
+
+// 音量を50%に（0.0〜1.0 の範囲）
+video.[___B___] = 0.5;</div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:8px;">
+        <div style="flex:1;min-width:180px;">
+          <label style="font-size:0.82rem;color:var(--muted);">A の答え：</label>
+          <input type="text" class="fill-input" id="q5a" placeholder="プロパティ名">
+        </div>
+        <div style="flex:1;min-width:180px;">
+          <label style="font-size:0.82rem;color:var(--muted);">B の答え：</label>
+          <input type="text" class="fill-input" id="q5b" placeholder="プロパティ名">
+        </div>
+      </div>
+      <button class="btn btn-primary btn-sm" onclick="checkQ5()">答え合わせ</button>
+      <div class="explanation" id="exp_q5"></div>
+    </div>
+
+  </div><!-- /quiz-section -->
+
+  <!-- 完了ボタン -->
+  <div class="complete-area">
+    <button class="complete-btn" id="completeBtn" onclick="markComplete()">
+      ✅ このセクションを完了にする
+    </button>
+  </div>
+
+  <!-- ページナビ -->
+  <div class="page-nav">
+    <a href="01_graphics.html" class="page-nav-btn">← 4-1 グラフィックス</a>
+    <div style="font-size:0.85rem;color:var(--muted);text-align:center;">
+      <a href="index.html">📚 Chapter 4 目次</a>
+    </div>
+    <a href="03_storage.html" class="page-nav-btn">4-3 ストレージ →</a>
+  </div>
+
+</main>
+
+<footer>
+  <p>© MeshinoKiwamiOkome |
+    <a href="https://github.com/MeshinoKiwamiOkome/html5lv2" target="_blank" rel="noopener">GitHub リポジトリ</a>
+  </p>
+  <p style="margin-top:6px;font-size:0.8rem;opacity:0.7;">HTML5 Professional Level 2 学習サイト</p>
+</footer>
+
+<script>
+// ===================================================
+// ユーティリティ
+// ===================================================
+function copyCode(btn) {
+  const pre  = btn.closest('.code-block').querySelector('pre');
+  const text = pre.innerText;
+  navigator.clipboard.writeText(text).then(() => {
+    btn.textContent = 'copied!';
+    btn.classList.add('copied');
+    setTimeout(() => { btn.textContent = 'copy'; btn.classList.remove('copied'); }, 2000);
+  });
+}
+function log(id, msg, type='') {
+  const c = document.getElementById(id);
+  const d = document.createElement('div');
+  d.className = 'log-line ' + type;
+  d.textContent = msg;
+  c.appendChild(d);
+  c.scrollTop = c.scrollHeight;
+}
+function clearLog(id) { document.getElementById(id).innerHTML = ''; }
+
+// ===================================================
+// DEMO 1 & 2: カスタムプレーヤー + イベントエクスプローラー
+// ===================================================
+const PLAYER_DURATION = 180; // 3分（秒）
+let playerState = {
+  playing:      false,
+  currentTime:  0,
+  volume:       0.8,
+  playbackRate: 1.0,
+  intervalId:   null
+};
+
+// プレーヤーキャンバス描画
+const pCanvas = document.getElementById('playerCanvas');
+const pCtx    = pCanvas.getContext('2d');
+
+function drawPlayerScreen() {
+  const w = pCanvas.width;
+  const h = pCanvas.height;
+  pCtx.clearRect(0, 0, w, h);
+
+  // 背景グラデーション
+  const bg = pCtx.createLinearGradient(0, 0, w, h);
+  bg.addColorStop(0, '#0d1117');
+  bg.addColorStop(1, '#161b22');
+  pCtx.fillStyle = bg;
+  pCtx.fillRect(0, 0, w, h);
+
+  // 波形アニメーション（再生中）
+  if (playerState.playing) {
+    const bars = 60;
+    const barW = w / bars;
+    for (let i = 0; i < bars; i++) {
+      const t   = playerState.currentTime * playerState.playbackRate;
+      const amp = Math.sin(i * 0.3 + t * 2) * 0.5 + 0.5;
+      const barH = amp * h * 0.6 + 10;
+      const x   = i * barW;
+      const y   = (h - barH) / 2;
+      const alpha = 0.4 + amp * 0.5;
+      pCtx.fillStyle = `rgba(159,122,234,${alpha})`;
+      pCtx.fillRect(x + 1, y, barW - 2, barH);
+    }
+  }
+
+  // 中央テキスト
+  pCtx.fillStyle = playerState.playing ? '#9f7aea' : '#4a5568';
+  pCtx.font = 'bold 18px sans-serif';
+  pCtx.textAlign = 'center';
+  const stateText = playerState.playing ? '▶ 再生中' : (playerState.currentTime > 0 ? '⏸ 一時停止' : '⏹ 停止');
+  pCtx.fillText(stateText, w / 2, h / 2 - 10);
+
+  pCtx.fillStyle = '#718096';
+  pCtx.font = '14px monospace';
+  pCtx.fillText(
+    `currentTime: ${playerState.currentTime.toFixed(2)}s  |  volume: ${(playerState.volume * 100).toFixed(0)}%  |  rate: ${playerState.playbackRate}x`,
+    w / 2, h / 2 + 20
+  );
+  pCtx.textAlign = 'left';
+}
+
+function updatePlayerUI() {
+  const pct = (playerState.currentTime / PLAYER_DURATION) * 100;
+  document.getElementById('progressBar').style.width   = pct + '%';
+  document.getElementById('progressThumb').style.left  = pct + '%';
+  const cur = formatTime(playerState.currentTime);
+  const dur = formatTime(PLAYER_DURATION);
+  document.getElementById('playerTime').textContent = `${cur} / ${dur}`;
+  drawPlayerScreen();
+}
+
+function formatTime(sec) {
+  const m = Math.floor(sec / 60);
+  const s = Math.floor(sec % 60);
+  return `${m}:${String(s).padStart(2,'0')}`;
+}
+
+function fireEvent(name) {
+  // イベントバッジ更新
+  const badge = document.getElementById('ev_' + name);
+  const cnt   = document.getElementById('cnt_' + name);
+  if (badge && cnt) {
+    const n = parseInt(cnt.textContent) + 1;
+    cnt.textContent = n;
+    badge.classList.add('fired');
+    setTimeout(() => badge.classList.remove('fired'), 400);
+  }
+  // イベントログ
+  log('eventConsole', `[event] ${name} — currentTime: ${playerState.currentTime.toFixed(2)}s`, 'ok');
+}
+
+function togglePlayPause() {
+  if (playerState.playing) {
+    pausePlayer();
+  } else {
+    playPlayer();
+  }
+}
+
+function playPlayer() {
+  if (playerState.currentTime >= PLAYER_DURATION) {
+    playerState.currentTime = 0;
+  }
+  playerState.playing = true;
+  document.getElementById('playPauseBtn').textContent = '⏸ 一時停止';
+  document.getElementById('playPauseBtn').classList.add('active');
+
+  fireEvent('play');
+  fireEvent('playing');
+
+  clearLog('playerConsole');
+  log('playerConsole', `video.play() → Promise<void>  currentTime: ${playerState.currentTime.toFixed(2)}s`, 'ok');
+
+  if (playerState.intervalId) clearInterval(playerState.intervalId);
+  let tuCounter = 0;
+  playerState.intervalId = setInterval(() => {
+    if (!playerState.playing) return;
+    playerState.currentTime += 0.1 * playerState.playbackRate;
+    tuCounter++;
+    if (tuCounter % 3 === 0) {
+      fireEvent('timeupdate');
+    }
+    if (playerState.currentTime >= PLAYER_DURATION) {
+      playerState.currentTime = PLAYER_DURATION;
+      playerState.playing = false;
+      clearInterval(playerState.intervalId);
+      document.getElementById('playPauseBtn').textContent = '▶ 再生';
+      document.getElementById('playPauseBtn').classList.remove('active');
+      fireEvent('ended');
+      clearLog('playerConsole');
+      log('playerConsole', 'ended イベント発火 — 再生終了', 'warn');
+    }
+    updatePlayerUI();
+  }, 100);
+}
+
+function pausePlayer() {
+  playerState.playing = false;
+  if (playerState.intervalId) {
+    clearInterval(playerState.intervalId);
+    playerState.intervalId = null;
+  }
+  document.getElementById('playPauseBtn').textContent = '▶ 再生';
+  document.getElementById('playPauseBtn').classList.remove('active');
+  fireEvent('pause');
+  clearLog('playerConsole');
+  log('playerConsole', `video.pause()  currentTime: ${playerState.currentTime.toFixed(2)}s`, 'warn');
+  updatePlayerUI();
+}
+
+function stopPlayer() {
+  pausePlayer();
+  playerState.currentTime = 0;
+  updatePlayerUI();
+  clearLog('playerConsole');
+  log('playerConsole', 'video.pause() + currentTime = 0  → 停止', 'warn');
+}
+
+function seekPlayer(e) {
+  const wrap = document.getElementById('progressWrap');
+  const rect  = wrap.getBoundingClientRect();
+  const pct   = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
+  playerState.currentTime = pct * PLAYER_DURATION;
+  fireEvent('seeking');
+  fireEvent('seeked');
+  updatePlayerUI();
+  clearLog('playerConsole');
+  log('playerConsole', `video.currentTime = ${playerState.currentTime.toFixed(2)}  → シーク`, 'info');
+}
+
+function seekRelative(delta) {
+  playerState.currentTime = Math.max(0, Math.min(PLAYER_DURATION, playerState.currentTime + delta));
+  fireEvent('seeking');
+  fireEvent('seeked');
+  updatePlayerUI();
+  log('playerConsole', `currentTime ${delta > 0 ? '+' : ''}${delta}s → ${playerState.currentTime.toFixed(2)}s`, 'info');
+}
+
+function changeVolume(val) {
+  playerState.volume = val / 100;
+  document.getElementById('volVal').textContent = val + '%';
+  fireEvent('volumechange');
+  log('playerConsole', `video.volume = ${playerState.volume.toFixed(2)}`, 'info');
+  updatePlayerUI();
+}
+
+function changeRate(val) {
+  playerState.playbackRate = parseFloat(val);
+  fireEvent('ratechange');
+  log('playerConsole', `video.playbackRate = ${playerState.playbackRate}`, 'info');
+}
+
+function resetEventCounts() {
+  const names = ['play','pause','playing','ended','timeupdate','seeking','seeked','volumechange','ratechange','loadedmetadata','canplay','waiting'];
+  names.forEach(n => {
+    const el = document.getElementById('cnt_' + n);
+    if (el) el.textContent = '0';
+  });
+  clearLog('eventConsole');
+  log('eventConsole', 'イベントカウントをリセットしました', 'warn');
+}
+
+// 初期描画
+drawPlayerScreen();
+// loadedmetadata と canplay をシミュレート
+setTimeout(() => {
+  fireEvent('loadedmetadata');
+  log('playerConsole', 'loadedmetadata — duration: 180s, 解像度: 1280x720', 'info');
+}, 600);
+setTimeout(() => {
+  fireEvent('canplay');
+  log('playerConsole', 'canplay — 再生可能状態になりました', 'ok');
+}, 1000);
+
+// ===================================================
+// DEMO 3: Web Audio ビジュアライザー
+// ===================================================
+let audioCtx    = null;
+let oscillator  = null;
+let gainNode    = null;
+let analyser    = null;
+let vizAnimId   = null;
+let vizMode     = 'waveform';
+let vizRunning  = false;
+
+const vizCanvas = document.getElementById('vizCanvas');
+const vizCtx    = vizCanvas.getContext('2d');
+
+function startViz() {
+  if (vizRunning) return;
+  try {
+    audioCtx  = new (window.AudioContext || window.webkitAudioContext)();
+    oscillator = audioCtx.createOscillator();
+    gainNode   = audioCtx.createGain();
+    analyser   = audioCtx.createAnalyser();
+
+    analyser.fftSize = 512;
+    const freq  = parseInt(document.getElementById('freqRange').value);
+    const gain  = parseInt(document.getElementById('gainRange').value) / 100;
+    const type  = document.getElementById('oscType').value;
+
+    oscillator.type = type;
+    oscillator.frequency.setValueAtTime(freq, audioCtx.currentTime);
+    gainNode.gain.setValueAtTime(gain * 0.3, audioCtx.currentTime);
+
+    oscillator.connect(gainNode);
+    gainNode.connect(analyser);
+    analyser.connect(audioCtx.destination);
+    oscillator.start();
+
+    vizRunning = true;
+    document.getElementById('vizStartBtn').disabled = true;
+    document.getElementById('vizStopBtn').disabled  = false;
+    document.getElementById('vizStartBtn').classList.remove('active');
+
+    clearLog('vizConsole');
+    log('vizConsole', `AudioContext 作成 — sampleRate: ${audioCtx.sampleRate}Hz`, 'ok');
+    log('vizConsole', `OscillatorNode: type=${type}, frequency=${freq}Hz`, 'ok');
+    log('vizConsole', `GainNode: gain=${(gain*0.3).toFixed(2)}`, 'info');
+    log('vizConsole', `AnalyserNode: fftSize=${analyser.fftSize}, frequencyBinCount=${analyser.frequencyBinCount}`, 'info');
+    log('vizConsole', 'osc.connect(gain) → gain.connect(analyser) → analyser.connect(destination)', 'ok');
+
+    drawViz();
+  } catch(e) {
+    log('vizConsole', 'AudioContext の作成に失敗しました: ' + e.message, 'err');
+  }
+}
+
+function stopViz() {
+  if (!vizRunning) return;
+  if (oscillator) { try { oscillator.stop(); } catch(e){} }
+  if (audioCtx)   { audioCtx.close(); }
+  if (vizAnimId)  { cancelAnimationFrame(vizAnimId); }
+  oscillator = null; gainNode = null; analyser = null; audioCtx = null;
+  vizRunning = false;
+  document.getElementById('vizStartBtn').disabled = false;
+  document.getElementById('vizStopBtn').disabled  = true;
+  vizCtx.clearRect(0, 0, vizCanvas.width, vizCanvas.height);
+  vizCtx.fillStyle = '#0d1117';
+  vizCtx.fillRect(0, 0, vizCanvas.width, vizCanvas.height);
+  clearLog('vizConsole');
+  log('vizConsole', 'oscillator.stop() — AudioContext を閉じました', 'warn');
+}
+
+function drawViz() {
+  if (!analyser || !vizRunning) return;
+  const w = vizCanvas.width;
+  const h = vizCanvas.height;
+  const bufLen = analyser.frequencyBinCount;
+  const dataArr = new Uint8Array(bufLen);
+
+  function loop() {
+    if (!vizRunning) return;
+    vizAnimId = requestAnimationFrame(loop);
+
+    vizCtx.fillStyle = 'rgba(13,17,23,0.3)';
+    vizCtx.fillRect(0, 0, w, h);
+
+    if (vizMode === 'waveform') {
+      analyser.getByteTimeDomainData(dataArr);
+      vizCtx.lineWidth   = 2;
+      vizCtx.strokeStyle = '#9f7aea';
+      vizCtx.beginPath();
+      const sliceW = w / bufLen;
+      let x = 0;
+      for (let i = 0; i < bufLen; i++) {
+        const v = dataArr[i] / 128.0;
+        const y = v * h / 2;
+        if (i === 0) vizCtx.moveTo(x, y);
+        else         vizCtx.lineTo(x, y);
+        x += sliceW;
+      }
+      vizCtx.lineTo(w, h / 2);
+      vizCtx.stroke();
+
+      // 中心線
+      vizCtx.strokeStyle = 'rgba(159,122,234,0.2)';
+      vizCtx.lineWidth   = 1;
+      vizCtx.beginPath();
+      vizCtx.moveTo(0, h/2);
+      vizCtx.lineTo(w, h/2);
+      vizCtx.stroke();
+
+    } else {
+      analyser.getByteFrequencyData(dataArr);
+      const barW = w / bufLen * 2.5;
+      let x = 0;
+      for (let i = 0; i < bufLen; i++) {
+        const barH = (dataArr[i] / 255) * h;
+        const hue  = (i / bufLen) * 280 + 200;
+        vizCtx.fillStyle = `hsl(${hue},70%,60%)`;
+        vizCtx.fillRect(x, h - barH, barW - 1, barH);
+        x += barW;
+        if (x > w) break;
+      }
+    }
+  }
+  loop();
+}
+
+function setVizMode(mode) {
+  vizMode = mode;
+  document.getElementById('vizModeWave').classList.toggle('active', mode === 'waveform');
+  document.getElementById('vizModeFreq').classList.toggle('active', mode === 'frequency');
+}
+
+function changeOscType(type) {
+  if (oscillator) {
+    oscillator.type = type;
+    log('vizConsole', `oscillator.type = '${type}'`, 'info');
+  }
+}
+
+function changeFreq(val) {
+  document.getElementById('freqVal').textContent = val;
+  if (oscillator && audioCtx) {
+    oscillator.frequency.setValueAtTime(parseInt(val), audioCtx.currentTime);
+    log('vizConsole', `oscillator.frequency.setValueAtTime(${val}, currentTime)`, 'info');
+  }
+}
+
+function changeGain(val) {
+  document.getElementById('gainVal').textContent = val;
+  if (gainNode && audioCtx) {
+    gainNode.gain.setValueAtTime(parseInt(val) / 100 * 0.3, audioCtx.currentTime);
+  }
+}
+
+// ===================================================
+// DEMO 4: TextTrack シミュレーター
+// ===================================================
+const CUES = [
+  { start: 0,   end: 3,   text: 'こんにちは、HTML5 の世界へようこそ。' },
+  { start: 4,   end: 7,   text: 'メディア要素の API を学びましょう。' },
+  { start: 8,   end: 12,  text: 'HTMLMediaElement は audio と video の共通インターフェースです。' },
+  { start: 13,  end: 16,  text: 'play() / pause() / load() でメディアを制御できます。' },
+  { start: 17,  end: 21,  text: 'Web Audio API では AudioContext を使って音声を処理します。' },
+  { start: 22,  end: 26,  text: 'TextTrack API で字幕・キャプションを操作できます。' },
+  { start: 27,  end: 30,  text: 'track.mode は showing / hidden / disabled の3種類です。' },
+  { start: 31,  end: 35,  text: 'canPlayType() でブラウザの対応形式を確認できます。' },
+];
+
+let trackMode     = 'showing';
+let trackAutoId   = null;
+let trackCueIdx   = 0;
+
+function buildTrackTimeline() {
+  const tl = document.getElementById('trackTimeline');
+  tl.innerHTML = '';
+  CUES.forEach((cue, i) => {
+    const div = document.createElement('div');
+    div.className = 'track-cue';
+    div.id = 'cue_' + i;
+    div.innerHTML = `<span class="cue-time">${String(cue.start).padStart(2,'0')}:00 → ${String(cue.end).padStart(2,'0')}:00</span><span class="cue-text">${cue.text}</span>`;
+    div.onclick = () => activateCue(i);
+    tl.appendChild(div);
+  });
+}
+
+function activateCue(idx) {
+  if (trackMode === 'disabled') {
+    clearLog('trackConsole');
+    log('trackConsole', 'track.mode = "disabled" — キューは無効です（cuechange も発火しません）', 'err');
+    return;
+  }
+  // 全キューのアクティブ解除
+  document.querySelectorAll('.track-cue').forEach(el => el.classList.remove('active'));
+  document.getElementById('cue_' + idx).classList.add('active');
+
+  const cue = CUES[idx];
+  const subtitle = document.getElementById('subtitleDisplay');
+  if (trackMode === 'showing') {
+    subtitle.textContent = cue.text;
+    subtitle.style.opacity = '1';
+  } else {
+    subtitle.textContent = '（hidden モード — 字幕は非表示）';
+    subtitle.style.opacity = '0.4';
+  }
+  clearLog('trackConsole');
+  log('trackConsole', `cuechange イベント発火`, 'ok');
+  log('trackConsole', `activeCues[0].startTime = ${cue.start}`, 'info');
+  log('trackConsole', `activeCues[0].endTime   = ${cue.end}`, 'info');
+  log('trackConsole', `activeCues[0].text      = "${cue.text}"`, 'info');
+  log('trackConsole', `track.mode = "${trackMode}"`, trackMode === 'showing' ? 'ok' : 'warn');
+}
+
+function setTrackMode(mode) {
+  trackMode = mode;
+  ['modeShowing','modeHidden','modeDisabled'].forEach(id => {
+    document.getElementById(id).classList.remove('active');
+  });
+  document.getElementById('mode' + mode.charAt(0).toUpperCase() + mode.slice(1)).classList.add('active');
+  clearLog('trackConsole');
+  log('trackConsole', `track.mode = "${mode}" に変更しました`, mode === 'showing' ? 'ok' : 'warn');
+  if (mode === 'disabled') {
+    document.getElementById('subtitleDisplay').textContent = '（disabled — トラック無効）';
+    document.getElementById('subtitleDisplay').style.opacity = '0.3';
+  }
+}
+
+function autoPlayTrack() {
+  if (trackAutoId) return;
+  trackCueIdx = 0;
+  log('trackConsole', '▶ 自動再生開始', 'ok');
+  function nextCue() {
+    if (trackCueIdx >= CUES.length) {
+      trackAutoId = null;
+      log('trackConsole', '自動再生終了', 'warn');
+      return;
+    }
+    activateCue(trackCueIdx);
+    trackCueIdx++;
+    trackAutoId = setTimeout(nextCue, 2000);
+  }
+  nextCue();
+}
+
+function stopTrackAuto() {
+  if (trackAutoId) { clearTimeout(trackAutoId); trackAutoId = null; }
+  log('trackConsole', '自動再生を停止しました', 'warn');
+}
+
+buildTrackTimeline();
+
+// ===================================================
+// DEMO 5: canPlayType チェッカー
+// ===================================================
+const MEDIA_TYPES = [
+  { label:'video/mp4',                type:'video/mp4' },
+  { label:'video/mp4 (H.264+AAC)',    type:'video/mp4; codecs="avc1.42E01E, mp4a.40.2"' },
+  { label:'video/webm',               type:'video/webm' },
+  { label:'video/webm (VP9)',         type:'video/webm; codecs="vp9, vorbis"' },
+  { label:'video/ogg (Theora)',       type:'video/ogg; codecs="theora"' },
+  { label:'audio/mpeg (MP3)',         type:'audio/mpeg' },
+  { label:'audio/ogg (Vorbis)',       type:'audio/ogg; codecs="vorbis"' },
+  { label:'audio/wav',               type:'audio/wav' },
+  { label:'audio/aac',               type:'audio/aac' },
+  { label:'audio/flac',              type:'audio/flac' },
+];
+
+function runCanPlayType() {
+  const videoEl = document.createElement('video');
+  const audioEl = document.createElement('audio');
+  const grid    = document.getElementById('cptGrid');
+  grid.innerHTML = '';
+  clearLog('cptConsole');
+
+  MEDIA_TYPES.forEach(item => {
+    const el     = item.type.startsWith('video') ? videoEl : audioEl;
+    const result = el.canPlayType(item.type);
+    const cls    = result === 'probably' ? 'probably' : result === 'maybe' ? 'maybe' : 'empty';
+    const label  = result === '' ? '再生不可' : result;
+
+    const div = document.createElement('div');
+    div.className = 'cpt-item';
+    div.innerHTML = `<div class="cpt-type">${item.label}</div><span class="cpt-result ${cls}">${label || '""（不可）'}</span>`;
+    grid.appendChild(div);
+
+    log('cptConsole',
+      `canPlayType('${item.type.substring(0,40)}...') → "${result || ''}"`,
+      result === 'probably' ? 'ok' : result === 'maybe' ? 'warn' : 'err'
+    );
+  });
+}
+
+// ===================================================
+// 演習問題
+// ===================================================
+function checkQ(btn, qid, correct) {
+  const item = document.getElementById(qid);
+  item.querySelectorAll('.option-btn').forEach(b => {
+    b.disabled = true;
+    if (b === btn && correct)  b.classList.add('correct');
+    if (b === btn && !correct) b.classList.add('wrong');
+  });
+  if (!correct) {
+    // 正解ボタンを緑に
+    const allBtns = item.querySelectorAll('.option-btn');
+    const correctAnswers = { q1:'B', q2:'C', q3:'B', q4:'C' };
+    allBtns.forEach(b => {
+      if (b.textContent.startsWith(correctAnswers[qid] + '.')) b.classList.add('correct');
+    });
+  }
+  document.getElementById('exp_' + qid).classList.add('show');
+}
+
+function checkQ5() {
+  const a = document.getElementById('q5a').value.trim().toLowerCase();
+  const b = document.getElementById('q5b').value.trim().toLowerCase();
+  const aOk = a === 'playbackrate';
+  const bOk = b === 'volume';
+  const exp = document.getElementById('exp_q5');
+  exp.classList.add('show');
+  let html = '';
+  if (aOk && bOk) {
+    html = '<strong>✅ 両方正解！</strong><br><br>';
+  } else {
+    html  = '<strong>' + (aOk ? '✅' : '❌') + ' A: playbackRate</strong>（あなたの答え: ' + (document.getElementById('q5a').value || '未入力') + '）<br>';
+    html += '<strong>' + (bOk ? '✅' : '❌') + ' B: volume</strong>（あなたの答え: ' + (document.getElementById('q5b').value || '未入力') + '）<br><br>';
+  }
+  html += '<strong>解説：</strong><br>';
+  html += '• <code>playbackRate</code> — 再生速度を設定します。1.0が標準速度、2.0で2倍速、0.5で半速になります。負の値で逆再生するブラウザもあります。<br>';
+  html += '• <code>volume</code> — 音量を 0.0（無音）〜 1.0（最大）の範囲で設定します。0.5 は50%の音量です。ミュートには <code>muted = true</code> を使います。';
+  exp.innerHTML = html;
+}
+
+// ===================================================
+// 完了ボタン
+// ===================================================
+function markComplete() {
+  const key = 'html5lv2_ch4_02';
+  const btn = document.getElementById('completeBtn');
+  if (localStorage.getItem(key) === 'done') {
+    localStorage.removeItem(key);
+    btn.textContent = '✅ このセクションを完了にする';
+    btn.classList.remove('done');
+  } else {
+    localStorage.setItem(key, 'done');
+    btn.textContent = '🎉 完了済み！（クリックで取り消し）';
+    btn.classList.add('done');
+  }
+}
+
+(function() {
+  if (localStorage.getItem('html5lv2_ch4_02') === 'done') {
+    const btn = document.getElementById('completeBtn');
+    btn.textContent = '🎉 完了済み！（クリックで取り消し）';
+    btn.classList.add('done');
+  }
+})();
+</script>
+</body>
+</html>
