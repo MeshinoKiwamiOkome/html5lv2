@@ -1,0 +1,1595 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>1-3 型とオブジェクト | HTML5プロフェッショナル Level 2</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; }
+    body {
+      font-family: 'Segoe UI', 'Helvetica Neue', sans-serif;
+      max-width: 960px; margin: 40px auto; padding: 0 24px;
+      background: #f0f4f8; color: #2d3748; line-height: 1.8;
+    }
+    .breadcrumb {
+      font-size: 0.82em; color: #a0aec0; margin-bottom: 20px;
+      font-family: 'Consolas','Monaco',monospace;
+    }
+    .breadcrumb a { color: #2c7a7b; text-decoration: none; }
+    .breadcrumb a:hover { text-decoration: underline; }
+
+    .chapter-header {
+      background: linear-gradient(135deg, #1a365d, #2c7a7b);
+      border-radius: 12px; padding: 32px 32px 24px;
+      margin-bottom: 32px; color: #fff;
+      box-shadow: 0 4px 18px rgba(44,122,123,0.35);
+    }
+    .chapter-header .ch-num {
+      font-size: 0.8em; font-family: 'Consolas','Monaco',monospace;
+      opacity: 0.85; letter-spacing: 0.08em; margin-bottom: 6px;
+    }
+    .chapter-header h1 { margin: 0 0 10px; font-size: 1.6em; color: #fff; border: none; padding: 0; }
+    .chapter-header p  { margin: 0; font-size: 0.92em; opacity: 0.88; }
+    .badge-row { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 14px; }
+    .badge {
+      background: rgba(255,255,255,0.18);
+      border: 1px solid rgba(255,255,255,0.35);
+      border-radius: 20px; padding: 3px 12px;
+      font-size: 0.76em; font-weight: bold;
+    }
+
+    .section-nav {
+      background: #fff; border: 1px solid #bee3f8;
+      border-radius: 10px; padding: 18px 22px;
+      margin-bottom: 32px; box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+    }
+    .section-nav h2 { margin: 0 0 12px; font-size: 0.92em; color: #1a365d; border: none; padding: 0; }
+    .section-nav ol { margin: 0; padding-left: 20px; font-size: 0.9em; }
+    .section-nav ol li { margin: 4px 0; }
+    .section-nav ol li a { color: #2c7a7b; text-decoration: none; }
+    .section-nav ol li a:hover { text-decoration: underline; }
+    .section-nav ol li.current a { color: #1a365d; font-weight: bold; }
+
+    h2 { color: #1a365d; margin-top: 48px; border-left: 5px solid #2c7a7b; padding-left: 12px; }
+    h3 { color: #2c7a7b; margin-top: 28px; }
+
+    code {
+      background: #edf2f7; padding: 2px 6px;
+      border-radius: 4px; font-size: 0.93em;
+      font-family: 'Consolas','Monaco',monospace;
+    }
+    pre {
+      background: #1a202c; color: #e2e8f0;
+      padding: 18px 20px; border-radius: 8px;
+      overflow-x: auto; font-size: 0.88em;
+      line-height: 1.7; font-family: 'Consolas','Monaco',monospace;
+    }
+    pre .comment { color: #68d391; }
+    pre .kw      { color: #90cdf4; }
+    pre .str     { color: #fbd38d; }
+    pre .num     { color: #fc8181; }
+    pre .fn      { color: #b794f4; }
+    pre .op      { color: #f6ad55; }
+    pre .out     { color: #a0aec0; }
+    pre .prop    { color: #81e6d9; }
+
+    .pre-wrap { position: relative; margin: 14px 0; }
+    .copy-btn {
+      position: absolute; top: 8px; right: 8px;
+      background: #4a5568; color: #e2e8f0;
+      border: none; border-radius: 4px;
+      padding: 4px 10px; font-size: 0.75em;
+      cursor: pointer; font-family: 'Consolas','Monaco',monospace;
+      transition: background 0.2s; z-index: 1;
+    }
+    .copy-btn:hover { background: #2c7a7b; }
+
+    .note {
+      background: #fff; border: 1px dashed #81e6d9;
+      border-radius: 6px; padding: 14px 18px;
+      font-size: 0.93em; color: #4a5568; margin: 14px 0;
+    }
+    .note strong { color: #1a365d; }
+    .warn {
+      background: #fffaf0; border: 1px solid #f6ad55;
+      border-left: 5px solid #f6ad55; border-radius: 6px;
+      padding: 14px 18px; font-size: 0.93em; color: #744210; margin: 14px 0;
+    }
+    .good {
+      background: #f0fff4; border: 1px solid #68d391;
+      border-left: 5px solid #48bb78; border-radius: 6px;
+      padding: 14px 18px; font-size: 0.93em; color: #276749; margin: 14px 0;
+    }
+    .demo-box {
+      background: #fff; border: 1px solid #bee3f8;
+      border-radius: 8px; padding: 20px 24px;
+      margin: 12px 0 28px; box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+    }
+
+    /* ===== 型カード ===== */
+    .type-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+      gap: 12px; margin: 14px 0;
+    }
+    .type-card {
+      border-radius: 10px; padding: 16px;
+      cursor: pointer; border: 2px solid transparent;
+      transition: transform 0.15s, box-shadow 0.15s, border-color 0.15s;
+      text-align: center;
+    }
+    .type-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 6px 16px rgba(0,0,0,0.12);
+    }
+    .type-card.active { border-color: #68d391; }
+    .type-card .tc-icon  { font-size: 2em; margin-bottom: 6px; }
+    .type-card .tc-name  {
+      font-family: 'Consolas','Monaco',monospace;
+      font-size: 0.95em; font-weight: bold; margin-bottom: 4px;
+    }
+    .type-card .tc-ex    { font-size: 0.78em; opacity: 0.85; }
+
+    /* ===== typeof チェッカー ===== */
+    .typeof-checker {
+      background: #1a202c; border-radius: 10px;
+      padding: 18px 20px; margin: 14px 0;
+    }
+    .typeof-input-row {
+      display: flex; gap: 10px; align-items: center; flex-wrap: wrap;
+    }
+    .typeof-input {
+      flex: 1; background: #2d3748; border: 1px solid #4a5568;
+      border-radius: 6px; padding: 8px 12px;
+      color: #e2e8f0; font-family: 'Consolas','Monaco',monospace;
+      font-size: 0.9em; outline: none; min-width: 160px;
+    }
+    .typeof-input:focus { border-color: #2c7a7b; }
+    .typeof-btn {
+      background: #2c7a7b; color: #fff; border: none;
+      border-radius: 6px; padding: 8px 18px;
+      font-size: 0.88em; font-weight: bold; cursor: pointer;
+      transition: background 0.2s; white-space: nowrap;
+    }
+    .typeof-btn:hover { background: #1a365d; }
+    .typeof-result {
+      margin-top: 12px; padding: 10px 14px;
+      background: #0d1117; border-radius: 6px;
+      font-family: 'Consolas','Monaco',monospace;
+      font-size: 0.88em; line-height: 1.8; min-height: 40px;
+    }
+
+    /* ===== 配列ビジュアライザ ===== */
+    .array-visual {
+      display: flex; align-items: stretch;
+      gap: 0; margin: 16px 0; flex-wrap: wrap;
+    }
+    .array-cell {
+      border: 2px solid #4a5568; background: #2d3748;
+      padding: 10px 14px; text-align: center;
+      font-family: 'Consolas','Monaco',monospace;
+      transition: all 0.3s ease; min-width: 60px;
+    }
+    .array-cell:first-child { border-radius: 6px 0 0 6px; }
+    .array-cell:last-child  { border-radius: 0 6px 6px 0; }
+    .array-cell .cell-idx {
+      font-size: 0.68em; color: #a0aec0; display: block; margin-bottom: 4px;
+    }
+    .array-cell .cell-val {
+      font-size: 0.9em; color: #fbd38d; font-weight: bold;
+    }
+    .array-cell.highlight {
+      background: #276749; border-color: #68d391;
+    }
+    .array-cell.highlight .cell-val { color: #68d391; }
+
+    /* ===== オブジェクトビジュアライザ ===== */
+    .obj-visual {
+      background: #1a202c; border-radius: 8px;
+      padding: 16px 20px; margin: 14px 0;
+      font-family: 'Consolas','Monaco',monospace; font-size: 0.88em;
+    }
+    .obj-brace { color: #f6ad55; font-size: 1.1em; }
+    .obj-row {
+      display: flex; align-items: center; gap: 8px;
+      padding: 4px 0 4px 20px; flex-wrap: wrap;
+    }
+    .obj-key   { color: #81e6d9; }
+    .obj-colon { color: #a0aec0; }
+    .obj-val   { color: #fbd38d; }
+    .obj-val.str-val  { color: #fbd38d; }
+    .obj-val.num-val  { color: #fc8181; }
+    .obj-val.bool-val { color: #90cdf4; }
+    .obj-comma { color: #a0aec0; }
+    .obj-highlight .obj-key,
+    .obj-highlight .obj-val { animation: objFlash 0.6s ease; }
+    @keyframes objFlash {
+      0%   { opacity: 0.3; }
+      100% { opacity: 1; }
+    }
+
+    /* ===== インタラクティブデモ ===== */
+    .interactive-demo {
+      background: #ebf8ff; border: 1px solid #bee3f8;
+      border-radius: 8px; padding: 16px 20px; margin: 14px 0;
+    }
+    .demo-label {
+      font-size: 0.85em; font-weight: bold;
+      color: #1a365d; margin-bottom: 10px;
+    }
+    .demo-input-row {
+      display: flex; gap: 10px; align-items: center;
+      flex-wrap: wrap; margin-bottom: 10px;
+    }
+    .demo-input {
+      border: 2px solid #bee3f8; border-radius: 6px;
+      padding: 7px 12px; font-size: 0.9em;
+      font-family: 'Consolas','Monaco',monospace;
+      color: #2d3748; background: #fff; flex: 1; min-width: 80px;
+    }
+    .demo-input:focus { border-color: #2c7a7b; outline: none; }
+    .demo-btn {
+      background: #2c7a7b; color: #fff; border: none;
+      border-radius: 6px; padding: 8px 18px;
+      font-size: 0.88em; font-weight: bold; cursor: pointer;
+      transition: background 0.2s; white-space: nowrap;
+    }
+    .demo-btn:hover { background: #1a365d; }
+    .demo-output {
+      background: #1a202c; color: #68d391;
+      border-radius: 6px; padding: 10px 14px;
+      font-family: 'Consolas','Monaco',monospace;
+      font-size: 0.85em; min-height: 40px;
+      white-space: pre-wrap; line-height: 1.7;
+    }
+
+    /* ===== タブ ===== */
+    .tab-wrap { margin: 14px 0; }
+    .tab-btns { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: -1px; }
+    .tab-btn {
+      padding: 8px 18px; border: 1px solid #bee3f8;
+      border-bottom: none; border-radius: 6px 6px 0 0;
+      background: #edf2f7; color: #2c7a7b;
+      font-size: 0.85em; font-weight: bold;
+      font-family: 'Consolas','Monaco',monospace;
+      cursor: pointer; transition: background 0.15s;
+    }
+    .tab-btn.active { background: #fff; border-bottom: 1px solid #fff; }
+    .tab-btn:hover:not(.active) { background: #e6fffa; }
+    .tab-content {
+      display: none; background: #fff;
+      border: 1px solid #bee3f8;
+      border-radius: 0 6px 6px 6px; padding: 18px 20px;
+    }
+    .tab-content.active { display: block; }
+
+    /* ===== テーブル ===== */
+    table.ref-table {
+      border-collapse: collapse; width: 100%;
+      background: #fff; border-radius: 8px;
+      overflow: hidden; box-shadow: 0 2px 6px rgba(0,0,0,0.07);
+      margin: 14px 0; font-size: 0.9em;
+    }
+    table.ref-table th, table.ref-table td {
+      border: 1px solid #bee3f8; padding: 10px 14px; text-align: left;
+    }
+    table.ref-table thead tr { background: #1a365d; color: #fff; }
+    table.ref-table tbody tr:nth-child(even) { background: #ebf8ff; }
+
+    /* ===== JSコンソール ===== */
+    .js-console {
+      background: #1a202c; border-radius: 10px;
+      overflow: hidden; margin: 16px 0;
+      box-shadow: 0 4px 14px rgba(0,0,0,0.25);
+    }
+    .js-console-bar {
+      background: #2d3748; padding: 8px 16px;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .js-console-bar .dot { width: 12px; height: 12px; border-radius: 50%; }
+    .dot-red    { background: #fc8181; }
+    .dot-yellow { background: #f6ad55; }
+    .dot-green  { background: #68d391; }
+    .js-console-bar span {
+      font-size: 0.78em; color: #a0aec0;
+      font-family: 'Consolas','Monaco',monospace; margin-left: 6px;
+    }
+    .js-console-output {
+      padding: 14px 16px; min-height: 80px;
+      font-family: 'Consolas','Monaco',monospace;
+      font-size: 0.85em; line-height: 1.8;
+      max-height: 260px; overflow-y: auto;
+    }
+    .log-line   { color: #e2e8f0; }
+    .log-info   { color: #90cdf4; }
+    .log-warn   { color: #f6ad55; }
+    .log-error  { color: #fc8181; }
+    .log-result { color: #68d391; }
+    .log-prompt { color: #a0aec0; }
+    .js-console-input-row {
+      display: flex; align-items: center;
+      border-top: 1px solid #2d3748; padding: 8px 12px; gap: 8px;
+    }
+    .js-console-input-row span {
+      color: #68d391; font-family: 'Consolas','Monaco',monospace;
+      font-size: 0.9em; flex-shrink: 0;
+    }
+    .js-console-input {
+      flex: 1; background: transparent; border: none; outline: none;
+      color: #e2e8f0; font-family: 'Consolas','Monaco',monospace;
+      font-size: 0.88em; caret-color: #68d391;
+    }
+    .js-console-run {
+      background: #2c7a7b; color: #fff; border: none;
+      border-radius: 4px; padding: 4px 12px;
+      font-size: 0.78em; font-weight: bold; cursor: pointer;
+      transition: background 0.2s;
+    }
+    .js-console-run:hover { background: #1a365d; }
+    .js-console-clear {
+      background: #4a5568; color: #e2e8f0; border: none;
+      border-radius: 4px; padding: 4px 10px;
+      font-size: 0.78em; cursor: pointer; transition: background 0.2s;
+    }
+    .js-console-clear:hover { background: #718096; }
+
+    /* ===== 演習問題 ===== */
+    .quiz-section {
+      background: #ebf8ff; border-left: 6px solid #4299e1;
+      border-radius: 0 8px 8px 0; padding: 24px 28px; margin: 48px 0 32px;
+    }
+    .quiz-section > h2 { margin-top: 0; color: #1a365d; border-left-color: #4299e1; }
+    .quiz-block {
+      background: #fff; border: 1px solid #bee3f8;
+      border-radius: 8px; padding: 18px 22px; margin-bottom: 22px;
+    }
+    .quiz-block h3 { margin-top: 0; color: #1a365d; }
+    .quiz-block input[type="text"],
+    .quiz-block select {
+      border: 2px solid #bee3f8; border-radius: 6px;
+      padding: 8px 12px; font-size: 0.95em;
+      width: 100%; max-width: 440px; margin: 6px 0;
+      outline: none; font-family: 'Consolas','Monaco',monospace;
+      transition: border-color 0.2s;
+    }
+    .quiz-block input[type="text"]:focus,
+    .quiz-block select:focus { border-color: #2c7a7b; }
+    .quiz-block label { display: block; margin: 8px 0 2px; font-weight: bold; color: #4a5568; }
+    .quiz-block label.checkbox-label {
+      display: flex; align-items: flex-start; gap: 8px;
+      font-weight: normal; cursor: pointer; margin: 6px 0;
+    }
+    .quiz-block label.checkbox-label input { margin-top: 3px; flex-shrink: 0; }
+    .btn {
+      display: inline-block; padding: 9px 20px;
+      border-radius: 6px; border: none; cursor: pointer;
+      font-size: 0.95em; font-weight: bold;
+      transition: opacity 0.2s; margin-top: 8px;
+    }
+    .btn:hover { opacity: 0.85; }
+    .btn-teal { background: #2c7a7b; color: #fff; }
+    .btn-done { background: #48bb78; color: #fff; }
+    .result-msg {
+      margin-top: 10px; padding: 10px 14px;
+      border-radius: 6px; font-weight: bold; display: none;
+    }
+    .result-msg.correct { background: #c6f6d5; color: #276749; display: block; }
+    .result-msg.wrong   { background: #fed7d7; color: #9b2335; display: block; }
+    .result-msg.info    { background: #bee3f8; color: #1a365d; display: block; }
+
+    .page-nav {
+      display: flex; justify-content: space-between;
+      align-items: center; margin-top: 48px;
+      padding-top: 20px; border-top: 2px solid #bee3f8;
+      gap: 12px; flex-wrap: wrap;
+    }
+    .page-nav a {
+      display: inline-block; padding: 10px 20px;
+      border-radius: 8px; text-decoration: none;
+      font-weight: bold; font-size: 0.9em; transition: opacity 0.2s;
+    }
+    .page-nav a:hover { opacity: 0.8; }
+    .page-nav .prev { background: #edf2f7; color: #4a5568; }
+    .page-nav .next { background: #2c7a7b; color: #fff; }
+    .page-nav .home { background: #fff; color: #2c7a7b; border: 2px solid #2c7a7b; }
+
+    .complete-section {
+      background: #f0fff4; border: 2px solid #48bb78;
+      border-radius: 10px; padding: 20px 24px;
+      margin-top: 40px; text-align: center;
+    }
+    .complete-section p { margin: 0 0 12px; color: #276749; font-weight: bold; }
+
+    footer {
+      margin-top: 48px; padding-top: 16px;
+      border-top: 2px solid #bee3f8;
+      font-size: 0.82em; color: #a0aec0; text-align: center;
+    }
+    footer a { color: #2c7a7b; text-decoration: none; }
+    footer a:hover { text-decoration: underline; }
+
+    @media (max-width: 600px) {
+      body { font-size: 0.84em; }
+      .chapter-header { padding: 20px 16px; }
+      .chapter-header h1 { font-size: 1.2em; }
+      .type-grid { grid-template-columns: repeat(2, 1fr); }
+      .array-visual { gap: 0; }
+      .array-cell { min-width: 48px; padding: 8px 10px; }
+      .quiz-section { padding: 16px 12px; }
+      .quiz-block { padding: 14px 12px; }
+      .page-nav { flex-direction: column; align-items: stretch; }
+      .page-nav a { text-align: center; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- パンくず -->
+<div class="breadcrumb">
+  <a href="../index.html">🏠 HTML5 Level 2</a> ›
+  Chapter 1：速習JavaScript入門 › 1-3 型とオブジェクト
+</div>
+
+<!-- ヘッダー -->
+<div class="chapter-header">
+  <div class="ch-num">CHAPTER 01 › SECTION 03</div>
+  <h1>🧩 1-3 型とオブジェクト</h1>
+  <p>JavaScriptの型システム・プリミティブ型・配列・オブジェクトを
+  ビジュアライザとインタラクティブデモで体験しながら学びます。
+  typeof・配列操作・オブジェクト操作まで網羅します。</p>
+  <div class="badge-row">
+    <span class="badge">typeof</span>
+    <span class="badge">string / number / boolean</span>
+    <span class="badge">null / undefined</span>
+    <span class="badge">Array</span>
+    <span class="badge">push / pop / slice</span>
+    <span class="badge">Object</span>
+  </div>
+</div>
+
+<!-- セクションナビ -->
+<div class="section-nav">
+  <h2>📋 Chapter 1 のセクション</h2>
+  <ol>
+    <li><a href="01_variables.html">1-1 変数の宣言と値の代入</a></li>
+    <li><a href="02_operators.html">1-2 さまざまな演算</a></li>
+    <li class="current"><a href="03_types.html">1-3 型とオブジェクト</a></li>
+    <li><a href="04_functions.html">1-4 関数</a></li>
+    <li><a href="05_scope.html">1-5 スコープ</a></li>
+    <li><a href="06_conditions.html">1-6 条件分岐</a></li>
+    <li><a href="07_loops.html">1-7 繰り返しの処理</a></li>
+    <li><a href="08_classes.html">1-8 オブジェクトとクラス</a></li>
+    <li><a href="09_dom.html">1-9 HTMLの操作</a></li>
+    <li><a href="10_events.html">1-10 イベントと非同期処理</a></li>
+    <li><a href="11_html5.html">1-11 HTML5とJavaScript</a></li>
+  </ol>
+</div>
+
+
+<!-- ============================================================ -->
+<!-- PART 1: JavaScriptにおける型 -->
+<!-- ============================================================ -->
+<h2 id="types">① JavaScriptにおける型</h2>
+
+<div class="note">
+  <strong>重要ポイント：JavaScriptは動的型付け言語です。変数の型は宣言時に決めず、代入した値によって自動的に決まります。</strong><br>
+  <code>typeof</code> 演算子で値の型を確認できます。
+</div>
+
+<div class="demo-box">
+  <h3>型の全体マップ（クリックで詳細）</h3>
+  <div class="type-grid">
+    <div class="type-card" style="background:#ebf8ff;"
+         onclick="showTypeDetail('string',this)">
+      <div class="tc-icon">📝</div>
+      <div class="tc-name" style="color:#2b4c7e;">string</div>
+      <div class="tc-ex" style="color:#4a5568;">"Hello"<br>'World'<br>`template`</div>
+    </div>
+    <div class="type-card" style="background:#fff5f5;"
+         onclick="showTypeDetail('number',this)">
+      <div class="tc-icon">🔢</div>
+      <div class="tc-name" style="color:#9b2335;">number</div>
+      <div class="tc-ex" style="color:#4a5568;">42<br>3.14<br>NaN / Infinity</div>
+    </div>
+    <div class="type-card" style="background:#f0fff4;"
+         onclick="showTypeDetail('boolean',this)">
+      <div class="tc-icon">✅</div>
+      <div class="tc-name" style="color:#276749;">boolean</div>
+      <div class="tc-ex" style="color:#4a5568;">true<br>false</div>
+    </div>
+    <div class="type-card" style="background:#faf5ff;"
+         onclick="showTypeDetail('undefined',this)">
+      <div class="tc-icon">❓</div>
+      <div class="tc-name" style="color:#553c9a;">undefined</div>
+      <div class="tc-ex" style="color:#4a5568;">let x;<br>x → undefined</div>
+    </div>
+    <div class="type-card" style="background:#fffaf0;"
+         onclick="showTypeDetail('null',this)">
+      <div class="tc-icon">🚫</div>
+      <div class="tc-name" style="color:#744210;">null</div>
+      <div class="tc-ex" style="color:#4a5568;">意図的な「空」<br>typeof → "object"</div>
+    </div>
+    <div class="type-card" style="background:#edf2f7;"
+         onclick="showTypeDetail('symbol',this)">
+      <div class="tc-icon">🔑</div>
+      <div class="tc-name" style="color:#4a5568;">symbol</div>
+      <div class="tc-ex" style="color:#4a5568;">Symbol("id")<br>一意な識別子</div>
+    </div>
+    <div class="type-card" style="background:#e6fffa;"
+         onclick="showTypeDetail('bigint',this)">
+      <div class="tc-icon">🔭</div>
+      <div class="tc-name" style="color:#1a4731;">bigint</div>
+      <div class="tc-ex" style="color:#4a5568;">9007199254740993n<br>大きな整数</div>
+    </div>
+    <div class="type-card" style="background:#fefcbf;"
+         onclick="showTypeDetail('object',this)">
+      <div class="tc-icon">📦</div>
+      <div class="tc-name" style="color:#744210;">object</div>
+      <div class="tc-ex" style="color:#4a5568;">{} / [] / null<br>参照型</div>
+    </div>
+  </div>
+
+  <!-- 型詳細パネル -->
+  <div id="type-detail" style="display:none; margin-top:12px;
+    background:#1a202c; border-radius:8px; padding:16px 20px;
+    font-family:'Consolas','Monaco',monospace; font-size:0.85em;
+    line-height:1.9; color:#e2e8f0;">
+  </div>
+
+  <h3>🔍 typeof チェッカー（値を入力して型を確認）</h3>
+  <div class="typeof-checker">
+    <div class="typeof-input-row">
+      <input class="typeof-input" id="typeof-input"
+             placeholder='値を入力（例：42, "hello", true, null, undefined）'>
+      <button class="typeof-btn" onclick="runTypeof()">typeof を確認</button>
+    </div>
+    <div class="typeof-result" id="typeof-result">
+      <span style="color:#a0aec0;">← 値を入力して型を確認してみましょう</span>
+    </div>
+  </div>
+
+  <div class="pre-wrap">
+    <button class="copy-btn" onclick="copyPre(this)">copy</button>
+<pre>
+<span class="comment">// typeof 演算子で型を確認する</span>
+console.<span class="fn">log</span>(<span class="kw">typeof</span> <span class="str">"Hello"</span>);     <span class="out">// → "string"</span>
+console.<span class="fn">log</span>(<span class="kw">typeof</span> <span class="num">42</span>);          <span class="out">// → "number"</span>
+console.<span class="fn">log</span>(<span class="kw">typeof</span> <span class="num">3.14</span>);        <span class="out">// → "number"（整数も小数も同じ型）</span>
+console.<span class="fn">log</span>(<span class="kw">typeof</span> <span class="kw">true</span>);        <span class="out">// → "boolean"</span>
+console.<span class="fn">log</span>(<span class="kw">typeof</span> <span class="kw">undefined</span>);   <span class="out">// → "undefined"</span>
+console.<span class="fn">log</span>(<span class="kw">typeof</span> <span class="kw">null</span>);        <span class="out">// → "object" ← 歴史的バグ！</span>
+console.<span class="fn">log</span>(<span class="kw">typeof</span> {});          <span class="out">// → "object"</span>
+console.<span class="fn">log</span>(<span class="kw">typeof</span> []);          <span class="out">// → "object"（配列も object）</span>
+console.<span class="fn">log</span>(<span class="kw">typeof</span> <span class="kw">function</span>(){}); <span class="out">// → "function"</span>
+console.<span class="fn">log</span>(<span class="kw">typeof</span> Symbol());     <span class="out">// → "symbol"</span>
+console.<span class="fn">log</span>(<span class="kw">typeof</span> <span class="num">9007199254740993n</span>); <span class="out">// → "bigint"</span>
+</pre>
+  </div>
+
+  <div class="warn">
+    ⚠️ <strong>typeof null === "object" は歴史的バグです</strong><br>
+    <code>null</code> の typeof は <code>"object"</code> を返しますが、null はオブジェクトではありません。
+    これはJavaScriptの最初の実装から残るバグで、後方互換性のために修正されていません。
+    null チェックは <code>value === null</code> で行いましょう。
+  </div>
+</div>
+
+
+<!-- ============================================================ -->
+<!-- PART 2: プリミティブ型 -->
+<!-- ============================================================ -->
+<h2 id="primitive">② プリミティブ型</h2>
+
+<div class="note">
+  <strong>重要ポイント：string・number・boolean・undefined・null・symbol・bigint の7種類がプリミティブ型です。</strong><br>
+  プリミティブ型は値そのものがコピーされます（値渡し）。オブジェクト型は参照がコピーされます（参照渡し）。
+</div>
+
+<div class="demo-box">
+  <h3>値渡し vs 参照渡し（重要！）</h3>
+  <div class="tab-wrap">
+    <div class="tab-btns">
+      <button class="tab-btn active" onclick="switchTab(this,'tab-primitive')">プリミティブ（値渡し）</button>
+      <button class="tab-btn"        onclick="switchTab(this,'tab-reference')">オブジェクト（参照渡し）</button>
+      <button class="tab-btn"        onclick="switchTab(this,'tab-coerce')">型変換</button>
+    </div>
+
+    <div class="tab-content active" id="tab-primitive">
+      <h3 style="margin-top:0; color:#1a365d;">プリミティブ型は「値」がコピーされる</h3>
+      <div class="pre-wrap">
+        <button class="copy-btn" onclick="copyPre(this)">copy</button>
+<pre>
+<span class="comment">// プリミティブ型：値がコピーされる</span>
+<span class="kw">let</span> a = <span class="num">10</span>;
+<span class="kw">let</span> b = a;   <span class="comment">// a の「値 10」がコピーされる</span>
+b = <span class="num">20</span>;      <span class="comment">// b を変えても a は変わらない</span>
+
+console.<span class="fn">log</span>(a); <span class="out">// → 10（変わっていない）</span>
+console.<span class="fn">log</span>(b); <span class="out">// → 20</span>
+
+<span class="comment">// 文字列も同様</span>
+<span class="kw">let</span> s1 = <span class="str">"Hello"</span>;
+<span class="kw">let</span> s2 = s1;
+s2 = <span class="str">"World"</span>;
+console.<span class="fn">log</span>(s1); <span class="out">// → "Hello"（変わっていない）</span>
+console.<span class="fn">log</span>(s2); <span class="out">// → "World"</span>
+</pre>
+      </div>
+      <div class="good">✅ プリミティブ型はコピーすると完全に独立した値になります。</div>
+    </div>
+
+    <div class="tab-content" id="tab-reference">
+      <h3 style="margin-top:0; color:#1a365d;">オブジェクト型は「参照」がコピーされる</h3>
+      <div class="pre-wrap">
+        <button class="copy-btn" onclick="copyPre(this)">copy</button>
+<pre>
+<span class="comment">// オブジェクト型：参照（アドレス）がコピーされる</span>
+<span class="kw">const</span> obj1 = { name: <span class="str">"Alice"</span>, age: <span class="num">25</span> };
+<span class="kw">const</span> obj2 = obj1;  <span class="comment">// 同じオブジェクトを指す参照がコピーされる</span>
+
+obj2.<span class="prop">name</span> = <span class="str">"Bob"</span>;  <span class="comment">// obj2 を変更すると…</span>
+console.<span class="fn">log</span>(obj1.<span class="prop">name</span>); <span class="out">// → "Bob"（obj1 も変わる！）</span>
+console.<span class="fn">log</span>(obj2.<span class="prop">name</span>); <span class="out">// → "Bob"</span>
+
+<span class="comment">// 配列も同様（配列はオブジェクトの一種）</span>
+<span class="kw">const</span> arr1 = [<span class="num">1</span>, <span class="num">2</span>, <span class="num">3</span>];
+<span class="kw">const</span> arr2 = arr1;
+arr2.<span class="fn">push</span>(<span class="num">4</span>);
+console.<span class="fn">log</span>(arr1); <span class="out">// → [1, 2, 3, 4]（arr1 も変わる！）</span>
+
+<span class="comment">// コピーしたい場合はスプレッド構文を使う</span>
+<span class="kw">const</span> obj3 = { ...obj1 };  <span class="comment">// シャローコピー</span>
+<span class="kw">const</span> arr3 = [...arr1];    <span class="comment">// シャローコピー</span>
+obj3.<span class="prop">name</span> = <span class="str">"Carol"</span>;
+console.<span class="fn">log</span>(obj1.<span class="prop">name</span>); <span class="out">// → "Bob"（変わらない）</span>
+</pre>
+      </div>
+      <div class="warn">⚠️ オブジェクトを別の変数に代入しても、同じオブジェクトを参照しています。
+      独立したコピーを作るにはスプレッド構文 <code>{ ...obj }</code> や <code>[...arr]</code> を使いましょう。</div>
+    </div>
+
+    <div class="tab-content" id="tab-coerce">
+      <h3 style="margin-top:0; color:#1a365d;">型変換（明示的・暗黙的）</h3>
+      <div class="pre-wrap">
+        <button class="copy-btn" onclick="copyPre(this)">copy</button>
+<pre>
+<span class="comment">// ===== 明示的な型変換 =====</span>
+
+<span class="comment">// 数値 → 文字列</span>
+console.<span class="fn">log</span>(String(<span class="num">42</span>));        <span class="out">// → "42"</span>
+console.<span class="fn">log</span>((<span class="num">42</span>).<span class="fn">toString</span>());   <span class="out">// → "42"</span>
+console.<span class="fn">log</span>((<span class="num">255</span>).<span class="fn">toString</span>(<span class="num">16</span>)); <span class="out">// → "ff"（16進数）</span>
+
+<span class="comment">// 文字列 → 数値</span>
+console.<span class="fn">log</span>(Number(<span class="str">"42"</span>));      <span class="out">// → 42</span>
+console.<span class="fn">log</span>(Number(<span class="str">"3.14"</span>));    <span class="out">// → 3.14</span>
+console.<span class="fn">log</span>(Number(<span class="str">""</span>));        <span class="out">// → 0</span>
+console.<span class="fn">log</span>(Number(<span class="str">"abc"</span>));     <span class="out">// → NaN</span>
+console.<span class="fn">log</span>(parseInt(<span class="str">"42px"</span>));  <span class="out">// → 42（先頭の数値部分のみ）</span>
+console.<span class="fn">log</span>(parseFloat(<span class="str">"3.14rem"</span>)); <span class="out">// → 3.14</span>
+
+<span class="comment">// 真偽値への変換</span>
+console.<span class="fn">log</span>(Boolean(<span class="num">0</span>));        <span class="out">// → false（falsy）</span>
+console.<span class="fn">log</span>(Boolean(<span class="str">""</span>));       <span class="out">// → false（falsy）</span>
+console.<span class="fn">log</span>(Boolean(<span class="kw">null</span>));     <span class="out">// → false（falsy）</span>
+console.<span class="fn">log</span>(Boolean(<span class="num">1</span>));        <span class="out">// → true（truthy）</span>
+console.<span class="fn">log</span>(Boolean(<span class="str">"hello"</span>));  <span class="out">// → true（truthy）</span>
+
+<span class="comment">// ===== 暗黙的な型変換（注意！）=====</span>
+console.<span class="fn">log</span>(<span class="str">"5"</span> <span class="op">-</span> <span class="num">2</span>);   <span class="out">// → 3  （- は数値変換）</span>
+console.<span class="fn">log</span>(<span class="str">"5"</span> <span class="op">*</span> <span class="num">2</span>);   <span class="out">// → 10 （* は数値変換）</span>
+console.<span class="fn">log</span>(<span class="str">"5"</span> <span class="op">+</span> <span class="num">2</span>);   <span class="out">// → "52"（+ は文字列連結！）</span>
+</pre>
+      </div>
+      <div class="interactive-demo" style="margin-top:12px;">
+        <div class="demo-label">型変換を試してみよう</div>
+        <div class="demo-input-row">
+          <input class="demo-input" id="coerce-val" placeholder='変換する値（例：42, "3.14", true）' type="text">
+          <select class="demo-input" id="coerce-to" style="flex:0 0 auto; width:160px;">
+            <option value="string">→ String</option>
+            <option value="number">→ Number</option>
+            <option value="boolean">→ Boolean</option>
+          </select>
+          <button class="demo-btn" onclick="runCoerce()">▶ 変換</button>
+        </div>
+        <div class="demo-output" id="coerce-output">← 値と変換先を選んで実行してみましょう</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ============================================================ -->
+<!-- PART 3: 配列 -->
+<!-- ============================================================ -->
+<h2 id="array">③ 配列</h2>
+
+<div class="note">
+  <strong>重要ポイント：配列は複数の値を順番に格納するデータ構造です。インデックスは 0 から始まります。</strong>
+</div>
+
+<div class="demo-box">
+  <h3>配列ビジュアライザ</h3>
+  <div id="arr-visual-wrap">
+    <div class="array-visual" id="arr-visual"></div>
+    <div style="margin-top:8px; font-family:'Consolas','Monaco',monospace;
+      font-size:0.82em; color:#718096;" id="arr-info"></div>
+  </div>
+
+  <div class="interactive-demo" style="margin-top:16px;">
+    <div class="demo-label">配列を操作してビジュアルで確認しよう</div>
+    <div class="demo-input-row">
+      <select class="demo-input" id="arr-op" style="flex:0 0 auto; width:200px;"
+              onchange="updateArrOpUI()">
+        <option value="push">push（末尾に追加）</option>
+        <option value="pop">pop（末尾を削除）</option>
+        <option value="unshift">unshift（先頭に追加）</option>
+        <option value="shift">shift（先頭を削除）</option>
+        <option value="splice">splice（指定位置を操作）</option>
+        <option value="slice">slice（部分取得）</option>
+        <option value="indexOf">indexOf（検索）</option>
+        <option value="includes">includes（存在確認）</option>
+      </select>
+      <input class="demo-input" id="arr-arg1" placeholder="引数1" type="text" style="max-width:90px;">
+      <input class="demo-input" id="arr-arg2" placeholder="引数2" type="text"
+             style="max-width:90px; display:none;" id="arr-arg2">
+      <button class="demo-btn" onclick="runArrOp()">▶ 実行</button>
+      <button class="demo-btn" style="background:#4a5568;" onclick="resetArr()">リセット</button>
+    </div>
+    <div class="demo-output" id="arr-output">← 操作を選んで実行してみましょう</div>
+  </div>
+
+  <div class="pre-wrap">
+    <button class="copy-btn" onclick="copyPre(this)">copy</button>
+<pre>
+<span class="comment">// 配列の作成</span>
+<span class="kw">const</span> fruits = [<span class="str">"apple"</span>, <span class="str">"banana"</span>, <span class="str">"cherry"</span>];
+
+<span class="comment">// インデックスでアクセス（0始まり）</span>
+console.<span class="fn">log</span>(fruits[<span class="num">0</span>]); <span class="out">// → "apple"</span>
+console.<span class="fn">log</span>(fruits[<span class="num">2</span>]); <span class="out">// → "cherry"</span>
+console.<span class="fn">log</span>(fruits.<span class="prop">length</span>); <span class="out">// → 3</span>
+
+<span class="comment">// 末尾への追加・削除</span>
+fruits.<span class="fn">push</span>(<span class="str">"date"</span>);    <span class="out">// → ["apple","banana","cherry","date"]</span>
+fruits.<span class="fn">pop</span>();           <span class="out">// → ["apple","banana","cherry"]（"date"を削除）</span>
+
+<span class="comment">// 先頭への追加・削除</span>
+fruits.<span class="fn">unshift</span>(<span class="str">"avocado"</span>); <span class="out">// → ["avocado","apple","banana","cherry"]</span>
+fruits.<span class="fn">shift</span>();              <span class="out">// → ["apple","banana","cherry"]</span>
+
+<span class="comment">// 部分取得（元の配列は変更しない）</span>
+console.<span class="fn">log</span>(fruits.<span class="fn">slice</span>(<span class="num">0</span>, <span class="num">2</span>)); <span class="out">// → ["apple","banana"]</span>
+
+<span class="comment">// 検索</span>
+console.<span class="fn">log</span>(fruits.<span class="fn">indexOf</span>(<span class="str">"banana"</span>));  <span class="out">// → 1</span>
+console.<span class="fn">log</span>(fruits.<span class="fn">includes</span>(<span class="str">"cherry"</span>)); <span class="out">// → true</span>
+
+<span class="comment">// splice：要素の追加・削除・置換</span>
+fruits.<span class="fn">splice</span>(<span class="num">1</span>, <span class="num">1</span>, <span class="str">"blueberry"</span>); <span class="out">// インデックス1から1個削除して"blueberry"を挿入</span>
+console.<span class="fn">log</span>(fruits); <span class="out">// → ["apple","blueberry","cherry"]</span>
+</pre>
+  </div>
+</div>
+
+
+<!-- ============================================================ -->
+<!-- PART 4: オブジェクト -->
+<!-- ============================================================ -->
+<h2 id="object">④ オブジェクト</h2>
+
+<div class="note">
+  <strong>重要ポイント：オブジェクトはキーと値のペアでデータを管理します。ドット記法またはブラケット記法でアクセスします。</strong>
+</div>
+
+<div class="demo-box">
+  <h3>オブジェクトビジュアライザ</h3>
+  <div class="obj-visual" id="obj-visual">
+    <div class="obj-brace">{</div>
+    <div class="obj-row" id="obj-row-name">
+      <span class="obj-key">name</span>
+      <span class="obj-colon">:</span>
+      <span class="obj-val str-val" id="obj-val-name">"Alice"</span>
+      <span class="obj-comma">,</span>
+    </div>
+    <div class="obj-row" id="obj-row-age">
+      <span class="obj-key">age</span>
+      <span class="obj-colon">:</span>
+      <span class="obj-val num-val" id="obj-val-age">25</span>
+      <span class="obj-comma">,</span>
+    </div>
+    <div class="obj-row" id="obj-row-city">
+      <span class="obj-key">city</span>
+      <span class="obj-colon">:</span>
+      <span class="obj-val str-val" id="obj-val-city">"Tokyo"</span>
+      <span class="obj-comma">,</span>
+    </div>
+    <div class="obj-row" id="obj-row-active">
+      <span class="obj-key">active</span>
+      <span class="obj-colon">:</span>
+      <span class="obj-val bool-val" id="obj-val-active">true</span>
+    </div>
+    <div class="obj-brace">}</div>
+  </div>
+
+  <h3>インタラクティブ：オブジェクトを操作しよう</h3>
+  <div class="interactive-demo">
+    <div class="demo-label">プロパティを操作してビジュアルで確認しよう</div>
+    <div class="demo-input-row">
+      <select class="demo-input" id="obj-op" style="flex:0 0 auto; width:200px;">
+        <option value="get">プロパティを取得</option>
+        <option value="set">プロパティを変更</option>
+        <option value="add">プロパティを追加</option>
+        <option value="del">プロパティを削除</option>
+        <option value="keys">キー一覧を取得</option>
+        <option value="values">値一覧を取得</option>
+        <option value="entries">キーと値の一覧</option>
+        <option value="spread">スプレッドでコピー</option>
+      </select>
+      <input class="demo-input" id="obj-key-input"  placeholder="キー名" type="text" style="max-width:100px;">
+      <input class="demo-input" id="obj-val-input"  placeholder="値"     type="text" style="max-width:100px;">
+      <button class="demo-btn" onclick="runObjOp()">▶ 実行</button>
+    </div>
+    <div class="demo-output" id="obj-output">← 操作を選んで実行してみましょう</div>
+  </div>
+
+  <div class="pre-wrap">
+    <button class="copy-btn" onclick="copyPre(this)">copy</button>
+<pre>
+<span class="comment">// オブジェクトの作成</span>
+<span class="kw">const</span> user = {
+  <span class="prop">name</span>:   <span class="str">"Alice"</span>,
+  <span class="prop">age</span>:    <span class="num">25</span>,
+  <span class="prop">city</span>:   <span class="str">"Tokyo"</span>,
+  <span class="prop">active</span>: <span class="kw">true</span>
+};
+
+<span class="comment">// プロパティへのアクセス（ドット記法）</span>
+console.<span class="fn">log</span>(user.<span class="prop">name</span>);   <span class="out">// → "Alice"</span>
+console.<span class="fn">log</span>(user.<span class="prop">age</span>);    <span class="out">// → 25</span>
+
+<span class="comment">// ブラケット記法（変数でキーを指定できる）</span>
+<span class="kw">const</span> key = <span class="str">"name"</span>;
+console.<span class="fn">log</span>(user[key]);    <span class="out">// → "Alice"</span>
+
+<span class="comment">// プロパティの変更・追加・削除</span>
+user.<span class="prop">age</span> = <span class="num">26</span>;             <span class="comment">// 変更</span>
+user.<span class="prop">email</span> = <span class="str">"a@example.com"</span>; <span class="comment">// 追加</span>
+<span class="kw">delete</span> user.<span class="prop">active</span>;       <span class="comment">// 削除</span>
+
+<span class="comment">// キー・値・エントリの取得</span>
+console.<span class="fn">log</span>(Object.<span class="fn">keys</span>(user));    <span class="out">// → ["name","age","city","email"]</span>
+console.<span class="fn">log</span>(Object.<span class="fn">values</span>(user));  <span class="out">// → ["Alice",26,"Tokyo","a@example.com"]</span>
+console.<span class="fn">log</span>(Object.<span class="fn">entries</span>(user)); <span class="out">// → [["name","Alice"],["age",26],...]</span>
+
+<span class="comment">// プロパティの存在確認</span>
+console.<span class="fn">log</span>(<span class="str">"name"</span> <span class="kw">in</span> user);       <span class="out">// → true</span>
+console.<span class="fn">log</span>(user.<span class="fn">hasOwnProperty</span>(<span class="str">"age"</span>)); <span class="out">// → true</span>
+
+<span class="comment">// スプレッド構文でコピー・マージ</span>
+<span class="kw">const</span> copy   = { ...user };
+<span class="kw">const</span> merged = { ...user, <span class="prop">role</span>: <span class="str">"admin"</span> };
+</pre>
+  </div>
+
+  <h3>分割代入（Destructuring）</h3>
+  <div class="pre-wrap">
+    <button class="copy-btn" onclick="copyPre(this)">copy</button>
+<pre>
+<span class="comment">// オブジェクトの分割代入</span>
+<span class="kw">const</span> user = { name: <span class="str">"Alice"</span>, age: <span class="num">25</span>, city: <span class="str">"Tokyo"</span> };
+<span class="kw">const</span> { name, age } = user;
+console.<span class="fn">log</span>(name); <span class="out">// → "Alice"</span>
+console.<span class="fn">log</span>(age);  <span class="out">// → 25</span>
+
+<span class="comment">// 別名をつける</span>
+<span class="kw">const</span> { name: userName, age: userAge } = user;
+console.<span class="fn">log</span>(userName); <span class="out">// → "Alice"</span>
+
+<span class="comment">// デフォルト値を設定</span>
+<span class="kw">const</span> { name: n, score = <span class="num">0</span> } = user;
+console.<span class="fn">log</span>(score); <span class="out">// → 0（user に score がないのでデフォルト値）</span>
+
+<span class="comment">// 配列の分割代入</span>
+<span class="kw">const</span> [first, second, ...rest] = [<span class="num">1</span>, <span class="num">2</span>, <span class="num">3</span>, <span class="num">4</span>, <span class="num">5</span>];
+console.<span class="fn">log</span>(first);  <span class="out">// → 1</span>
+console.<span class="fn">log</span>(second); <span class="out">// → 2</span>
+console.<span class="fn">log</span>(rest);   <span class="out">// → [3, 4, 5]</span>
+</pre>
+  </div>
+</div>
+
+
+<!-- ============================================================ -->
+<!-- まとめ -->
+<!-- ============================================================ -->
+<h2>📌 まとめ</h2>
+<div class="demo-box">
+  <table class="ref-table">
+    <thead><tr><th>分類</th><th>型 / 操作</th><th>説明</th><th>例</th></tr></thead>
+    <tbody>
+      <tr><td rowspan="7">プリミティブ型</td>
+        <td><code>string</code></td><td>文字列</td><td><code>"Hello"</code></td></tr>
+      <tr><td><code>number</code></td><td>数値（整数・小数）</td><td><code>42 / 3.14</code></td></tr>
+      <tr><td><code>boolean</code></td><td>真偽値</td><td><code>true / false</code></td></tr>
+      <tr><td><code>undefined</code></td><td>未定義</td><td><code>let x; // x は undefined</code></td></tr>
+      <tr><td><code>null</code></td><td>意図的な空</td><td><code>let x = null;</code></td></tr>
+      <tr><td><code>symbol</code></td><td>一意な識別子</td><td><code>Symbol("id")</code></td></tr>
+      <tr><td><code>bigint</code></td><td>大きな整数</td><td><code>9007199254740993n</code></td></tr>
+      <tr><td rowspan="4">配列操作</td>
+        <td><code>push / pop</code></td><td>末尾に追加 / 削除</td><td><code>arr.push(4)</code></td></tr>
+      <tr><td><code>unshift / shift</code></td><td>先頭に追加 / 削除</td><td><code>arr.unshift(0)</code></td></tr>
+      <tr><td><code>slice(s,e)</code></td><td>部分取得（非破壊）</td><td><code>arr.slice(0,2)</code></td></tr>
+      <tr><td><code>splice(i,n,...)</code></td><td>追加・削除・置換（破壊）</td><td><code>arr.splice(1,1,"x")</code></td></tr>
+      <tr><td rowspan="3">オブジェクト操作</td>
+        <td><code>obj.key / obj[key]</code></td><td>プロパティ取得</td><td><code>user.name</code></td></tr>
+      <tr><td><code>Object.keys/values/entries</code></td><td>キー・値・ペア取得</td><td><code>Object.keys(obj)</code></td></tr>
+      <tr><td><code>{ ...obj }</code></td><td>スプレッドでコピー</td><td><code>const c = {...obj}</code></td></tr>
+    </tbody>
+  </table>
+</div>
+
+
+<!-- ============================================================ -->
+<!-- 演習問題 -->
+<!-- ============================================================ -->
+<div class="quiz-section">
+  <h2>🖊️ 演習問題</h2>
+
+  <!-- Q1 -->
+  <div class="quiz-block">
+    <h3>Q1. 穴埋め問題</h3>
+    <p>以下の説明に合う答えを入力してください。</p>
+    <label>① <code>typeof null</code> の結果：</label>
+    <input type="text" id="q1a" placeholder="文字列で答える">
+    <label>② <code>typeof []</code> の結果：</label>
+    <input type="text" id="q1b" placeholder="文字列で答える">
+    <label>③ 配列の末尾に要素を追加するメソッド：</label>
+    <input type="text" id="q1c" placeholder="メソッド名">
+    <label>④ オブジェクトのキー一覧を配列で返すメソッド：</label>
+    <input type="text" id="q1d" placeholder="Object.???">
+    <br>
+    <button class="btn btn-teal" onclick="checkQ1()">答え合わせ</button>
+    <div class="result-msg" id="q1-result"></div>
+    <script>
+      function checkQ1() {
+        const a = document.getElementById('q1a').value.trim().replace(/['"]/g,'').toLowerCase();
+        const b = document.getElementById('q1b').value.trim().replace(/['"]/g,'').toLowerCase();
+        const c = document.getElementById('q1c').value.trim().toLowerCase().replace(/[()]/g,'');
+        const d = document.getElementById('q1d').value.trim().toLowerCase().replace(/[()]/g,'');
+        const r = document.getElementById('q1-result');
+        const ca = a === 'object';
+        const cb = b === 'object';
+        const cc = c === 'push';
+        const cd = d === 'object.keys' || d === 'keys';
+        const count = [ca,cb,cc,cd].filter(Boolean).length;
+        if (count === 4) {
+          r.className = 'result-msg correct';
+          r.textContent = '✅ 全問正解！完璧です！';
+        } else {
+          r.className = 'result-msg wrong';
+          r.innerHTML = `❌ ${count}/4 問正解。<br>` +
+            `① ${ca?'✅':'❌ "object"（歴史的バグ）'}　` +
+            `② ${cb?'✅':'❌ "object"（配列もオブジェクト）'}　` +
+            `③ ${cc?'✅':'❌ push'}　` +
+            `④ ${cd?'✅':'❌ Object.keys'}`;
+        }
+      }
+    </script>
+  </div>
+
+  <!-- Q2 -->
+  <div class="quiz-block">
+    <h3>Q2. 選択問題</h3>
+    <p>以下のコードを実行した結果として正しいものはどれですか？</p>
+    <div class="pre-wrap" style="margin-bottom:12px;">
+<pre style="margin:0;">
+<span class="kw">const</span> arr = [<span class="num">10</span>, <span class="num">20</span>, <span class="num">30</span>];
+<span class="kw">const</span> arr2 = arr;
+arr2.<span class="fn">push</span>(<span class="num">40</span>);
+console.<span class="fn">log</span>(arr.<span class="prop">length</span>);
+</pre>
+    </div>
+    <select id="q2">
+      <option value="">-- 選択してください --</option>
+      <option value="a">3</option>
+      <option value="b">4</option>
+      <option value="c">エラーが発生する</option>
+      <option value="d">undefined</option>
+    </select>
+    <br>
+    <button class="btn btn-teal" onclick="checkQ2()">答え合わせ</button>
+    <div class="result-msg" id="q2-result"></div>
+    <script>
+      function checkQ2() {
+        const v = document.getElementById('q2').value;
+        const r = document.getElementById('q2-result');
+        if (v === 'b') {
+          r.className = 'result-msg correct';
+          r.innerHTML = '✅ 正解！<br><br>' +
+            '配列はオブジェクト型なので <strong>参照渡し</strong> です。<br>' +
+            '<code>const arr2 = arr</code> は同じ配列を指す参照をコピーするだけです。<br>' +
+            '<code>arr2.push(40)</code> は <code>arr</code> と同じ配列を変更するため、<br>' +
+            '<code>arr.length</code> は <strong>4</strong> になります。<br><br>' +
+            '独立したコピーを作るには <code>const arr2 = [...arr]</code> を使います。';
+        } else if (v === '') {
+          r.className = 'result-msg info';
+          r.textContent = '⚠️ 選択肢を選んでください。';
+        } else {
+          r.className = 'result-msg wrong';
+          r.innerHTML = '❌ 不正解。<br>' +
+            '配列は参照型です。<code>arr2 = arr</code> は同じ配列への参照をコピーするため、<br>' +
+            '<code>arr2.push(40)</code> は元の <code>arr</code> も変更します。';
+        }
+      }
+    </script>
+  </div>
+
+  <!-- Q3 -->
+  <div class="quiz-block">
+    <h3>Q3. 正誤チェックボックス問題</h3>
+    <p><strong>正しい記述</strong>をすべて選んでください。</p>
+    <label class="checkbox-label"><input type="checkbox" id="q3a">
+      ① <code>typeof undefined</code> は <code>"undefined"</code> を返す</label>
+    <label class="checkbox-label"><input type="checkbox" id="q3b">
+      ② <code>null</code> と <code>undefined</code> は同じ型である</label>
+    <label class="checkbox-label"><input type="checkbox" id="q3c">
+      ③ <code>arr.slice(1, 3)</code> は元の配列を変更しない</label>
+    <label class="checkbox-label"><input type="checkbox" id="q3d">
+      ④ <code>arr.splice(1, 1)</code> は元の配列を変更する</label>
+    <label class="checkbox-label"><input type="checkbox" id="q3e">
+      ⑤ オブジェクトのプロパティには <code>obj.key</code> と <code>obj["key"]</code> の両方でアクセスできる</label>
+    <label class="checkbox-label"><input type="checkbox" id="q3f">
+      ⑥ プリミティブ型の値は代入時に参照がコピーされる</label>
+    <br>
+    <button class="btn btn-teal" onclick="checkQ3()">答え合わせ</button>
+    <div class="result-msg" id="q3-result"></div>
+    <script>
+      function checkQ3() {
+        const r = document.getElementById('q3-result');
+        const checks = {
+          a: document.getElementById('q3a').checked,
+          b: document.getElementById('q3b').checked,
+          c: document.getElementById('q3c').checked,
+          d: document.getElementById('q3d').checked,
+          e: document.getElementById('q3e').checked,
+          f: document.getElementById('q3f').checked,
+        };
+        // 正解：①③④⑤（a,c,d,e）
+        // ② null は "object"、undefined は "undefined" で異なる型
+        // ⑥ プリミティブは値がコピーされる（参照ではない）
+        const correct = { a:true, b:false, c:true, d:true, e:true, f:false };
+        const allOk = Object.keys(correct).every(k => checks[k] === correct[k]);
+        if (allOk) {
+          r.className = 'result-msg correct';
+          r.innerHTML = '✅ 全問正解！完璧です！';
+        } else {
+          r.className = 'result-msg wrong';
+          r.innerHTML =
+            '❌ 不正解の項目があります。<br><br>' +
+            '<strong>正しい記述：</strong>①③④⑤<br><br>' +
+            '<strong>誤った記述：</strong><br>' +
+            '・② <code>typeof null</code> は <code>"object"</code>、<code>typeof undefined</code> は <code>"undefined"</code> で<strong>異なります</strong>。<br>' +
+            '・⑥ プリミティブ型は代入時に<strong>値そのものがコピー</strong>されます。参照渡しはオブジェクト型の特性です。';
+        }
+      }
+    </script>
+  </div>
+
+  <!-- Q4 コンソール実践 -->
+  <div class="quiz-block">
+    <h3>Q4. コンソール実践問題</h3>
+    <p>以下のオブジェクトを作成し、<code>Object.entries()</code> で全プロパティを表示してください。</p>
+    <div style="background:#1a202c; border-radius:6px; padding:10px 14px;
+      font-family:'Consolas','Monaco',monospace; font-size:0.88em;
+      color:#a0aec0; margin:10px 0; line-height:1.8;">
+      <span style="color:#81e6d9;">name</span>: <span style="color:#fbd38d;">"JavaScript"</span>,
+      <span style="color:#81e6d9;">version</span>: <span style="color:#fc8181;">ES2023</span>,
+      <span style="color:#81e6d9;">isAwesome</span>: <span style="color:#90cdf4;">true</span>
+    </div>
+    <div class="js-console" id="console-q4">
+      <div class="js-console-bar">
+        <div class="dot dot-red"></div>
+        <div class="dot dot-yellow"></div>
+        <div class="dot dot-green"></div>
+        <span>Practice Console</span>
+      </div>
+      <div class="js-console-output" id="console-q4-output">
+        <div class="log-info">// オブジェクトを作成して Object.entries() を試してみましょう</div>
+      </div>
+      <div class="js-console-input-row">
+        <span>&gt;</span>
+        <input class="js-console-input" id="console-q4-input"
+               placeholder="const lang = { name: 'JavaScript', ... }; console.log(Object.entries(lang));"
+               type="text">
+        <button class="js-console-clear" onclick="clearConsole('q4')">クリア</button>
+        <button class="js-console-run"   onclick="runConsole('q4')">▶ 実行</button>
+      </div>
+    </div>
+    <label style="margin-top:12px; display:block;"><code>Object.entries()</code> の戻り値の型は？</label>
+    <select id="q4-sel">
+      <option value="">-- 選択してください --</option>
+      <option value="a">オブジェクト</option>
+      <option value="b">文字列</option>
+      <option value="c">配列（[キー, 値] のペアの配列）</option>
+      <option value="d">Map オブジェクト</option>
+    </select>
+    <br>
+    <button class="btn btn-teal" onclick="checkQ4()">答え合わせ</button>
+    <div class="result-msg" id="q4-result"></div>
+    <script>
+      function checkQ4() {
+        const v = document.getElementById('q4-sel').value;
+        const r = document.getElementById('q4-result');
+        if (v === 'c') {
+          r.className = 'result-msg correct';
+          r.innerHTML = '✅ 正解！<br><br>' +
+            '<code>Object.entries(obj)</code> は <strong>[キー, 値] のペアを要素とする配列</strong>を返します。<br>' +
+            '例：<code>[["name","JavaScript"], ["version","ES2023"], ["isAwesome",true]]</code><br><br>' +
+            '関連メソッド：<br>' +
+            '・<code>Object.keys(obj)</code>   → キーの配列<br>' +
+            '・<code>Object.values(obj)</code> → 値の配列<br>' +
+            '・<code>Object.entries(obj)</code>→ [キー,値]ペアの配列';
+        } else if (v === '') {
+          r.className = 'result-msg info';
+          r.textContent = '⚠️ 選択肢を選んでください。';
+        } else {
+          r.className = 'result-msg wrong';
+          r.innerHTML = '❌ 不正解。<br>' +
+            '<code>Object.entries()</code> は <strong>[キー, 値] のペアを要素とする配列</strong>を返します。';
+        }
+      }
+    </script>
+  </div>
+
+</div><!-- /quiz-section -->
+
+
+<!-- 完了ボタン -->
+<div class="complete-section">
+  <p>🎉 「1-3 型とオブジェクト」の学習が完了したら記録しましょう！</p>
+  <button class="btn btn-done" onclick="markComplete()">✅ このセクションを完了にする</button>
+  <div id="complete-msg" style="margin-top:10px; font-size:0.88em; color:#276749; display:none;">
+    進捗を保存しました！トップページの進捗バーに反映されます。
+  </div>
+</div>
+
+<!-- ページナビ -->
+<div class="page-nav">
+  <a class="prev" href="02_operators.html">← 1-2 さまざまな演算</a>
+  <a class="home" href="../index.html">🏠 目次へ</a>
+  <a class="next" href="04_functions.html">次へ：1-4 関数 →</a>
+</div>
+
+<!-- フッター -->
+<footer>
+  <p>
+    HTML5プロフェッショナル Level 2 学習サイト ／
+    <a href="../index.html">🏠 目次</a> ／
+    <a href="../exam/index.html">📝 模擬試験</a> ／
+    <a href="https://github.com/MeshinoKiwamiOkome/html5lv2" target="_blank">GitHub</a>
+  </p>
+  <p style="margin-top:4px;">© MeshinoKiwamiOkome</p>
+</footer>
+
+
+<!-- ============================================================ -->
+<!-- JavaScript -->
+<!-- ============================================================ -->
+<script>
+  /* ===== コピーボタン ===== */
+  function copyPre(btn) {
+    const pre = btn.nextElementSibling;
+    navigator.clipboard.writeText(pre.innerText || pre.textContent).then(() => {
+      btn.textContent = 'copied!';
+      setTimeout(() => btn.textContent = 'copy', 1800);
+    });
+  }
+
+  /* ===== タブ ===== */
+  function switchTab(btn, id) {
+    btn.closest('.tab-wrap').querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    btn.closest('.tab-wrap').querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById(id).classList.add('active');
+  }
+
+  /* ===== 型詳細パネル ===== */
+  const typeDetails = {
+    string: {
+      color: '#90cdf4',
+      text: `// string（文字列）\n// シングル・ダブル・バッククォートで囲む\nlet s1 = "Hello";\nlet s2 = 'World';\nlet s3 = \`template \${s1}\`;\n\n// 文字列のメソッド\nconsole.log("hello".toUpperCase()); // → "HELLO"\nconsole.log("  hello  ".trim());    // → "hello"\nconsole.log("hello".length);        // → 5\nconsole.log("hello".includes("ell")); // → true\nconsole.log("hello".split("l"));    // → ["he","","o"]\nconsole.log("hello".replace("l","L")); // → "heLlo"`
+    },
+    number: {
+      color: '#fc8181',
+      text: `// number（数値）\n// 整数も小数も同じ number 型\nlet n1 = 42;\nlet n2 = 3.14;\nlet n3 = -10;\n\n// 特殊な数値\nconsole.log(1 / 0);        // → Infinity\nconsole.log(-1 / 0);       // → -Infinity\nconsole.log(0 / 0);        // → NaN（Not a Number）\nconsole.log(isNaN(NaN));   // → true\nconsole.log(isFinite(42)); // → true\n\n// 安全な整数の最大値\nconsole.log(Number.MAX_SAFE_INTEGER); // → 9007199254740991`
+    },
+    boolean: {
+      color: '#68d391',
+      text: `// boolean（真偽値）\n// true または false の2値のみ\nlet isActive = true;\nlet isDone   = false;\n\n// falsy な値（false と同等）\n// false, 0, "", null, undefined, NaN\nconsole.log(Boolean(0));         // → false\nconsole.log(Boolean(""));        // → false\nconsole.log(Boolean(null));      // → false\nconsole.log(Boolean(undefined)); // → false\nconsole.log(Boolean(NaN));       // → false\n\n// truthy な値（上記以外はすべて true）\nconsole.log(Boolean(1));         // → true\nconsole.log(Boolean("0"));       // → true（"0"は文字列なのでtruthy！）\nconsole.log(Boolean([]));        // → true（空配列もtruthy！）`
+    },
+    undefined: {
+      color: '#b794f4',
+      text: `// undefined（未定義）\n// 変数を宣言したが値を代入していない状態\nlet x;\nconsole.log(x);           // → undefined\nconsole.log(typeof x);    // → "undefined"\n\n// 関数の戻り値がない場合も undefined\nfunction noReturn() {}\nconsole.log(noReturn());  // → undefined\n\n// オブジェクトに存在しないプロパティ\nconst obj = { name: "Alice" };\nconsole.log(obj.age);     // → undefined\n\n// undefined との比較\nconsole.log(x === undefined); // → true\nconsole.log(x == null);       // → true（null との緩い比較）`
+    },
+    null: {
+      color: '#f6ad55',
+      text: `// null（意図的な空）\n// 「値が存在しない」ことを明示的に表す\nlet user = null; // まだユーザーが設定されていない\n\n// typeof null は "object"（歴史的バグ）\nconsole.log(typeof null); // → "object"\n\n// null チェックは === で行う\nconsole.log(user === null); // → true\n\n// null と undefined の違い\nconsole.log(null == undefined);  // → true（緩い比較）\nconsole.log(null === undefined); // → false（厳密比較）\n\n// Nullish 合体演算子（??）\nconst name = null ?? "デフォルト名";\nconsole.log(name); // → "デフォルト名"`
+    },
+    symbol: {
+      color: '#a0aec0',
+      text: `// symbol（シンボル）ES6〜\n// 一意で変更不可能な識別子\nconst id1 = Symbol("id");\nconst id2 = Symbol("id");\nconsole.log(id1 === id2); // → false（同じ説明でも別物）\n\n// オブジェクトのキーとして使用\nconst KEY = Symbol("key");\nconst obj = { [KEY]: "value" };\nconsole.log(obj[KEY]); // → "value"\n\n// for...in や Object.keys() には現れない\n// プライベートなプロパティキーとして活用`
+    },
+    bigint: {
+      color: '#68d391',
+      text: `// bigint（大きな整数）ES2020〜\n// Number.MAX_SAFE_INTEGER を超える整数を扱える\nconst big = 9007199254740993n; // 末尾に n をつける\nconsole.log(typeof big); // → "bigint"\n\n// 通常の number との演算はエラー\n// console.log(big + 1); // TypeError\nconsole.log(big + 1n);   // → 9007199254740994n\n\n// 用途：暗号処理・大きなIDの扱いなど`
+    },
+    object: {
+      color: '#fbd38d',
+      text: `// object（オブジェクト型）\n// オブジェクト・配列・null・関数以外 がオブジェクト型\nconsole.log(typeof {});        // → "object"\nconsole.log(typeof []);        // → "object"\nconsole.log(typeof null);      // → "object"（バグ）\nconsole.log(typeof function(){}); // → "function"\n\n// 配列かどうかの判定\nconsole.log(Array.isArray([]));  // → true\nconsole.log(Array.isArray({}));  // → false\n\n// null チェック\nconst val = null;\nconsole.log(val === null);       // → true\n\n// instanceof でクラスを確認\nconsole.log([] instanceof Array);  // → true\nconsole.log({} instanceof Object); // → true`
+    }
+  };
+
+  function showTypeDetail(key, card) {
+    document.querySelectorAll('.type-card').forEach(c => c.classList.remove('active'));
+    const detail = document.getElementById('type-detail');
+    if (detail.dataset.current === key && detail.style.display !== 'none') {
+      detail.style.display = 'none'; detail.dataset.current = ''; return;
+    }
+    card.classList.add('active');
+    detail.dataset.current = key;
+    detail.style.display = 'block';
+    const d = typeDetails[key];
+    detail.style.color = d.color;
+    detail.textContent = d.text;
+    detail.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }
+
+  /* ===== typeof チェッカー ===== */
+  function runTypeof() {
+    const raw = document.getElementById('typeof-input').value.trim();
+    const out = document.getElementById('typeof-result');
+    if (!raw) return;
+    let val, type, display;
+    try {
+      val  = eval(raw);
+      type = typeof val;
+      display = val === null ? 'null' :
+                Array.isArray(val) ? JSON.stringify(val) :
+                typeof val === 'object' ? JSON.stringify(val) :
+                typeof val === 'string' ? `"${val}"` : String(val);
+    } catch(e) {
+      out.innerHTML = `<span style="color:#fc8181;">エラー: ${e.message}</span>`;
+      return;
+    }
+    const colorMap = {
+      string:'#fbd38d', number:'#fc8181', boolean:'#68d391',
+      undefined:'#b794f4', object:'#f6ad55', symbol:'#a0aec0',
+      bigint:'#81e6d9', function:'#90cdf4'
+    };
+    const c = colorMap[type] || '#e2e8f0';
+    out.innerHTML =
+      `<span style="color:#a0aec0;">&gt; typeof ${raw}</span>\n` +
+      `<span style="color:${c}; font-weight:bold;">"${type}"</span>\n\n` +
+      `<span style="color:#a0aec0;">値：</span><span style="color:${c};">${display}</span>` +
+      (val === null ? '\n<span style="color:#f6ad55;">⚠ typeof null === "object" は歴史的バグです</span>' : '') +
+      (Array.isArray(val) ? '\n<span style="color:#f6ad55;">💡 配列も typeof では "object" になります。Array.isArray() で判定しましょう</span>' : '');
+  }
+  document.getElementById('typeof-input').addEventListener('keydown', e => {
+    if (e.key === 'Enter') runTypeof();
+  });
+
+  /* ===== 型変換デモ ===== */
+  function runCoerce() {
+    const raw  = document.getElementById('coerce-val').value.trim();
+    const to   = document.getElementById('coerce-to').value;
+    const out  = document.getElementById('coerce-output');
+    let val, result, resultStr;
+    try { val = eval(raw); } catch(e) { val = raw; }
+    try {
+      if (to === 'string')  { result = String(val);  resultStr = `"${result}"`; }
+      if (to === 'number')  { result = Number(val);  resultStr = String(result); }
+      if (to === 'boolean') { result = Boolean(val); resultStr = String(result); }
+    } catch(e) {
+      out.textContent = `エラー: ${e.message}`; return;
+    }
+    const isFalsy = !result && result !== 0;
+    out.style.color = to === 'boolean' ? (result ? '#68d391' : '#fc8181') : '#68d391';
+    out.textContent =
+      `> ${to === 'string' ? 'String' : to === 'number' ? 'Number' : 'Boolean'}(${raw})\n` +
+      `  ${resultStr}\n\n` +
+      `型：${typeof val} → ${typeof result}` +
+      (to === 'boolean' ? `\n${result ? '✅ truthy（true に変換）' : '❌ falsy（false に変換）'}` : '') +
+      (to === 'number' && isNaN(result) ? '\n⚠ NaN（数値に変換できません）' : '');
+  }
+
+  /* ===== 配列ビジュアライザ ===== */
+  let demoArr = ['apple', 'banana', 'cherry'];
+
+  function renderArr() {
+    const wrap = document.getElementById('arr-visual');
+    wrap.innerHTML = '';
+    demoArr.forEach((v, i) => {
+      const cell = document.createElement('div');
+      cell.className = 'array-cell';
+      cell.innerHTML = `<span class="cell-idx">[${i}]</span><span class="cell-val">${JSON.stringify(v)}</span>`;
+      wrap.appendChild(cell);
+    });
+    document.getElementById('arr-info').textContent =
+      `length: ${demoArr.length}  |  ${JSON.stringify(demoArr)}`;
+  }
+  renderArr();
+
+  function resetArr() {
+    demoArr = ['apple', 'banana', 'cherry'];
+    renderArr();
+    document.getElementById('arr-output').textContent = '配列をリセットしました';
+    document.getElementById('arr-output').style.color = '#a0aec0';
+  }
+
+  function updateArrOpUI() {
+    const op   = document.getElementById('arr-op').value;
+    const arg1 = document.getElementById('arr-arg1');
+    const arg2 = document.getElementById('arr-arg2');
+    const needArg1 = ['push','unshift','splice','slice','indexOf','includes'].includes(op);
+    const needArg2 = ['splice','slice'].includes(op);
+    arg1.style.display = needArg1 ? '' : 'none';
+    arg2.style.display = needArg2 ? '' : 'none';
+    const phMap = {
+      push:'追加する値', unshift:'追加する値',
+      splice:'開始インデックス', slice:'開始インデックス',
+      indexOf:'検索する値', includes:'確認する値'
+    };
+    arg1.placeholder = phMap[op] || '引数1';
+    arg2.placeholder = op === 'splice' ? '削除する個数' : '終了インデックス';
+  }
+  updateArrOpUI();
+
+  function runArrOp() {
+    const op   = document.getElementById('arr-op').value;
+    const raw1 = document.getElementById('arr-arg1').value.trim();
+    const raw2 = document.getElementById('arr-arg2').value.trim();
+    const out  = document.getElementById('arr-output');
+    let arg1, arg2, result, code, desc;
+
+    try {
+      arg1 = raw1 !== '' ? (isNaN(raw1) ? raw1.replace(/^['"]|['"]$/g,'') : Number(raw1)) : undefined;
+      arg2 = raw2 !== '' ? Number(raw2) : undefined;
+    } catch(e) { arg1 = raw1; }
+
+    const before = JSON.stringify(demoArr);
+
+    switch(op) {
+      case 'push':
+        result = demoArr.push(arg1 !== undefined ? arg1 : 'newItem');
+        code = `arr.push(${JSON.stringify(arg1 !== undefined ? arg1 : 'newItem')})`;
+        desc = `戻り値（新しい length）: ${result}`;
+        break;
+      case 'pop':
+        result = demoArr.pop();
+        code = `arr.pop()`;
+        desc = `削除された要素: ${JSON.stringify(result)}`;
+        break;
+      case 'unshift':
+        result = demoArr.unshift(arg1 !== undefined ? arg1 : 'newItem');
+        code = `arr.unshift(${JSON.stringify(arg1 !== undefined ? arg1 : 'newItem')})`;
+        desc = `戻り値（新しい length）: ${result}`;
+        break;
+      case 'shift':
+        result = demoArr.shift();
+        code = `arr.shift()`;
+        desc = `削除された要素: ${JSON.stringify(result)}`;
+        break;
+      case 'splice':
+        const idx = arg1 !== undefined ? Number(arg1) : 0;
+        const cnt = arg2 !== undefined ? Number(arg2) : 1;
+        result = demoArr.splice(idx, cnt);
+        code = `arr.splice(${idx}, ${cnt})`;
+        desc = `削除された要素: ${JSON.stringify(result)}`;
+        break;
+      case 'slice':
+        const s = arg1 !== undefined ? Number(arg1) : 0;
+        const e = arg2 !== undefined ? Number(arg2) : demoArr.length;
+        result = demoArr.slice(s, e);
+        code = `arr.slice(${s}, ${e})`;
+        desc = `取得した部分配列: ${JSON.stringify(result)}\n（元の配列は変更されません）`;
+        break;
+      case 'indexOf':
+        result = demoArr.indexOf(arg1 !== undefined ? arg1 : '');
+        code = `arr.indexOf(${JSON.stringify(arg1)})`;
+        desc = `インデックス: ${result}${result === -1 ? '（見つかりません）' : ''}`;
+        break;
+      case 'includes':
+        result = demoArr.includes(arg1 !== undefined ? arg1 : '');
+        code = `arr.includes(${JSON.stringify(arg1)})`;
+        desc = `結果: ${result}`;
+        break;
+    }
+
+    renderArr();
+    out.style.color = '#68d391';
+    out.textContent =
+      `> ${code}\n` +
+      `  ${desc}\n\n` +
+      `変更前: ${before}\n` +
+      `変更後: ${JSON.stringify(demoArr)}`;
+
+    // ハイライト
+    if (['push','unshift'].includes(op)) {
+      const cells = document.querySelectorAll('.array-cell');
+      const target = op === 'push' ? cells[cells.length-1] : cells[0];
+      if (target) { target.classList.add('highlight'); setTimeout(()=>target.classList.remove('highlight'),800); }
+    }
+  }
+
+  /* ===== オブジェクト操作デモ ===== */
+  let demoObj = { name: 'Alice', age: 25, city: 'Tokyo', active: true };
+
+  function renderObj() {
+    Object.keys(demoObj).forEach(k => {
+      const row = document.getElementById(`obj-row-${k}`);
+      const valEl = document.getElementById(`obj-val-${k}`);
+      if (row && valEl) {
+        const v = demoObj[k];
+        valEl.textContent = typeof v === 'string' ? `"${v}"` : String(v);
+        valEl.className = 'obj-val ' + (typeof v === 'string' ? 'str-val' : typeof v === 'number' ? 'num-val' : 'bool-val');
+      }
+    });
+  }
+
+  function runObjOp() {
+    const op  = document.getElementById('obj-op').value;
+    const key = document.getElementById('obj-key-input').value.trim();
+    const val = document.getElementById('obj-val-input').value.trim();
+    const out = document.getElementById('obj-output');
+    let result, code, desc;
+
+    switch(op) {
+      case 'get':
+        const k = key || 'name';
+        result = demoObj[k];
+        code = `user.${k}`;
+        desc = result !== undefined ? `→ ${JSON.stringify(result)}` : `→ undefined（存在しないキー）`;
+        break;
+      case 'set':
+        if (!key) { out.textContent = 'キー名を入力してください'; return; }
+        let newVal;
+        try { newVal = JSON.parse(val); } catch(e) { newVal = val; }
+        demoObj[key] = newVal;
+        code = `user.${key} = ${JSON.stringify(newVal)}`;
+        desc = `プロパティを変更しました`;
+        renderObj();
+        break;
+      case 'add':
+        if (!key) { out.textContent = 'キー名を入力してください'; return; }
+        let addVal;
+        try { addVal = JSON.parse(val); } catch(e) { addVal = val; }
+        demoObj[key] = addVal;
+        code = `user.${key} = ${JSON.stringify(addVal)}`;
+        desc = `新しいプロパティを追加しました`;
+        // ビジュアルに新しい行を追加
+        const objViz = document.getElementById('obj-visual');
+        const lastBrace = objViz.lastElementChild;
+        const newRow = document.createElement('div');
+        newRow.className = 'obj-row obj-highlight';
+        newRow.id = `obj-row-${key}`;
+        newRow.innerHTML = `<span class="obj-key">${key}</span><span class="obj-colon">:</span>` +
+          `<span class="obj-val ${typeof addVal === 'string' ? 'str-val' : typeof addVal === 'number' ? 'num-val' : 'bool-val'}" id="obj-val-${key}">` +
+          `${typeof addVal === 'string' ? '"'+addVal+'"' : String(addVal)}</span>`;
+        objViz.insertBefore(newRow, lastBrace);
+        break;
+      case 'del':
+        if (!key) { out.textContent = 'キー名を入力してください'; return; }
+        delete demoObj[key];
+        code = `delete user.${key}`;
+        desc = `プロパティを削除しました`;
+        const delRow = document.getElementById(`obj-row-${key}`);
+        if (delRow) delRow.remove();
+        break;
+      case 'keys':
+        result = Object.keys(demoObj);
+        code = `Object.keys(user)`;
+        desc = `→ ${JSON.stringify(result)}`;
+        break;
+      case 'values':
+        result = Object.values(demoObj);
+        code = `Object.values(user)`;
+        desc = `→ ${JSON.stringify(result)}`;
+        break;
+      case 'entries':
+        result = Object.entries(demoObj);
+        code = `Object.entries(user)`;
+        desc = `→ [\n${result.map(([k,v])=>`  ["${k}", ${JSON.stringify(v)}]`).join(',\n')}\n]`;
+        break;
+      case 'spread':
+        const copy = { ...demoObj };
+        code = `const copy = { ...user }`;
+        desc = `コピー: ${JSON.stringify(copy)}\n（元のオブジェクトとは独立したコピーです）`;
+        break;
+    }
+
+    out.style.color = '#68d391';
+    out.textContent = `> ${code}\n  ${desc}`;
+  }
+
+  /* ===== JSコンソール ===== */
+  function runConsole(id) {
+    const input  = document.getElementById(`console-${id}-input`);
+    const output = document.getElementById(`console-${id}-output`);
+    const code   = input.value.trim();
+    if (!code) return;
+
+    const promptLine = document.createElement('div');
+    promptLine.className = 'log-prompt';
+    promptLine.textContent = '> ' + code;
+    output.appendChild(promptLine);
+
+    const origLog   = console.log;
+    const origWarn  = console.warn;
+    const origError = console.error;
+    const origInfo  = console.info;
+
+    function addLine(cls, ...args) {
+      const line = document.createElement('div');
+      line.className = cls;
+      line.textContent = args.map(a => {
+        if (typeof a === 'object' && a !== null) {
+          try { return JSON.stringify(a, null, 2); } catch(e) { return String(a); }
+        }
+        return String(a);
+      }).join(' ');
+      output.appendChild(line);
+    }
+
+    console.log   = (...a) => { addLine('log-line',  ...a); origLog(...a);   };
+    console.warn  = (...a) => { addLine('log-warn',  ...a); origWarn(...a);  };
+    console.error = (...a) => { addLine('log-error', ...a); origError(...a); };
+    console.info  = (...a) => { addLine('log-info',  ...a); origInfo(...a);  };
+
+    try {
+      const result = eval(code);
+      if (result !== undefined) {
+        addLine('log-result', '← ' + (typeof result === 'object' ?
+          JSON.stringify(result) : String(result)));
+      }
+    } catch(e) {
+      addLine('log-error', e.toString());
+    }
+
+    console.log   = origLog;
+    console.warn  = origWarn;
+    console.error = origError;
+    console.info  = origInfo;
+
+    input.value = '';
+    output.scrollTop = output.scrollHeight;
+  }
+
+  function clearConsole(id) {
+    document.getElementById(`console-${id}-output`).innerHTML =
+      '<div class="log-info">// クリアしました</div>';
+  }
+
+  document.querySelectorAll('.js-console-input').forEach(el => {
+    el.addEventListener('keydown', e => {
+      if (e.key === 'Enter') {
+        const id = el.id.replace('console-','').replace('-input','');
+        runConsole(id);
+      }
+    });
+  });
+
+  /* ===== 完了ボタン ===== */
+  function markComplete() {
+    const current = parseInt(localStorage.getItem('html5lv2_ch1') || '0', 10);
+    const newVal  = Math.min(100, current + 9);
+    localStorage.setItem('html5lv2_ch1', String(newVal));
+    document.getElementById('complete-msg').style.display = 'block';
+  }
+  if (parseInt(localStorage.getItem('html5lv2_ch1') || '0') >= 27) {
+    document.getElementById('complete-msg').style.display = 'block';
+  }
+</script>
+
+</body>
+</html>

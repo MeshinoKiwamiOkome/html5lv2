@@ -1,0 +1,1720 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>1-4 関数 | HTML5プロフェッショナル Level 2</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; }
+    body {
+      font-family: 'Segoe UI', 'Helvetica Neue', sans-serif;
+      max-width: 960px; margin: 40px auto; padding: 0 24px;
+      background: #f0f4f8; color: #2d3748; line-height: 1.8;
+    }
+    .breadcrumb {
+      font-size: 0.82em; color: #a0aec0; margin-bottom: 20px;
+      font-family: 'Consolas','Monaco',monospace;
+    }
+    .breadcrumb a { color: #2c7a7b; text-decoration: none; }
+    .breadcrumb a:hover { text-decoration: underline; }
+
+    .chapter-header {
+      background: linear-gradient(135deg, #1a365d, #2c7a7b);
+      border-radius: 12px; padding: 32px 32px 24px;
+      margin-bottom: 32px; color: #fff;
+      box-shadow: 0 4px 18px rgba(44,122,123,0.35);
+    }
+    .chapter-header .ch-num {
+      font-size: 0.8em; font-family: 'Consolas','Monaco',monospace;
+      opacity: 0.85; letter-spacing: 0.08em; margin-bottom: 6px;
+    }
+    .chapter-header h1 { margin: 0 0 10px; font-size: 1.6em; color: #fff; border: none; padding: 0; }
+    .chapter-header p  { margin: 0; font-size: 0.92em; opacity: 0.88; }
+    .badge-row { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 14px; }
+    .badge {
+      background: rgba(255,255,255,0.18);
+      border: 1px solid rgba(255,255,255,0.35);
+      border-radius: 20px; padding: 3px 12px;
+      font-size: 0.76em; font-weight: bold;
+    }
+
+    .section-nav {
+      background: #fff; border: 1px solid #bee3f8;
+      border-radius: 10px; padding: 18px 22px;
+      margin-bottom: 32px; box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+    }
+    .section-nav h2 { margin: 0 0 12px; font-size: 0.92em; color: #1a365d; border: none; padding: 0; }
+    .section-nav ol { margin: 0; padding-left: 20px; font-size: 0.9em; }
+    .section-nav ol li { margin: 4px 0; }
+    .section-nav ol li a { color: #2c7a7b; text-decoration: none; }
+    .section-nav ol li a:hover { text-decoration: underline; }
+    .section-nav ol li.current a { color: #1a365d; font-weight: bold; }
+
+    h2 { color: #1a365d; margin-top: 48px; border-left: 5px solid #2c7a7b; padding-left: 12px; }
+    h3 { color: #2c7a7b; margin-top: 28px; }
+
+    code {
+      background: #edf2f7; padding: 2px 6px;
+      border-radius: 4px; font-size: 0.93em;
+      font-family: 'Consolas','Monaco',monospace;
+    }
+    pre {
+      background: #1a202c; color: #e2e8f0;
+      padding: 18px 20px; border-radius: 8px;
+      overflow-x: auto; font-size: 0.88em;
+      line-height: 1.7; font-family: 'Consolas','Monaco',monospace;
+    }
+    pre .comment { color: #68d391; }
+    pre .kw      { color: #90cdf4; }
+    pre .str     { color: #fbd38d; }
+    pre .num     { color: #fc8181; }
+    pre .fn      { color: #b794f4; }
+    pre .op      { color: #f6ad55; }
+    pre .out     { color: #a0aec0; }
+    pre .param   { color: #81e6d9; }
+
+    .pre-wrap { position: relative; margin: 14px 0; }
+    .copy-btn {
+      position: absolute; top: 8px; right: 8px;
+      background: #4a5568; color: #e2e8f0;
+      border: none; border-radius: 4px;
+      padding: 4px 10px; font-size: 0.75em;
+      cursor: pointer; font-family: 'Consolas','Monaco',monospace;
+      transition: background 0.2s; z-index: 1;
+    }
+    .copy-btn:hover { background: #2c7a7b; }
+
+    .note {
+      background: #fff; border: 1px dashed #81e6d9;
+      border-radius: 6px; padding: 14px 18px;
+      font-size: 0.93em; color: #4a5568; margin: 14px 0;
+    }
+    .note strong { color: #1a365d; }
+    .warn {
+      background: #fffaf0; border: 1px solid #f6ad55;
+      border-left: 5px solid #f6ad55; border-radius: 6px;
+      padding: 14px 18px; font-size: 0.93em; color: #744210; margin: 14px 0;
+    }
+    .good {
+      background: #f0fff4; border: 1px solid #68d391;
+      border-left: 5px solid #48bb78; border-radius: 6px;
+      padding: 14px 18px; font-size: 0.93em; color: #276749; margin: 14px 0;
+    }
+    .demo-box {
+      background: #fff; border: 1px solid #bee3f8;
+      border-radius: 8px; padding: 20px 24px;
+      margin: 12px 0 28px; box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+    }
+
+    /* ===== 関数フロー図 ===== */
+    .fn-flow {
+      display: flex; align-items: center;
+      gap: 8px; flex-wrap: wrap;
+      justify-content: center; margin: 20px 0;
+    }
+    .fn-flow-box {
+      border-radius: 8px; padding: 12px 18px;
+      text-align: center; font-family: 'Consolas','Monaco',monospace;
+      font-size: 0.85em; font-weight: bold; min-width: 100px;
+    }
+    .fn-flow-arrow { font-size: 1.6em; color: #718096; }
+
+    /* ===== 関数比較カード ===== */
+    .fn-type-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 14px; margin: 14px 0;
+    }
+    .fn-type-card {
+      border-radius: 10px; padding: 16px 18px;
+      cursor: pointer; border: 2px solid transparent;
+      transition: transform 0.15s, box-shadow 0.15s, border-color 0.15s;
+    }
+    .fn-type-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 6px 16px rgba(0,0,0,0.12);
+    }
+    .fn-type-card.active { border-color: #68d391; }
+    .fn-type-card .ftc-tag {
+      font-size: 0.72em; font-weight: bold;
+      border-radius: 10px; padding: 2px 10px;
+      display: inline-block; margin-bottom: 8px;
+    }
+    .fn-type-card .ftc-name {
+      font-family: 'Consolas','Monaco',monospace;
+      font-size: 0.95em; font-weight: bold; margin-bottom: 6px;
+    }
+    .fn-type-card .ftc-code {
+      font-family: 'Consolas','Monaco',monospace;
+      font-size: 0.78em; background: rgba(0,0,0,0.15);
+      border-radius: 4px; padding: 6px 8px;
+      line-height: 1.6; white-space: pre;
+    }
+
+    /* ===== 引数ビジュアライザ ===== */
+    .arg-visual {
+      background: #1a202c; border-radius: 8px;
+      padding: 16px 20px; margin: 14px 0;
+      font-family: 'Consolas','Monaco',monospace; font-size: 0.88em;
+    }
+    .arg-row {
+      display: flex; align-items: center;
+      gap: 10px; margin-bottom: 8px; flex-wrap: wrap;
+    }
+    .arg-label { color: #a0aec0; min-width: 80px; font-size: 0.82em; }
+    .arg-box {
+      background: #2d3748; border: 2px solid #4a5568;
+      border-radius: 6px; padding: 5px 12px;
+      color: #81e6d9; font-weight: bold; min-width: 80px;
+      text-align: center; transition: all 0.3s;
+    }
+    .arg-box.active-arg {
+      border-color: #68d391; color: #68d391;
+      animation: argPop 0.4s ease;
+    }
+    @keyframes argPop {
+      0%   { transform: scale(0.8); opacity: 0.5; }
+      100% { transform: scale(1);   opacity: 1; }
+    }
+    .arg-arrow { color: #f6ad55; font-size: 1.1em; }
+
+    /* ===== インタラクティブデモ ===== */
+    .interactive-demo {
+      background: #ebf8ff; border: 1px solid #bee3f8;
+      border-radius: 8px; padding: 16px 20px; margin: 14px 0;
+    }
+    .demo-label {
+      font-size: 0.85em; font-weight: bold;
+      color: #1a365d; margin-bottom: 10px;
+    }
+    .demo-input-row {
+      display: flex; gap: 10px; align-items: center;
+      flex-wrap: wrap; margin-bottom: 10px;
+    }
+    .demo-input {
+      border: 2px solid #bee3f8; border-radius: 6px;
+      padding: 7px 12px; font-size: 0.9em;
+      font-family: 'Consolas','Monaco',monospace;
+      color: #2d3748; background: #fff; flex: 1; min-width: 80px;
+    }
+    .demo-input:focus { border-color: #2c7a7b; outline: none; }
+    .demo-btn {
+      background: #2c7a7b; color: #fff; border: none;
+      border-radius: 6px; padding: 8px 18px;
+      font-size: 0.88em; font-weight: bold; cursor: pointer;
+      transition: background 0.2s; white-space: nowrap;
+    }
+    .demo-btn:hover { background: #1a365d; }
+    .demo-output {
+      background: #1a202c; color: #68d391;
+      border-radius: 6px; padding: 10px 14px;
+      font-family: 'Consolas','Monaco',monospace;
+      font-size: 0.85em; min-height: 40px;
+      white-space: pre-wrap; line-height: 1.7;
+    }
+
+    /* ===== タブ ===== */
+    .tab-wrap { margin: 14px 0; }
+    .tab-btns { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: -1px; }
+    .tab-btn {
+      padding: 8px 18px; border: 1px solid #bee3f8;
+      border-bottom: none; border-radius: 6px 6px 0 0;
+      background: #edf2f7; color: #2c7a7b;
+      font-size: 0.85em; font-weight: bold;
+      font-family: 'Consolas','Monaco',monospace;
+      cursor: pointer; transition: background 0.15s;
+    }
+    .tab-btn.active { background: #fff; border-bottom: 1px solid #fff; }
+    .tab-btn:hover:not(.active) { background: #e6fffa; }
+    .tab-content {
+      display: none; background: #fff;
+      border: 1px solid #bee3f8;
+      border-radius: 0 6px 6px 6px; padding: 18px 20px;
+    }
+    .tab-content.active { display: block; }
+
+    /* ===== テーブル ===== */
+    table.ref-table {
+      border-collapse: collapse; width: 100%;
+      background: #fff; border-radius: 8px;
+      overflow: hidden; box-shadow: 0 2px 6px rgba(0,0,0,0.07);
+      margin: 14px 0; font-size: 0.9em;
+    }
+    table.ref-table th, table.ref-table td {
+      border: 1px solid #bee3f8; padding: 10px 14px; text-align: left;
+    }
+    table.ref-table thead tr { background: #1a365d; color: #fff; }
+    table.ref-table tbody tr:nth-child(even) { background: #ebf8ff; }
+
+    /* ===== JSコンソール ===== */
+    .js-console {
+      background: #1a202c; border-radius: 10px;
+      overflow: hidden; margin: 16px 0;
+      box-shadow: 0 4px 14px rgba(0,0,0,0.25);
+    }
+    .js-console-bar {
+      background: #2d3748; padding: 8px 16px;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .js-console-bar .dot { width: 12px; height: 12px; border-radius: 50%; }
+    .dot-red    { background: #fc8181; }
+    .dot-yellow { background: #f6ad55; }
+    .dot-green  { background: #68d391; }
+    .js-console-bar span {
+      font-size: 0.78em; color: #a0aec0;
+      font-family: 'Consolas','Monaco',monospace; margin-left: 6px;
+    }
+    .js-console-output {
+      padding: 14px 16px; min-height: 80px;
+      font-family: 'Consolas','Monaco',monospace;
+      font-size: 0.85em; line-height: 1.8;
+      max-height: 280px; overflow-y: auto;
+    }
+    .log-line   { color: #e2e8f0; }
+    .log-info   { color: #90cdf4; }
+    .log-warn   { color: #f6ad55; }
+    .log-error  { color: #fc8181; }
+    .log-result { color: #68d391; }
+    .log-prompt { color: #a0aec0; }
+    .js-console-input-row {
+      display: flex; align-items: center;
+      border-top: 1px solid #2d3748; padding: 8px 12px; gap: 8px;
+    }
+    .js-console-input-row span {
+      color: #68d391; font-family: 'Consolas','Monaco',monospace;
+      font-size: 0.9em; flex-shrink: 0;
+    }
+    .js-console-input {
+      flex: 1; background: transparent; border: none; outline: none;
+      color: #e2e8f0; font-family: 'Consolas','Monaco',monospace;
+      font-size: 0.88em; caret-color: #68d391;
+    }
+    .js-console-run {
+      background: #2c7a7b; color: #fff; border: none;
+      border-radius: 4px; padding: 4px 12px;
+      font-size: 0.78em; font-weight: bold; cursor: pointer;
+      transition: background 0.2s;
+    }
+    .js-console-run:hover { background: #1a365d; }
+    .js-console-clear {
+      background: #4a5568; color: #e2e8f0; border: none;
+      border-radius: 4px; padding: 4px 10px;
+      font-size: 0.78em; cursor: pointer; transition: background 0.2s;
+    }
+    .js-console-clear:hover { background: #718096; }
+
+    /* ===== 演習問題 ===== */
+    .quiz-section {
+      background: #ebf8ff; border-left: 6px solid #4299e1;
+      border-radius: 0 8px 8px 0; padding: 24px 28px; margin: 48px 0 32px;
+    }
+    .quiz-section > h2 { margin-top: 0; color: #1a365d; border-left-color: #4299e1; }
+    .quiz-block {
+      background: #fff; border: 1px solid #bee3f8;
+      border-radius: 8px; padding: 18px 22px; margin-bottom: 22px;
+    }
+    .quiz-block h3 { margin-top: 0; color: #1a365d; }
+    .quiz-block input[type="text"],
+    .quiz-block select {
+      border: 2px solid #bee3f8; border-radius: 6px;
+      padding: 8px 12px; font-size: 0.95em;
+      width: 100%; max-width: 440px; margin: 6px 0;
+      outline: none; font-family: 'Consolas','Monaco',monospace;
+      transition: border-color 0.2s;
+    }
+    .quiz-block input[type="text"]:focus,
+    .quiz-block select:focus { border-color: #2c7a7b; }
+    .quiz-block label { display: block; margin: 8px 0 2px; font-weight: bold; color: #4a5568; }
+    .quiz-block label.checkbox-label {
+      display: flex; align-items: flex-start; gap: 8px;
+      font-weight: normal; cursor: pointer; margin: 6px 0;
+    }
+    .quiz-block label.checkbox-label input { margin-top: 3px; flex-shrink: 0; }
+    .btn {
+      display: inline-block; padding: 9px 20px;
+      border-radius: 6px; border: none; cursor: pointer;
+      font-size: 0.95em; font-weight: bold;
+      transition: opacity 0.2s; margin-top: 8px;
+    }
+    .btn:hover { opacity: 0.85; }
+    .btn-teal { background: #2c7a7b; color: #fff; }
+    .btn-done { background: #48bb78; color: #fff; }
+    .result-msg {
+      margin-top: 10px; padding: 10px 14px;
+      border-radius: 6px; font-weight: bold; display: none;
+    }
+    .result-msg.correct { background: #c6f6d5; color: #276749; display: block; }
+    .result-msg.wrong   { background: #fed7d7; color: #9b2335; display: block; }
+    .result-msg.info    { background: #bee3f8; color: #1a365d; display: block; }
+
+    .page-nav {
+      display: flex; justify-content: space-between;
+      align-items: center; margin-top: 48px;
+      padding-top: 20px; border-top: 2px solid #bee3f8;
+      gap: 12px; flex-wrap: wrap;
+    }
+    .page-nav a {
+      display: inline-block; padding: 10px 20px;
+      border-radius: 8px; text-decoration: none;
+      font-weight: bold; font-size: 0.9em; transition: opacity 0.2s;
+    }
+    .page-nav a:hover { opacity: 0.8; }
+    .page-nav .prev { background: #edf2f7; color: #4a5568; }
+    .page-nav .next { background: #2c7a7b; color: #fff; }
+    .page-nav .home { background: #fff; color: #2c7a7b; border: 2px solid #2c7a7b; }
+
+    .complete-section {
+      background: #f0fff4; border: 2px solid #48bb78;
+      border-radius: 10px; padding: 20px 24px;
+      margin-top: 40px; text-align: center;
+    }
+    .complete-section p { margin: 0 0 12px; color: #276749; font-weight: bold; }
+
+    footer {
+      margin-top: 48px; padding-top: 16px;
+      border-top: 2px solid #bee3f8;
+      font-size: 0.82em; color: #a0aec0; text-align: center;
+    }
+    footer a { color: #2c7a7b; text-decoration: none; }
+    footer a:hover { text-decoration: underline; }
+
+    @media (max-width: 600px) {
+      body { font-size: 0.84em; }
+      .chapter-header { padding: 20px 16px; }
+      .chapter-header h1 { font-size: 1.2em; }
+      .fn-type-grid { grid-template-columns: 1fr 1fr; }
+      .fn-flow { gap: 4px; }
+      .fn-flow-box { min-width: 80px; font-size: 0.78em; padding: 8px 10px; }
+      .quiz-section { padding: 16px 12px; }
+      .quiz-block { padding: 14px 12px; }
+      .page-nav { flex-direction: column; align-items: stretch; }
+      .page-nav a { text-align: center; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- パンくず -->
+<div class="breadcrumb">
+  <a href="../index.html">🏠 HTML5 Level 2</a> ›
+  Chapter 1：速習JavaScript入門 › 1-4 関数
+</div>
+
+<!-- ヘッダー -->
+<div class="chapter-header">
+  <div class="ch-num">CHAPTER 01 › SECTION 04</div>
+  <h1>⚙️ 1-4 関数</h1>
+  <p>関数の基本・引数・戻り値・さまざまな定義方法を
+  インタラクティブなデモと関数フロー図で体験しながら学びます。
+  アロー関数・デフォルト引数・残余引数まで網羅します。</p>
+  <div class="badge-row">
+    <span class="badge">function</span>
+    <span class="badge">引数 / 戻り値</span>
+    <span class="badge">アロー関数</span>
+    <span class="badge">デフォルト引数</span>
+    <span class="badge">残余引数</span>
+    <span class="badge">高階関数</span>
+  </div>
+</div>
+
+<!-- セクションナビ -->
+<div class="section-nav">
+  <h2>📋 Chapter 1 のセクション</h2>
+  <ol>
+    <li><a href="01_variables.html">1-1 変数の宣言と値の代入</a></li>
+    <li><a href="02_operators.html">1-2 さまざまな演算</a></li>
+    <li><a href="03_types.html">1-3 型とオブジェクト</a></li>
+    <li class="current"><a href="04_functions.html">1-4 関数</a></li>
+    <li><a href="05_scope.html">1-5 スコープ</a></li>
+    <li><a href="06_conditions.html">1-6 条件分岐</a></li>
+    <li><a href="07_loops.html">1-7 繰り返しの処理</a></li>
+    <li><a href="08_classes.html">1-8 オブジェクトとクラス</a></li>
+    <li><a href="09_dom.html">1-9 HTMLの操作</a></li>
+    <li><a href="10_events.html">1-10 イベントと非同期処理</a></li>
+    <li><a href="11_html5.html">1-11 HTML5とJavaScript</a></li>
+  </ol>
+</div>
+
+
+<!-- ============================================================ -->
+<!-- PART 1: 関数の基本 -->
+<!-- ============================================================ -->
+<h2 id="basic">① 関数の基本</h2>
+
+<div class="note">
+  <strong>重要ポイント：関数は処理をひとまとめにして名前をつけたものです。<code>function</code> キーワードで定義し、<code>関数名()</code> で呼び出します。</strong><br>
+  同じ処理を何度も書かずに済み、コードの再利用性が上がります。
+</div>
+
+<div class="demo-box">
+  <h3>関数の構造</h3>
+  <div class="fn-flow">
+    <div class="fn-flow-box" style="background:#2b4c7e; color:#90cdf4; border:2px solid #4299e1;">
+      🔧 定義<br><code style="font-size:0.8em;">function greet()</code>
+    </div>
+    <div class="fn-flow-arrow">→</div>
+    <div class="fn-flow-box" style="background:#276749; color:#9ae6b4; border:2px solid #48bb78;">
+      📥 引数<br><code style="font-size:0.8em;">name</code>
+    </div>
+    <div class="fn-flow-arrow">→</div>
+    <div class="fn-flow-box" style="background:#553c9a; color:#d6bcfa; border:2px solid #9f7aea;">
+      ⚙️ 処理<br><code style="font-size:0.8em;">{ ... }</code>
+    </div>
+    <div class="fn-flow-arrow">→</div>
+    <div class="fn-flow-box" style="background:#744210; color:#fbd38d; border:2px solid #f6ad55;">
+      📤 戻り値<br><code style="font-size:0.8em;">return</code>
+    </div>
+  </div>
+
+  <div class="pre-wrap">
+    <button class="copy-btn" onclick="copyPre(this)">copy</button>
+<pre>
+<span class="comment">// 関数の定義（function 宣言）</span>
+<span class="kw">function</span> <span class="fn">greet</span>() {
+  console.<span class="fn">log</span>(<span class="str">"こんにちは！"</span>);
+}
+
+<span class="comment">// 関数の呼び出し</span>
+<span class="fn">greet</span>(); <span class="out">// → こんにちは！</span>
+<span class="fn">greet</span>(); <span class="out">// → こんにちは！（何度でも呼び出せる）</span>
+
+<span class="comment">// 関数は定義より前に呼び出せる（ホイスティング）</span>
+<span class="fn">sayHello</span>(); <span class="out">// → Hello!（定義前でも動く）</span>
+<span class="kw">function</span> <span class="fn">sayHello</span>() {
+  console.<span class="fn">log</span>(<span class="str">"Hello!"</span>);
+}
+</pre>
+  </div>
+
+  <h3>🎮 関数を自分で作って呼び出してみよう</h3>
+  <div class="interactive-demo">
+    <div class="demo-label">関数名と処理内容を入力して、関数を作って呼び出してみましょう</div>
+    <div class="demo-input-row">
+      <input class="demo-input" id="fn-name" placeholder="関数名（例：greet）" type="text" value="greet">
+      <input class="demo-input" id="fn-body" placeholder='処理（例：console.log("Hello!")）' type="text" value='console.log("Hello!")'>
+      <button class="demo-btn" onclick="runFnBasic()">▶ 定義して呼び出す</button>
+    </div>
+    <div class="demo-output" id="fn-basic-output">← 関数名と処理を入力して実行してみましょう</div>
+  </div>
+</div>
+
+
+<!-- ============================================================ -->
+<!-- PART 2: 引数の基本 / 複数の引数 -->
+<!-- ============================================================ -->
+<h2 id="args">② 引数の基本・複数の引数</h2>
+
+<div class="note">
+  <strong>重要ポイント：引数（パラメータ）は関数に渡す入力値です。複数の引数はカンマで区切って定義します。</strong><br>
+  引数を渡さなかった場合は <code>undefined</code> になります。デフォルト値を設定することもできます。
+</div>
+
+<div class="demo-box">
+  <h3>引数ビジュアライザ</h3>
+  <div class="arg-visual" id="arg-visual">
+    <div style="color:#a0aec0; font-size:0.82em; margin-bottom:10px;">
+      // 関数呼び出し時の引数の流れ
+    </div>
+    <div class="arg-row">
+      <span class="arg-label">呼び出し側</span>
+      <div class="arg-box" id="arg-call-a" style="color:#fbd38d;">?</div>
+      <div class="arg-box" id="arg-call-b" style="color:#fbd38d;">?</div>
+    </div>
+    <div class="arg-row" style="padding-left:80px;">
+      <span class="arg-arrow">↓</span>
+      <span style="color:#a0aec0; font-size:0.8em; margin-left:8px;">引数として渡される</span>
+    </div>
+    <div class="arg-row">
+      <span class="arg-label">関数内部</span>
+      <div class="arg-box" id="arg-param-a">a</div>
+      <div class="arg-box" id="arg-param-b">b</div>
+    </div>
+    <div class="arg-row" style="padding-left:80px;">
+      <span class="arg-arrow">↓</span>
+      <span style="color:#a0aec0; font-size:0.8em; margin-left:8px;">処理して return</span>
+    </div>
+    <div class="arg-row">
+      <span class="arg-label">戻り値</span>
+      <div class="arg-box" id="arg-return" style="color:#68d391;">?</div>
+    </div>
+  </div>
+
+  <div class="interactive-demo">
+    <div class="demo-label">💡 2つの数値を受け取って計算する関数を試してみよう</div>
+    <div class="demo-input-row">
+      <input class="demo-input" id="arg-a" type="number" value="10" style="max-width:80px;">
+      <select class="demo-input" id="arg-op" style="flex:0 0 auto; width:120px;">
+        <option value="add">足し算 +</option>
+        <option value="sub">引き算 -</option>
+        <option value="mul">掛け算 *</option>
+        <option value="div">割り算 /</option>
+        <option value="pow">べき乗 **</option>
+      </select>
+      <input class="demo-input" id="arg-b" type="number" value="3"  style="max-width:80px;">
+      <button class="demo-btn" onclick="runArgDemo()">▶ 実行</button>
+    </div>
+    <div class="demo-output" id="arg-output">← 値と演算子を選んで実行してみましょう</div>
+  </div>
+
+  <div class="pre-wrap">
+    <button class="copy-btn" onclick="copyPre(this)">copy</button>
+<pre>
+<span class="comment">// 引数を1つ受け取る関数</span>
+<span class="kw">function</span> <span class="fn">greet</span>(<span class="param">name</span>) {
+  console.<span class="fn">log</span>(<span class="str">`こんにちは、<span class="op">${</span><span class="param">name</span><span class="op">}</span>さん！`</span>);
+}
+<span class="fn">greet</span>(<span class="str">"Alice"</span>); <span class="out">// → こんにちは、Aliceさん！</span>
+<span class="fn">greet</span>(<span class="str">"Bob"</span>);   <span class="out">// → こんにちは、Bobさん！</span>
+<span class="fn">greet</span>();       <span class="out">// → こんにちは、undefinedさん！（引数なし）</span>
+
+<span class="comment">// 複数の引数</span>
+<span class="kw">function</span> <span class="fn">add</span>(<span class="param">a</span>, <span class="param">b</span>) {
+  <span class="kw">return</span> <span class="param">a</span> <span class="op">+</span> <span class="param">b</span>;
+}
+console.<span class="fn">log</span>(<span class="fn">add</span>(<span class="num">3</span>, <span class="num">5</span>));  <span class="out">// → 8</span>
+console.<span class="fn">log</span>(<span class="fn">add</span>(<span class="num">10</span>, <span class="num">20</span>)); <span class="out">// → 30</span>
+
+<span class="comment">// デフォルト引数（ES6〜）</span>
+<span class="kw">function</span> <span class="fn">greetDefault</span>(<span class="param">name</span> = <span class="str">"ゲスト"</span>) {
+  console.<span class="fn">log</span>(<span class="str">`こんにちは、<span class="op">${</span><span class="param">name</span><span class="op">}</span>さん！`</span>);
+}
+<span class="fn">greetDefault</span>();         <span class="out">// → こんにちは、ゲストさん！</span>
+<span class="fn">greetDefault</span>(<span class="str">"Alice"</span>); <span class="out">// → こんにちは、Aliceさん！</span>
+
+<span class="comment">// 残余引数（...args）：可変長引数</span>
+<span class="kw">function</span> <span class="fn">sum</span>(...<span class="param">nums</span>) {
+  <span class="kw">return</span> <span class="param">nums</span>.<span class="fn">reduce</span>((<span class="param">acc</span>, <span class="param">n</span>) <span class="op">=></span> <span class="param">acc</span> <span class="op">+</span> <span class="param">n</span>, <span class="num">0</span>);
+}
+console.<span class="fn">log</span>(<span class="fn">sum</span>(<span class="num">1</span>, <span class="num">2</span>, <span class="num">3</span>));       <span class="out">// → 6</span>
+console.<span class="fn">log</span>(<span class="fn">sum</span>(<span class="num">1</span>, <span class="num">2</span>, <span class="num">3</span>, <span class="num">4</span>, <span class="num">5</span>)); <span class="out">// → 15</span>
+</pre>
+  </div>
+
+  <h3>デフォルト引数・残余引数を試してみよう</h3>
+  <div class="interactive-demo">
+    <div class="demo-label">複数の数値をカンマ区切りで入力して合計を計算（残余引数の例）</div>
+    <div class="demo-input-row">
+      <input class="demo-input" id="rest-nums" placeholder="例：1, 2, 3, 4, 5" type="text" value="1, 2, 3, 4, 5">
+      <button class="demo-btn" onclick="runRestArgs()">▶ 合計を計算</button>
+    </div>
+    <div class="demo-output" id="rest-output">← 数値をカンマ区切りで入力して実行してみましょう</div>
+  </div>
+</div>
+
+
+<!-- ============================================================ -->
+<!-- PART 3: 戻り値 -->
+<!-- ============================================================ -->
+<h2 id="return">③ 戻り値</h2>
+
+<div class="note">
+  <strong>重要ポイント：<code>return</code> 文で関数の結果を返します。<code>return</code> に達した時点で関数の実行が終了します。</strong><br>
+  <code>return</code> がない関数、または値なしの <code>return</code> は <code>undefined</code> を返します。
+</div>
+
+<div class="demo-box">
+  <div class="pre-wrap">
+    <button class="copy-btn" onclick="copyPre(this)">copy</button>
+<pre>
+<span class="comment">// 戻り値のある関数</span>
+<span class="kw">function</span> <span class="fn">square</span>(<span class="param">n</span>) {
+  <span class="kw">return</span> <span class="param">n</span> <span class="op">*</span> <span class="param">n</span>;  <span class="comment">// n の2乗を返す</span>
+}
+<span class="kw">const</span> result = <span class="fn">square</span>(<span class="num">5</span>);
+console.<span class="fn">log</span>(result); <span class="out">// → 25</span>
+
+<span class="comment">// return に達したら関数終了（早期リターン）</span>
+<span class="kw">function</span> <span class="fn">divide</span>(<span class="param">a</span>, <span class="param">b</span>) {
+  <span class="kw">if</span> (<span class="param">b</span> <span class="op">===</span> <span class="num">0</span>) {
+    <span class="kw">return</span> <span class="str">"エラー：0で割れません"</span>; <span class="comment">// ここで終了</span>
+  }
+  <span class="kw">return</span> <span class="param">a</span> <span class="op">/</span> <span class="param">b</span>;
+}
+console.<span class="fn">log</span>(<span class="fn">divide</span>(<span class="num">10</span>, <span class="num">2</span>)); <span class="out">// → 5</span>
+console.<span class="fn">log</span>(<span class="fn">divide</span>(<span class="num">10</span>, <span class="num">0</span>)); <span class="out">// → "エラー：0で割れません"</span>
+
+<span class="comment">// 複数の値を返す（オブジェクトや配列で）</span>
+<span class="kw">function</span> <span class="fn">minMax</span>(<span class="param">arr</span>) {
+  <span class="kw">return</span> {
+    min: Math.<span class="fn">min</span>(...<span class="param">arr</span>),
+    max: Math.<span class="fn">max</span>(...<span class="param">arr</span>)
+  };
+}
+<span class="kw">const</span> { min, max } = <span class="fn">minMax</span>([<span class="num">3</span>, <span class="num">1</span>, <span class="num">4</span>, <span class="num">1</span>, <span class="num">5</span>, <span class="num">9</span>]);
+console.<span class="fn">log</span>(min, max); <span class="out">// → 1 9</span>
+
+<span class="comment">// return なし → undefined を返す</span>
+<span class="kw">function</span> <span class="fn">noReturn</span>() {
+  console.<span class="fn">log</span>(<span class="str">"処理のみ"</span>);
+}
+console.<span class="fn">log</span>(<span class="fn">noReturn</span>()); <span class="out">// → "処理のみ" が出力され、undefined が返る</span>
+</pre>
+  </div>
+
+  <h3>戻り値を使った計算チェーン</h3>
+  <div class="interactive-demo">
+    <div class="demo-label">関数の戻り値を別の関数に渡すチェーンを試してみよう</div>
+    <div class="demo-input-row">
+      <input class="demo-input" id="chain-num" type="number" value="5" style="max-width:80px;">
+      <button class="demo-btn" onclick="runChain()">▶ チェーン実行</button>
+    </div>
+    <div class="demo-output" id="chain-output">← 数値を入力して実行してみましょう</div>
+  </div>
+</div>
+
+
+<!-- ============================================================ -->
+<!-- PART 4: さまざまな関数の作り方とその違い -->
+<!-- ============================================================ -->
+<h2 id="fn-types">④ さまざまな関数の作り方とその違い</h2>
+
+<div class="note">
+  <strong>重要ポイント：JavaScriptには関数宣言・関数式・アロー関数など複数の書き方があります。</strong><br>
+  試験では特にアロー関数と <code>this</code> の扱いの違いが重要です。
+</div>
+
+<div class="demo-box">
+  <h3>関数の種類（クリックでコード例を表示）</h3>
+  <div class="fn-type-grid">
+
+    <div class="fn-type-card" style="background:#ebf8ff;"
+         onclick="showFnType('declaration',this)">
+      <span class="ftc-tag" style="background:#2b4c7e; color:#fff;">最も基本</span>
+      <div class="ftc-name" style="color:#2b4c7e;">関数宣言</div>
+      <div class="ftc-code" style="color:#90cdf4;">function fn() {
+  ...
+}</div>
+    </div>
+
+    <div class="fn-type-card" style="background:#f0fff4;"
+         onclick="showFnType('expression',this)">
+      <span class="ftc-tag" style="background:#276749; color:#fff;">変数に代入</span>
+      <div class="ftc-name" style="color:#276749;">関数式</div>
+      <div class="ftc-code" style="color:#68d391;">const fn = function() {
+  ...
+};</div>
+    </div>
+
+    <div class="fn-type-card" style="background:#faf5ff;"
+         onclick="showFnType('arrow',this)">
+      <span class="ftc-tag" style="background:#553c9a; color:#fff;">ES6〜 推奨</span>
+      <div class="ftc-name" style="color:#553c9a;">アロー関数</div>
+      <div class="ftc-code" style="color:#b794f4;">const fn = () => {
+  ...
+};</div>
+    </div>
+
+    <div class="fn-type-card" style="background:#fffaf0;"
+         onclick="showFnType('arrow-short',this)">
+      <span class="ftc-tag" style="background:#744210; color:#fff;">省略形</span>
+      <div class="ftc-name" style="color:#744210;">アロー関数（短縮）</div>
+      <div class="ftc-code" style="color:#f6ad55;">const fn = x => x * 2;
+// 1行なら{}とreturn省略</div>
+    </div>
+
+    <div class="fn-type-card" style="background:#fff5f5;"
+         onclick="showFnType('immediately',this)">
+      <span class="ftc-tag" style="background:#9b2335; color:#fff;">即時実行</span>
+      <div class="ftc-name" style="color:#9b2335;">IIFE</div>
+      <div class="ftc-code" style="color:#fc8181;">(function() {
+  ...
+})();</div>
+    </div>
+
+    <div class="fn-type-card" style="background:#e6fffa;"
+         onclick="showFnType('higher',this)">
+      <span class="ftc-tag" style="background:#1a4731; color:#fff;">関数を扱う</span>
+      <div class="ftc-name" style="color:#1a4731;">高階関数</div>
+      <div class="ftc-code" style="color:#81e6d9;">[1,2,3].map(x => x*2)
+// 関数を引数に渡す</div>
+    </div>
+
+  </div>
+
+  <!-- 詳細パネル -->
+  <div id="fn-type-detail" style="display:none; margin-top:14px;
+    background:#1a202c; border-radius:8px; padding:18px 20px;
+    font-family:'Consolas','Monaco',monospace; font-size:0.85em;
+    line-height:1.9; white-space:pre-wrap; color:#e2e8f0;">
+  </div>
+
+  <h3>関数宣言 vs 関数式 vs アロー関数 比較表</h3>
+  <table class="ref-table">
+    <thead>
+      <tr><th>特徴</th><th>関数宣言</th><th>関数式</th><th>アロー関数</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>ホイスティング</td>
+        <td>✅ あり（定義前に呼び出せる）</td>
+        <td>❌ なし（定義後のみ）</td>
+        <td>❌ なし（定義後のみ）</td>
+      </tr>
+      <tr>
+        <td>this の扱い</td>
+        <td>呼び出し方で変わる</td>
+        <td>呼び出し方で変わる</td>
+        <td>外側のスコープの this を継承</td>
+      </tr>
+      <tr>
+        <td>arguments オブジェクト</td>
+        <td>✅ あり</td>
+        <td>✅ あり</td>
+        <td>❌ なし（...args を使う）</td>
+      </tr>
+      <tr>
+        <td>コンストラクタとして使用</td>
+        <td>✅ 可能</td>
+        <td>✅ 可能</td>
+        <td>❌ 不可（new できない）</td>
+      </tr>
+      <tr>
+        <td>推奨場面</td>
+        <td>トップレベルの関数定義</td>
+        <td>条件付き定義・コールバック</td>
+        <td>コールバック・メソッド以外</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3>アロー関数の省略ルール</h3>
+  <div class="tab-wrap">
+    <div class="tab-btns">
+      <button class="tab-btn active" onclick="switchTab(this,'tab-arrow1')">基本形</button>
+      <button class="tab-btn"        onclick="switchTab(this,'tab-arrow2')">引数の省略</button>
+      <button class="tab-btn"        onclick="switchTab(this,'tab-arrow3')">本体の省略</button>
+      <button class="tab-btn"        onclick="switchTab(this,'tab-arrow4')">this の違い</button>
+    </div>
+
+    <div class="tab-content active" id="tab-arrow1">
+      <div class="pre-wrap">
+        <button class="copy-btn" onclick="copyPre(this)">copy</button>
+<pre>
+<span class="comment">// 通常の関数宣言</span>
+<span class="kw">function</span> <span class="fn">add</span>(<span class="param">a</span>, <span class="param">b</span>) {
+  <span class="kw">return</span> <span class="param">a</span> <span class="op">+</span> <span class="param">b</span>;
+}
+
+<span class="comment">// アロー関数（基本形）</span>
+<span class="kw">const</span> <span class="fn">add</span> = (<span class="param">a</span>, <span class="param">b</span>) <span class="op">=></span> {
+  <span class="kw">return</span> <span class="param">a</span> <span class="op">+</span> <span class="param">b</span>;
+};
+
+console.<span class="fn">log</span>(<span class="fn">add</span>(<span class="num">3</span>, <span class="num">5</span>)); <span class="out">// → 8</span>
+</pre>
+      </div>
+    </div>
+
+    <div class="tab-content" id="tab-arrow2">
+      <div class="pre-wrap">
+        <button class="copy-btn" onclick="copyPre(this)">copy</button>
+<pre>
+<span class="comment">// 引数が1つ → () を省略できる</span>
+<span class="kw">const</span> <span class="fn">double</span> = <span class="param">x</span> <span class="op">=></span> { <span class="kw">return</span> <span class="param">x</span> <span class="op">*</span> <span class="num">2</span>; };
+
+<span class="comment">// 引数が0個 → () は省略できない</span>
+<span class="kw">const</span> <span class="fn">greet</span> = () <span class="op">=></span> { console.<span class="fn">log</span>(<span class="str">"Hello!"</span>); };
+
+<span class="comment">// 引数が2個以上 → () は省略できない</span>
+<span class="kw">const</span> <span class="fn">add</span> = (<span class="param">a</span>, <span class="param">b</span>) <span class="op">=></span> { <span class="kw">return</span> <span class="param">a</span> <span class="op">+</span> <span class="param">b</span>; };
+
+console.<span class="fn">log</span>(<span class="fn">double</span>(<span class="num">5</span>)); <span class="out">// → 10</span>
+</pre>
+      </div>
+    </div>
+
+    <div class="tab-content" id="tab-arrow3">
+      <div class="pre-wrap">
+        <button class="copy-btn" onclick="copyPre(this)">copy</button>
+<pre>
+<span class="comment">// 本体が1行の式 → {} と return を省略できる</span>
+<span class="kw">const</span> <span class="fn">double</span> = <span class="param">x</span> <span class="op">=></span> <span class="param">x</span> <span class="op">*</span> <span class="num">2</span>;
+<span class="kw">const</span> <span class="fn">add</span>    = (<span class="param">a</span>, <span class="param">b</span>) <span class="op">=></span> <span class="param">a</span> <span class="op">+</span> <span class="param">b</span>;
+<span class="kw">const</span> <span class="fn">square</span> = <span class="param">n</span> <span class="op">=></span> <span class="param">n</span> <span class="op">**</span> <span class="num">2</span>;
+
+console.<span class="fn">log</span>(<span class="fn">double</span>(<span class="num">5</span>));    <span class="out">// → 10</span>
+console.<span class="fn">log</span>(<span class="fn">add</span>(<span class="num">3</span>, <span class="num">4</span>));   <span class="out">// → 7</span>
+console.<span class="fn">log</span>(<span class="fn">square</span>(<span class="num">4</span>));   <span class="out">// → 16</span>
+
+<span class="comment">// オブジェクトを返す場合は () で囲む</span>
+<span class="kw">const</span> <span class="fn">makeUser</span> = (<span class="param">name</span>, <span class="param">age</span>) <span class="op">=></span> ({ <span class="param">name</span>, <span class="param">age</span> });
+console.<span class="fn">log</span>(<span class="fn">makeUser</span>(<span class="str">"Alice"</span>, <span class="num">25</span>)); <span class="out">// → {name:"Alice", age:25}</span>
+
+<span class="comment">// 配列メソッドとの組み合わせ（最もよく使う場面）</span>
+<span class="kw">const</span> nums = [<span class="num">1</span>, <span class="num">2</span>, <span class="num">3</span>, <span class="num">4</span>, <span class="num">5</span>];
+<span class="kw">const</span> doubled  = nums.<span class="fn">map</span>(<span class="param">n</span> <span class="op">=></span> <span class="param">n</span> <span class="op">*</span> <span class="num">2</span>);
+<span class="kw">const</span> evens    = nums.<span class="fn">filter</span>(<span class="param">n</span> <span class="op">=></span> <span class="param">n</span> <span class="op">%</span> <span class="num">2</span> <span class="op">===</span> <span class="num">0</span>);
+<span class="kw">const</span> total    = nums.<span class="fn">reduce</span>((<span class="param">acc</span>, <span class="param">n</span>) <span class="op">=></span> <span class="param">acc</span> <span class="op">+</span> <span class="param">n</span>, <span class="num">0</span>);
+console.<span class="fn">log</span>(doubled); <span class="out">// → [2,4,6,8,10]</span>
+console.<span class="fn">log</span>(evens);   <span class="out">// → [2,4]</span>
+console.<span class="fn">log</span>(total);   <span class="out">// → 15</span>
+</pre>
+      </div>
+    </div>
+
+    <div class="tab-content" id="tab-arrow4">
+      <div class="pre-wrap">
+        <button class="copy-btn" onclick="copyPre(this)">copy</button>
+<pre>
+<span class="comment">// 通常の関数：this は呼び出し方で変わる</span>
+<span class="kw">const</span> obj1 = {
+  <span class="param">name</span>: <span class="str">"Alice"</span>,
+  <span class="fn">greet</span>: <span class="kw">function</span>() {
+    console.<span class="fn">log</span>(<span class="kw">this</span>.<span class="param">name</span>); <span class="out">// → "Alice"（obj1 を指す）</span>
+  }
+};
+obj1.<span class="fn">greet</span>();
+
+<span class="comment">// アロー関数：this は外側のスコープを継承する</span>
+<span class="kw">const</span> obj2 = {
+  <span class="param">name</span>: <span class="str">"Bob"</span>,
+  <span class="fn">greet</span>: () <span class="op">=></span> {
+    console.<span class="fn">log</span>(<span class="kw">this</span>.<span class="param">name</span>); <span class="out">// → undefined（外側の this = window）</span>
+  }
+};
+obj2.<span class="fn">greet</span>();
+
+<span class="comment">// アロー関数が有効な場面：コールバック内での this</span>
+<span class="kw">function</span> <span class="fn">Timer</span>() {
+  <span class="kw">this</span>.<span class="param">count</span> = <span class="num">0</span>;
+  setInterval(() <span class="op">=></span> {
+    <span class="kw">this</span>.<span class="param">count</span>++;  <span class="comment">// アロー関数なので外側の this（Timer）を参照</span>
+    console.<span class="fn">log</span>(<span class="kw">this</span>.<span class="param">count</span>);
+  }, <span class="num">1000</span>);
+}
+</pre>
+      </div>
+      <div class="warn">
+        ⚠️ <strong>オブジェクトのメソッドにアロー関数を使うと this が期待通りに動きません。</strong><br>
+        オブジェクトのメソッドには通常の関数を使い、コールバックにはアロー関数を使うのが基本です。
+      </div>
+    </div>
+  </div>
+
+  <h3>🎮 アロー関数変換ツール</h3>
+  <div class="interactive-demo">
+    <div class="demo-label">通常の関数をアロー関数に変換するパターンを選んで確認しよう</div>
+    <div class="demo-input-row">
+      <select class="demo-input" id="arrow-pattern" onchange="showArrowPattern()">
+        <option value="">-- パターンを選択 --</option>
+        <option value="p1">引数なし・複数行</option>
+        <option value="p2">引数1つ・1行</option>
+        <option value="p3">引数2つ・1行</option>
+        <option value="p4">オブジェクトを返す</option>
+        <option value="p5">map/filter/reduce</option>
+      </select>
+    </div>
+    <div class="demo-output" id="arrow-output" style="min-height:80px;">← パターンを選択してください</div>
+  </div>
+
+  <h3>高階関数（map / filter / reduce）</h3>
+  <div class="interactive-demo">
+    <div class="demo-label">配列に対して高階関数を適用してみよう</div>
+    <div class="demo-input-row">
+      <input class="demo-input" id="hof-arr" placeholder="配列（例：1,2,3,4,5）" type="text" value="1,2,3,4,5">
+      <select class="demo-input" id="hof-op" style="flex:0 0 auto; width:160px;">
+        <option value="map2">map（×2）</option>
+        <option value="map-sq">map（2乗）</option>
+        <option value="filter-even">filter（偶数）</option>
+        <option value="filter-gt3">filter（3より大）</option>
+        <option value="reduce-sum">reduce（合計）</option>
+        <option value="reduce-max">reduce（最大値）</option>
+      </select>
+      <button class="demo-btn" onclick="runHof()">▶ 実行</button>
+    </div>
+    <div class="demo-output" id="hof-output">← 配列と操作を選んで実行してみましょう</div>
+  </div>
+</div>
+
+
+<!-- ============================================================ -->
+<!-- まとめ -->
+<!-- ============================================================ -->
+<h2>📌 まとめ</h2>
+<div class="demo-box">
+  <table class="ref-table">
+    <thead><tr><th>項目</th><th>構文</th><th>ポイント</th></tr></thead>
+    <tbody>
+      <tr><td>関数宣言</td>
+        <td><code>function fn(a, b) { return a+b; }</code></td>
+        <td>ホイスティングあり・定義前に呼び出せる</td></tr>
+      <tr><td>関数式</td>
+        <td><code>const fn = function(a, b) { return a+b; };</code></td>
+        <td>変数に代入・ホイスティングなし</td></tr>
+      <tr><td>アロー関数（基本）</td>
+        <td><code>const fn = (a, b) => { return a+b; };</code></td>
+        <td>this を継承・コンストラクタ不可</td></tr>
+      <tr><td>アロー関数（省略）</td>
+        <td><code>const fn = (a, b) => a + b;</code></td>
+        <td>1行なら {} と return を省略</td></tr>
+      <tr><td>デフォルト引数</td>
+        <td><code>function fn(name = "ゲスト") {}</code></td>
+        <td>引数省略時のデフォルト値</td></tr>
+      <tr><td>残余引数</td>
+        <td><code>function fn(...args) {}</code></td>
+        <td>可変長引数・配列として受け取る</td></tr>
+      <tr><td>高階関数</td>
+        <td><code>arr.map(x => x*2)</code></td>
+        <td>関数を引数に渡す・関数を返す</td></tr>
+    </tbody>
+  </table>
+</div>
+
+
+<!-- ============================================================ -->
+<!-- 演習問題 -->
+<!-- ============================================================ -->
+<div class="quiz-section">
+  <h2>🖊️ 演習問題</h2>
+
+  <!-- Q1 -->
+  <div class="quiz-block">
+    <h3>Q1. 穴埋め問題</h3>
+    <p>以下の説明に合う答えを入力してください。</p>
+    <label>① 関数の結果を呼び出し元に返すキーワード：</label>
+    <input type="text" id="q1a" placeholder="キーワード">
+    <label>② アロー関数で引数が1つの場合に省略できるもの：</label>
+    <input type="text" id="q1b" placeholder="記号">
+    <label>③ 可変長引数を配列として受け取る構文（例：<code>...args</code>）の名称：</label>
+    <input type="text" id="q1c" placeholder="〇〇引数">
+    <label>④ 関数宣言が定義前に呼び出せる仕組みの名称：</label>
+    <input type="text" id="q1d" placeholder="カタカナ">
+    <br>
+    <button class="btn btn-teal" onclick="checkQ1()">答え合わせ</button>
+    <div class="result-msg" id="q1-result"></div>
+    <script>
+      function checkQ1() {
+        const a = document.getElementById('q1a').value.trim().toLowerCase();
+        const b = document.getElementById('q1b').value.trim();
+        const c = document.getElementById('q1c').value.trim()
+                    .replace(/引数|ひきすう/g,'').toLowerCase();
+        const d = document.getElementById('q1d').value.trim()
+                    .replace(/\s/g,'').toLowerCase();
+        const r = document.getElementById('q1-result');
+        const ca = a === 'return';
+        const cb = b === '()' || b === '（）' || b === 'かっこ' || b === '丸括弧' || b === '括弧';
+        const cc = c === 'rest' || c === '残余' || c === 'ざんよ';
+        const cd = d === 'ホイスティング' || d === 'hoisting' || d === 'hoisiting' ||
+                   d === 'ほいすてぃんぐ';
+        const count = [ca,cb,cc,cd].filter(Boolean).length;
+        if (count === 4) {
+          r.className = 'result-msg correct';
+          r.textContent = '✅ 全問正解！完璧です！';
+        } else {
+          r.className = 'result-msg wrong';
+          r.innerHTML = `❌ ${count}/4 問正解。<br>` +
+            `① ${ca?'✅':'❌ return'}　` +
+            `② ${cb?'✅':'❌ ()（丸括弧）'}　` +
+            `③ ${cc?'✅':'❌ 残余引数（rest）'}　` +
+            `④ ${cd?'✅':'❌ ホイスティング（Hoisting）'}`;
+        }
+      }
+    </script>
+  </div>
+
+  <!-- Q2 -->
+  <div class="quiz-block">
+    <h3>Q2. 選択問題</h3>
+    <p>以下のコードを実行した結果として正しいものはどれですか？</p>
+    <div class="pre-wrap" style="margin-bottom:12px;">
+<pre style="margin:0;">
+console.<span class="fn">log</span>(<span class="fn">double</span>(<span class="num">4</span>));
+
+<span class="kw">const</span> <span class="fn">double</span> = <span class="param">x</span> <span class="op">=></span> <span class="param">x</span> <span class="op">*</span> <span class="num">2</span>;
+</pre>
+    </div>
+    <select id="q2">
+      <option value="">-- 選択してください --</option>
+      <option value="a">8 が出力される</option>
+      <option value="b">undefined が出力される</option>
+      <option value="c">ReferenceError が発生する</option>
+      <option value="d">TypeError が発生する</option>
+    </select>
+    <br>
+    <button class="btn btn-teal" onclick="checkQ2()">答え合わせ</button>
+    <div class="result-msg" id="q2-result"></div>
+    <script>
+      function checkQ2() {
+        const v = document.getElementById('q2').value;
+        const r = document.getElementById('q2-result');
+        if (v === 'c') {
+          r.className = 'result-msg correct';
+          r.innerHTML = '✅ 正解！<br><br>' +
+            'アロー関数は <strong>const</strong> で宣言されているため、ホイスティングされません。<br>' +
+            '定義前に呼び出すと <strong>ReferenceError: Cannot access \'double\' before initialization</strong> が発生します。<br><br>' +
+            '関数宣言（<code>function double(x) {...}</code>）であればホイスティングにより定義前でも呼び出せます。';
+        } else if (v === '') {
+          r.className = 'result-msg info';
+          r.textContent = '⚠️ 選択肢を選んでください。';
+        } else {
+          r.className = 'result-msg wrong';
+          r.innerHTML = '❌ 不正解。<br>' +
+            '<code>const</code> で宣言したアロー関数はホイスティングされません。<br>' +
+            '定義前にアクセスすると <strong>ReferenceError</strong> が発生します（TDZ）。';
+        }
+      }
+    </script>
+  </div>
+
+  <!-- Q3 -->
+  <div class="quiz-block">
+    <h3>Q3. 正誤チェックボックス問題</h3>
+    <p><strong>正しい記述</strong>をすべて選んでください。</p>
+    <label class="checkbox-label"><input type="checkbox" id="q3a">
+      ① アロー関数は <code>new</code> キーワードでコンストラクタとして使用できない</label>
+    <label class="checkbox-label"><input type="checkbox" id="q3b">
+      ② 関数宣言はホイスティングにより定義前に呼び出せる</label>
+    <label class="checkbox-label"><input type="checkbox" id="q3c">
+      ③ アロー関数の <code>this</code> は呼び出し方によって変わる</label>
+    <label class="checkbox-label"><input type="checkbox" id="q3d">
+      ④ <code>return</code> 文のない関数は <code>undefined</code> を返す</label>
+    <label class="checkbox-label"><input type="checkbox" id="q3e">
+      ⑤ 残余引数（<code>...args</code>）は配列として受け取られる</label>
+    <label class="checkbox-label"><input type="checkbox" id="q3f">
+      ⑥ アロー関数で本体が1行の場合、<code>{}</code> と <code>return</code> を省略できる</label>
+    <br>
+    <button class="btn btn-teal" onclick="checkQ3()">答え合わせ</button>
+    <div class="result-msg" id="q3-result"></div>
+    <script>
+      function checkQ3() {
+        const r = document.getElementById('q3-result');
+        const checks = {
+          a: document.getElementById('q3a').checked,
+          b: document.getElementById('q3b').checked,
+          c: document.getElementById('q3c').checked,
+          d: document.getElementById('q3d').checked,
+          e: document.getElementById('q3e').checked,
+          f: document.getElementById('q3f').checked,
+        };
+        // 正解：①②④⑤⑥（a,b,d,e,f）
+        // ③ アロー関数の this は外側スコープを継承（呼び出し方では変わらない）
+        const correct = { a:true, b:true, c:false, d:true, e:true, f:true };
+        const allOk = Object.keys(correct).every(k => checks[k] === correct[k]);
+        if (allOk) {
+          r.className = 'result-msg correct';
+          r.innerHTML = '✅ 全問正解！完璧です！';
+        } else {
+          r.className = 'result-msg wrong';
+          r.innerHTML =
+            '❌ 不正解の項目があります。<br><br>' +
+            '<strong>正しい記述：</strong>①②④⑤⑥<br><br>' +
+            '<strong>誤った記述：</strong><br>' +
+            '・③ アロー関数の <code>this</code> は<strong>定義時の外側スコープを継承</strong>します。' +
+            '呼び出し方によって変わるのは通常の関数の特性です。';
+        }
+      }
+    </script>
+  </div>
+
+  <!-- Q4 コンソール実践 -->
+  <div class="quiz-block">
+    <h3>Q4. コンソール実践問題</h3>
+    <p>以下の処理をアロー関数で実装してコンソールで確認してください。</p>
+    <ul style="font-size:0.92em; color:#4a5568; line-height:2;">
+      <li>配列 <code>[1, 2, 3, 4, 5, 6, 7, 8, 9, 10]</code> から</li>
+      <li><strong>偶数のみ</strong>を取り出し（<code>filter</code>）</li>
+      <li>それぞれを<strong>2乗</strong>して（<code>map</code>）</li>
+      <li>その<strong>合計</strong>を求める（<code>reduce</code>）</li>
+    </ul>
+    <div class="js-console" id="console-q4">
+      <div class="js-console-bar">
+        <div class="dot dot-red"></div>
+        <div class="dot dot-yellow"></div>
+        <div class="dot dot-green"></div>
+        <span>Practice Console</span>
+      </div>
+      <div class="js-console-output" id="console-q4-output">
+        <div class="log-info">// filter → map → reduce のチェーンを試してみましょう</div>
+        <div class="log-info">// const nums = [1,2,3,4,5,6,7,8,9,10];</div>
+      </div>
+      <div class="js-console-input-row">
+        <span>&gt;</span>
+        <input class="js-console-input" id="console-q4-input"
+               placeholder="const nums = [1,2,3,4,5,6,7,8,9,10]; const result = nums.filter(...).map(...).reduce(...);"
+               type="text">
+        <button class="js-console-clear" onclick="clearConsole('q4')">クリア</button>
+        <button class="js-console-run"   onclick="runConsole('q4')">▶ 実行</button>
+      </div>
+    </div>
+    <label style="margin-top:12px; display:block;">正しい答えは何ですか？</label>
+    <input type="text" id="q4-ans" placeholder="数値を入力">
+    <br>
+    <button class="btn btn-teal" onclick="checkQ4()">答え合わせ</button>
+    <div class="result-msg" id="q4-result"></div>
+    <script>
+      function checkQ4() {
+        const v = document.getElementById('q4-ans').value.trim();
+        const r = document.getElementById('q4-result');
+        // 偶数：2,4,6,8,10 → 2乗：4,16,36,64,100 → 合計：220
+        if (v === '220') {
+          r.className = 'result-msg correct';
+          r.innerHTML = '✅ 正解！<br><br>' +
+            '偶数：[2, 4, 6, 8, 10]<br>' +
+            '2乗：[4, 16, 36, 64, 100]<br>' +
+            '合計：4 + 16 + 36 + 64 + 100 = <strong>220</strong><br><br>' +
+            '模範解答：<br>' +
+            '<code>const nums = [1,2,3,4,5,6,7,8,9,10];</code><br>' +
+            '<code>const result = nums</code><br>' +
+            '<code>  .filter(n => n % 2 === 0)</code><br>' +
+            '<code>  .map(n => n ** 2)</code><br>' +
+            '<code>  .reduce((acc, n) => acc + n, 0);</code><br>' +
+            '<code>console.log(result); // → 220</code>';
+        } else if (v === '') {
+          r.className = 'result-msg info';
+          r.textContent = '⚠️ 上のコンソールでコードを実行して答えを確認してから入力してください。';
+        } else {
+          r.className = 'result-msg wrong';
+          r.innerHTML = '❌ 不正解。<br>' +
+            '偶数（2,4,6,8,10）を2乗（4,16,36,64,100）して合計すると？<br>' +
+            'コンソールで <code>filter → map → reduce</code> のチェーンを試してみましょう。';
+        }
+      }
+    </script>
+  </div>
+
+</div><!-- /quiz-section -->
+
+
+<!-- 完了ボタン -->
+<div class="complete-section">
+  <p>🎉 「1-4 関数」の学習が完了したら記録しましょう！</p>
+  <button class="btn btn-done" onclick="markComplete()">✅ このセクションを完了にする</button>
+  <div id="complete-msg" style="margin-top:10px; font-size:0.88em; color:#276749; display:none;">
+    進捗を保存しました！トップページの進捗バーに反映されます。
+  </div>
+</div>
+
+<!-- ページナビ -->
+<div class="page-nav">
+  <a class="prev" href="03_types.html">← 1-3 型とオブジェクト</a>
+  <a class="home" href="../index.html">🏠 目次へ</a>
+  <a class="next" href="05_scope.html">次へ：1-5 スコープ →</a>
+</div>
+
+<!-- フッター -->
+<footer>
+  <p>
+    HTML5プロフェッショナル Level 2 学習サイト ／
+    <a href="../index.html">🏠 目次</a> ／
+    <a href="../exam/index.html">📝 模擬試験</a> ／
+    <a href="https://github.com/MeshinoKiwamiOkome/html5lv2" target="_blank">GitHub</a>
+  </p>
+  <p style="margin-top:4px;">© MeshinoKiwamiOkome</p>
+</footer>
+
+
+<!-- ============================================================ -->
+<!-- JavaScript -->
+<!-- ============================================================ -->
+<script>
+  /* ===== コピーボタン ===== */
+  function copyPre(btn) {
+    const pre = btn.nextElementSibling;
+    navigator.clipboard.writeText(pre.innerText || pre.textContent).then(() => {
+      btn.textContent = 'copied!';
+      setTimeout(() => btn.textContent = 'copy', 1800);
+    });
+  }
+
+  /* ===== タブ ===== */
+  function switchTab(btn, id) {
+    btn.closest('.tab-wrap').querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    btn.closest('.tab-wrap').querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById(id).classList.add('active');
+  }
+
+  /* ===== 関数の基本デモ ===== */
+  function runFnBasic() {
+    const name = document.getElementById('fn-name').value.trim() || 'myFn';
+    const body = document.getElementById('fn-body').value.trim() || 'console.log("Hello!")';
+    const out  = document.getElementById('fn-basic-output');
+    const logs = [];
+    const origLog = console.log;
+    console.log = (...a) => { logs.push(a.map(String).join(' ')); origLog(...a); };
+    try {
+      eval(`function ${name}() { ${body} } ${name}();`);
+      out.style.color = '#68d391';
+      out.textContent =
+        `// 定義したコード\nfunction ${name}() {\n  ${body}\n}\n\n` +
+        `// 呼び出し結果\n> ${name}();\n` +
+        (logs.length ? logs.map(l => `  ${l}`).join('\n') : '  （出力なし）');
+    } catch(e) {
+      out.style.color = '#fc8181';
+      out.textContent = `エラー: ${e.message}`;
+    }
+    console.log = origLog;
+  }
+
+  /* ===== 引数デモ ===== */
+  function runArgDemo() {
+    const a  = parseFloat(document.getElementById('arg-a').value) || 0;
+    const b  = parseFloat(document.getElementById('arg-b').value) || 0;
+    const op = document.getElementById('arg-op').value;
+    const out = document.getElementById('arg-output');
+    const opMap = { add:'+', sub:'-', mul:'*', div:'/', pow:'**' };
+    const fnMap = {
+      add: (a,b) => a + b,
+      sub: (a,b) => a - b,
+      mul: (a,b) => a * b,
+      div: (a,b) => b !== 0 ? a / b : 'Infinity',
+      pow: (a,b) => a ** b,
+    };
+    const sym    = opMap[op];
+    const result = fnMap[op](a, b);
+    const fnName = { add:'add', sub:'subtract', mul:'multiply', div:'divide', pow:'power' }[op];
+
+    // ビジュアル更新
+    ['a','b'].forEach((k, i) => {
+      const callEl  = document.getElementById(`arg-call-${k}`);
+      const paramEl = document.getElementById(`arg-param-${k}`);
+      callEl.textContent  = k === 'a' ? a : b;
+      paramEl.textContent = k === 'a' ? `a=${a}` : `b=${b}`;
+      callEl.classList.add('active-arg');
+      paramEl.classList.add('active-arg');
+      setTimeout(() => {
+        callEl.classList.remove('active-arg');
+        paramEl.classList.remove('active-arg');
+      }, 600);
+    });
+    const retEl = document.getElementById('arg-return');
+    retEl.textContent = result;
+    retEl.classList.add('active-arg');
+    setTimeout(() => retEl.classList.remove('active-arg'), 600);
+
+    out.style.color = '#68d391';
+    out.textContent =
+      `// 関数定義\nfunction ${fnName}(a, b) {\n  return a ${sym} b;\n}\n\n` +
+      `// 呼び出し\n> ${fnName}(${a}, ${b})\n  → ${result}`;
+  }
+
+  /* ===== 残余引数デモ ===== */
+  function runRestArgs() {
+    const raw = document.getElementById('rest-nums').value;
+    const out = document.getElementById('rest-output');
+    const nums = raw.split(',').map(s => parseFloat(s.trim())).filter(n => !isNaN(n));
+    if (nums.length === 0) {
+      out.textContent = '有効な数値を入力してください'; return;
+    }
+    const sum = nums.reduce((a, b) => a + b, 0);
+    const avg = (sum / nums.length).toFixed(2);
+    out.style.color = '#68d391';
+    out.textContent =
+      `// 残余引数を使った関数\nfunction sum(...nums) {\n  return nums.reduce((acc, n) => acc + n, 0);\n}\n\n` +
+      `> sum(${nums.join(', ')})\n  → ${sum}\n\n` +
+      `// 受け取った配列: [${nums.join(', ')}]\n` +
+      `// 要素数: ${nums.length}\n` +
+      `// 平均: ${avg}`;
+  }
+
+  /* ===== 戻り値チェーンデモ ===== */
+  function runChain() {
+    const n   = parseFloat(document.getElementById('chain-num').value) || 0;
+    const out = document.getElementById('chain-output');
+    const step1 = n * 2;
+    const step2 = step1 + 10;
+    const step3 = Math.pow(step2, 2);
+    out.style.color = '#68d391';
+    out.textContent =
+      `// 関数の定義\nconst double  = n => n * 2;\nconst addTen  = n => n + 10;\nconst square  = n => n ** 2;\n\n` +
+      `// チェーン実行\n> const n = ${n};\n` +
+      `> double(${n})       → ${step1}\n` +
+      `> addTen(${step1})   → ${step2}\n` +
+      `> square(${step2})   → ${step3}\n\n` +
+      `// 1行でも書ける\n> square(addTen(double(${n})))\n  → ${step3}`;
+  }
+
+  /* ===== 関数タイプ詳細 ===== */
+  const fnTypeData = {
+    declaration: {
+      color: '#90cdf4',
+      text:
+`// ===== 関数宣言 =====
+// 最も基本的な書き方。ホイスティングあり。
+
+function add(a, b) {
+  return a + b;
+}
+
+// 定義前に呼び出せる（ホイスティング）
+console.log(add(3, 5)); // → 8
+
+// 特徴
+// ✅ ホイスティングあり（定義前に呼び出せる）
+// ✅ arguments オブジェクトが使える
+// ✅ new でコンストラクタとして使える
+// ⚠ this は呼び出し方によって変わる`
+    },
+    expression: {
+      color: '#68d391',
+      text:
+`// ===== 関数式 =====
+// 変数に関数を代入する書き方。
+
+const add = function(a, b) {
+  return a + b;
+};
+
+// 定義後のみ呼び出せる
+console.log(add(3, 5)); // → 8
+
+// 名前付き関数式（デバッグ時に便利）
+const factorial = function fact(n) {
+  return n <= 1 ? 1 : n * fact(n - 1);
+};
+console.log(factorial(5)); // → 120
+
+// 特徴
+// ❌ ホイスティングなし（定義後のみ）
+// ✅ 変数に代入できる（条件分岐で切り替え可能）
+// ✅ arguments オブジェクトが使える`
+    },
+    arrow: {
+      color: '#b794f4',
+      text:
+`// ===== アロー関数（基本形）=====
+// ES6 で追加。this を外側スコープから継承。
+
+const add = (a, b) => {
+  return a + b;
+};
+
+// 省略形（1行）
+const double = x => x * 2;
+const greet  = () => console.log("Hello!");
+
+console.log(add(3, 5));  // → 8
+console.log(double(5));  // → 10
+
+// 特徴
+// ❌ ホイスティングなし
+// ✅ this を外側スコープから継承（コールバックに最適）
+// ❌ arguments オブジェクトなし（...args を使う）
+// ❌ new でコンストラクタとして使えない`
+    },
+    'arrow-short': {
+      color: '#f6ad55',
+      text:
+`// ===== アロー関数（省略形）=====
+// 本体が1行の式なら {} と return を省略できる
+
+// 引数1つ → () も省略できる
+const double = x => x * 2;
+const square = x => x ** 2;
+
+// 引数2つ以上 → () は省略できない
+const add  = (a, b) => a + b;
+const max  = (a, b) => a > b ? a : b;
+
+// オブジェクトを返す場合は () で囲む！
+const makeUser = (name, age) => ({ name, age });
+
+// 配列メソッドとの組み合わせ
+const nums = [1, 2, 3, 4, 5];
+console.log(nums.map(x => x * 2));       // → [2,4,6,8,10]
+console.log(nums.filter(x => x % 2 === 0)); // → [2,4]
+console.log(nums.reduce((s, x) => s + x, 0)); // → 15`
+    },
+    immediately: {
+      color: '#fc8181',
+      text:
+`// ===== IIFE（即時実行関数式）=====
+// 定義と同時に実行される。スコープの汚染を防ぐ。
+
+// 基本形
+(function() {
+  const secret = "外から見えない変数";
+  console.log("即時実行！");
+})();
+
+// アロー関数版
+(() => {
+  console.log("アロー関数の IIFE");
+})();
+
+// 引数を渡すこともできる
+(function(name) {
+  console.log("Hello, " + name + "!");
+})("Alice");
+
+// 用途
+// ・グローバルスコープの汚染を防ぐ
+// ・モジュールパターン（ES6 以前）
+// ・初期化処理の即時実行`
+    },
+    higher: {
+      color: '#81e6d9',
+      text:
+`// ===== 高階関数 =====
+// 関数を引数に受け取る、または関数を返す関数
+
+// ① 関数を引数に受け取る
+function applyTwice(fn, x) {
+  return fn(fn(x));
+}
+console.log(applyTwice(x => x * 2, 3)); // → 12
+
+// ② 関数を返す（クロージャ）
+function makeMultiplier(n) {
+  return x => x * n;
+}
+const triple = makeMultiplier(3);
+console.log(triple(5)); // → 15
+
+// ③ 配列の高階メソッド
+const nums = [1, 2, 3, 4, 5];
+// map：各要素を変換
+console.log(nums.map(x => x ** 2));      // → [1,4,9,16,25]
+// filter：条件に合う要素を取り出す
+console.log(nums.filter(x => x > 3));    // → [4,5]
+// reduce：集約（合計・最大値など）
+console.log(nums.reduce((s,x) => s+x, 0)); // → 15`
+    }
+  };
+
+  function showFnType(key, card) {
+    document.querySelectorAll('.fn-type-card').forEach(c => c.classList.remove('active'));
+    const detail = document.getElementById('fn-type-detail');
+    if (detail.dataset.current === key && detail.style.display !== 'none') {
+      detail.style.display = 'none'; detail.dataset.current = ''; return;
+    }
+    card.classList.add('active');
+    detail.dataset.current = key;
+    detail.style.display = 'block';
+    const d = fnTypeData[key];
+    detail.style.color = d.color;
+    detail.textContent = d.text;
+    detail.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }
+
+  /* ===== アロー関数変換パターン ===== */
+  const arrowPatterns = {
+    p1: {
+      color: '#90cdf4',
+      text:
+`// 引数なし・複数行
+// ── 通常の関数 ──
+function greet() {
+  const msg = "Hello!";
+  console.log(msg);
+}
+
+// ── アロー関数 ──
+const greet = () => {
+  const msg = "Hello!";
+  console.log(msg);
+};`
+    },
+    p2: {
+      color: '#68d391',
+      text:
+`// 引数1つ・1行（最も省略できる形）
+// ── 通常の関数 ──
+function double(x) {
+  return x * 2;
+}
+
+// ── アロー関数（基本） ──
+const double = (x) => {
+  return x * 2;
+};
+
+// ── アロー関数（省略形）──
+const double = x => x * 2;
+//             ↑ () 省略  ↑ {} と return 省略`
+    },
+    p3: {
+      color: '#b794f4',
+      text:
+`// 引数2つ・1行
+// ── 通常の関数 ──
+function add(a, b) {
+  return a + b;
+}
+
+// ── アロー関数（基本） ──
+const add = (a, b) => {
+  return a + b;
+};
+
+// ── アロー関数（省略形）──
+const add = (a, b) => a + b;
+// 引数が2つ以上なので () は省略できない！`
+    },
+    p4: {
+      color: '#f6ad55',
+      text:
+`// オブジェクトを返す場合は () で囲む
+// ── 通常の関数 ──
+function makeUser(name, age) {
+  return { name: name, age: age };
+}
+
+// ── アロー関数（省略形）──
+const makeUser = (name, age) => ({ name, age });
+// { } がブロックと区別できないため () で囲む！
+
+// ❌ これは間違い（ブロックとして解釈される）
+// const makeUser = (name, age) => { name, age };`
+    },
+    p5: {
+      color: '#81e6d9',
+      text:
+`// map / filter / reduce でのアロー関数
+const nums = [1, 2, 3, 4, 5];
+
+// ── 通常の関数 ──
+const doubled = nums.map(function(n) { return n * 2; });
+const evens   = nums.filter(function(n) { return n % 2 === 0; });
+const sum     = nums.reduce(function(acc, n) { return acc + n; }, 0);
+
+// ── アロー関数（省略形）── ← こちらが一般的
+const doubled = nums.map(n => n * 2);
+const evens   = nums.filter(n => n % 2 === 0);
+const sum     = nums.reduce((acc, n) => acc + n, 0);
+
+console.log(doubled); // → [2, 4, 6, 8, 10]
+console.log(evens);   // → [2, 4]
+console.log(sum);     // → 15`
+    }
+  };
+
+  function showArrowPattern() {
+    const key = document.getElementById('arrow-pattern').value;
+    const out = document.getElementById('arrow-output');
+    if (!key) { out.textContent = '← パターンを選択してください'; out.style.color = '#a0aec0'; return; }
+    const d = arrowPatterns[key];
+    out.style.color = d.color;
+    out.textContent = d.text;
+  }
+
+  /* ===== 高階関数デモ ===== */
+  function runHof() {
+    const raw = document.getElementById('hof-arr').value;
+    const op  = document.getElementById('hof-op').value;
+    const out = document.getElementById('hof-output');
+    const nums = raw.split(',').map(s => parseFloat(s.trim())).filter(n => !isNaN(n));
+    if (nums.length === 0) { out.textContent = '有効な数値を入力してください'; return; }
+
+    let result, code, desc;
+    switch(op) {
+      case 'map2':
+        result = nums.map(n => n * 2);
+        code   = `nums.map(n => n * 2)`;
+        desc   = `各要素を2倍: [${result.join(', ')}]`;
+        break;
+      case 'map-sq':
+        result = nums.map(n => n ** 2);
+        code   = `nums.map(n => n ** 2)`;
+        desc   = `各要素を2乗: [${result.join(', ')}]`;
+        break;
+      case 'filter-even':
+        result = nums.filter(n => n % 2 === 0);
+        code   = `nums.filter(n => n % 2 === 0)`;
+        desc   = `偶数のみ: [${result.join(', ')}]`;
+        break;
+      case 'filter-gt3':
+        result = nums.filter(n => n > 3);
+        code   = `nums.filter(n => n > 3)`;
+        desc   = `3より大きい値: [${result.join(', ')}]`;
+        break;
+      case 'reduce-sum':
+        result = nums.reduce((acc, n) => acc + n, 0);
+        code   = `nums.reduce((acc, n) => acc + n, 0)`;
+        desc   = `合計: ${result}`;
+        break;
+      case 'reduce-max':
+        result = nums.reduce((max, n) => n > max ? n : max, nums[0]);
+        code   = `nums.reduce((max, n) => n > max ? n : max, nums[0])`;
+        desc   = `最大値: ${result}`;
+        break;
+    }
+
+    out.style.color = '#68d391';
+    out.textContent =
+      `// 入力配列: [${nums.join(', ')}]\n\n` +
+      `> ${code}\n  → ${Array.isArray(result) ? '[' + result.join(', ') + ']' : result}\n\n` +
+      `${desc}`;
+  }
+
+  /* ===== JSコンソール ===== */
+  function runConsole(id) {
+    const input  = document.getElementById(`console-${id}-input`);
+    const output = document.getElementById(`console-${id}-output`);
+    const code   = input.value.trim();
+    if (!code) return;
+
+    const promptLine = document.createElement('div');
+    promptLine.className = 'log-prompt';
+    promptLine.textContent = '> ' + code;
+    output.appendChild(promptLine);
+
+    const origLog   = console.log;
+    const origWarn  = console.warn;
+    const origError = console.error;
+    const origInfo  = console.info;
+
+    function addLine(cls, ...args) {
+      const line = document.createElement('div');
+      line.className = cls;
+      line.textContent = args.map(a => {
+        if (typeof a === 'object' && a !== null) {
+          try { return JSON.stringify(a, null, 2); } catch(e) { return String(a); }
+        }
+        return String(a);
+      }).join(' ');
+      output.appendChild(line);
+    }
+
+    console.log   = (...a) => { addLine('log-line',  ...a); origLog(...a);   };
+    console.warn  = (...a) => { addLine('log-warn',  ...a); origWarn(...a);  };
+    console.error = (...a) => { addLine('log-error', ...a); origError(...a); };
+    console.info  = (...a) => { addLine('log-info',  ...a); origInfo(...a);  };
+
+    try {
+      const result = eval(code);
+      if (result !== undefined) {
+        addLine('log-result', '← ' + (typeof result === 'object' ?
+          JSON.stringify(result) : String(result)));
+      }
+    } catch(e) {
+      addLine('log-error', e.toString());
+    }
+
+    console.log   = origLog;
+    console.warn  = origWarn;
+    console.error = origError;
+    console.info  = origInfo;
+
+    input.value = '';
+    output.scrollTop = output.scrollHeight;
+  }
+
+  function clearConsole(id) {
+    document.getElementById(`console-${id}-output`).innerHTML =
+      '<div class="log-info">// クリアしました</div>';
+  }
+
+  document.querySelectorAll('.js-console-input').forEach(el => {
+    el.addEventListener('keydown', e => {
+      if (e.key === 'Enter') {
+        const id = el.id.replace('console-','').replace('-input','');
+        runConsole(id);
+      }
+    });
+  });
+
+  /* ===== 完了ボタン ===== */
+  function markComplete() {
+    const current = parseInt(localStorage.getItem('html5lv2_ch1') || '0', 10);
+    const newVal  = Math.min(100, current + 9);
+    localStorage.setItem('html5lv2_ch1', String(newVal));
+    document.getElementById('complete-msg').style.display = 'block';
+  }
+  if (parseInt(localStorage.getItem('html5lv2_ch1') || '0') >= 36) {
+    document.getElementById('complete-msg').style.display = 'block';
+  }
+</script>
+
+</body>
+</html>

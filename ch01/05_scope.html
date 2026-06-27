@@ -1,0 +1,1567 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>1-5 スコープ | HTML5プロフェッショナル Level 2</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; }
+    body {
+      font-family: 'Segoe UI', 'Helvetica Neue', sans-serif;
+      max-width: 960px; margin: 40px auto; padding: 0 24px;
+      background: #f0f4f8; color: #2d3748; line-height: 1.8;
+    }
+    .breadcrumb {
+      font-size: 0.82em; color: #a0aec0; margin-bottom: 20px;
+      font-family: 'Consolas','Monaco',monospace;
+    }
+    .breadcrumb a { color: #2c7a7b; text-decoration: none; }
+    .breadcrumb a:hover { text-decoration: underline; }
+
+    .chapter-header {
+      background: linear-gradient(135deg, #1a365d, #2c7a7b);
+      border-radius: 12px; padding: 32px 32px 24px;
+      margin-bottom: 32px; color: #fff;
+      box-shadow: 0 4px 18px rgba(44,122,123,0.35);
+    }
+    .chapter-header .ch-num {
+      font-size: 0.8em; font-family: 'Consolas','Monaco',monospace;
+      opacity: 0.85; letter-spacing: 0.08em; margin-bottom: 6px;
+    }
+    .chapter-header h1 { margin: 0 0 10px; font-size: 1.6em; color: #fff; border: none; padding: 0; }
+    .chapter-header p  { margin: 0; font-size: 0.92em; opacity: 0.88; }
+    .badge-row { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 14px; }
+    .badge {
+      background: rgba(255,255,255,0.18);
+      border: 1px solid rgba(255,255,255,0.35);
+      border-radius: 20px; padding: 3px 12px;
+      font-size: 0.76em; font-weight: bold;
+    }
+
+    .section-nav {
+      background: #fff; border: 1px solid #bee3f8;
+      border-radius: 10px; padding: 18px 22px;
+      margin-bottom: 32px; box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+    }
+    .section-nav h2 { margin: 0 0 12px; font-size: 0.92em; color: #1a365d; border: none; padding: 0; }
+    .section-nav ol { margin: 0; padding-left: 20px; font-size: 0.9em; }
+    .section-nav ol li { margin: 4px 0; }
+    .section-nav ol li a { color: #2c7a7b; text-decoration: none; }
+    .section-nav ol li a:hover { text-decoration: underline; }
+    .section-nav ol li.current a { color: #1a365d; font-weight: bold; }
+
+    h2 { color: #1a365d; margin-top: 48px; border-left: 5px solid #2c7a7b; padding-left: 12px; }
+    h3 { color: #2c7a7b; margin-top: 28px; }
+
+    code {
+      background: #edf2f7; padding: 2px 6px;
+      border-radius: 4px; font-size: 0.93em;
+      font-family: 'Consolas','Monaco',monospace;
+    }
+    pre {
+      background: #1a202c; color: #e2e8f0;
+      padding: 18px 20px; border-radius: 8px;
+      overflow-x: auto; font-size: 0.88em;
+      line-height: 1.7; font-family: 'Consolas','Monaco',monospace;
+    }
+    pre .comment { color: #68d391; }
+    pre .kw      { color: #90cdf4; }
+    pre .str     { color: #fbd38d; }
+    pre .num     { color: #fc8181; }
+    pre .fn      { color: #b794f4; }
+    pre .op      { color: #f6ad55; }
+    pre .out     { color: #a0aec0; }
+    pre .err     { color: #fc8181; font-weight: bold; }
+    pre .hl      { color: #68d391; font-weight: bold; }
+
+    .pre-wrap { position: relative; margin: 14px 0; }
+    .copy-btn {
+      position: absolute; top: 8px; right: 8px;
+      background: #4a5568; color: #e2e8f0;
+      border: none; border-radius: 4px;
+      padding: 4px 10px; font-size: 0.75em;
+      cursor: pointer; font-family: 'Consolas','Monaco',monospace;
+      transition: background 0.2s; z-index: 1;
+    }
+    .copy-btn:hover { background: #2c7a7b; }
+
+    .note {
+      background: #fff; border: 1px dashed #81e6d9;
+      border-radius: 6px; padding: 14px 18px;
+      font-size: 0.93em; color: #4a5568; margin: 14px 0;
+    }
+    .note strong { color: #1a365d; }
+    .warn {
+      background: #fffaf0; border: 1px solid #f6ad55;
+      border-left: 5px solid #f6ad55; border-radius: 6px;
+      padding: 14px 18px; font-size: 0.93em; color: #744210; margin: 14px 0;
+    }
+    .good {
+      background: #f0fff4; border: 1px solid #68d391;
+      border-left: 5px solid #48bb78; border-radius: 6px;
+      padding: 14px 18px; font-size: 0.93em; color: #276749; margin: 14px 0;
+    }
+    .demo-box {
+      background: #fff; border: 1px solid #bee3f8;
+      border-radius: 8px; padding: 20px 24px;
+      margin: 12px 0 28px; box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+    }
+
+    /* ===== スコープ可視化 ===== */
+    .scope-map {
+      position: relative;
+      margin: 20px 0;
+      font-family: 'Consolas','Monaco',monospace;
+      font-size: 0.85em;
+    }
+    .scope-layer {
+      border-radius: 10px;
+      padding: 16px 18px;
+      margin-bottom: 0;
+      position: relative;
+    }
+    .scope-layer-label {
+      font-size: 0.75em; font-weight: bold;
+      letter-spacing: 0.06em; margin-bottom: 8px;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .scope-badge {
+      border-radius: 10px; padding: 2px 10px;
+      font-size: 0.78em; font-weight: bold;
+    }
+    .scope-vars {
+      display: flex; flex-wrap: wrap; gap: 8px; margin-top: 6px;
+    }
+    .scope-var {
+      border-radius: 6px; padding: 4px 12px;
+      font-size: 0.82em; font-weight: bold;
+      cursor: pointer; transition: transform 0.15s, box-shadow 0.15s;
+    }
+    .scope-var:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+    }
+    .scope-var.accessible   { opacity: 1; }
+    .scope-var.inaccessible { opacity: 0.35; text-decoration: line-through; }
+
+    /* ===== スコープチェーン図 ===== */
+    .chain-diagram {
+      background: #1a202c; border-radius: 10px;
+      padding: 20px; margin: 14px 0;
+      font-family: 'Consolas','Monaco',monospace; font-size: 0.85em;
+    }
+    .chain-box {
+      border-radius: 8px; padding: 12px 16px;
+      margin-bottom: 8px; position: relative;
+    }
+    .chain-box-title {
+      font-size: 0.78em; font-weight: bold;
+      letter-spacing: 0.06em; margin-bottom: 6px;
+    }
+    .chain-box-vars {
+      display: flex; flex-wrap: wrap; gap: 6px;
+    }
+    .chain-var {
+      border-radius: 4px; padding: 3px 10px;
+      font-size: 0.8em;
+    }
+    .chain-arrow {
+      text-align: center; color: #a0aec0;
+      font-size: 1.2em; margin: 2px 0;
+    }
+    .chain-search {
+      background: #0d1117; border-radius: 6px;
+      padding: 10px 14px; margin-top: 12px;
+      color: #68d391; font-size: 0.82em; line-height: 1.8;
+    }
+
+    /* ===== var vs let 比較 ===== */
+    .compare-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px; margin: 14px 0;
+    }
+    .compare-card {
+      border-radius: 8px; padding: 16px 18px;
+      font-family: 'Consolas','Monaco',monospace; font-size: 0.82em;
+    }
+    .compare-card h4 {
+      margin: 0 0 10px; font-size: 0.95em;
+      font-family: 'Segoe UI', sans-serif;
+    }
+    .compare-row {
+      display: flex; align-items: flex-start;
+      gap: 8px; margin-bottom: 6px; font-size: 0.82em;
+    }
+    .compare-icon { flex-shrink: 0; font-size: 1em; }
+
+    /* ===== インタラクティブデモ ===== */
+    .interactive-demo {
+      background: #ebf8ff; border: 1px solid #bee3f8;
+      border-radius: 8px; padding: 16px 20px; margin: 14px 0;
+    }
+    .demo-label {
+      font-size: 0.85em; font-weight: bold;
+      color: #1a365d; margin-bottom: 10px;
+    }
+    .demo-input-row {
+      display: flex; gap: 10px; align-items: center;
+      flex-wrap: wrap; margin-bottom: 10px;
+    }
+    .demo-input {
+      border: 2px solid #bee3f8; border-radius: 6px;
+      padding: 7px 12px; font-size: 0.9em;
+      font-family: 'Consolas','Monaco',monospace;
+      color: #2d3748; background: #fff; flex: 1; min-width: 80px;
+    }
+    .demo-input:focus { border-color: #2c7a7b; outline: none; }
+    .demo-btn {
+      background: #2c7a7b; color: #fff; border: none;
+      border-radius: 6px; padding: 8px 18px;
+      font-size: 0.88em; font-weight: bold; cursor: pointer;
+      transition: background 0.2s; white-space: nowrap;
+    }
+    .demo-btn:hover { background: #1a365d; }
+    .demo-output {
+      background: #1a202c; color: #68d391;
+      border-radius: 6px; padding: 10px 14px;
+      font-family: 'Consolas','Monaco',monospace;
+      font-size: 0.85em; min-height: 40px;
+      white-space: pre-wrap; line-height: 1.7;
+    }
+
+    /* ===== タブ ===== */
+    .tab-wrap { margin: 14px 0; }
+    .tab-btns { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: -1px; }
+    .tab-btn {
+      padding: 8px 18px; border: 1px solid #bee3f8;
+      border-bottom: none; border-radius: 6px 6px 0 0;
+      background: #edf2f7; color: #2c7a7b;
+      font-size: 0.85em; font-weight: bold;
+      font-family: 'Consolas','Monaco',monospace;
+      cursor: pointer; transition: background 0.15s;
+    }
+    .tab-btn.active { background: #fff; border-bottom: 1px solid #fff; }
+    .tab-btn:hover:not(.active) { background: #e6fffa; }
+    .tab-content {
+      display: none; background: #fff;
+      border: 1px solid #bee3f8;
+      border-radius: 0 6px 6px 6px; padding: 18px 20px;
+    }
+    .tab-content.active { display: block; }
+
+    /* ===== テーブル ===== */
+    table.ref-table {
+      border-collapse: collapse; width: 100%;
+      background: #fff; border-radius: 8px;
+      overflow: hidden; box-shadow: 0 2px 6px rgba(0,0,0,0.07);
+      margin: 14px 0; font-size: 0.9em;
+    }
+    table.ref-table th, table.ref-table td {
+      border: 1px solid #bee3f8; padding: 10px 14px; text-align: left;
+    }
+    table.ref-table thead tr { background: #1a365d; color: #fff; }
+    table.ref-table tbody tr:nth-child(even) { background: #ebf8ff; }
+
+    /* ===== JSコンソール ===== */
+    .js-console {
+      background: #1a202c; border-radius: 10px;
+      overflow: hidden; margin: 16px 0;
+      box-shadow: 0 4px 14px rgba(0,0,0,0.25);
+    }
+    .js-console-bar {
+      background: #2d3748; padding: 8px 16px;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .js-console-bar .dot { width: 12px; height: 12px; border-radius: 50%; }
+    .dot-red    { background: #fc8181; }
+    .dot-yellow { background: #f6ad55; }
+    .dot-green  { background: #68d391; }
+    .js-console-bar span {
+      font-size: 0.78em; color: #a0aec0;
+      font-family: 'Consolas','Monaco',monospace; margin-left: 6px;
+    }
+    .js-console-output {
+      padding: 14px 16px; min-height: 80px;
+      font-family: 'Consolas','Monaco',monospace;
+      font-size: 0.85em; line-height: 1.8;
+      max-height: 280px; overflow-y: auto;
+    }
+    .log-line   { color: #e2e8f0; }
+    .log-info   { color: #90cdf4; }
+    .log-warn   { color: #f6ad55; }
+    .log-error  { color: #fc8181; }
+    .log-result { color: #68d391; }
+    .log-prompt { color: #a0aec0; }
+    .js-console-input-row {
+      display: flex; align-items: center;
+      border-top: 1px solid #2d3748; padding: 8px 12px; gap: 8px;
+    }
+    .js-console-input-row span {
+      color: #68d391; font-family: 'Consolas','Monaco',monospace;
+      font-size: 0.9em; flex-shrink: 0;
+    }
+    .js-console-input {
+      flex: 1; background: transparent; border: none; outline: none;
+      color: #e2e8f0; font-family: 'Consolas','Monaco',monospace;
+      font-size: 0.88em; caret-color: #68d391;
+    }
+    .js-console-run {
+      background: #2c7a7b; color: #fff; border: none;
+      border-radius: 4px; padding: 4px 12px;
+      font-size: 0.78em; font-weight: bold; cursor: pointer;
+      transition: background 0.2s;
+    }
+    .js-console-run:hover { background: #1a365d; }
+    .js-console-clear {
+      background: #4a5568; color: #e2e8f0; border: none;
+      border-radius: 4px; padding: 4px 10px;
+      font-size: 0.78em; cursor: pointer; transition: background 0.2s;
+    }
+    .js-console-clear:hover { background: #718096; }
+
+    /* ===== 演習問題 ===== */
+    .quiz-section {
+      background: #ebf8ff; border-left: 6px solid #4299e1;
+      border-radius: 0 8px 8px 0; padding: 24px 28px; margin: 48px 0 32px;
+    }
+    .quiz-section > h2 { margin-top: 0; color: #1a365d; border-left-color: #4299e1; }
+    .quiz-block {
+      background: #fff; border: 1px solid #bee3f8;
+      border-radius: 8px; padding: 18px 22px; margin-bottom: 22px;
+    }
+    .quiz-block h3 { margin-top: 0; color: #1a365d; }
+    .quiz-block input[type="text"],
+    .quiz-block select {
+      border: 2px solid #bee3f8; border-radius: 6px;
+      padding: 8px 12px; font-size: 0.95em;
+      width: 100%; max-width: 440px; margin: 6px 0;
+      outline: none; font-family: 'Consolas','Monaco',monospace;
+      transition: border-color 0.2s;
+    }
+    .quiz-block input[type="text"]:focus,
+    .quiz-block select:focus { border-color: #2c7a7b; }
+    .quiz-block label { display: block; margin: 8px 0 2px; font-weight: bold; color: #4a5568; }
+    .quiz-block label.checkbox-label {
+      display: flex; align-items: flex-start; gap: 8px;
+      font-weight: normal; cursor: pointer; margin: 6px 0;
+    }
+    .quiz-block label.checkbox-label input { margin-top: 3px; flex-shrink: 0; }
+    .btn {
+      display: inline-block; padding: 9px 20px;
+      border-radius: 6px; border: none; cursor: pointer;
+      font-size: 0.95em; font-weight: bold;
+      transition: opacity 0.2s; margin-top: 8px;
+    }
+    .btn:hover { opacity: 0.85; }
+    .btn-teal { background: #2c7a7b; color: #fff; }
+    .btn-done { background: #48bb78; color: #fff; }
+    .result-msg {
+      margin-top: 10px; padding: 10px 14px;
+      border-radius: 6px; font-weight: bold; display: none;
+    }
+    .result-msg.correct { background: #c6f6d5; color: #276749; display: block; }
+    .result-msg.wrong   { background: #fed7d7; color: #9b2335; display: block; }
+    .result-msg.info    { background: #bee3f8; color: #1a365d; display: block; }
+
+    .page-nav {
+      display: flex; justify-content: space-between;
+      align-items: center; margin-top: 48px;
+      padding-top: 20px; border-top: 2px solid #bee3f8;
+      gap: 12px; flex-wrap: wrap;
+    }
+    .page-nav a {
+      display: inline-block; padding: 10px 20px;
+      border-radius: 8px; text-decoration: none;
+      font-weight: bold; font-size: 0.9em; transition: opacity 0.2s;
+    }
+    .page-nav a:hover { opacity: 0.8; }
+    .page-nav .prev { background: #edf2f7; color: #4a5568; }
+    .page-nav .next { background: #2c7a7b; color: #fff; }
+    .page-nav .home { background: #fff; color: #2c7a7b; border: 2px solid #2c7a7b; }
+
+    .complete-section {
+      background: #f0fff4; border: 2px solid #48bb78;
+      border-radius: 10px; padding: 20px 24px;
+      margin-top: 40px; text-align: center;
+    }
+    .complete-section p { margin: 0 0 12px; color: #276749; font-weight: bold; }
+
+    footer {
+      margin-top: 48px; padding-top: 16px;
+      border-top: 2px solid #bee3f8;
+      font-size: 0.82em; color: #a0aec0; text-align: center;
+    }
+    footer a { color: #2c7a7b; text-decoration: none; }
+    footer a:hover { text-decoration: underline; }
+
+    @media (max-width: 600px) {
+      body { font-size: 0.84em; }
+      .chapter-header { padding: 20px 16px; }
+      .chapter-header h1 { font-size: 1.2em; }
+      .compare-grid { grid-template-columns: 1fr; }
+      .quiz-section { padding: 16px 12px; }
+      .quiz-block { padding: 14px 12px; }
+      .page-nav { flex-direction: column; align-items: stretch; }
+      .page-nav a { text-align: center; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- パンくず -->
+<div class="breadcrumb">
+  <a href="../index.html">🏠 HTML5 Level 2</a> ›
+  Chapter 1：速習JavaScript入門 › 1-5 スコープ
+</div>
+
+<!-- ヘッダー -->
+<div class="chapter-header">
+  <div class="ch-num">CHAPTER 01 › SECTION 05</div>
+  <h1>🔭 1-5 スコープ</h1>
+  <p>グローバル変数・ローカル変数・スコープチェーン・
+  let と var の違いを、インタラクティブなスコープ可視化ツールで
+  体験しながら学びます。クロージャの基礎まで解説します。</p>
+  <div class="badge-row">
+    <span class="badge">グローバルスコープ</span>
+    <span class="badge">ローカルスコープ</span>
+    <span class="badge">ブロックスコープ</span>
+    <span class="badge">スコープチェーン</span>
+    <span class="badge">let vs var</span>
+    <span class="badge">クロージャ</span>
+  </div>
+</div>
+
+<!-- セクションナビ -->
+<div class="section-nav">
+  <h2>📋 Chapter 1 のセクション</h2>
+  <ol>
+    <li><a href="01_variables.html">1-1 変数の宣言と値の代入</a></li>
+    <li><a href="02_operators.html">1-2 さまざまな演算</a></li>
+    <li><a href="03_types.html">1-3 型とオブジェクト</a></li>
+    <li><a href="04_functions.html">1-4 関数</a></li>
+    <li class="current"><a href="05_scope.html">1-5 スコープ</a></li>
+    <li><a href="06_conditions.html">1-6 条件分岐</a></li>
+    <li><a href="07_loops.html">1-7 繰り返しの処理</a></li>
+    <li><a href="08_classes.html">1-8 オブジェクトとクラス</a></li>
+    <li><a href="09_dom.html">1-9 HTMLの操作</a></li>
+    <li><a href="10_events.html">1-10 イベントと非同期処理</a></li>
+    <li><a href="11_html5.html">1-11 HTML5とJavaScript</a></li>
+  </ol>
+</div>
+
+
+<!-- ============================================================ -->
+<!-- PART 1: グローバル変数とローカル変数 -->
+<!-- ============================================================ -->
+<h2 id="global-local">① グローバル変数とローカル変数</h2>
+
+<div class="note">
+  <strong>重要ポイント：スコープとは「変数が参照できる範囲」のことです。</strong><br>
+  関数の外で宣言した変数はグローバル変数（どこからでも参照可能）、
+  関数の中で宣言した変数はローカル変数（その関数の中でのみ参照可能）になります。
+</div>
+
+<div class="demo-box">
+  <h3>🗺️ スコープ可視化マップ（変数をクリックしてアクセス可否を確認）</h3>
+
+  <div class="scope-map">
+    <!-- グローバルスコープ -->
+    <div class="scope-layer" style="background:#1a202c; border:2px solid #4a5568; padding:20px;">
+      <div class="scope-layer-label" style="color:#a0aec0;">
+        🌐 グローバルスコープ
+        <span class="scope-badge" style="background:#4a5568; color:#e2e8f0;">どこからでもアクセス可</span>
+      </div>
+      <div class="scope-vars">
+        <div class="scope-var" style="background:#2b4c7e; color:#90cdf4;"
+             onclick="checkAccess('globalX', this)">globalX = 100</div>
+        <div class="scope-var" style="background:#276749; color:#9ae6b4;"
+             onclick="checkAccess('globalMsg', this)">globalMsg = "Hello"</div>
+      </div>
+
+      <!-- 関数スコープ -->
+      <div class="scope-layer" style="background:#2d3748; border:2px solid #553c9a;
+           margin-top:16px; padding:16px;">
+        <div class="scope-layer-label" style="color:#b794f4;">
+          ⚙️ 関数スコープ（outer）
+          <span class="scope-badge" style="background:#553c9a; color:#e9d8fd;">outer内のみ</span>
+        </div>
+        <div class="scope-vars">
+          <div class="scope-var" style="background:#553c9a; color:#e9d8fd;"
+               onclick="checkAccess('outerVar', this)">outerVar = 200</div>
+        </div>
+
+        <!-- ネストした関数スコープ -->
+        <div class="scope-layer" style="background:#3d4a5c; border:2px solid #744210;
+             margin-top:12px; padding:14px;">
+          <div class="scope-layer-label" style="color:#f6ad55;">
+            ⚙️ 関数スコープ（inner）
+            <span class="scope-badge" style="background:#744210; color:#fbd38d;">inner内のみ</span>
+          </div>
+          <div class="scope-vars">
+            <div class="scope-var" style="background:#744210; color:#fbd38d;"
+                 onclick="checkAccess('innerVar', this)">innerVar = 300</div>
+          </div>
+          <div style="margin-top:10px; font-size:0.78em; color:#a0aec0;">
+            inner からアクセスできる変数：
+            <span style="color:#fbd38d;">innerVar</span>、
+            <span style="color:#e9d8fd;">outerVar</span>、
+            <span style="color:#90cdf4;">globalX</span>、
+            <span style="color:#9ae6b4;">globalMsg</span>
+          </div>
+        </div>
+
+        <div style="margin-top:10px; font-size:0.78em; color:#a0aec0;">
+          outer からアクセスできる変数：
+          <span style="color:#e9d8fd;">outerVar</span>、
+          <span style="color:#90cdf4;">globalX</span>、
+          <span style="color:#9ae6b4;">globalMsg</span>
+          （innerVar には<span style="color:#fc8181;">アクセス不可</span>）
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- アクセス確認パネル -->
+  <div id="access-panel" style="display:none; margin-top:12px;
+    background:#1a202c; border-radius:8px; padding:14px 18px;
+    font-family:'Consolas','Monaco',monospace; font-size:0.85em; line-height:1.9;">
+  </div>
+
+  <div class="pre-wrap">
+    <button class="copy-btn" onclick="copyPre(this)">copy</button>
+<pre>
+<span class="comment">// グローバル変数（関数の外で宣言）</span>
+<span class="kw">let</span> globalX   = <span class="num">100</span>;
+<span class="kw">let</span> globalMsg  = <span class="str">"Hello"</span>;
+
+<span class="kw">function</span> <span class="fn">outer</span>() {
+  <span class="comment">// ローカル変数（outer 関数内で宣言）</span>
+  <span class="kw">let</span> outerVar = <span class="num">200</span>;
+
+  <span class="comment">// グローバル変数にアクセスできる</span>
+  console.<span class="fn">log</span>(globalX);   <span class="out">// → 100 ✅</span>
+  console.<span class="fn">log</span>(outerVar);  <span class="out">// → 200 ✅</span>
+
+  <span class="kw">function</span> <span class="fn">inner</span>() {
+    <span class="comment">// ローカル変数（inner 関数内で宣言）</span>
+    <span class="kw">let</span> innerVar = <span class="num">300</span>;
+
+    <span class="comment">// 外側のすべての変数にアクセスできる</span>
+    console.<span class="fn">log</span>(globalX);  <span class="out">// → 100 ✅</span>
+    console.<span class="fn">log</span>(outerVar); <span class="out">// → 200 ✅</span>
+    console.<span class="fn">log</span>(innerVar); <span class="out">// → 300 ✅</span>
+  }
+  <span class="fn">inner</span>();
+
+  <span class="comment">// inner のローカル変数にはアクセスできない</span>
+  console.<span class="fn">log</span>(innerVar); <span class="err">// → ReferenceError ❌</span>
+}
+
+<span class="fn">outer</span>();
+<span class="comment">// グローバルからローカル変数にはアクセスできない</span>
+console.<span class="fn">log</span>(outerVar); <span class="err">// → ReferenceError ❌</span>
+</pre>
+  </div>
+
+  <h3>🎮 スコープシミュレーター</h3>
+  <div class="interactive-demo">
+    <div class="demo-label">どのスコープから変数を参照するか選んで、アクセス可否を確認しよう</div>
+    <div class="demo-input-row">
+      <select class="demo-input" id="scope-from" style="flex:0 0 auto; width:180px;">
+        <option value="global">グローバル</option>
+        <option value="outer">outer 関数内</option>
+        <option value="inner">inner 関数内</option>
+      </select>
+      <span style="color:#718096; font-size:0.9em;">から</span>
+      <select class="demo-input" id="scope-var" style="flex:0 0 auto; width:180px;">
+        <option value="globalX">globalX</option>
+        <option value="globalMsg">globalMsg</option>
+        <option value="outerVar">outerVar</option>
+        <option value="innerVar">innerVar</option>
+      </select>
+      <span style="color:#718096; font-size:0.9em;">にアクセス</span>
+      <button class="demo-btn" onclick="runScopeCheck()">▶ 確認</button>
+    </div>
+    <div class="demo-output" id="scope-check-output">← スコープと変数を選んで確認してみましょう</div>
+  </div>
+</div>
+
+
+<!-- ============================================================ -->
+<!-- PART 2: スコープチェーン -->
+<!-- ============================================================ -->
+<h2 id="scope-chain">② スコープチェーン</h2>
+
+<div class="note">
+  <strong>重要ポイント：変数を参照するとき、JavaScriptは現在のスコープから外側へ順番に変数を探します。これをスコープチェーンといいます。</strong><br>
+  見つかった時点で探索を止め、最終的にグローバルスコープまで見つからなければ <code>ReferenceError</code> になります。
+</div>
+
+<div class="demo-box">
+  <h3>スコープチェーンの探索順序</h3>
+  <div class="chain-diagram">
+    <div class="chain-box" style="background:#744210; border:1px solid #f6ad55;">
+      <div class="chain-box-title" style="color:#fbd38d;">🔍 現在のスコープ（inner 関数）</div>
+      <div class="chain-box-vars">
+        <div class="chain-var" style="background:#9b5c1a; color:#fbd38d;">innerVar = 300</div>
+        <div class="chain-var" style="background:#9b5c1a; color:#fbd38d;">x = 30</div>
+      </div>
+    </div>
+    <div class="chain-arrow">↑ 見つからなければ外側へ</div>
+    <div class="chain-box" style="background:#553c9a; border:1px solid #b794f4;">
+      <div class="chain-box-title" style="color:#e9d8fd;">🔍 外側のスコープ（outer 関数）</div>
+      <div class="chain-box-vars">
+        <div class="chain-var" style="background:#6b46c1; color:#e9d8fd;">outerVar = 200</div>
+        <div class="chain-var" style="background:#6b46c1; color:#e9d8fd;">x = 20</div>
+      </div>
+    </div>
+    <div class="chain-arrow">↑ 見つからなければ外側へ</div>
+    <div class="chain-box" style="background:#2b4c7e; border:1px solid #4299e1;">
+      <div class="chain-box-title" style="color:#90cdf4;">🔍 グローバルスコープ</div>
+      <div class="chain-box-vars">
+        <div class="chain-var" style="background:#2c5282; color:#90cdf4;">globalX = 100</div>
+        <div class="chain-var" style="background:#2c5282; color:#90cdf4;">x = 10</div>
+      </div>
+    </div>
+    <div class="chain-arrow">↑ ここまで見つからなければ ReferenceError</div>
+    <div class="chain-search" id="chain-search-result">
+      ← 下のシミュレーターで変数を検索してみましょう
+    </div>
+  </div>
+
+  <div class="interactive-demo">
+    <div class="demo-label">スコープチェーンの探索をシミュレートしよう</div>
+    <div class="demo-input-row">
+      <select class="demo-input" id="chain-var-sel" style="flex:0 0 auto; width:200px;">
+        <option value="innerVar">innerVar（inner のみ）</option>
+        <option value="outerVar">outerVar（outer のみ）</option>
+        <option value="globalX">globalX（グローバルのみ）</option>
+        <option value="x">x（全スコープに存在）</option>
+        <option value="notExist">notExist（どこにもない）</option>
+      </select>
+      <span style="color:#718096; font-size:0.9em;">を inner から参照</span>
+      <button class="demo-btn" onclick="runChainSearch()">🔍 探索</button>
+    </div>
+    <div class="demo-output" id="chain-output">← 変数を選んで探索してみましょう</div>
+  </div>
+
+  <div class="pre-wrap">
+    <button class="copy-btn" onclick="copyPre(this)">copy</button>
+<pre>
+<span class="comment">// スコープチェーンの例</span>
+<span class="kw">let</span> x = <span class="num">10</span>; <span class="comment">// グローバル</span>
+
+<span class="kw">function</span> <span class="fn">outer</span>() {
+  <span class="kw">let</span> x = <span class="num">20</span>; <span class="comment">// outer のローカル（グローバルを隠す）</span>
+
+  <span class="kw">function</span> <span class="fn">inner</span>() {
+    <span class="kw">let</span> x = <span class="num">30</span>; <span class="comment">// inner のローカル（outer を隠す）</span>
+    console.<span class="fn">log</span>(x); <span class="out">// → 30（最も近いスコープの x）</span>
+  }
+
+  <span class="fn">inner</span>();
+  console.<span class="fn">log</span>(x); <span class="out">// → 20（outer のローカル x）</span>
+}
+
+<span class="fn">outer</span>();
+console.<span class="fn">log</span>(x); <span class="out">// → 10（グローバル x）</span>
+
+<span class="comment">// 変数シャドーイング：内側の変数が外側の同名変数を「隠す」</span>
+<span class="kw">let</span> name = <span class="str">"グローバル"</span>;
+<span class="kw">function</span> <span class="fn">test</span>() {
+  <span class="kw">let</span> name = <span class="str">"ローカル"</span>; <span class="comment">// グローバルの name を隠す（シャドーイング）</span>
+  console.<span class="fn">log</span>(name);    <span class="out">// → "ローカル"</span>
+}
+<span class="fn">test</span>();
+console.<span class="fn">log</span>(name);      <span class="out">// → "グローバル"（影響なし）</span>
+</pre>
+  </div>
+</div>
+
+
+<!-- ============================================================ -->
+<!-- PART 3: let と var の違い -->
+<!-- ============================================================ -->
+<h2 id="let-vs-var">③ let と var の違い</h2>
+
+<div class="note">
+  <strong>重要ポイント：let はブロックスコープ、var は関数スコープです。この違いがバグの原因になりやすいため、現代のJavaScriptでは let / const を使います。</strong>
+</div>
+
+<div class="demo-box">
+  <h3>スコープの違いを比較</h3>
+  <div class="compare-grid">
+    <div class="compare-card" style="background:#f0fff4; border:2px solid #48bb78;">
+      <h4 style="color:#276749;">✅ let（ブロックスコープ）</h4>
+      <div class="compare-row">
+        <span class="compare-icon">📦</span>
+        <span style="color:#2d3748;">{ } ブロック内でのみ有効</span>
+      </div>
+      <div class="compare-row">
+        <span class="compare-icon">🔒</span>
+        <span style="color:#2d3748;">同じスコープで再宣言不可</span>
+      </div>
+      <div class="compare-row">
+        <span class="compare-icon">⏰</span>
+        <span style="color:#2d3748;">TDZ（宣言前アクセス不可）</span>
+      </div>
+      <div class="compare-row">
+        <span class="compare-icon">🌍</span>
+        <span style="color:#2d3748;">グローバル汚染なし</span>
+      </div>
+    </div>
+    <div class="compare-card" style="background:#fff5f5; border:2px solid #fc8181;">
+      <h4 style="color:#9b2335;">⚠️ var（関数スコープ）</h4>
+      <div class="compare-row">
+        <span class="compare-icon">📦</span>
+        <span style="color:#2d3748;">関数全体で有効（ブロック無視）</span>
+      </div>
+      <div class="compare-row">
+        <span class="compare-icon">🔓</span>
+        <span style="color:#2d3748;">同じスコープで再宣言可能</span>
+      </div>
+      <div class="compare-row">
+        <span class="compare-icon">⬆️</span>
+        <span style="color:#2d3748;">ホイスティング（undefined）</span>
+      </div>
+      <div class="compare-row">
+        <span class="compare-icon">🌍</span>
+        <span style="color:#2d3748;">グローバル宣言で window に追加</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="tab-wrap">
+    <div class="tab-btns">
+      <button class="tab-btn active" onclick="switchTab(this,'tab-block')">ブロックスコープの違い</button>
+      <button class="tab-btn"        onclick="switchTab(this,'tab-loop')">ループでの違い（重要）</button>
+      <button class="tab-btn"        onclick="switchTab(this,'tab-hoist')">ホイスティングの違い</button>
+      <button class="tab-btn"        onclick="switchTab(this,'tab-closure')">クロージャ入門</button>
+    </div>
+
+    <!-- ブロックスコープ -->
+    <div class="tab-content active" id="tab-block">
+      <h3 style="margin-top:0; color:#1a365d;">ブロックスコープの違い</h3>
+      <div class="pre-wrap">
+        <button class="copy-btn" onclick="copyPre(this)">copy</button>
+<pre>
+<span class="comment">// ===== let：ブロックスコープ =====</span>
+{
+  <span class="kw">let</span> blockLet = <span class="str">"let の値"</span>;
+  console.<span class="fn">log</span>(blockLet); <span class="out">// → "let の値" ✅</span>
+}
+console.<span class="fn">log</span>(blockLet); <span class="err">// → ReferenceError ❌（ブロック外は参照不可）</span>
+
+<span class="comment">// ===== var：ブロックスコープを無視 =====</span>
+{
+  <span class="kw">var</span> blockVar = <span class="str">"var の値"</span>;
+  console.<span class="fn">log</span>(blockVar); <span class="out">// → "var の値" ✅</span>
+}
+console.<span class="fn">log</span>(blockVar); <span class="out">// → "var の値" ✅（ブロック外でも参照できる！）</span>
+
+<span class="comment">// if 文のブロックでも同様</span>
+<span class="kw">if</span> (<span class="kw">true</span>) {
+  <span class="kw">let</span> letInIf = <span class="str">"let"</span>;
+  <span class="kw">var</span> varInIf = <span class="str">"var"</span>;
+}
+<span class="comment">// console.log(letInIf); // → ReferenceError</span>
+console.<span class="fn">log</span>(varInIf);   <span class="out">// → "var"（if の外でも使える）</span>
+</pre>
+      </div>
+      <div class="warn">⚠️ <code>var</code> はブロックスコープを無視するため、意図しない場所で変数が参照できてしまいます。これがバグの原因になりやすい理由です。</div>
+    </div>
+
+    <!-- ループでの違い -->
+    <div class="tab-content" id="tab-loop">
+      <h3 style="margin-top:0; color:#1a365d;">ループでの let vs var（試験頻出！）</h3>
+      <div class="pre-wrap">
+        <button class="copy-btn" onclick="copyPre(this)">copy</button>
+<pre>
+<span class="comment">// ===== var を使ったループ（よくあるバグ）=====</span>
+<span class="kw">for</span> (<span class="kw">var</span> i = <span class="num">0</span>; i <span class="op">&lt;</span> <span class="num">3</span>; i++) {
+  setTimeout(() <span class="op">=></span> {
+    console.<span class="fn">log</span>(i); <span class="comment">// var は関数スコープなので i が共有される</span>
+  }, <span class="num">100</span>);
+}
+<span class="out">// → 3, 3, 3（すべて 3 になる！）</span>
+<span class="comment">// ループ終了後に i = 3 になっているため</span>
+
+<span class="comment">// ===== let を使ったループ（正しい動作）=====</span>
+<span class="kw">for</span> (<span class="kw">let</span> j = <span class="num">0</span>; j <span class="op">&lt;</span> <span class="num">3</span>; j++) {
+  setTimeout(() <span class="op">=></span> {
+    console.<span class="fn">log</span>(j); <span class="comment">// let はブロックスコープなので各ループで独立</span>
+  }, <span class="num">100</span>);
+}
+<span class="out">// → 0, 1, 2（期待通りの動作）</span>
+<span class="comment">// 各ループで j の新しいバインディングが作られるため</span>
+</pre>
+      </div>
+      <div class="interactive-demo" style="margin-top:12px;">
+        <div class="demo-label">var と let のループ動作の違いを確認しよう</div>
+        <div class="demo-input-row">
+          <select class="demo-input" id="loop-type" style="flex:0 0 auto; width:160px;">
+            <option value="var">var を使う</option>
+            <option value="let">let を使う</option>
+          </select>
+          <input class="demo-input" id="loop-count" type="number" value="3" min="1" max="5"
+                 style="max-width:80px;">
+          <span style="color:#718096; font-size:0.9em;">回ループ</span>
+          <button class="demo-btn" onclick="runLoopDemo()">▶ 実行</button>
+        </div>
+        <div class="demo-output" id="loop-output">← var と let を切り替えて違いを確認してみましょう</div>
+      </div>
+    </div>
+
+    <!-- ホイスティング -->
+    <div class="tab-content" id="tab-hoist">
+      <h3 style="margin-top:0; color:#1a365d;">ホイスティングの違い</h3>
+      <div class="pre-wrap">
+        <button class="copy-btn" onclick="copyPre(this)">copy</button>
+<pre>
+<span class="comment">// ===== var のホイスティング =====</span>
+console.<span class="fn">log</span>(varX); <span class="out">// → undefined（エラーにならない！）</span>
+<span class="kw">var</span> varX = <span class="num">10</span>;
+console.<span class="fn">log</span>(varX); <span class="out">// → 10</span>
+
+<span class="comment">// 上のコードは内部的にこう解釈される</span>
+<span class="kw">var</span> varX;           <span class="comment">// 宣言だけが先頭に「巻き上げ」られる</span>
+console.<span class="fn">log</span>(varX); <span class="out">// → undefined</span>
+varX = <span class="num">10</span>;          <span class="comment">// 代入はその場で実行</span>
+console.<span class="fn">log</span>(varX); <span class="out">// → 10</span>
+
+<span class="comment">// ===== let のホイスティング（TDZ）=====</span>
+console.<span class="fn">log</span>(letX); <span class="err">// → ReferenceError（TDZ: 一時的なデッドゾーン）</span>
+<span class="kw">let</span> letX = <span class="num">10</span>;
+console.<span class="fn">log</span>(letX); <span class="out">// → 10</span>
+
+<span class="comment">// let も宣言は巻き上げられるが、初期化前はアクセス不可（TDZ）</span>
+<span class="comment">// TDZ = Temporal Dead Zone（一時的なデッドゾーン）</span>
+</pre>
+      </div>
+      <div class="good">
+        ✅ <strong>TDZ（Temporal Dead Zone）のメリット</strong><br>
+        <code>let</code> / <code>const</code> の TDZ は、宣言前のアクセスを明確なエラーにします。
+        <code>var</code> のように <code>undefined</code> が返るよりも、バグを早期に発見できます。
+      </div>
+    </div>
+
+    <!-- クロージャ -->
+    <div class="tab-content" id="tab-closure">
+      <h3 style="margin-top:0; color:#1a365d;">クロージャ入門</h3>
+      <div class="note">
+        <strong>クロージャとは：</strong>関数が定義されたスコープの変数を、そのスコープが終わった後も参照し続ける仕組みです。
+      </div>
+      <div class="pre-wrap">
+        <button class="copy-btn" onclick="copyPre(this)">copy</button>
+<pre>
+<span class="comment">// クロージャの基本例</span>
+<span class="kw">function</span> <span class="fn">makeCounter</span>() {
+  <span class="kw">let</span> count = <span class="num">0</span>; <span class="comment">// この変数がクロージャで保持される</span>
+
+  <span class="kw">return</span> <span class="kw">function</span>() {
+    count++;
+    <span class="kw">return</span> count;
+  };
+}
+
+<span class="kw">const</span> counter1 = <span class="fn">makeCounter</span>();
+<span class="kw">const</span> counter2 = <span class="fn">makeCounter</span>(); <span class="comment">// 独立したカウンター</span>
+
+console.<span class="fn">log</span>(counter1()); <span class="out">// → 1</span>
+console.<span class="fn">log</span>(counter1()); <span class="out">// → 2</span>
+console.<span class="fn">log</span>(counter1()); <span class="out">// → 3</span>
+console.<span class="fn">log</span>(counter2()); <span class="out">// → 1（counter2 は独立）</span>
+
+<span class="comment">// クロージャを使ったプライベート変数</span>
+<span class="kw">function</span> <span class="fn">createBankAccount</span>(<span class="param">initialBalance</span>) {
+  <span class="kw">let</span> balance = <span class="param">initialBalance</span>; <span class="comment">// 外からは直接アクセスできない</span>
+
+  <span class="kw">return</span> {
+    <span class="fn">deposit</span>: (<span class="param">amount</span>) <span class="op">=></span> { balance <span class="op">+=</span> <span class="param">amount</span>; <span class="kw">return</span> balance; },
+    <span class="fn">withdraw</span>: (<span class="param">amount</span>) <span class="op">=></span> { balance <span class="op">-=</span> <span class="param">amount</span>; <span class="kw">return</span> balance; },
+    <span class="fn">getBalance</span>: () <span class="op">=></span> balance
+  };
+}
+
+<span class="kw">const</span> account = <span class="fn">createBankAccount</span>(<span class="num">1000</span>);
+console.<span class="fn">log</span>(account.<span class="fn">deposit</span>(<span class="num">500</span>));    <span class="out">// → 1500</span>
+console.<span class="fn">log</span>(account.<span class="fn">withdraw</span>(<span class="num">200</span>));   <span class="out">// → 1300</span>
+console.<span class="fn">log</span>(account.<span class="fn">getBalance</span>());   <span class="out">// → 1300</span>
+</pre>
+      </div>
+
+      <div class="interactive-demo" style="margin-top:12px;">
+        <div class="demo-label">クロージャで作ったカウンターを試してみよう</div>
+        <div style="display:flex; gap:10px; flex-wrap:wrap; margin-bottom:10px;">
+          <button class="demo-btn" onclick="closureIncrement()">+1 カウント</button>
+          <button class="demo-btn" style="background:#744210;" onclick="closureReset()">リセット</button>
+          <button class="demo-btn" style="background:#553c9a;" onclick="closureNewCounter()">新しいカウンターを作成</button>
+        </div>
+        <div class="demo-output" id="closure-output">← ボタンを押してクロージャの動作を確認しましょう</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ============================================================ -->
+<!-- まとめ -->
+<!-- ============================================================ -->
+<h2>📌 まとめ</h2>
+<div class="demo-box">
+  <table class="ref-table">
+    <thead><tr><th>概念</th><th>説明</th><th>ポイント</th></tr></thead>
+    <tbody>
+      <tr>
+        <td>グローバルスコープ</td>
+        <td>関数・ブロックの外で宣言した変数</td>
+        <td>どこからでもアクセス可能。汚染に注意</td>
+      </tr>
+      <tr>
+        <td>ローカルスコープ</td>
+        <td>関数内で宣言した変数</td>
+        <td>その関数内のみアクセス可能</td>
+      </tr>
+      <tr>
+        <td>ブロックスコープ</td>
+        <td><code>{ }</code> 内で <code>let</code>/<code>const</code> で宣言した変数</td>
+        <td>そのブロック内のみアクセス可能</td>
+      </tr>
+      <tr>
+        <td>スコープチェーン</td>
+        <td>変数を内側から外側へ順番に探す仕組み</td>
+        <td>見つかった時点で探索終了</td>
+      </tr>
+      <tr>
+        <td>変数シャドーイング</td>
+        <td>内側の同名変数が外側の変数を隠す</td>
+        <td>内側の変数が優先される</td>
+      </tr>
+      <tr>
+        <td>TDZ</td>
+        <td>let/const の宣言前アクセス禁止ゾーン</td>
+        <td>ReferenceError が発生する</td>
+      </tr>
+      <tr>
+        <td>クロージャ</td>
+        <td>外側スコープの変数を保持し続ける関数</td>
+        <td>プライベート変数・カウンターなどに活用</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+
+<!-- ============================================================ -->
+<!-- 演習問題 -->
+<!-- ============================================================ -->
+<div class="quiz-section">
+  <h2>🖊️ 演習問題</h2>
+
+  <!-- Q1 -->
+  <div class="quiz-block">
+    <h3>Q1. 穴埋め問題</h3>
+    <p>以下の説明に合う答えを入力してください。</p>
+    <label>① 変数を内側のスコープから外側へ順番に探す仕組みの名称：</label>
+    <input type="text" id="q1a" placeholder="〇〇チェーン">
+    <label>② let/const で宣言前にアクセスすると発生するエラーの種類：</label>
+    <input type="text" id="q1b" placeholder="〇〇Error">
+    <label>③ 内側の変数が外側の同名変数を隠す現象の名称：</label>
+    <input type="text" id="q1c" placeholder="英語で">
+    <label>④ 外側スコープの変数を保持し続ける関数の仕組みの名称：</label>
+    <input type="text" id="q1d" placeholder="英語または日本語">
+    <br>
+    <button class="btn btn-teal" onclick="checkQ1()">答え合わせ</button>
+    <div class="result-msg" id="q1-result"></div>
+    <script>
+      function checkQ1() {
+        const a = document.getElementById('q1a').value.trim()
+                    .replace(/スコープ|scope/gi,'').toLowerCase();
+        const b = document.getElementById('q1b').value.trim()
+                    .replace(/error/gi,'').toLowerCase();
+        const c = document.getElementById('q1c').value.trim().toLowerCase()
+                    .replace(/\s/g,'');
+        const d = document.getElementById('q1d').value.trim().toLowerCase()
+                    .replace(/\s/g,'');
+        const r = document.getElementById('q1-result');
+        const ca = a === 'チェーン' || a === 'chain' || a === 'すこーぷちぇーん';
+        const cb = b === 'reference' || b === 'referenceerror' ||
+                   b === '参照' || b === 'リファレンス';
+        const cc = c === 'shadowing' || c === 'シャドーイング' ||
+                   c === 'shadow' || c === 'しゃどーいんぐ' || c === 'しゃどー';
+        const cd = d === 'closure' || d === 'クロージャ' ||
+                   d === 'くろーじゃ' || d === 'くろーじゃー';
+        const count = [ca,cb,cc,cd].filter(Boolean).length;
+        if (count === 4) {
+          r.className = 'result-msg correct';
+          r.textContent = '✅ 全問正解！完璧です！';
+        } else {
+          r.className = 'result-msg wrong';
+          r.innerHTML = `❌ ${count}/4 問正解。<br>` +
+            `① ${ca?'✅':'❌ スコープチェーン（Scope Chain）'}　` +
+            `② ${cb?'✅':'❌ ReferenceError'}　` +
+            `③ ${cc?'✅':'❌ シャドーイング（Shadowing）'}　` +
+            `④ ${cd?'✅':'❌ クロージャ（Closure）'}`;
+        }
+      }
+    </script>
+  </div>
+
+  <!-- Q2 -->
+  <div class="quiz-block">
+    <h3>Q2. 選択問題</h3>
+    <p>以下のコードを実行した結果として正しいものはどれですか？</p>
+    <div class="pre-wrap" style="margin-bottom:12px;">
+<pre style="margin:0;">
+<span class="kw">for</span> (<span class="kw">var</span> i = <span class="num">0</span>; i <span class="op">&lt;</span> <span class="num">3</span>; i++) {
+  setTimeout(() <span class="op">=></span> console.<span class="fn">log</span>(i), <span class="num">0</span>);
+}
+</pre>
+    </div>
+    <select id="q2">
+      <option value="">-- 選択してください --</option>
+      <option value="a">0, 1, 2 が出力される</option>
+      <option value="b">3, 3, 3 が出力される</option>
+      <option value="c">0, 0, 0 が出力される</option>
+      <option value="d">エラーが発生する</option>
+    </select>
+    <br>
+    <button class="btn btn-teal" onclick="checkQ2()">答え合わせ</button>
+    <div class="result-msg" id="q2-result"></div>
+    <script>
+      function checkQ2() {
+        const v = document.getElementById('q2').value;
+        const r = document.getElementById('q2-result');
+        if (v === 'b') {
+          r.className = 'result-msg correct';
+          r.innerHTML = '✅ 正解！<br><br>' +
+            '<strong>理由：</strong><br>' +
+            '<code>var</code> は関数スコープなので、ループの3回の繰り返しで <code>i</code> は共有されます。<br>' +
+            '<code>setTimeout</code> のコールバックは非同期で実行されるため、<br>' +
+            'ループが終了して <code>i = 3</code> になってから実行されます。<br><br>' +
+            '<strong>解決策：</strong><code>var</code> を <code>let</code> に変えると <code>0, 1, 2</code> になります。<br>' +
+            '<code>let</code> はブロックスコープなので各ループで独立した <code>j</code> が作られます。';
+        } else if (v === '') {
+          r.className = 'result-msg info';
+          r.textContent = '⚠️ 選択肢を選んでください。';
+        } else {
+          r.className = 'result-msg wrong';
+          r.innerHTML = '❌ 不正解。<br>' +
+            '<code>var</code> は関数スコープなので <code>i</code> はループ全体で共有されます。<br>' +
+            'setTimeout のコールバックはループ終了後（<code>i=3</code>）に実行されるため、<br>' +
+            '<strong>3, 3, 3</strong> が出力されます。';
+        }
+      }
+    </script>
+  </div>
+
+  <!-- Q3 -->
+  <div class="quiz-block">
+    <h3>Q3. 正誤チェックボックス問題</h3>
+    <p><strong>正しい記述</strong>をすべて選んでください。</p>
+    <label class="checkbox-label"><input type="checkbox" id="q3a">
+      ① <code>let</code> で宣言した変数はブロックスコープを持つ</label>
+    <label class="checkbox-label"><input type="checkbox" id="q3b">
+      ② <code>var</code> で宣言した変数は if 文のブロック外からでも参照できる</label>
+    <label class="checkbox-label"><input type="checkbox" id="q3c">
+      ③ スコープチェーンは外側から内側へ変数を探す</label>
+    <label class="checkbox-label"><input type="checkbox" id="q3d">
+      ④ クロージャを使うと外側スコープの変数を関数終了後も保持できる</label>
+    <label class="checkbox-label"><input type="checkbox" id="q3e">
+      ⑤ <code>let</code> の TDZ では宣言前にアクセスすると <code>undefined</code> が返る</label>
+    <label class="checkbox-label"><input type="checkbox" id="q3f">
+      ⑥ 内側のスコープで同名の変数を宣言すると外側の変数を隠す（シャドーイング）</label>
+    <br>
+    <button class="btn btn-teal" onclick="checkQ3()">答え合わせ</button>
+    <div class="result-msg" id="q3-result"></div>
+    <script>
+      function checkQ3() {
+        const r = document.getElementById('q3-result');
+        const checks = {
+          a: document.getElementById('q3a').checked,
+          b: document.getElementById('q3b').checked,
+          c: document.getElementById('q3c').checked,
+          d: document.getElementById('q3d').checked,
+          e: document.getElementById('q3e').checked,
+          f: document.getElementById('q3f').checked,
+        };
+        // 正解：①②④⑥（a,b,d,f）
+        // ③ スコープチェーンは内側から外側へ探す
+        // ⑤ TDZ では undefined ではなく ReferenceError が発生する
+        const correct = { a:true, b:true, c:false, d:true, e:false, f:true };
+        const allOk = Object.keys(correct).every(k => checks[k] === correct[k]);
+        if (allOk) {
+          r.className = 'result-msg correct';
+          r.innerHTML = '✅ 全問正解！完璧です！';
+        } else {
+          r.className = 'result-msg wrong';
+          r.innerHTML =
+            '❌ 不正解の項目があります。<br><br>' +
+            '<strong>正しい記述：</strong>①②④⑥<br><br>' +
+            '<strong>誤った記述：</strong><br>' +
+            '・③ スコープチェーンは<strong>内側から外側へ</strong>変数を探します（外側→内側ではありません）。<br>' +
+            '・⑤ let の TDZ では <code>undefined</code> ではなく <strong>ReferenceError</strong> が発生します。';
+        }
+      }
+    </script>
+  </div>
+
+  <!-- Q4 コンソール実践 -->
+  <div class="quiz-block">
+    <h3>Q4. コンソール実践問題</h3>
+    <p>クロージャを使って「加算器」を作ってください。</p>
+    <ul style="font-size:0.92em; color:#4a5568; line-height:2;">
+      <li><code>makeAdder(n)</code> という関数を定義する</li>
+      <li>この関数は「引数に <code>n</code> を加算する関数」を返す</li>
+      <li><code>const add5 = makeAdder(5)</code> で「5を加算する関数」を作れる</li>
+      <li><code>add5(3)</code> → <code>8</code>、<code>add5(10)</code> → <code>15</code> になる</li>
+    </ul>
+    <div class="js-console" id="console-q4">
+      <div class="js-console-bar">
+        <div class="dot dot-red"></div>
+        <div class="dot dot-yellow"></div>
+        <div class="dot dot-green"></div>
+        <span>Practice Console</span>
+      </div>
+      <div class="js-console-output" id="console-q4-output">
+        <div class="log-info">// makeAdder 関数を定義してみましょう</div>
+        <div class="log-info">// function makeAdder(n) { return ... }</div>
+      </div>
+      <div class="js-console-input-row">
+        <span>&gt;</span>
+        <input class="js-console-input" id="console-q4-input"
+               placeholder="function makeAdder(n) { return x => x + n; }"
+               type="text">
+        <button class="js-console-clear" onclick="clearConsole('q4')">クリア</button>
+        <button class="js-console-run"   onclick="runConsole('q4')">▶ 実行</button>
+      </div>
+    </div>
+    <label style="margin-top:12px; display:block;">
+      <code>const add5 = makeAdder(5); console.log(add5(3));</code> の結果は？
+    </label>
+    <input type="text" id="q4-ans" placeholder="数値を入力">
+    <br>
+    <button class="btn btn-teal" onclick="checkQ4()">答え合わせ</button>
+    <div class="result-msg" id="q4-result"></div>
+    <script>
+      function checkQ4() {
+        const v = document.getElementById('q4-ans').value.trim();
+        const r = document.getElementById('q4-result');
+        if (v === '8') {
+          r.className = 'result-msg correct';
+          r.innerHTML = '✅ 正解！<br><br>' +
+            '模範解答：<br>' +
+            '<code>function makeAdder(n) {</code><br>' +
+            '<code>  return x => x + n; // n をクロージャで保持</code><br>' +
+            '<code>}</code><br>' +
+            '<code>const add5 = makeAdder(5);</code><br>' +
+            '<code>console.log(add5(3));  // → 8</code><br>' +
+            '<code>console.log(add5(10)); // → 15</code><br><br>' +
+            '<code>makeAdder(5)</code> が返す関数は <code>n=5</code> をクロージャで保持しています。<br>' +
+            '<code>add5(3)</code> を呼ぶと <code>3 + 5 = 8</code> が返ります。';
+        } else if (v === '') {
+          r.className = 'result-msg info';
+          r.textContent = '⚠️ コンソールでコードを実行してから答えを入力してください。';
+        } else {
+          r.className = 'result-msg wrong';
+          r.innerHTML = '❌ 不正解。<br>' +
+            '<code>makeAdder(5)</code> は「引数に 5 を加える関数」を返します。<br>' +
+            '<code>add5(3)</code> は <code>3 + 5</code> を計算します。';
+        }
+      }
+    </script>
+  </div>
+
+</div><!-- /quiz-section -->
+
+
+<!-- 完了ボタン -->
+<div class="complete-section">
+  <p>🎉 「1-5 スコープ」の学習が完了したら記録しましょう！</p>
+  <button class="btn btn-done" onclick="markComplete()">✅ このセクションを完了にする</button>
+  <div id="complete-msg" style="margin-top:10px; font-size:0.88em; color:#276749; display:none;">
+    進捗を保存しました！トップページの進捗バーに反映されます。
+  </div>
+</div>
+
+<!-- ページナビ -->
+<div class="page-nav">
+  <a class="prev" href="04_functions.html">← 1-4 関数</a>
+  <a class="home" href="../index.html">🏠 目次へ</a>
+  <a class="next" href="06_conditions.html">次へ：1-6 条件分岐 →</a>
+</div>
+
+<!-- フッター -->
+<footer>
+  <p>
+    HTML5プロフェッショナル Level 2 学習サイト ／
+    <a href="../index.html">🏠 目次</a> ／
+    <a href="../exam/index.html">📝 模擬試験</a> ／
+    <a href="https://github.com/MeshinoKiwamiOkome/html5lv2" target="_blank">GitHub</a>
+  </p>
+  <p style="margin-top:4px;">© MeshinoKiwamiOkome</p>
+</footer>
+
+
+<!-- ============================================================ -->
+<!-- JavaScript -->
+<!-- ============================================================ -->
+<script>
+  /* ===== コピーボタン ===== */
+  function copyPre(btn) {
+    const pre = btn.nextElementSibling;
+    navigator.clipboard.writeText(pre.innerText || pre.textContent).then(() => {
+      btn.textContent = 'copied!';
+      setTimeout(() => btn.textContent = 'copy', 1800);
+    });
+  }
+
+  /* ===== タブ ===== */
+  function switchTab(btn, id) {
+    btn.closest('.tab-wrap').querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    btn.closest('.tab-wrap').querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById(id).classList.add('active');
+  }
+
+  /* ===== スコープマップ：変数クリック ===== */
+  const accessData = {
+    globalX: {
+      name: 'globalX',
+      accessible: ['global','outer','inner'],
+      desc: 'グローバル変数はすべてのスコープからアクセスできます。'
+    },
+    globalMsg: {
+      name: 'globalMsg',
+      accessible: ['global','outer','inner'],
+      desc: 'グローバル変数はすべてのスコープからアクセスできます。'
+    },
+    outerVar: {
+      name: 'outerVar',
+      accessible: ['outer','inner'],
+      desc: 'outer 関数のローカル変数です。outer と inner からアクセスできますが、グローバルスコープからはアクセスできません。'
+    },
+    innerVar: {
+      name: 'innerVar',
+      accessible: ['inner'],
+      desc: 'inner 関数のローカル変数です。inner の中からのみアクセスできます。outer やグローバルからはアクセスできません。'
+    }
+  };
+
+  function checkAccess(key, el) {
+    const d   = accessData[key];
+    const panel = document.getElementById('access-panel');
+    panel.style.display = 'block';
+    const scopeLabels = { global:'グローバル', outer:'outer関数', inner:'inner関数' };
+    const rows = ['global','outer','inner'].map(s => {
+      const ok = d.accessible.includes(s);
+      return `${ok ? '✅' : '❌'} ${scopeLabels[s]} から ${d.name} へのアクセス：${ok ? '可能' : '不可能（ReferenceError）'}`;
+    }).join('\n');
+    panel.style.color = '#e2e8f0';
+    panel.textContent = `// ${d.name} のアクセス確認\n${rows}\n\n// ${d.desc}`;
+    panel.scrollIntoView({ behavior:'smooth', block:'nearest' });
+  }
+
+  /* ===== スコープシミュレーター ===== */
+  const scopeRules = {
+    global:  ['globalX','globalMsg'],
+    outer:   ['globalX','globalMsg','outerVar'],
+    inner:   ['globalX','globalMsg','outerVar','innerVar']
+  };
+  const varValues = {
+    globalX:'100', globalMsg:'"Hello"', outerVar:'200', innerVar:'300'
+  };
+
+  function runScopeCheck() {
+    const from = document.getElementById('scope-from').value;
+    const vari = document.getElementById('scope-var').value;
+    const out  = document.getElementById('scope-check-output');
+    const accessible = scopeRules[from].includes(vari);
+    const fromLabel = { global:'グローバル', outer:'outer 関数内', inner:'inner 関数内' }[from];
+    const declaredIn = {
+      globalX:'グローバルスコープ', globalMsg:'グローバルスコープ',
+      outerVar:'outer 関数', innerVar:'inner 関数'
+    }[vari];
+
+    if (accessible) {
+      out.style.color = '#68d391';
+      out.textContent =
+        `✅ アクセス可能\n\n` +
+        `${fromLabel} から ${vari} にアクセス\n` +
+        `宣言場所：${declaredIn}\n` +
+        `値：${varValues[vari]}\n\n` +
+        `> console.log(${vari});\n  → ${varValues[vari]}`;
+    } else {
+      out.style.color = '#fc8181';
+      out.textContent =
+        `❌ アクセス不可（ReferenceError）\n\n` +
+        `${fromLabel} から ${vari} にアクセスしようとしましたが、\n` +
+        `${vari} は ${declaredIn} で宣言されており、\n` +
+        `${fromLabel} のスコープには存在しません。\n\n` +
+        `> console.log(${vari});\n  ReferenceError: ${vari} is not defined`;
+    }
+  }
+
+  /* ===== スコープチェーン探索 ===== */
+  const chainData = {
+    innerVar: {
+      steps: [
+        { scope:'inner（現在）', found:true,  vars:['innerVar=300','x=30'], hit:'innerVar' }
+      ],
+      result: '300',
+      color: '#f6ad55'
+    },
+    outerVar: {
+      steps: [
+        { scope:'inner（現在）', found:false, vars:['innerVar=300','x=30'], hit:null },
+        { scope:'outer（外側）', found:true,  vars:['outerVar=200','x=20'], hit:'outerVar' }
+      ],
+      result: '200',
+      color: '#b794f4'
+    },
+    globalX: {
+      steps: [
+        { scope:'inner（現在）', found:false, vars:['innerVar=300','x=30'], hit:null },
+        { scope:'outer（外側）', found:false, vars:['outerVar=200','x=20'], hit:null },
+        { scope:'グローバル',    found:true,  vars:['globalX=100','x=10'], hit:'globalX' }
+      ],
+      result: '100',
+      color: '#90cdf4'
+    },
+    x: {
+      steps: [
+        { scope:'inner（現在）', found:true,  vars:['innerVar=300','x=30'], hit:'x' }
+      ],
+      result: '30（最も近いスコープの x が使われる）',
+      color: '#68d391',
+      note: '⚠️ シャドーイング：inner の x=30 が outer の x=20 とグローバルの x=10 を隠しています'
+    },
+    notExist: {
+      steps: [
+        { scope:'inner（現在）', found:false, vars:['innerVar=300','x=30'], hit:null },
+        { scope:'outer（外側）', found:false, vars:['outerVar=200','x=20'], hit:null },
+        { scope:'グローバル',    found:false, vars:['globalX=100','x=10'], hit:null }
+      ],
+      result: null,
+      color: '#fc8181'
+    }
+  };
+
+  function runChainSearch() {
+    const key = document.getElementById('chain-var-sel').value;
+    const out = document.getElementById('chain-output');
+    const res = document.getElementById('chain-search-result');
+    const d   = chainData[key];
+
+    let text = `// "${key}" を inner スコープから探索\n\n`;
+    d.steps.forEach((step, i) => {
+      text += `[Step ${i+1}] ${step.scope} を確認\n`;
+      text += `  変数：${step.vars.join(', ')}\n`;
+      if (step.found) {
+        text += `  → ✅ "${key}" が見つかりました！探索終了\n`;
+      } else {
+        text += `  → ❌ "${key}" は見つかりません。外側へ...\n`;
+      }
+      text += '\n';
+    });
+
+    if (d.result !== null) {
+      text += `結果：${key} = ${d.result}`;
+      if (d.note) text += `\n\n${d.note}`;
+      out.style.color = d.color;
+    } else {
+      text += `結果：ReferenceError: ${key} is not defined\n`;
+      text += `すべてのスコープを探しましたが見つかりませんでした。`;
+      out.style.color = '#fc8181';
+    }
+    out.textContent = text;
+
+    res.textContent = d.result !== null
+      ? `✅ "${key}" はスコープチェーンで見つかりました → ${d.result}`
+      : `❌ "${key}" はどのスコープにも存在しません → ReferenceError`;
+    res.style.color = d.result !== null ? '#68d391' : '#fc8181';
+  }
+
+  /* ===== ループデモ ===== */
+  function runLoopDemo() {
+    const type  = document.getElementById('loop-type').value;
+    const count = parseInt(document.getElementById('loop-count').value) || 3;
+    const out   = document.getElementById('loop-output');
+    const results = [];
+
+    if (type === 'var') {
+      // var: ループ終了後の値が使われる
+      for (var vi = 0; vi < count; vi++) {
+        (function(captured_i) {
+          results.push(count); // var は共有されるので count になる
+        })(vi);
+      }
+      out.style.color = '#fc8181';
+      out.textContent =
+        `// var を使ったループ\nfor (var i = 0; i < ${count}; i++) {\n  setTimeout(() => console.log(i), 0);\n}\n\n` +
+        `出力結果：${Array(count).fill(count).join(', ')}\n\n` +
+        `⚠️ すべて ${count} になります！\n` +
+        `理由：var は関数スコープなので i が共有され、\n` +
+        `setTimeout 実行時には i = ${count} になっています。\n\n` +
+        `解決策：var を let に変えてください。`;
+    } else {
+      // let: 各ループで独立したバインディング
+      for (let li = 0; li < count; li++) {
+        results.push(li);
+      }
+      out.style.color = '#68d391';
+      out.textContent =
+        `// let を使ったループ\nfor (let j = 0; j < ${count}; j++) {\n  setTimeout(() => console.log(j), 0);\n}\n\n` +
+        `出力結果：${results.join(', ')}\n\n` +
+        `✅ 期待通り ${results.join(', ')} になります！\n` +
+        `理由：let はブロックスコープなので、\n` +
+        `各ループで独立した j のバインディングが作られます。`;
+    }
+  }
+
+  /* ===== クロージャデモ ===== */
+  let closureCounters = [];
+  let currentCounterIdx = 0;
+
+  function makeCounter() {
+    let count = 0;
+    return () => ++count;
+  }
+
+  // 最初のカウンターを作成
+  closureCounters.push({ fn: makeCounter(), id: 1 });
+
+  function updateClosureOutput() {
+    const out = document.getElementById('closure-output');
+    const c   = closureCounters[currentCounterIdx];
+    out.style.color = '#68d391';
+    out.textContent =
+      `// クロージャで作ったカウンター #${c.id}\n\n` +
+      `現在の count = ${c.fn.toString().includes('count') ? '（内部変数）' : ''}\n` +
+      `カウンター数：${closureCounters.length} 個\n\n` +
+      `// 使い方\nconst counter = makeCounter();\ncounter(); // → 1\ncounter(); // → 2\n...\n\n` +
+      `現在のカウンター #${c.id} を操作中`;
+  }
+
+  function closureIncrement() {
+    const c   = closureCounters[currentCounterIdx];
+    const val = c.fn();
+    const out = document.getElementById('closure-output');
+    out.style.color = '#68d391';
+    out.textContent =
+      `// カウンター #${c.id} をインクリメント\n\n` +
+      `> counter${c.id}()\n  → ${val}\n\n` +
+      `count の値が ${val-1} → ${val} に増えました\n` +
+      `（count はクロージャで保持されています）`;
+  }
+
+  function closureReset() {
+    closureCounters[currentCounterIdx] = {
+      fn: makeCounter(),
+      id: closureCounters[currentCounterIdx].id
+    };
+    const out = document.getElementById('closure-output');
+    out.style.color = '#f6ad55';
+    out.textContent =
+      `// カウンター #${closureCounters[currentCounterIdx].id} をリセット\n\n` +
+      `新しいクロージャが作られ、count = 0 になりました。\n` +
+      `次回 counter() を呼ぶと 1 から始まります。`;
+  }
+
+  function closureNewCounter() {
+    const newId = closureCounters.length + 1;
+    closureCounters.push({ fn: makeCounter(), id: newId });
+    currentCounterIdx = closureCounters.length - 1;
+    const out = document.getElementById('closure-output');
+    out.style.color = '#b794f4';
+    out.textContent =
+      `// 新しいカウンター #${newId} を作成\n\n` +
+      `const counter${newId} = makeCounter();\n\n` +
+      `カウンター数：${closureCounters.length} 個\n` +
+      `各カウンターは独立した count を持っています。\n\n` +
+      `現在のカウンター #${newId} を操作中\n` +
+      `（+1 ボタンで #${newId} をインクリメントできます）`;
+  }
+
+  /* ===== JSコンソール ===== */
+  function runConsole(id) {
+    const input  = document.getElementById(`console-${id}-input`);
+    const output = document.getElementById(`console-${id}-output`);
+    const code   = input.value.trim();
+    if (!code) return;
+
+    const promptLine = document.createElement('div');
+    promptLine.className = 'log-prompt';
+    promptLine.textContent = '> ' + code;
+    output.appendChild(promptLine);
+
+    const origLog   = console.log;
+    const origWarn  = console.warn;
+    const origError = console.error;
+    const origInfo  = console.info;
+
+    function addLine(cls, ...args) {
+      const line = document.createElement('div');
+      line.className = cls;
+      line.textContent = args.map(a => {
+        if (typeof a === 'object' && a !== null) {
+          try { return JSON.stringify(a, null, 2); } catch(e) { return String(a); }
+        }
+        return String(a);
+      }).join(' ');
+      output.appendChild(line);
+    }
+
+    console.log   = (...a) => { addLine('log-line',  ...a); origLog(...a);   };
+    console.warn  = (...a) => { addLine('log-warn',  ...a); origWarn(...a);  };
+    console.error = (...a) => { addLine('log-error', ...a); origError(...a); };
+    console.info  = (...a) => { addLine('log-info',  ...a); origInfo(...a);  };
+
+    try {
+      const result = eval(code);
+      if (result !== undefined) {
+        addLine('log-result', '← ' + (typeof result === 'object' ?
+          JSON.stringify(result) : String(result)));
+      }
+    } catch(e) {
+      addLine('log-error', e.toString());
+    }
+
+    console.log   = origLog;
+    console.warn  = origWarn;
+    console.error = origError;
+    console.info  = origInfo;
+
+    input.value = '';
+    output.scrollTop = output.scrollHeight;
+  }
+
+  function clearConsole(id) {
+    document.getElementById(`console-${id}-output`).innerHTML =
+      '<div class="log-info">// クリアしました</div>';
+  }
+
+  document.querySelectorAll('.js-console-input').forEach(el => {
+    el.addEventListener('keydown', e => {
+      if (e.key === 'Enter') {
+        const id = el.id.replace('console-','').replace('-input','');
+        runConsole(id);
+      }
+    });
+  });
+
+  /* ===== 完了ボタン ===== */
+  function markComplete() {
+    const current = parseInt(localStorage.getItem('html5lv2_ch1') || '0', 10);
+    const newVal  = Math.min(100, current + 9);
+    localStorage.setItem('html5lv2_ch1', String(newVal));
+    document.getElementById('complete-msg').style.display = 'block';
+  }
+  if (parseInt(localStorage.getItem('html5lv2_ch1') || '0') >= 45) {
+    document.getElementById('complete-msg').style.display = 'block';
+  }
+</script>
+
+</body>
+</html>
